@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, CircleHelp, Keyboard, PlayCircle, RotateCcw, Settings2, Smartphone } from 'lucide-react';
+import { BookOpen, CircleHelp, Keyboard, PlayCircle, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { APP_ROUTES } from '@/app/routes';
-import { resetDemoData } from '@/stores/persistence';
 import { useCurrentOrg, useT } from '@/stores/hooks';
 
 export const TOUR_EVENT = 'treesyt:tour';
@@ -23,7 +22,6 @@ function Kbd({ children }: { children: string }) {
 /** Help menu (PRD 6.5). */
 export function HelpMenu() {
   const [shortcuts, setShortcuts] = useState(false);
-  const [reset, setReset] = useState(false);
   const [configurable, setConfigurable] = useState(false);
   const navigate = useNavigate();
   const route = useCurrentRoute();
@@ -45,18 +43,11 @@ export function HelpMenu() {
           <DropdownMenuItem onSelect={() => setConfigurable(true)}>
             <Settings2 /> {t('shell.whatsConfigurable')}
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => navigate('/app/help/mobile')}>
-            <Smartphone /> {t('shell.mobilePreviews')}
-          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => navigate('/app/help')}>
             <BookOpen /> {t('shell.knowledgeBase')}
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setShortcuts(true)}>
             <Keyboard /> {t('shell.shortcuts')}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => setReset(true)} className="text-danger focus:text-danger [&_svg]:text-danger">
-            <RotateCcw /> {t('shell.resetDemo')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -70,7 +61,6 @@ export function HelpMenu() {
             {[
               ['⌘ K', 'shell.shortcutPalette'],
               ['?', 'shell.shortcutHelp'],
-              ['M', 'shell.shortcutMobile'],
             ].map(([k, label]) => (
               <div key={k} className="flex items-center justify-between">
                 <dt>{t(label!)}</dt>
@@ -81,18 +71,6 @@ export function HelpMenu() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={reset} onOpenChange={setReset}>
-        <DialogContent closeLabel={t('common.close')}>
-          <DialogHeader>
-            <DialogTitle>{t('shell.resetDemo')}</DialogTitle>
-            <DialogDescription>{t('shell.resetConfirm')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="secondary" onClick={() => setReset(false)}>{t('common.cancel')}</Button>
-            <Button variant="danger" onClick={resetDemoData}>{t('shell.resetDemo')}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <Sheet open={configurable} onOpenChange={setConfigurable}>
         <SheetContent closeLabel={t('common.close')} className="max-w-[440px] p-8">

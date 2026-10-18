@@ -75,8 +75,8 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <TooltipProvider delayDuration={250}>
       <BootGate>{children}</BootGate>
-      {/* The mobile window shows toasts at the top so they never cover the bottom tabs. */}
-      <Toaster theme={theme} position={window.location.pathname.startsWith('/m') ? 'top-center' : 'bottom-right'} />
+      {/* Toasts sit at the top: clear of the mobile tabs and of the Demo icon (bottom-right). */}
+      <Toaster theme={theme} position={window.location.pathname.startsWith('/m') ? 'top-center' : 'top-right'} />
     </TooltipProvider>
   );
 }

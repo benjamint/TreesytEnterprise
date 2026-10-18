@@ -10,6 +10,7 @@ import i18n from '@/i18n';
 import { BottomTabs } from './BottomTabs';
 import { RecordSheet } from './RecordSheet';
 import { MobileSignIn } from '@/mobile/flows/auth/MobileSignIn';
+import { DemoDock } from '@/components/shared/DemoDock';
 
 /**
  * Mobile app shell (PRD 4.1–4.2): centred 390×844 viewport with a subtle device frame on desktop,
@@ -62,6 +63,7 @@ export function MobileShell() {
         ) : (
           <MobileSignIn />
         )}
+        <DemoDock placement="mobile" />
       </div>
     </div>
   );

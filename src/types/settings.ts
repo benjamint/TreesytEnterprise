@@ -195,7 +195,14 @@ export interface OrgSettings {
   agentTypes: AgentType[];
   expenseTypes: ExpenseType[];
   mobile: { otpLength: number; minAppVersion: string };
-  security: { sessionMinutes: number };
+  security: {
+    sessionMinutes: number;
+    passwordPolicy: { minLength: number; requireNumber: boolean; requireSymbol: boolean; requireMixedCase: boolean };
+    /** Role templates that must use 2-step sign-in. */
+    twoFactorRoles: string[];
+    sso: { enabled: boolean; protocol: 'SAML' | 'OIDC'; domain: string; idpName: string };
+    ipAllowList: string[];
+  };
   makerChecker: boolean;
   bulkBatchSize: number;
   landUnitId: string;

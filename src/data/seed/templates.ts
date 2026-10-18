@@ -21,14 +21,14 @@ export const ORG = {
 
 export const roleId = (orgId: string, template: string) => `${orgId}_role_${template}`;
 
-const sep = { requesterCannotApprove: true, sameUserNotTwoSteps: true };
+export const sep = { requesterCannotApprove: true, sameUserNotTwoSteps: true };
 
-const PR_STATUSES = [
+export const PR_STATUSES = [
   'PENDING', 'MANAGEMENT_APPROVED', 'FINANCE_APPROVED', 'RATE_CONFIRMED', 'PARTIAL_DISBURSEMENT', 'FULL_DISBURSEMENT',
   'FUNDS_RECEIVED', 'TICKET_ACTIVATED', 'RECONCILED', 'NOT_APPROVED', 'ON_HOLD', 'PRICE_UPDATE', 'ARCHIVED',
 ];
 
-function vitaraWorkflows(): WorkflowDefinition[] {
+export function vitaraWorkflows(): WorkflowDefinition[] {
   return [
     {
       id: 'wf_vit_pr', docType: 'purchaseRequest', statuses: PR_STATUSES,
@@ -63,7 +63,7 @@ function vitaraWorkflows(): WorkflowDefinition[] {
   ];
 }
 
-function kakaoWorkflows(): WorkflowDefinition[] {
+export function kakaoWorkflows(): WorkflowDefinition[] {
   const o = ORG.kakao;
   return [
     {
@@ -97,7 +97,7 @@ function kakaoWorkflows(): WorkflowDefinition[] {
   ];
 }
 
-const VITARA_NUMBERING: NumberingPattern[] = [
+export const VITARA_NUMBERING: NumberingPattern[] = [
   { docType: 'purchaseRequest', prefix: 'CS', pattern: '{prefix}-{yymm}-{seq:4}', scope: 'month' },
   { docType: 'purchase', prefix: 'P', pattern: '{prefix}-{yymm}-{seq:5}', scope: 'month' },
   { docType: 'preExpense', prefix: 'PRE', pattern: '{prefix}-{yymm}-{seq:4}', scope: 'month' },
@@ -138,13 +138,13 @@ const shea: Commodity = {
   grades: ['A', 'B'], aggregatorThresholdKg: 2000, farmerMaxKg: 1500, eudrRelevant: false, lossTolerancePct: 0.5, color: '#14583F',
 };
 
-const simple = (id: string, code: string, en: string, fr: string, color: string, extra: Partial<Commodity> = {}): Commodity => ({
+export const simple = (id: string, code: string, en: string, fr: string, color: string, extra: Partial<Commodity> = {}): Commodity => ({
   id, code, name: { en, fr }, aliases: [], hsCode: '', defaultUnitId: 'kg', allowedUnitIds: ['kg', 'bag', 't'],
   quality: [{ key: 'moisture', label: 'Moisture', max: 13, unit: '%' }], grades: ['A', 'B'], aggregatorThresholdKg: 3000,
   farmerMaxKg: 2500, eudrRelevant: false, lossTolerancePct: 0.5, color, ...extra,
 });
 
-const VITARA_COMMODITIES: Commodity[] = [
+export const VITARA_COMMODITIES: Commodity[] = [
   shea,
   simple('com_soy', 'SOY', 'Soybeans', 'Soja', '#B8E05A', { hsCode: '1201.90' }),
   simple('com_maize', 'MAZ', 'Maize', 'Maïs', '#E0A94A', { hsCode: '1005.90' }),
@@ -154,7 +154,7 @@ const VITARA_COMMODITIES: Commodity[] = [
   simple('com_millet', 'WML', 'White millet', 'Mil blanc', '#93A39B', { hsCode: '1008.29' }),
 ];
 
-const KAKAO_COMMODITIES: Commodity[] = [
+export const KAKAO_COMMODITIES: Commodity[] = [
   {
     id: 'com_cocoa', code: 'CAC', name: { en: 'Cocoa', fr: 'Cacao' }, aliases: ['cacao', 'fèves'], hsCode: '1801.00', defaultUnitId: 'kg',
     allowedUnitIds: ['kg', 'bag', 't'], quality: [{ key: 'moisture', label: 'Humidité', max: 8, unit: '%' }, { key: 'mouldy', label: 'Moisies', max: 3, unit: '%' }],
@@ -163,7 +163,7 @@ const KAKAO_COMMODITIES: Commodity[] = [
   simple('com_cashew', 'CAJ', 'Cashew nuts', 'Noix de cajou', '#B7791F', { hsCode: '0801.31', grades: ['Standard'] }),
 ];
 
-const pack = (commodityId: string, name: string, minKg: number, maxKg: number): PackagingProfile => ({
+export const pack = (commodityId: string, name: string, minKg: number, maxKg: number): PackagingProfile => ({
   id: `pk_${commodityId}`, commodityId, name, minKg, maxKg, tareKg: 0.5, tag: 'QR', mode: 'PER_BAG',
 });
 
@@ -183,7 +183,7 @@ const providers = (ids: [string, number][], walletPrefix: string): PaymentProvid
     return { ...p, share, walletName: p.kind === 'MOBILE_MONEY' ? `${walletPrefix} ${p.name}` : p.walletName };
   });
 
-const VITARA_EXPENSES: ExpenseType[] = [
+export const VITARA_EXPENSES: ExpenseType[] = [
   { id: 'ex_bag', name: 'Empty sack', basis: 'PER_BAG', defaultRate: { amountMinor: 450, currency: 'GHS' }, requiresWallet: false, requiresBagScan: true, triggersInbound: false },
   { id: 'ex_load', name: 'Loading', basis: 'PER_BAG', defaultRate: { amountMinor: 200, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false },
   { id: 'ex_tricycle', name: 'Tricycle transport', basis: 'PER_BAG', defaultRate: { amountMinor: 350, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false },
@@ -198,13 +198,13 @@ const KAKAO_EXPENSES: ExpenseType[] = [
   { id: 'ex_camion', name: 'Transport camion vers magasin', basis: 'PER_TRIP', defaultRate: { amountMinor: 60_000, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true },
 ];
 
-const VITARA_AGENT_TYPES: AgentType[] = [
+export const VITARA_AGENT_TYPES: AgentType[] = [
   { id: 'at_ceo', code: 'CEO', name: { en: 'Community Engagement Officer', fr: "Agent d'engagement communautaire" }, budgetEligible: true, mobileTiles: ['profiling', 'farmers', 'groups', 'buying', 'support', 'recovery', 'surveys', 'workshops', 'budget'] },
   { id: 'at_cons', code: 'CONS', name: { en: 'Conservation agent', fr: 'Agent de conservation' }, budgetEligible: true, mobileTiles: ['farmers', 'trees', 'plots', 'surveys', 'workshops', 'budget'] },
   { id: 'at_wh', code: 'WH', name: { en: 'Warehouse officer', fr: 'Magasinier' }, budgetEligible: false, mobileTiles: ['warehouse'] },
 ];
 
-const KAKAO_AGENT_TYPES: AgentType[] = [
+export const KAKAO_AGENT_TYPES: AgentType[] = [
   { id: 'at_del', code: 'DEL', name: { en: 'Délégué', fr: 'Délégué' }, budgetEligible: false, mobileTiles: ['profiling', 'farmers', 'groups', 'buying', 'plots', 'surveys', 'recovery'] },
   { id: 'at_mag', code: 'MAG', name: { en: 'Warehouse officer', fr: 'Magasinier' }, budgetEligible: false, mobileTiles: ['warehouse'] },
 ];
@@ -243,7 +243,13 @@ export function vitaraSettings(): OrgSettings {
     agentTypes: VITARA_AGENT_TYPES,
     expenseTypes: VITARA_EXPENSES,
     mobile: { otpLength: 4, minAppVersion: '3.8.0' },
-    security: { sessionMinutes: 60 },
+    security: {
+      sessionMinutes: 60,
+      passwordPolicy: { minLength: 8, requireNumber: true, requireSymbol: false, requireMixedCase: false },
+      twoFactorRoles: ['financeOfficer'],
+      sso: { enabled: true, protocol: 'SAML', domain: 'vitara.example', idpName: 'Vitara Identity' },
+      ipAllowList: [],
+    },
     makerChecker: true,
     bulkBatchSize: 20,
     landUnitId: 'acre',
@@ -287,7 +293,13 @@ export function kakaoSettings(): OrgSettings {
     agentTypes: KAKAO_AGENT_TYPES,
     expenseTypes: KAKAO_EXPENSES,
     mobile: { otpLength: 6, minAppVersion: '3.8.0' },
-    security: { sessionMinutes: 30 },
+    security: {
+      sessionMinutes: 30,
+      passwordPolicy: { minLength: 10, requireNumber: true, requireSymbol: true, requireMixedCase: true },
+      twoFactorRoles: ['financeOfficer', 'companyAdmin'],
+      sso: { enabled: false, protocol: 'OIDC', domain: 'kakao-ivoire.example', idpName: '' },
+      ipAllowList: [],
+    },
     makerChecker: true,
     bulkBatchSize: 25,
     landUnitId: 'ha',
@@ -310,6 +322,7 @@ export function minimalSettings(orgId: string, modulesOn: string[], landUnitId =
     feeTiers: [],
     agentTypes: [],
     expenseTypes: [],
+    security: { ...base.security, sso: { enabled: false, protocol: 'SAML', domain: '', idpName: '' }, twoFactorRoles: [] },
     landUnitId,
   };
 }

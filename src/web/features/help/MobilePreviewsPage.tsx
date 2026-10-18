@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import { ExternalLink, Smartphone } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Avatar } from '@/components/shared/Avatar';
 import { MOBILE_FLOWS, MOBILE_FLOW_PHASE } from '@/app/routes';
+import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { defaultMobileUser, openMobileWindow } from '@/app/mobile';
 import { useActor, useT } from '@/stores/hooks';
 import { useAccessStore } from '@/stores/accessStore';
@@ -27,6 +27,7 @@ export function MobilePreviewsPage() {
   );
   const [selected, setSelected] = useState<string | null>(() => defaultMobileUser(orgId, userId, memberships, roles));
   const current = fieldUsers.find((f) => f.u.id === selected) ?? fieldUsers[0];
+  useDemoNotes(MOBILE_FLOWS.map((flow) => ({ id: flow, key: 'demo.note.flowPhase', params: { flow, phase: MOBILE_FLOW_PHASE[flow] } })));
 
   return (
     <>
@@ -71,7 +72,6 @@ export function MobilePreviewsPage() {
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-mono text-[13px] font-semibold text-brand">{flow}</span>
-                <Badge tone={MOBILE_FLOW_PHASE[flow] <= 1 ? 'success' : 'neutral'}>{t('mobileFlows.phase', { phase: MOBILE_FLOW_PHASE[flow] })}</Badge>
               </div>
               <h2 className="text-[17px]">{t(`mobileFlows.${flow}.title`)}</h2>
               <p className="mt-1 text-[14px] text-muted">{t(`mobileFlows.${flow}.desc`)}</p>

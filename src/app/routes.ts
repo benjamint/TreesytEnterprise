@@ -138,11 +138,8 @@ export const SETTINGS_GROUPS: { key: string; pages: SettingsPage[] }[] = [
 ];
 
 /** Platform console pages (PRD A3). */
-export const PLATFORM_PAGES = ['companies', 'newCompany', 'plans', 'catalogues', 'leads', 'audit'] as const;
+export const PLATFORM_PAGES = ['companies', 'plans', 'catalogues', 'leads', 'audit'] as const;
 export type PlatformPage = (typeof PLATFORM_PAGES)[number];
-export const PLATFORM_PATHS: Record<PlatformPage, string> = {
-  companies: 'companies', newCompany: 'companies/new', plans: 'plans', catalogues: 'catalogues', leads: 'leads', audit: 'audit',
-};
 
 /** Mobile flows M1–M12 (PRD 10). */
 export const MOBILE_FLOWS = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'] as const;

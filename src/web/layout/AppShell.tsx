@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { EnvironmentSync } from '@/app/providers';
-import { defaultMobileUser, openMobileWindow } from '@/app/mobile';
+import { DemoDock } from '@/components/shared/DemoDock';
+import { useAuthFlowStore } from '@/stores/authFlowStore';
+import { SessionTimeout } from './SessionTimeout';
 import { onAnnounce } from '@/stores/persistence';
 import { useActor, useCurrentOrg, useCurrentUser, useT } from '@/stores/hooks';
-import { useAccessStore } from '@/stores/accessStore';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { CommandPalette } from './CommandPalette';
@@ -17,18 +18,15 @@ export function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const location = useLocation();
-  const { orgId, userId } = useActor();
+  const { orgId } = useActor();
   const org = useCurrentOrg();
   const user = useCurrentUser();
   const { t } = useT();
 
-  const openMobile = useCallback(() => {
-    const { memberships, roles } = useAccessStore.getState();
-    const uid = defaultMobileUser(orgId, userId, memberships, roles);
-    if (uid) openMobileWindow(orgId, uid);
-  }, [orgId, userId]);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
+  // Signed in: drop any half-finished sign-in flow kept for the 2-step / company steps.
+  useEffect(() => useAuthFlowStore.getState().clear(), []);
 
   // Toasts for things other tabs (e.g. the mobile window) announce.
   useEffect(
@@ -38,17 +36,6 @@ export function AppShell() {
       }),
     [t],
   );
-
-  // Single-key shortcuts: ? help, M mobile (ignored while typing).
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const el = e.target as HTMLElement;
-      if (el.closest('input, textarea, select, [contenteditable="true"]') || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === 'm' || e.key === 'M') openMobile();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [openMobile]);
 
   if (!user || !org) return null;
   return (
@@ -70,14 +57,16 @@ export function AppShell() {
         </SheetContent>
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar onMenu={() => setMenuOpen(true)} onSearch={() => setPaletteOpen(true)} onOpenMobile={openMobile} />
+        <TopBar onMenu={() => setMenuOpen(true)} onSearch={() => setPaletteOpen(true)} />
         <main id="main" className="flex-1 px-4 py-8 md:px-8 lg:px-10 lg:py-10">
           <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1600px]">
             <Outlet />
           </motion.div>
         </main>
       </div>
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} onOpenMobile={openMobile} />
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <DemoDock />
+      <SessionTimeout />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { DataSharingGrant, Lead, Membership, Organisation, Plan, Role, RoleTemplate, User } from '@/types';
+import type { AuditEntry, DataSharingGrant, Invite, Lead, Membership, Organisation, Plan, Role, RoleTemplate, Session, User } from '@/types';
 import { ROLE_TEMPLATES } from '@/engines/permissions';
 import { ORG, roleId } from './templates';
 import type { Clock } from './rng';
@@ -6,7 +6,7 @@ import type { Clock } from './rng';
 export const PLANS: Plan[] = [
   {
     id: 'plan_starter', name: 'Starter', limits: { agents: 10, farmers: 2_000 },
-    modules: ['dashboard', 'farmers', 'buying', 'payments', 'forms', 'reports', 'notifications', 'system'],
+    modules: ['dashboard', 'farmers', 'buying', 'payments', 'forms', 'traceboard', 'reports', 'notifications', 'system'],
     permissionCeiling: ['*', '!aggregators.*', '!eudr.*', '!carbon.*', '!settings.manageIntegrations'],
   },
   {
@@ -39,7 +39,7 @@ export function organisations(clock: Clock): Organisation[] {
     {
       id: ORG.kakao, code: 'KI', name: 'Kakao Ivoire', legalName: 'Union des Coopératives Kakao Ivoire SCOOPS', type: 'SUPPLIER', countries: ['CI'],
       currency: 'XOF', locale: 'fr-CI', language: 'fr', languages: ['fr', 'en'], timezone: 'Africa/Abidjan', weekStart: 1,
-      planId: 'plan_growth', status: 'ACTIVE', createdAt: at(400),
+      planId: 'plan_enterprise', status: 'ACTIVE', createdAt: at(400),
       branding: { primaryColor: '#7A3E12', logoText: 'KI', senderName: 'Kakao Ivoire', signatureName: "L'équipe commerciale" },
     },
     {
@@ -117,15 +117,79 @@ export function emailFor(name: string, orgId: string): string {
   return `${local}@${DOMAIN[orgId] ?? 'example.com'}`;
 }
 
+/** Demo password for every seeded account. */
+export const DEMO_PASSWORD = 'demo1234';
+
+/** Users with 2-step sign-in switched on in the seed (finance roles where the company requires it). */
+const TWO_FACTOR = new Set(['u_efua', 'u_jeanmarc', 'u_aicha']);
+/** Status demo moments (PRD A2): one locked office user, one deactivated agent. */
+const STATUS: Record<string, User['status']> = { u_peter: 'LOCKED', u_vit_ag12: 'DEACTIVATED' };
+
 export function makeUser(p: PersonaSeed, i: number, persona: boolean, lastActiveAt: string): User {
   return {
-    id: p.id, name: p.name, email: emailFor(p.name, p.orgId), phone: p.phone, language: p.language, status: 'ACTIVE',
+    id: p.id, name: p.name, email: emailFor(p.name, p.orgId), phone: p.phone, language: p.language, status: STATUS[p.id] ?? 'ACTIVE',
     avatarColor: COLORS[i % COLORS.length], isPlatformOwner: p.template === 'platformOwner', persona, lastActiveAt,
+    password: DEMO_PASSWORD,
+    twoFactor: { enabled: TWO_FACTOR.has(p.id), method: 'APP', backupCodes: TWO_FACTOR.has(p.id) ? ['4821-7730', '1958-0264', '6637-4411', '9012-5583'] : [] },
+    failedAttempts: STATUS[p.id] === 'LOCKED' ? 5 : 0,
+    trustedDevices: [],
   };
 }
 
 export function makeMembership(p: PersonaSeed): Membership {
-  return { id: `mem_${p.id}_${p.orgId}`, userId: p.id, orgId: p.orgId, roleIds: [roleId(p.orgId, p.template)], status: 'ACTIVE', title: p.title };
+  return { id: `mem_${p.id}_${p.orgId}`, userId: p.id, orgId: p.orgId, roleIds: [roleId(p.orgId, p.template)], status: STATUS[p.id] ?? 'ACTIVE', title: p.title };
+}
+
+/** Extra memberships: Naa Lamptey also advises Kakao Ivoire on EUDR, so she picks a company at sign-in. */
+export function extraMemberships(): Membership[] {
+  return [{ id: 'mem_u_naa_org_kakao', userId: 'u_naa', orgId: ORG.kakao, roleIds: [roleId(ORG.kakao, 'sustainabilityOfficer')], status: 'ACTIVE', title: 'Conseillère RDUE' }];
+}
+
+export function invites(clock: Clock): Invite[] {
+  return [
+    { id: 'inv_1', token: 'inv-vitara-akosua', orgId: ORG.vitara, email: 'akosua.dery@vitara.example', name: 'Akosua Dery', roleIds: [roleId(ORG.vitara, 'meOfficer')], invitedBy: 'u_ama', createdAt: clock.iso(clock.daysAgo(1)), expiresAt: clock.iso(clock.daysAgo(-6)), status: 'PENDING' },
+    { id: 'inv_2', token: 'inv-kakao-expired', orgId: ORG.kakao, email: 'serge.tape@kakao-ivoire.example', name: 'Serge Tapé', roleIds: [roleId(ORG.kakao, 'warehouseManager')], invitedBy: 'u_aicha', createdAt: clock.iso(clock.daysAgo(12)), expiresAt: clock.iso(clock.daysAgo(5)), status: 'PENDING' },
+  ];
+}
+
+const DEVICES = [
+  { device: 'MacBook Pro', browser: 'Chrome 141', os: 'macOS 15', location: 'Accra, GH', ip: '41.66.201.14' },
+  { device: 'iPhone 15', browser: 'Safari 19', os: 'iOS 19', location: 'Tamale, GH', ip: '154.160.3.77' },
+  { device: 'Lenovo ThinkPad', browser: 'Edge 141', os: 'Windows 11', location: 'Wa, GH', ip: '197.251.140.9' },
+  { device: 'Samsung Galaxy A55', browser: 'Chrome 141', os: 'Android 15', location: 'Abidjan, CI', ip: '160.154.48.120' },
+];
+
+/** Other signed-in devices per persona, for My account → Sessions. */
+export function sessions(users: User[], memberships: Membership[], clock: Clock): Session[] {
+  return users
+    .filter((u) => u.persona)
+    .flatMap((u, i) => {
+      const orgId = memberships.find((m) => m.userId === u.id)?.orgId ?? ORG.treesyt;
+      const picks = [DEVICES[(i + 1) % 4]!, DEVICES[(i + 2) % 4]!].slice(0, 1 + (i % 2));
+      return picks.map((d, k) => ({
+        id: `ses_${u.id}_${k}`, userId: u.id, orgId, ...d,
+        createdAt: clock.iso(clock.daysAgo(3 + k * 4)), lastActiveAt: clock.iso(new Date(clock.today.getTime() - (2 + k * 20) * 3_600_000)),
+      }));
+    });
+}
+
+/** Admin actions across companies (Platform → Audit). */
+export function auditSeed(clock: Clock): AuditEntry[] {
+  const e = (i: number, orgId: string, actorId: string, entity: string, entityId: string, key: string, days: number, before?: unknown, after?: unknown): AuditEntry => ({
+    id: `aud_${i}`, orgId, actorId, entity, entityId, key, before, after, at: clock.iso(clock.daysAgo(days)),
+  });
+  return [
+    e(1, ORG.vitara, 'u_benjamin', 'organisation', ORG.vitara, 'company.created', 900),
+    e(2, ORG.kakao, 'u_benjamin', 'organisation', ORG.kakao, 'company.created', 400),
+    e(3, ORG.kakao, 'u_benjamin', 'organisation', ORG.kakao, 'company.planChanged', 120, { plan: 'Growth' }, { plan: 'Enterprise' }),
+    e(4, ORG.nordic, 'u_benjamin', 'organisation', ORG.nordic, 'company.created', 300),
+    e(5, ORG.vitara, 'u_ama', 'grant', 'grant_vit_nsb', 'grant.created', 200, undefined, { to: 'Nordic Shea Butter AB' }),
+    e(6, ORG.vitara, 'u_ama', 'settings', 'approvals', 'settings.updated', 30, { page: 'approvals' }),
+    e(7, ORG.afp, 'u_benjamin', 'organisation', ORG.afp, 'company.created', 45),
+    e(8, ORG.vitara, 'u_ama', 'invite', 'inv_1', 'user.invited', 1, undefined, { email: 'akosua.dery@vitara.example' }),
+    e(9, ORG.kakao, 'u_aicha', 'settings', 'terminology', 'settings.updated', 60, { page: 'terminology' }),
+    e(10, ORG.vitara, 'u_ama', 'user', 'u_peter', 'user.locked', 2, undefined, { reason: 'failedAttempts' }),
+  ];
 }
 
 const KAKAO_ROLE_NAMES: Partial<Record<RoleTemplate, string>> = {

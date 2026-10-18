@@ -7,6 +7,7 @@ export const useSettingsStore = defineStore(
   { settings: {} as Record<string, OrgSettings>, sequences: {} as Record<string, Record<string, number>> },
   (s) => ({ settings: s.settings, sequences: s.sequences }),
   (set, get) => ({
+    addSettings: (settings: OrgSettings) => set((st) => ({ settings: { ...st.settings, [settings.orgId]: settings }, sequences: { ...st.sequences, [settings.orgId]: {} } })),
     updateSettings: (orgId: string, patch: Partial<OrgSettings>) =>
       set((st) => ({ settings: { ...st.settings, [orgId]: { ...st.settings[orgId]!, ...patch } } })),
     /** Issue the next document number for a company (numbering engine + per-company sequences). */

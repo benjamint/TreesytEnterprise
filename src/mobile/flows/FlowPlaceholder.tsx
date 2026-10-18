@@ -5,11 +5,13 @@ import { comingSoon } from '@/components/shared/coming-soon';
 import { MobileHeader } from '@/mobile/layout/MobileHeader';
 import { MOBILE_FLOWS, MOBILE_FLOW_PHASE, type MobileFlow } from '@/app/routes';
 import { useT } from '@/stores/hooks';
+import { useDemoNotes } from '@/components/shared/useDemoNotes';
 
 /** Placeholder for mobile flows M1–M12 until their phases land. */
 export function FlowPlaceholder() {
   const { flowId } = useParams();
   const { t } = useT();
+  useDemoNotes(flowId ? [{ id: 'flow', key: 'demo.note.flowPhase', params: { flow: flowId, phase: MOBILE_FLOW_PHASE[flowId as MobileFlow] ?? '' } }] : []);
   if (!flowId || !(MOBILE_FLOWS as readonly string[]).includes(flowId)) return <Navigate to="/m" replace />;
   const flow = flowId as MobileFlow;
   return (
@@ -22,7 +24,6 @@ export function FlowPlaceholder() {
         </span>
         <h2 className="text-[22px]">{t(`mobileFlows.${flow}.title`)}</h2>
         <p className="mt-2 text-[15px] text-muted">{t(`mobileFlows.${flow}.desc`)}</p>
-        <p className="mt-4 text-[13px] text-muted">{t('mobile.flowPlaceholder', { phase: MOBILE_FLOW_PHASE[flow] })}</p>
       </div>
       <div className="shrink-0 border-t border-line p-4">
         <Button size="lg" className="w-full" onClick={() => comingSoon()}>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CheckCircle2, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -13,7 +13,8 @@ import { useOutboxStore } from '@/stores/outboxStore';
 /** M2 Sync (phase 1 version): outbox, Sync now, offline toggle. Item-by-item sync arrives in phase 9. */
 export function SyncScreen() {
   const { online, setOnline, lastSyncAt, markSynced, userId } = useMobileSessionStore();
-  const items = useOutboxStore((s) => s.items.filter((i) => i.userId === userId));
+  const allItems = useOutboxStore((s) => s.items);
+  const items = useMemo(() => allItems.filter((i) => i.userId === userId), [allItems, userId]);
   const [syncing, setSyncing] = useState(false);
   const f = useFormat();
   const { t } = useT();

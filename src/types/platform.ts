@@ -21,6 +21,11 @@ export interface Organisation {
   status: OrgStatus;
   branding: { primaryColor: string; logoText: string; senderName: string; signatureName: string };
   createdAt: ISODate;
+  email?: string;
+  phone?: string;
+  website?: string;
+  /** Present on companies created through the wizard or sign-up: drives the setup checklist. */
+  onboarding?: { via: 'WIZARD' | 'SIGNUP'; template: string; dismissed: boolean; done: string[]; description?: string };
 }
 
 export interface Plan {

@@ -11,6 +11,7 @@ void i18n.use(initReactI18next).init({
   fallbackLng: 'en',
   interpolation: { escapeValue: false, defaultVariables: termVariables(DEFAULT_TERMS.en) },
   returnNull: false,
+  showSupportNotice: false,
 });
 
 export default i18n;

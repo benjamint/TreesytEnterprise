@@ -108,9 +108,20 @@ export function usePermissionPatterns(): string[] {
   return useMemo(() => (userId ? permissionsFor(userId, orgId, { users, memberships, roles }) : []), [userId, orgId, users, memberships, roles]);
 }
 
+/** The plan's permission ceiling for the current company (platform permissions are exempt). */
+export function usePlanCeiling(): string[] {
+  const org = useCurrentOrg();
+  const plans = usePlatformStore((s) => s.plans);
+  return useMemo(() => plans.find((p) => p.id === org?.planId)?.permissionCeiling ?? ['*'], [plans, org?.planId]);
+}
+
 export function useCan() {
   const patterns = usePermissionPatterns();
-  return useCallback((permission: string) => hasPermission(patterns, permission), [patterns]);
+  const ceiling = usePlanCeiling();
+  return useCallback(
+    (permission: string) => hasPermission(patterns, permission) && (permission.startsWith('platform.') || hasPermission(ceiling, permission)),
+    [patterns, ceiling],
+  );
 }
 
 export function useModules(): Record<ModuleKey, boolean> {

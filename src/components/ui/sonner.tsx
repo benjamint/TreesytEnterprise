@@ -1,6 +1,6 @@
 import { Toaster as Sonner } from 'sonner';
 
-export function Toaster({ theme, position = 'bottom-right' }: { theme: 'light' | 'dark'; position?: 'bottom-right' | 'top-center' }) {
+export function Toaster({ theme, position = 'bottom-right' }: { theme: 'light' | 'dark'; position?: 'bottom-right' | 'top-center' | 'top-right' }) {
   return (
     <Sonner
       theme={theme}

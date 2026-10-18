@@ -15,7 +15,6 @@
     "no": "No",
     "none": "None",
     "records": "{{count}} records",
-    "phaseChip": "Full screen in phase {{phase}}",
     "sharedBy": "Shared by {{company}}",
     "missingPermission": "You need the “{{permission}}” permission",
     "moduleOff": "The {{module}} module is switched off for {{company}}",
@@ -262,8 +261,6 @@
     "approvalsCount_other": "{{count}} items waiting for you",
     "approvalsEmpty": "Nothing is waiting for you.",
     "setupChecklist": "Setup checklist",
-    "previewTitle": "Phase 1 preview",
-    "previewBody": "The full dashboard (charts, map, alerts and customisable widgets) arrives in phase 4. These numbers already come from the seeded data and the money engine.",
     "facts": "Company facts",
     "fact": {
       "country": "Country",
@@ -279,16 +276,16 @@
       "localTime": "Local time"
     },
     "buyerTitle": "Buyer workspace",
-    "buyerBody": "{{company}} sees orders, deliveries, impact and traceability shared by its suppliers in Traceboard."
+    "buyerBody": "{{company}} sees orders, deliveries, impact and traceability shared by its suppliers in Traceboard.",
+    "approvalsEmptyBody": "When something needs your decision, it shows up here."
   },
   "placeholder": {
-    "seeded": "Seeded for {{company}}",
-    "previewRows": "First rows of seeded data",
-    "nothingSeeded": "Demo data for this area is added in phase {{phase}}.",
     "primaryAction": "New",
     "sampleTour1": "This is the page title and a one-line description of what the page is for.",
     "sampleTour2": "The primary action for the page lives here. There is only ever one.",
-    "sampleTour3": "Every page has a tour. Use the ? button to run it again."
+    "sampleTour3": "Every page has a tour. Use the ? button to run it again.",
+    "emptyTitle": "No {{what}} yet",
+    "emptyBody": "Records will appear here as soon as they are added or imported."
   },
   "col": {
     "code": "Code",
@@ -383,7 +380,11 @@
     "OK": "OK",
     "FLAGGED": "Flagged",
     "NOT_PAID": "Not paid",
-    "PAID": "Paid"
+    "PAID": "Paid",
+    "LOCKED": "Locked",
+    "DEACTIVATED": "Deactivated",
+    "EXPIRED": "Expired",
+    "ACCEPTED": "Accepted"
   },
   "docType": {
     "purchaseRequest": "{{term.purchaseRequest}}",
@@ -483,19 +484,86 @@
     "title": "Platform",
     "page": {
       "companies": "Companies",
-      "newCompany": "Add company",
       "plans": "Plans",
       "catalogues": "Global catalogues",
       "leads": "Leads",
       "audit": "Platform audit"
     },
-    "pageDesc": {
-      "companies": "Every company on TreeSyt, their plan and usage.",
-      "newCompany": "Set up a new company in seven steps, with an AI draft.",
-      "plans": "Module bundles, limits and permission ceilings.",
-      "catalogues": "Countries, currencies, commodities and providers.",
-      "leads": "Book-a-demo and sign-up submissions.",
-      "audit": "Admin actions across all companies."
+    "addCompany": "Add company",
+    "view": "View",
+    "viewAs": "View as company",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "suspended": "{{company}} is suspended",
+    "reactivated": "{{company}} is active again",
+    "changePlan": "Change plan",
+    "changePlanBody": "Choose the plan for {{company}}. Modules and permissions outside the plan stop working.",
+    "currentPlan": "Current",
+    "planChanged": "{{company}} is now on {{plan}}",
+    "planLimits": "Up to {{agents}} agents · {{farmers}} farmers",
+    "actions": "Actions for {{company}}",
+    "since": "since {{date}}",
+    "col": {
+      "countries": "Countries",
+      "plan": "Plan",
+      "modules": "Modules",
+      "agents": "Active agents",
+      "created": "Created",
+      "when": "When",
+      "actor": "By",
+      "company": "Company",
+      "action": "Action",
+      "change": "Change",
+      "country": "Country",
+      "dial": "Dial code",
+      "levels": "Location levels",
+      "minor": "Minor units",
+      "hs": "HS code",
+      "eudr": "EUDR"
+    },
+    "usage": "Usage",
+    "usageAgents": "Agents active",
+    "usageRecords": "Records synced",
+    "usagePayouts": "Payouts",
+    "noUsage": "No activity yet",
+    "plan": "Plan",
+    "modules": "Modules",
+    "modulesOn": "{{count}} of {{total}} on",
+    "admins": "Admin contacts",
+    "noAdmins": "No admins yet.",
+    "grants": "Data-sharing grants",
+    "noGrants": "No data is shared with or by this company.",
+    "grantTo": "Shares with {{company}}",
+    "grantFrom": "Receives from {{company}}",
+    "scope": {
+      "farmers": "Farmers",
+      "communities": "Communities",
+      "purchases": "Purchases",
+      "orders": "Orders",
+      "traceability": "Traceability",
+      "impact": "Impact"
+    },
+    "noAudit": "No admin actions yet.",
+    "allCompanies": "All companies",
+    "companiesOnPlan_one": "{{count}} company",
+    "companiesOnPlan_other": "{{count}} companies",
+    "ceiling": "Permission ceiling",
+    "ceilingCount": "{{allowed}} of {{total}} permissions can be granted",
+    "cat": {
+      "countries": "Countries",
+      "currencies": "Currencies",
+      "commodities": "Commodities",
+      "questionTypes": "Question types",
+      "permissions": "Permissions",
+      "providers": "Providers"
+    },
+    "eudrYes": "EUDR-relevant",
+    "cashProvider": "Cash with proof",
+    "smsProviders": "SMS: {{list}}",
+    "leadKind": {
+      "DEMO": "Demo request",
+      "CONTACT": "Contact",
+      "SIGNUP": "Sign-up"
     }
   },
   "mobileFlows": {
@@ -605,17 +673,16 @@
     "language": "Language",
     "signOut": "Sign out",
     "signInTitle": "Sign in",
-    "signInBody": "Open the mobile app from the web app (top bar → Open mobile app) to sign in as a field user. Phone and code sign-in arrives in phase 9.",
-    "chooseUser": "Or pick a field user",
+    "signInBody": "Enter your phone number. We’ll send you a sign-in code.",
     "notMember": "This user isn’t a member of that company.",
-    "flowPlaceholder": "This flow is built in phase {{phase}}.",
     "back": "Back",
     "area_one": "{{count}} area",
     "area_other": "{{count}} areas",
     "alertConfirmFunds": "Confirm you received the money for {{number}}",
     "alertRejected": "{{number}} was not approved",
     "signedInToast": "Signed in as {{name}}",
-    "tilesTitle": "Record"
+    "tilesTitle": "Record",
+    "sendCode": "Send code"
   },
   "help": {
     "shortcutsTitle": "Keyboard shortcuts"
@@ -641,5 +708,696 @@
   "carousel": {
     "payments": "Pay farmers in minutes, in any currency.",
     "config": "Set up your operation without writing code."
+  },
+  "module": {
+    "dashboard": "Dashboard",
+    "ai": "AI assistant",
+    "farmers": "Farmers & communities",
+    "dataQuality": "Data quality",
+    "imports": "Imports",
+    "buying": "Buying",
+    "aggregators": "Aggregators",
+    "payments": "Payments",
+    "support": "Farmer support",
+    "recovery": "Recovery",
+    "inventory": "Inventory",
+    "dispatch": "Dispatch",
+    "salesContracts": "Sales contracts",
+    "traceboard": "Traceboard",
+    "nurseries": "Nurseries",
+    "trees": "Trees & seedlings",
+    "plots": "Plots & mapping",
+    "eudr": "EUDR",
+    "carbon": "Carbon",
+    "forms": "Forms & surveys",
+    "workshops": "Workshops",
+    "fieldTeam": "Field team",
+    "weeklyBudgets": "Weekly budgets",
+    "allowances": "Allowances",
+    "commissions": "Commissions",
+    "reports": "Reports",
+    "notifications": "Notifications",
+    "system": "System",
+    "settings": "Settings",
+    "platform": "Platform",
+    "mobile": "Mobile app"
+  },
+  "question": {
+    "shortText": "Short text",
+    "longText": "Long text",
+    "number": "Number",
+    "decimal": "Decimal",
+    "currency": "Currency",
+    "selectOne": "Select one",
+    "selectMany": "Select many",
+    "yesNo": "Yes / No",
+    "ranking": "Ranking",
+    "rating": "Rating",
+    "likert": "Likert scale",
+    "nps": "NPS",
+    "date": "Date",
+    "time": "Time",
+    "dateTime": "Date & time",
+    "monthYear": "Month & year",
+    "year": "Year",
+    "image": "Image",
+    "audio": "Audio",
+    "video": "Video",
+    "file": "File",
+    "signature": "Signature",
+    "gpsPoint": "GPS point",
+    "gpsPolygon": "GPS polygon / walk boundary",
+    "scanCode": "Scan code",
+    "nfcTap": "NFC tap",
+    "thumbprint": "Thumbprint",
+    "autoId": "Auto ID",
+    "contact": "Contact info",
+    "email": "Email",
+    "phone": "Phone",
+    "recordPicker": "Record picker",
+    "locationPicker": "Location picker",
+    "calculated": "Calculated",
+    "note": "Note",
+    "repeatGroup": "Repeat group",
+    "table": "Table"
+  },
+  "demo": {
+    "title": "Demo",
+    "subtitle": "Prototype controls and notes. Nothing here is part of the product.",
+    "codes": "Codes & emails",
+    "copied": "Copied",
+    "copy": "Copy code",
+    "aboutPage": "About this page",
+    "noNotes": "No notes for this page.",
+    "signInAs": "Sign in as a persona",
+    "passwordHint": "Every demo account uses the password “{{password}}”.",
+    "tools": "Prototype tools",
+    "code": {
+      "twoStep": "2-step code",
+      "verifyEmail": "Email verification code"
+    },
+    "link": {
+      "reset": "Password reset email",
+      "invite": "Invitation email"
+    },
+    "note": {
+      "phase": "The full version of this screen is built in phase {{phase}}. Until then it shows the company’s records and every button responds.",
+      "seeded": "{{company}} has {{count}} demo records here, generated from src/data.",
+      "settingsPhase": "Settings editors arrive in phase {{phase}}; each page shows the company’s current values.",
+      "dashboardPhase": "The full widget dashboard (charts, map, alerts, customisation) arrives in phase 4.",
+      "fact": "{{label}}: {{value}}",
+      "flowPhase": "{{flow}} is built in phase {{phase}}.",
+      "mobileSignIn": "Phone + code sign-in arrives in phase 9. Use “Sign in as a persona” in this panel to enter as a field user."
+    }
+  },
+  "auth": {
+    "home": "TreeSyt home",
+    "slides": "Highlights",
+    "slide1": "Know every kilo from farm to buyer.",
+    "slide2": "Pay farmers in minutes, in any currency.",
+    "slide3": "Set up your operation without writing code.",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support",
+    "legal": "By continuing you agree to the TreeSyt",
+    "terms": "Terms of service",
+    "privacy": "Privacy policy",
+    "signInTitle": "Welcome back",
+    "signInSubtitle": "Sign in to your TreeSyt workspace.",
+    "workEmail": "Work email",
+    "emailPlaceholder": "you@company.com",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "remember": "Remember this device",
+    "rememberHint": "Skip the 2-step code on this browser for 30 days.",
+    "signIn": "Sign in",
+    "or": "or",
+    "sso": "Sign in with SSO",
+    "noAccount": "New to TreeSyt?",
+    "startTrial": "Start a free trial",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "continue": "Continue",
+    "backToSignIn": "Back to sign in",
+    "ssoTitle": "Single sign-on",
+    "ssoSubtitle": "Use your company account. We’ll send you to your company’s sign-in page.",
+    "ssoHelper": "We look up your company from the email domain.",
+    "idpSecure": "Secure sign-in",
+    "idpTitle": "Sign in to {{app}}",
+    "idpBody": "Continue as {{email}}. Your company manages this account.",
+    "idpContinue": "Continue",
+    "twoStepTitle": "Enter your code",
+    "twoStepApp": "Open your authenticator app and enter the 6-digit code.",
+    "twoStepSms": "We sent a 6-digit code to your phone.",
+    "code": "Code",
+    "backupCode": "Backup code",
+    "verify": "Verify",
+    "resend": "Resend",
+    "resendIn": "Resend in {{seconds}} s",
+    "useBackup": "Use a backup code",
+    "useCode": "Use a code instead",
+    "chooseTitle": "Hi {{name}}, choose a company",
+    "chooseSubtitle": "You belong to more than one company.",
+    "forgotTitle": "Reset your password",
+    "forgotSubtitle": "Enter your work email and we’ll send you a link to choose a new password.",
+    "sendLink": "Send reset link",
+    "sentTitle": "Check your inbox",
+    "sentBody": "If {{email}} has a TreeSyt account, a reset link is on its way. It works for 30 minutes.",
+    "sentAgain": "We sent another link.",
+    "noEmail": "Didn’t get it?",
+    "link": {
+      "expiredTitle": "This link has expired",
+      "usedTitle": "This link was already used",
+      "unknownTitle": "This link isn’t valid",
+      "reset": {
+        "expired": "Reset links work for 30 minutes. Ask for a new one.",
+        "used": "You already chose a new password with this link. Ask for a new one if you need to.",
+        "unknown": "The link may be incomplete. Ask for a new one."
+      },
+      "invite": {
+        "expired": "Invitations work for 7 days. Ask your company admin to send a new one.",
+        "used": "This invitation was already accepted. Sign in instead.",
+        "unknown": "The invitation link may be incomplete. Ask your company admin to resend it."
+      }
+    },
+    "sendNewLink": "Send a new link",
+    "resetTitle": "Choose a new password",
+    "resetSubtitle": "For {{email}}.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "savePassword": "Save password",
+    "resetDoneTitle": "Password changed",
+    "resetDoneBody": "You can sign in with your new password.",
+    "policyTitle": "Password rules",
+    "rule": {
+      "minLength": "At least {{count}} characters",
+      "number": "At least one number",
+      "symbol": "At least one symbol",
+      "mixedCase": "Upper and lower case letters"
+    },
+    "strength": {
+      "1": "Weak",
+      "2": "Fair",
+      "3": "Good",
+      "4": "Strong"
+    },
+    "inviteTitle": "Join {{company}}",
+    "inviteSubtitle": "You were invited as {{email}}. Set your name and password.",
+    "fullName": "Full name",
+    "choosePassword": "Choose a password",
+    "acceptTerms": "I accept the terms of service and privacy policy",
+    "joinCompany": "Join {{company}}",
+    "timeoutTitle": "Still there?",
+    "timeoutBody": "For your security you’ll be signed out in {{seconds}} seconds. Sessions end after {{minutes}} minutes without activity.",
+    "staySignedIn": "Stay signed in",
+    "timedOut": "You were signed out after a period of inactivity.",
+    "sessionEnded": "This session was signed out from another device.",
+    "err": {
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordShort": "Use at least 8 characters.",
+      "invalid_one": "Email or password is wrong. {{count}} try left before the account locks.",
+      "invalid_other": "Email or password is wrong. {{count}} tries left before the account locks.",
+      "locked": "This account is locked after too many attempts. Reset your password or ask your admin.",
+      "deactivated": "This account has been deactivated. Ask your company admin.",
+      "invited": "You haven’t accepted your invitation yet. Use the link in your invitation email.",
+      "suspended": "Your company’s workspace is suspended. Contact TreeSyt support.",
+      "noCompany": "Your account isn’t linked to a company yet.",
+      "noSso": "Single sign-on isn’t set up for {{domain}}. Sign in with your password.",
+      "idpUnknown": "{{idp}} doesn’t know this account.",
+      "code": "That code isn’t right. Check it and try again.",
+      "policy": "The password doesn’t meet the rules.",
+      "mismatch": "The passwords don’t match.",
+      "nameRequired": "Enter your full name.",
+      "terms": "Accept the terms to continue."
+    }
+  },
+  "signup": {
+    "step": {
+      "account": "Account",
+      "verify": "Verify email",
+      "company": "Company",
+      "terms": "Terms"
+    },
+    "title": "Create your account",
+    "subtitle": "Start a free 30-day trial. No card needed.",
+    "country": "Country",
+    "countryHelper": "Sets your default currency, phone format and language",
+    "create": "Create account",
+    "haveAccount": "Already have an account?",
+    "termsLine": "By creating an account you agree to the terms of service.",
+    "exists": "An account with this email already exists. Sign in instead.",
+    "verifyTitle": "Verify your email",
+    "verifyBody": "We sent a 6-digit code to {{email}}.",
+    "changeEmail": "Change email",
+    "companyTitle": "Tell us about your company",
+    "companySubtitle": "You can change all of this later in Settings.",
+    "companyName": "Company name",
+    "currency": "Currency",
+    "currencyHelper": "The currency you pay farmers in",
+    "language": "Language",
+    "companyRequired": "Enter your company name.",
+    "termsTitle": "One last thing",
+    "termsSubtitle": "Please read and accept the terms of the trial.",
+    "termsText": "Your trial includes the Growth plan for 30 days. Your data stays yours: you can export it at any time, and we delete it 30 days after your trial ends unless you subscribe. Farmer personal data is processed only to run your operation, under your instructions, and is never sold. You are responsible for collecting consent from the farmers you register.",
+    "finish": "Create my workspace",
+    "welcome": "Welcome to TreeSyt, {{company}}"
+  },
+  "demoForm": {
+    "titleDemo": "Book a demo",
+    "titleContact": "Contact us",
+    "subtitle": "Tell us about your operation and we’ll get back to you within one working day.",
+    "type": "Request type",
+    "kind": {
+      "DEMO": "Book a demo",
+      "CONTACT": "Contact us"
+    },
+    "firstName": "First name",
+    "lastName": "Last name",
+    "phone": "Phone",
+    "phoneHelper": "Choose the country code, then the number.",
+    "business": "Business name",
+    "industry": "Industry",
+    "message": "Message",
+    "messagePlaceholder": "What do you buy, where, and from how many farmers?",
+    "submitDemo": "Request a demo",
+    "submitContact": "Send message",
+    "doneDemo": "Thanks, {{name}} — we’ll be in touch",
+    "doneContact": "Thanks, {{name}} — message received",
+    "doneBody": "We’ll reply to {{email}} within one working day.",
+    "backHome": "Back to home",
+    "industries": {
+      "cocoa": "Cocoa",
+      "cashew": "Cashew",
+      "shea": "Shea",
+      "coffee": "Coffee",
+      "grains": "Grains & legumes",
+      "tea": "Tea",
+      "other": "Other"
+    },
+    "err": {
+      "required": "This field is required.",
+      "phone": "Enter a valid phone number for the selected country."
+    }
+  },
+  "legal": {
+    "updated": "Last updated October 2026",
+    "terms1": "These terms describe how you may use TreeSyt Enterprise. This prototype shows how the terms will be presented; the final legal text will be provided by TreeSyt.",
+    "terms2": "You remain responsible for the accuracy of the data you enter and for the consent of the people you register.",
+    "privacy1": "TreeSyt processes personal data only to run your operation, on your instructions, and keeps each company’s data separate.",
+    "privacy2": "You can export or delete your company’s data at any time from Settings → Data & privacy."
+  },
+  "landing": {
+    "navLabel": "Main",
+    "nav": {
+      "how": "How it works",
+      "modules": "Modules",
+      "companies": "For every company"
+    },
+    "bookDemo": "Book a demo",
+    "startTrial": "Start free trial",
+    "eyebrow": "Agri-sourcing operations platform",
+    "title": "Know every kilo from farm to buyer.",
+    "subtitle": "TreeSyt runs the whole sourcing operation — field agents, approvals, mobile-money payouts, warehouses, dispatch and buyer traceability — for any company, in any country.",
+    "trialNote": "30-day free trial · No card needed · English and French",
+    "how": {
+      "eyebrow": "How it works",
+      "title": "One connected flow, from the field to the buyer",
+      "field": {
+        "title": "Field",
+        "body": "Agents profile farmers and record purchases, even offline."
+      },
+      "approve": {
+        "title": "Approve",
+        "body": "Requests move through your own approval steps."
+      },
+      "pay": {
+        "title": "Pay",
+        "body": "Mobile money to agents and farmers, with fees shown up front."
+      },
+      "store": {
+        "title": "Store",
+        "body": "Bags are scanned into warehouses; losses are caught."
+      },
+      "ship": {
+        "title": "Ship",
+        "body": "Dispatch orders are tracked to delivery and verification."
+      },
+      "trace": {
+        "title": "Trace",
+        "body": "Buyers see impact and trace each order back to plots."
+      }
+    },
+    "modules": {
+      "eyebrow": "Modules",
+      "title": "Switch on what your operation needs",
+      "farmers": {
+        "title": "Farmers & communities",
+        "body": "Profiles, consent, IDs and data-quality checks."
+      },
+      "buying": {
+        "title": "Buying",
+        "body": "Requests, purchases, bags and reconciliation."
+      },
+      "payments": {
+        "title": "Payments",
+        "body": "MTN, Orange, Wave, M-Pesa and more, with name lookup."
+      },
+      "support": {
+        "title": "Support & loans",
+        "body": "Inputs and pre-finance with automatic recovery ledgers."
+      },
+      "inventory": {
+        "title": "Inventory",
+        "body": "Receiving, discrepancies, transfers and stock counts."
+      },
+      "dispatch": {
+        "title": "Dispatch & contracts",
+        "body": "Loads, shipments and contract fulfilment."
+      },
+      "traceboard": {
+        "title": "Traceboard",
+        "body": "A branded portal for your buyers."
+      },
+      "trees": {
+        "title": "Trees & nurseries",
+        "body": "Seedlings, monitoring rounds and survival."
+      },
+      "eudr": {
+        "title": "EUDR",
+        "body": "Plot polygons, deforestation checks and DDS export."
+      },
+      "forms": {
+        "title": "Forms & surveys",
+        "body": "Build any form; it works on web and mobile."
+      },
+      "mobile": {
+        "title": "Mobile app",
+        "body": "Built for agents in the field, online or offline."
+      },
+      "ai": {
+        "title": "Ask your operations",
+        "body": "Plain-language answers from your own data."
+      }
+    },
+    "config": {
+      "eyebrow": "Configured, not coded",
+      "title": "Your words, your currency, your rules",
+      "body": "A shea buyer in Ghana and a cocoa union in Côte d’Ivoire run on the same platform with completely different settings.",
+      "workflow": {
+        "title": "Approvals your way",
+        "body": "Steps, thresholds and separation of duties per document."
+      },
+      "language": {
+        "title": "Your language and terms",
+        "body": "English and French, and your own word for “agent” or “community”."
+      },
+      "places": {
+        "title": "Your locations",
+        "body": "Regions, districts and villages as your country defines them."
+      },
+      "controls": {
+        "title": "Enterprise controls",
+        "body": "Roles, audit trail, SSO and data-sharing grants."
+      }
+    },
+    "cta": {
+      "title": "See TreeSyt with your own operation",
+      "body": "Start a free trial, or book a demo and we’ll set it up with you."
+    },
+    "footer": "© 2026 TreeSyt Technologies Ltd",
+    "contact": "Contact"
+  },
+  "checklist": {
+    "title": "Set up {{company}}",
+    "subtitle": "{{done}} of {{total}} steps done. Each step ticks itself as you go.",
+    "dismiss": "Hide checklist",
+    "step": {
+      "profile": {
+        "title": "Company profile",
+        "desc": "Name, country, currency and language."
+      },
+      "branding": {
+        "title": "Add your logo and colour",
+        "desc": "Shown in the app, emails, receipts and the buyer portal."
+      },
+      "locations": {
+        "title": "Set up your locations",
+        "desc": "Add the regions, districts and communities you work in."
+      },
+      "commodities": {
+        "title": "Choose what you buy",
+        "desc": "Commodities, units and quality parameters."
+      },
+      "priceLists": {
+        "title": "Publish a price list",
+        "desc": "Prices per commodity and zone, with tolerance."
+      },
+      "approvals": {
+        "title": "Check your approvals",
+        "desc": "Who approves purchase requests and expenses."
+      },
+      "team": {
+        "title": "Invite your team",
+        "desc": "Office staff with the right roles."
+      },
+      "agents": {
+        "title": "Add field agents",
+        "desc": "Assign areas, managers and wallets."
+      },
+      "farmers": {
+        "title": "Import farmers",
+        "desc": "Upload a spreadsheet or register them on mobile."
+      },
+      "mobile": {
+        "title": "Get the mobile app",
+        "desc": "Agents sign in with their phone number."
+      }
+    }
+  },
+  "account": {
+    "profile": "Profile",
+    "profileDesc": "How you appear to your team.",
+    "security": "Security",
+    "sessions": "Sessions",
+    "phoneHelper": "International format, validated for {{country}}.",
+    "language": "Language",
+    "languageHelper": "The language TreeSyt uses for you, in every company.",
+    "saved": "Profile saved",
+    "password": "Password",
+    "passwordDesc": "Use a password you don’t use anywhere else.",
+    "passwordChangedAt": "Last changed {{when}}.",
+    "currentPassword": "Current password",
+    "changePassword": "Change password",
+    "passwordChanged": "Password changed",
+    "err": {
+      "current": "Your current password isn’t right."
+    },
+    "twoStep": "2-step sign-in",
+    "twoStepDesc": "Add a code from an authenticator app when you sign in.",
+    "twoStepRequired": "Required for {{role}} in this company.",
+    "twoStepActive": "2-step sign-in is on.",
+    "backupCodes": "Backup codes",
+    "backupHint": "Each code works once. Keep them somewhere safe.",
+    "twoStepOff": "Turn off 2-step sign-in",
+    "cannotDisable": "Your company requires 2-step sign-in for your role.",
+    "setUp": "Set up 2-step sign-in",
+    "setup1": "Scan the QR code with an authenticator app (or type the key).",
+    "setup2": "Enter the 6-digit code the app shows.",
+    "secret": "Setup key",
+    "turnOn": "Turn on",
+    "twoStepOn": "2-step sign-in is on",
+    "sessionsDesc": "Devices where you are signed in. Sign out any you don’t recognise.",
+    "thisSession": "This device",
+    "thisDevice": "This browser",
+    "activeNow": "active now",
+    "signOutDevice": "Sign out",
+    "deviceSignedOut": "Device signed out",
+    "signOutAll": "Sign out of all devices",
+    "protected": "2-step protected"
+  },
+  "audit": {
+    "company": {
+      "created": "Company created",
+      "planChanged": "Plan changed",
+      "suspended": "Company suspended",
+      "reactivated": "Company reactivated"
+    },
+    "grant": {
+      "created": "Data-sharing grant created"
+    },
+    "settings": {
+      "updated": "Settings updated"
+    },
+    "user": {
+      "invited": "User invited",
+      "locked": "Account locked",
+      "inviteAccepted": "Invitation accepted"
+    }
+  },
+  "email": {
+    "reset": {
+      "subject": "Reset your TreeSyt password",
+      "body": "Hi {{name}}, use this link to choose a new password: {{link}} — it works for {{minutes}} minutes. If you didn’t ask, ignore this email."
+    },
+    "invite": {
+      "subject": "You’re invited to {{company}} on TreeSyt",
+      "body": "Hi {{name}}, {{company}} invited you to TreeSyt as a company admin. Accept here: {{link}}"
+    }
+  },
+  "wizard": {
+    "step": {
+      "describe": "Describe",
+      "basics": "Basics",
+      "plan": "Plan & modules",
+      "template": "Template",
+      "commodities": "Commodities",
+      "approvals": "Approvals",
+      "admins": "Invite admins",
+      "review": "Review"
+    },
+    "back": "Back",
+    "next": "Continue",
+    "create": "Create company",
+    "edit": "Edit",
+    "created": "{{company}} created",
+    "defaultSignature": "The Team",
+    "describe": {
+      "title": "Describe the company",
+      "body": "A few sentences are enough. The AI draft fills in the rest; you can change everything.",
+      "label": "Description",
+      "placeholder": "e.g. A cashew exporter in Ghana with 30 field agents buying from 5,000 farmers. We pre-finance inputs.",
+      "aiHint": "Let AI read your description and fill in country, currency, language, plan, modules, template, commodities and approvals.",
+      "draft": "Draft with AI",
+      "drafting": "Drafting…",
+      "filled": "What the AI filled in",
+      "review": "Review each step before you create the company."
+    },
+    "ai": {
+      "country": "Country {{country}} → {{currency}}, {{language}}, {{timezone}}",
+      "commodities_one": "{{count}} commodity, so the “{{template}}” template",
+      "commodities_other": "{{count}} commodities, so the “{{template}}” template",
+      "type": "Company type: {{type}}",
+      "plan": "Plan: {{plan}} (from {{agents}} agents, {{farmers}} farmers)",
+      "modules": "{{count}} modules switched on",
+      "approvals": "Approvals: {{approvals}}",
+      "nameFound": "Name: {{name}}",
+      "nameSuggested": "Suggested name: {{name}}",
+      "admin": "Admin invite to {{email}}"
+    },
+    "basics": {
+      "title": "Basics",
+      "body": "Country sets the defaults for currency, language and time zone.",
+      "name": "Trading name",
+      "legalName": "Legal name",
+      "weekStart": "Week starts on",
+      "countries": "Countries",
+      "countriesHelper": "The first country is the main one.",
+      "timezone": "Time zone"
+    },
+    "day": {
+      "0": "Sunday",
+      "1": "Monday",
+      "6": "Saturday"
+    },
+    "plan": {
+      "title": "Plan & modules",
+      "body": "The plan sets limits and what can be switched on.",
+      "modules": "Modules",
+      "notInPlan": "Not in {{plan}}",
+      "needs": "{{module}} needs {{needs}}"
+    },
+    "template": {
+      "title": "Start from a template",
+      "body": "Templates copy settings — workflows, numbering, commodities, expense lists — so the company works on day one.",
+      "reference": "Reference",
+      "vitara": {
+        "title": "Vitara template",
+        "body": "Today’s full TreeSyt setup: shea and grains, 4-level PRE approvals, Ghana numbering."
+      },
+      "blank": {
+        "title": "Blank",
+        "body": "Only the essentials. Set everything up yourself."
+      },
+      "cocoa": {
+        "title": "Cocoa",
+        "body": "Cocoa beans, EUDR plots and cooperative sections."
+      },
+      "cashew": {
+        "title": "Cashew",
+        "body": "Raw cashew nuts with KOR quality checks."
+      },
+      "shea": {
+        "title": "Shea",
+        "body": "Shea nuts with women’s groups and VSLAs."
+      },
+      "grains": {
+        "title": "Grains & legumes",
+        "body": "Maize, soybeans, millet and sorghum."
+      },
+      "coffee": {
+        "title": "Coffee",
+        "body": "Green coffee with EUDR traceability."
+      }
+    },
+    "commodities": {
+      "title": "What does the company buy?",
+      "body": "You can add codes, units, grades and quality limits later in Settings."
+    },
+    "approvals": {
+      "title": "Purchase request approvals",
+      "body": "How many people approve a request before money moves.",
+      "one": {
+        "title": "One step",
+        "body": "Operations approves."
+      },
+      "two": {
+        "title": "Two steps",
+        "body": "Operations, then finance."
+      },
+      "threeThreshold": {
+        "title": "Two steps + director above a limit",
+        "body": "Large requests also need the director."
+      },
+      "threshold": "Director approval above ({{currency}})",
+      "sod": "The requester can’t approve, and no one approves two steps",
+      "sodHint": "Separation of duties, recommended.",
+      "preview": "Preview"
+    },
+    "flow": {
+      "submitted": "Submitted",
+      "ops": "Operations",
+      "director": "Director if > {{amount}}",
+      "finance": "Finance",
+      "approved": "Approved"
+    },
+    "admins": {
+      "title": "Invite the company admins",
+      "body": "They receive an email to set their password and finish the setup.",
+      "add": "Add another admin",
+      "remove": "Remove",
+      "hint": "Invitations expire after 7 days."
+    },
+    "review": {
+      "title": "Review and create",
+      "body": "Check the setup. You can change all of it later in Settings.",
+      "company": "Company",
+      "where": "Country & language",
+      "plan": "Plan",
+      "template": "Template",
+      "commodities": "Commodities",
+      "approvals": "Approvals",
+      "admins": "Admins"
+    },
+    "err": {
+      "basics": "Add a name, a legal name and at least one country.",
+      "admins": "Add at least one admin with a name and a valid email.",
+      "threshold": "Enter the amount above which the director approves."
+    },
+    "doneTitle": "{{company}} is ready",
+    "doneBody_one": "We sent {{count}} invitation. The company starts with a setup checklist on its dashboard.",
+    "doneBody_other": "We sent {{count}} invitations. The company starts with a setup checklist on its dashboard.",
+    "viewCompany": "View company",
+    "openCompany": "Open {{company}}"
   }
 }

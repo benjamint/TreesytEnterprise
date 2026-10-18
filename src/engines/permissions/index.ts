@@ -32,7 +32,7 @@ export function expandPermissions(patterns: string[]): string[] {
 }
 
 export interface PermissionContext {
-  users: User[];
+  users: Pick<User, 'id' | 'isPlatformOwner'>[];
   memberships: Membership[];
   roles: Role[];
   /** Plan ceiling for the company (wildcards). */

@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Banknote, ClipboardList, Coins, Scale, ShoppingBasket, Users } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { StatCard } from '@/components/shared/StatCard';
 import { StatusBadge } from '@/components/shared/StatusBadge';
-import { Flag } from '@/components/shared/Flag';
+import { useDemoNotes } from '@/components/shared/useDemoNotes';
+import { SetupChecklist } from './SetupChecklist';
 import { usePageTour } from '@/components/shared/PageTour';
 import { canAct, type WorkflowRecord } from '@/engines/workflow';
 import { previewNumber } from '@/engines/numbering';
@@ -35,7 +35,8 @@ export function DashboardPage() {
   const patterns = usePermissionPatterns();
   const memberships = useAccessStore((s) => s.memberships);
   const countries = usePlatformStore((s) => s.countries);
-  const sequences = useSettingsStore((s) => s.sequences[org.id] ?? {});
+  const allSequences = useSettingsStore((s) => s.sequences);
+  const sequences = useMemo(() => allSequences[org.id] ?? {}, [allSequences, org.id]);
   const requests = useOrgRows(useBuyingStore((s) => s.requests));
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
   const expenses = useOrgRows(useBuyingStore((s) => s.expenses));
@@ -95,9 +96,9 @@ export function DashboardPage() {
   const weekLabel = formatDate(new Date(2026, 0, org.weekStart === 0 ? 4 : org.weekStart === 6 ? 10 : 5), org.timezone, lang, 'EEEE');
   const risky = requests.find((r) => r.riskFlags.some((x) => x.severity === 'HIGH') && queue.some((q) => q.id === r.id));
 
-  const facts: [string, React.ReactNode][] = [
-    ['country', <span key="c" className="inline-flex items-center gap-2"><Flag code={org.countries[0]!} />{country?.name[lang] ?? org.countries[0]}</span>],
-    ['currency', <span key="cur" className="tnum">{`${org.currency} · ${f.money(toMinor(1_234_567.5, org.currency))}`}</span>],
+  const facts: [string, string][] = [
+    ['country', country?.name[lang] ?? org.countries[0]!],
+    ['currency', `${org.currency} · ${f.money(toMinor(1_234_567.5, org.currency))}`],
     ['language', org.language.toUpperCase()],
     ['timezone', org.timezone],
     ['localTime', f.dateTime(new Date())],
@@ -106,10 +107,15 @@ export function DashboardPage() {
     ['commodities', settings.commodities.map((c) => c.name[lang] ?? c.name.en).join(', ') || '—'],
     ['providers', settings.paymentProviders.filter((p) => p.kind === 'MOBILE_MONEY').map((p) => p.name).join(', ') || '—'],
     ['approval', prWorkflow ? prWorkflow.steps.map((s) => s.name + (s.condition ? ` (> ${f.money(Number(s.condition.value))})` : '')).join(' → ') : '—'],
-    ['numbering', prPattern ? <span key="n" className="font-mono text-[13px]">{`${prPattern.pattern} → ${previewNumber(prPattern, sequences, { date: new Date() })}`}</span> : '—'],
+    ['numbering', prPattern ? `${prPattern.pattern} → ${previewNumber(prPattern, sequences, { date: new Date() })}` : '—'],
   ];
 
   const isOperational = org.type !== 'BUYER' && org.type !== 'PLATFORM';
+  // How this company is configured — useful while demoing, so it goes to the Demo panel.
+  useDemoNotes([
+    { id: 'phase', key: 'demo.note.dashboardPhase' },
+    ...facts.map(([k, v]) => ({ id: k, key: 'demo.note.fact', params: { label: t(`dashboard.fact.${k}`), value: v } })),
+  ]);
 
   return (
     <>
@@ -126,7 +132,9 @@ export function DashboardPage() {
         }
       />
 
-      {isOperational && (
+      <SetupChecklist />
+
+      {isOperational && purchases.length > 0 && (
         <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6" aria-label={t('nav.dashboard')}>
           <StatCard label={t('dashboard.kpi.volume')} value={f.kg(Math.round(kpis.volume))} icon={ShoppingBasket} onClick={() => navigate('/app/purchases')} />
           <StatCard label={t('dashboard.kpi.spend')} value={f.money(kpis.spend, { compact: true })} hint={f.money(kpis.spend)} icon={Banknote} onClick={() => navigate('/app/purchases')} />
@@ -137,8 +145,7 @@ export function DashboardPage() {
         </section>
       )}
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
-        <Card className="xl:col-span-3">
+      <Card>
           <CardHeader>
             <div>
               <CardTitle>{t('dashboard.approvals')}</CardTitle>
@@ -152,46 +159,25 @@ export function DashboardPage() {
                 <span>{t('notification.riskHigh', { number: risky.number, pct: risky.variancePct })}</span>
               </div>
             )}
-            <ul className="divide-y divide-line">
-              {queue.slice(0, 8).map((q) => (
-                <li key={q.id}>
-                  <Link to={q.link} className="flex items-center gap-4 rounded-ctl px-2 py-3 transition-colors hover:bg-brand-soft/50">
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-mono text-[13px] font-medium text-ink">{q.number}</span>
-                      <span className="block text-[13px] text-muted">{t(`docType.${q.type}`)}</span>
-                    </span>
-                    <StatusBadge status={q.status} />
-                    <span className="tnum w-36 text-right font-medium text-ink">{f.money(q.total)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {queue.length === 0 ? (
+              <p className="py-6 text-center text-[14px] text-muted">{t('dashboard.approvalsEmptyBody')}</p>
+            ) : (
+              <ul className="divide-y divide-line">
+                {queue.slice(0, 8).map((q) => (
+                  <li key={q.id}>
+                    <Link to={q.link} className="flex items-center gap-4 rounded-ctl px-2 py-3 transition-colors hover:bg-brand-soft/50">
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-mono text-[13px] font-medium text-ink">{q.number}</span>
+                        <span className="block text-[13px] text-muted">{t(`docType.${q.type}`)}</span>
+                      </span>
+                      <StatusBadge status={q.status} />
+                      <span className="tnum w-36 text-right font-medium text-ink">{f.money(q.total)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
-        </Card>
-
-        <Card className="xl:col-span-2">
-          <CardHeader>
-            <CardTitle>{t('dashboard.facts')}</CardTitle>
-            <Badge tone="brand">{t(`orgType.${org.type}`)}</Badge>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <dl className="divide-y divide-line">
-              {facts.map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[150px_1fr] gap-3 py-2.5 text-[14px]">
-                  <dt className="eyebrow pt-0.5">{t(`dashboard.fact.${k}`)}</dt>
-                  <dd className="min-w-0 text-ink">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="mt-6 border-dashed shadow-none">
-        <CardContent className="flex flex-col gap-1 py-5">
-          <span className="eyebrow">{t('dashboard.previewTitle')}</span>
-          <p className="text-[14px] text-muted">{t('dashboard.previewBody')}</p>
-        </CardContent>
       </Card>
     </>
   );

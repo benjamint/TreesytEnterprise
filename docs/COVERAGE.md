@@ -5,31 +5,33 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 1._
+_Last updated: Phase 2._
+
+Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", reset demo data, page notes) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
 ## Foundations (Scope 1)
 
 - [~] Company profile — profile fields on every company, read-only peek in Settings → Company profile [3]
-- [~] Platform owner role (replaces org 21) — `platformOwner` role, sees every company, Platform section gated by `platform.*` [2]
-- [~] Company list — Platform → Companies cards [2]
-- [ ] Onboarding wizard [2]
-- [ ] Company edit [3]
-- [ ] Deactivate / suspend [2]
-- [~] Plan permission ceiling — plans seeded with ceilings; `can()` enforces them (tested) [2–3]
+- [x] Platform owner role (replaces org 21) — `platformOwner` role, sees every company, Platform console gated by `platform.*`
+- [x] Company list — Platform → Companies: logo, countries, type, plan, modules, active agents, farmers, status, created; View / View as company / Suspend / Reactivate / Change plan; company detail with usage charts, plan limits, modules, admins, grants, audit
+- [x] Onboarding wizard — 7 steps + review with AI draft; template (Vitara / blank / cocoa / cashew / shea / grains / coffee); creates company, settings, roles, admin invites; setup checklist on the new company's dashboard
+- [~] Company edit — plan and status from the console; profile editors in Settings [3]
+- [x] Deactivate / suspend — suspend and reactivate (members of a suspended company can't sign in), audited
+- [x] Plan permission ceiling — Platform → Plans shows module bundles, limits and ceiling; enforced in every permission check; Change plan applies it immediately
 - [~] Company switching (web + mobile) — web switcher, command palette, persona switcher; mobile company switch from Me [9]
 - [x] Company code / numbering prefix — `{orgCode}` / `{prefix}` tokens, per-company patterns
-- [ ] Public sign-up [2]
-- [ ] Web sign-in [2]
-- [ ] Token / session expiry [2]
+- [x] Public sign-up — account (strength meter) → verify email (6-digit code) → company basics (currency and language from country) → terms → setup checklist
+- [x] Web sign-in — email + password with attempt counter and lockout, SSO (domain lookup → identity provider screen), 2-step code, remember this device, company picker
+- [x] Token / session expiry — idle warning modal with countdown (company session length), sessions revocable; a revoked session signs its tab out
 - [ ] Agent phone + code login [9]
-- [ ] OTP by SMS / email [2, 9]
-- [ ] Resend code [2, 9]
-- [ ] Forgot / reset password [2]
-- [ ] Invite acceptance [2]
-- [ ] Change password [2]
-- [~] Sign out (this device / all) — sign out of this tab and of the mobile window [2]
-- [ ] Email verification [2]
-- [ ] Users list / add / bulk invite / edit / remove [3]
+- [~] OTP by SMS / email — email verification and 2-step codes (simulated, shown in the Demo panel); SMS login for agents [9]
+- [x] Resend code — 2-step (with cooldown) and email verification; agent SMS resend [9]
+- [x] Forgot / reset password — email sent screen, reset link (expired / used / invalid states), new password with the company policy shown
+- [x] Invite acceptance — separate page: name, password (company policy), terms; expired and used states
+- [x] Change password — My account → Security
+- [x] Sign out (this device / all) — My account → Sessions, works across tabs
+- [x] Email verification — sign-up step 2
+- [~] Users list / add / bulk invite / edit / remove — admin invites from the wizard; user management screens [3]
 - [~] Roles CRUD per company — every company gets its own roles copied from the 14 templates (Kakao Ivoire renames them) [3]
 - [ ] Permission matrix [3]
 - [x] Permission checks per company — `can(user, permission, orgId)`, route guards, `<PermissionGate>` with "View as" mode
@@ -41,7 +43,7 @@ _Last updated: Phase 1._
 - [x] Time zone / week start — all dates via `formatDate()` in the company time zone; week start per company
 - [x] Languages + terminology — EN/FR via i18next; company terms (`{{term.agent}}` → "Délégué")
 - [x] Currency formatting — `formatMoney()` with minor-unit table (GHS 2, XOF 0, …)
-- [~] Countries catalogue — data (10 countries with currency, dial code, language, location levels, providers); screen [2]
+- [x] Countries catalogue — Platform → Global catalogues: countries, currencies, commodities, question types on/off, permission catalogue, providers per country
 - [ ] API versions / docs page [17]
 - [x] Removed unauthenticated debug routes — no backend; nothing to expose
 - [ ] NFC keys server-held [3]
@@ -281,7 +283,7 @@ _Last updated: Phase 1._
 
 - [~] Dashboards + caching — Phase 1 dashboard: KPI row, approval queue, company facts [4]
 - [ ] Exports / report builder [17]
-- [ ] Email [17]
+- [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
 - [ ] SMS [17]
 - [ ] Push [17]
 - [ ] Recovery banner / reminders [11]
@@ -289,13 +291,13 @@ _Last updated: Phase 1._
 - [ ] Sync logs (scoped, private, retention) [17]
 - [ ] Devices [17]
 - [~] Activity history (structured) — `{key, params}` events from every seeded approval, rendered via `t('activity.' + key)` [17]
-- [ ] Audit log [17]
+- [~] Audit log — Platform audit (company created, plan changed, suspended, invites, lockouts); company audit log [17]
 - [ ] Scheduled jobs [17]
 - [ ] Backups (platform) [17]
 - [x] Error reporting — n/a in the prototype (noted)
 - [ ] AI assistant [4]
 - [ ] Knowledge base [17]
-- [ ] Book a demo [2]
+- [x] Book a demo — book-a-demo / contact form with country phone validation → confirmation → Platform → Leads
 
 ## Hard-coded values (Scope 11)
 

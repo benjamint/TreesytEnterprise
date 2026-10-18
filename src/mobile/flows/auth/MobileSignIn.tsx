@@ -1,29 +1,24 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { Landscape } from '@/components/shared/Landscape';
 import { LogoBadge, Wordmark } from '@/components/shared/Logo';
-import { Avatar } from '@/components/shared/Avatar';
-import { useAccessStore } from '@/stores/accessStore';
-import { useMobileSessionStore } from '@/stores/mobileSessionStore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { comingSoon } from '@/components/shared/coming-soon';
+import { useDemoNotes } from '@/components/shared/useDemoNotes';
+import { COUNTRIES } from '@/data/catalogs/countries';
 import { useT } from '@/stores/hooks';
 
 /**
- * Phase 1 mobile sign-in: an illustrated splash with the field personas. The real phone + code
- * sign-in (M1) arrives in phase 9.
+ * Mobile sign-in (M1 shape): phone number with the country prefix. The full phone + code flow
+ * arrives in phase 9; until then field users sign in from the Demo panel.
  */
 export function MobileSignIn() {
-  const users = useAccessStore((s) => s.users);
-  const memberships = useAccessStore((s) => s.memberships);
-  const roles = useAccessStore((s) => s.roles);
-  const signIn = useMobileSessionStore((s) => s.signIn);
+  const [country, setCountry] = useState('GH');
+  const [phone, setPhone] = useState('');
   const { t } = useT();
-  const field = useMemo(
-    () =>
-      users
-        .filter((u) => u.persona)
-        .map((u) => ({ u, m: memberships.find((m) => m.userId === u.id)! }))
-        .filter(({ m }) => m && m.roleIds.some((r) => roles.find((x) => x.id === r)?.mobile)),
-    [users, memberships, roles],
-  );
+  const dial = COUNTRIES.find((c) => c.code === country)?.dialCode ?? '';
+  useDemoNotes([{ id: 'm1', key: 'demo.note.mobileSignIn' }]);
   return (
     <div className="flex h-full flex-col">
       <div className="relative h-[300px] shrink-0 overflow-hidden">
@@ -36,20 +31,26 @@ export function MobileSignIn() {
       <div className="-mt-6 flex-1 overflow-y-auto rounded-t-panel bg-surface px-6 pb-8 pt-7">
         <h1 className="text-[26px]">{t('mobile.signInTitle')}</h1>
         <p className="mt-2 text-[15px] text-muted">{t('mobile.signInBody')}</p>
-        <div className="eyebrow mb-3 mt-7">{t('mobile.chooseUser')}</div>
-        <ul className="space-y-2.5">
-          {field.map(({ u, m }) => (
-            <li key={u.id}>
-              <button type="button" onClick={() => signIn(u.id, m.orgId, u.language)} className="flex min-h-[56px] w-full items-center gap-3 rounded-ctl border border-line px-4 py-2.5 text-left transition-colors hover:border-brand/40 active:bg-brand-soft">
-                <Avatar name={u.name} color={u.avatarColor} size={36} />
-                <span>
-                  <span className="block font-semibold text-ink">{u.name}</span>
-                  <span className="block text-[13px] text-muted">{m.title}</span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <form
+          className="mt-7 space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            comingSoon();
+          }}
+        >
+          <div>
+            <Label htmlFor="m-phone">{t('demoForm.phone')}</Label>
+            <div className="flex gap-2">
+              <select aria-label={t('signup.country')} value={country} onChange={(e) => setCountry(e.target.value)} className="h-14 w-28 rounded-ctl border border-line bg-surface px-3 text-[16px] text-ink">
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>{`${c.code} ${c.dialCode}`}</option>
+                ))}
+              </select>
+              <Input id="m-phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={`${dial} …`} />
+            </div>
+          </div>
+          <Button type="submit" size="lg" className="w-full">{t('mobile.sendCode')}</Button>
+        </form>
       </div>
     </div>
   );

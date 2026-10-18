@@ -1,0 +1,24 @@
+import { Badge } from '@/components/ui/badge';
+import { useT } from '@/stores/hooks';
+
+type Tone = 'neutral' | 'warning' | 'info' | 'success' | 'teal' | 'paid' | 'done' | 'danger' | 'warningOutline' | 'dangerOutline' | 'unknown';
+
+/** Status colours (PRD 6.2). */
+const TONES: Record<string, Tone> = {
+  DRAFT: 'neutral', ARCHIVED: 'neutral', INACTIVE: 'neutral', NONE: 'neutral', NOT_PAID: 'neutral',
+  PENDING: 'warning', PRICE_UPDATE: 'warning', AWAITING_CHECKER: 'warning', INVITED: 'warning', TRIAL: 'warning', FLAGGED: 'warning',
+  MANAGEMENT_APPROVED: 'info', ZONE_APPROVED: 'info', OPS_APPROVED: 'info', LEVEL_1_APPROVED: 'info', LEVEL_2_APPROVED: 'info', LEVEL_3_APPROVED: 'info', PROCESSING: 'info',
+  FINANCE_APPROVED: 'success', APPROVED: 'success', RATE_CONFIRMED: 'success', SUCCESSFUL: 'success', OK: 'success',
+  ACTIVE: 'teal', TICKET_ACTIVATED: 'teal', FUNDS_RECEIVED: 'teal', PARTIAL_DISBURSEMENT: 'teal', PARTIALLY_DISBURSED: 'teal',
+  PAID: 'paid', FULL_DISBURSEMENT: 'paid', FUNDS_DISBURSED: 'paid',
+  RECONCILED: 'done', COMPLETED: 'done',
+  NOT_APPROVED: 'danger', REJECTED: 'danger', SUSPENDED: 'danger',
+  ON_HOLD: 'warningOutline',
+  FAILED: 'dangerOutline', REVERSED: 'dangerOutline',
+  UNKNOWN: 'unknown',
+};
+
+export function StatusBadge({ status }: { status: string }) {
+  const { t } = useT();
+  return <Badge tone={TONES[status] ?? 'neutral'}>{t(`status.${status}`, { defaultValue: status })}</Badge>;
+}

@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design tokens (PRD 6.1). Stored as RGB channels so Tailwind opacity modifiers work.
+   --brand, --brand-hover and --brand-soft are overridden at runtime by company branding. */
+@layer base {
+  :root {
+    --brand: 20 88 63;
+    --brand-hover: 15 71 50;
+    --brand-soft: 234 243 238;
+    --lime: 184 224 90;
+    --badge-dark: 15 42 32;
+    --ink: 15 42 32;
+    --body: 51 65 59;
+    --muted: 107 120 114;
+    --label: 61 74 68;
+    --surface: 255 255 255;
+    --canvas: 247 248 246;
+    --line: 227 231 228;
+    --info: 47 111 219;
+    --success: 31 138 76;
+    --warning: 183 121 31;
+    --danger: 192 57 43;
+    --teal: 15 128 128;
+    --unknown: 124 77 196;
+    color-scheme: light;
+  }
+
+  .dark {
+    --brand: 63 175 126;
+    --brand-hover: 86 192 143;
+    --brand-soft: 20 39 30;
+    --lime: 198 234 115;
+    --badge-dark: 15 42 32;
+    --ink: 241 245 242;
+    --body: 201 212 206;
+    --muted: 147 163 155;
+    --label: 175 192 183;
+    --surface: 17 29 24;
+    --canvas: 10 20 16;
+    --line: 36 53 45;
+    --info: 106 155 234;
+    --success: 76 192 127;
+    --warning: 224 169 74;
+    --danger: 232 105 92;
+    --teal: 72 190 190;
+    --unknown: 170 136 230;
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-canvas text-body font-sans text-base;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1, h2, h3, h4 {
+    @apply text-ink font-semibold;
+    letter-spacing: -0.02em;
+  }
+
+  :focus-visible {
+    outline: 3px solid rgb(var(--brand));
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-eyebrow uppercase text-label;
+  }
+  .tnum {
+    font-feature-settings: 'cv11', 'ss01', 'tnum';
+    font-variant-numeric: tabular-nums;
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/60;
+  }
+  .text-link {
+    @apply text-ink underline underline-offset-[3px] decoration-1 hover:text-brand;
+  }
+}
+
+/* Thin, calm scrollbars */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line)) transparent;
+  }
+}

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { Lock, PowerOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { routeByKey } from './routes';
@@ -7,10 +7,11 @@ import { useCurrentOrg, useRouteAccessFn, useT } from '@/stores/hooks';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useHomePath } from '@/web/layout/useNav';
 
-/** Auth guard: the web app needs a signed-in session (sign-in screens arrive in phase 2). */
+/** Auth guard: the web app needs a signed-in session. */
 export function RequireSession({ children }: { children: ReactNode }) {
   const userId = useSessionStore((s) => s.userId);
-  if (!userId) return <Navigate to="/" replace />;
+  const { pathname, search } = useLocation();
+  if (!userId) return <Navigate to={`/sign-in?next=${encodeURIComponent(pathname + search)}`} replace />;
   return <>{children}</>;
 }
 

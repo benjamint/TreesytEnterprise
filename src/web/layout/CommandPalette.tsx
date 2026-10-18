@@ -1,16 +1,15 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, RotateCcw, Smartphone } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { APP_ROUTES, SETTINGS_PAGES } from '@/app/routes';
 import { useCurrentOrg, useRouteAccessFn, useT, useUserOrgs } from '@/stores/hooks';
-import { resetDemoData } from '@/stores/persistence';
 import { useSessionStore } from '@/stores/sessionStore';
 import { CompanyLogo } from '@/components/shared/Logo';
 
 /** Global search / command palette (⌘K). */
-export function CommandPalette({ open, onOpenChange, onOpenMobile }: { open: boolean; onOpenChange: (o: boolean) => void; onOpenMobile: () => void }) {
+export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const navigate = useNavigate();
   const access = useRouteAccessFn();
   const orgs = useUserOrgs();
@@ -55,14 +54,6 @@ export function CommandPalette({ open, onOpenChange, onOpenMobile }: { open: boo
                     <span className="w-[18px]" /> {`${t('nav.settings')} · ${t(`settings.page.${p}`)}`}
                   </CommandItem>
                 ))}
-            </CommandGroup>
-            <CommandGroup heading={t('shell.commandActions')}>
-              <CommandItem value={t('shell.openMobile')} onSelect={() => { onOpenChange(false); onOpenMobile(); }}>
-                <Smartphone /> {t('shell.openMobile')}
-              </CommandItem>
-              <CommandItem value={t('shell.resetDemo')} onSelect={resetDemoData}>
-                <RotateCcw /> {t('shell.resetDemo')}
-              </CommandItem>
             </CommandGroup>
             {orgs.length > 1 && (
               <CommandGroup heading={t('shell.commandCompanies')}>

@@ -15,7 +15,6 @@
     "no": "Non",
     "none": "Aucun",
     "records": "{{count}} enregistrements",
-    "phaseChip": "Écran complet en phase {{phase}}",
     "sharedBy": "Partagé par {{company}}",
     "missingPermission": "Il vous faut la permission « {{permission}} »",
     "moduleOff": "Le module {{module}} est désactivé pour {{company}}",
@@ -262,8 +261,6 @@
     "approvalsCount_other": "{{count}} éléments vous attendent",
     "approvalsEmpty": "Rien ne vous attend.",
     "setupChecklist": "Liste de mise en route",
-    "previewTitle": "Aperçu phase 1",
-    "previewBody": "Le tableau de bord complet (graphiques, carte, alertes et widgets personnalisables) arrive en phase 4. Ces chiffres viennent déjà des données de démo et du moteur monétaire.",
     "facts": "Fiche entreprise",
     "fact": {
       "country": "Pays",
@@ -279,16 +276,16 @@
       "localTime": "Heure locale"
     },
     "buyerTitle": "Espace acheteur",
-    "buyerBody": "{{company}} consulte dans Traceboard les commandes, livraisons, l’impact et la traçabilité partagés par ses fournisseurs."
+    "buyerBody": "{{company}} consulte dans Traceboard les commandes, livraisons, l’impact et la traçabilité partagés par ses fournisseurs.",
+    "approvalsEmptyBody": "Quand une décision vous revient, elle apparaît ici."
   },
   "placeholder": {
-    "seeded": "Données de démo pour {{company}}",
-    "previewRows": "Premières lignes des données de démo",
-    "nothingSeeded": "Les données de démo de cet espace arrivent en phase {{phase}}.",
     "primaryAction": "Nouveau",
     "sampleTour1": "Voici le titre de la page et une ligne qui explique à quoi elle sert.",
     "sampleTour2": "L’action principale de la page se trouve ici. Il n’y en a toujours qu’une.",
-    "sampleTour3": "Chaque page a sa visite guidée. Utilisez le bouton ? pour la relancer."
+    "sampleTour3": "Chaque page a sa visite guidée. Utilisez le bouton ? pour la relancer.",
+    "emptyTitle": "Aucun élément pour l’instant ({{what}})",
+    "emptyBody": "Les enregistrements apparaîtront ici dès qu’ils seront ajoutés ou importés."
   },
   "col": {
     "code": "Code",
@@ -383,7 +380,11 @@
     "OK": "OK",
     "FLAGGED": "Signalé",
     "NOT_PAID": "Non payé",
-    "PAID": "Payé"
+    "PAID": "Payé",
+    "LOCKED": "Verrouillé",
+    "DEACTIVATED": "Désactivé",
+    "EXPIRED": "Expiré",
+    "ACCEPTED": "Acceptée"
   },
   "docType": {
     "purchaseRequest": "{{term.purchaseRequest}}",
@@ -483,19 +484,86 @@
     "title": "Plateforme",
     "page": {
       "companies": "Entreprises",
-      "newCompany": "Ajouter une entreprise",
       "plans": "Offres",
       "catalogues": "Catalogues globaux",
       "leads": "Prospects",
       "audit": "Audit de la plateforme"
     },
-    "pageDesc": {
-      "companies": "Chaque entreprise sur TreeSyt, son offre et son utilisation.",
-      "newCompany": "Configurez une nouvelle entreprise en sept étapes, avec un brouillon IA.",
-      "plans": "Lots de modules, limites et plafonds de permissions.",
-      "catalogues": "Pays, devises, produits et opérateurs.",
-      "leads": "Demandes de démo et inscriptions.",
-      "audit": "Actions d’administration dans toutes les entreprises."
+    "addCompany": "Ajouter une entreprise",
+    "view": "Voir",
+    "viewAs": "Voir en tant qu’entreprise",
+    "suspend": "Suspendre",
+    "reactivate": "Réactiver",
+    "suspended": "{{company}} est suspendue",
+    "reactivated": "{{company}} est de nouveau active",
+    "changePlan": "Changer d’offre",
+    "changePlanBody": "Choisissez l’offre de {{company}}. Les modules et permissions hors offre cessent de fonctionner.",
+    "currentPlan": "Actuelle",
+    "planChanged": "{{company}} passe à l’offre {{plan}}",
+    "planLimits": "Jusqu’à {{agents}} agents · {{farmers}} producteurs",
+    "actions": "Actions pour {{company}}",
+    "since": "depuis le {{date}}",
+    "col": {
+      "countries": "Pays",
+      "plan": "Offre",
+      "modules": "Modules",
+      "agents": "Agents actifs",
+      "created": "Créée le",
+      "when": "Quand",
+      "actor": "Par",
+      "company": "Entreprise",
+      "action": "Action",
+      "change": "Modification",
+      "country": "Pays",
+      "dial": "Indicatif",
+      "levels": "Niveaux géographiques",
+      "minor": "Décimales",
+      "hs": "Code SH",
+      "eudr": "RDUE"
+    },
+    "usage": "Utilisation",
+    "usageAgents": "Agents actifs",
+    "usageRecords": "Enregistrements synchronisés",
+    "usagePayouts": "Paiements",
+    "noUsage": "Pas encore d’activité",
+    "plan": "Offre",
+    "modules": "Modules",
+    "modulesOn": "{{count}} sur {{total}} activés",
+    "admins": "Administrateurs",
+    "noAdmins": "Pas encore d’administrateur.",
+    "grants": "Partages de données",
+    "noGrants": "Aucune donnée n’est partagée avec ou par cette entreprise.",
+    "grantTo": "Partage avec {{company}}",
+    "grantFrom": "Reçoit de {{company}}",
+    "scope": {
+      "farmers": "Producteurs",
+      "communities": "Communautés",
+      "purchases": "Achats",
+      "orders": "Commandes",
+      "traceability": "Traçabilité",
+      "impact": "Impact"
+    },
+    "noAudit": "Aucune action d’administration.",
+    "allCompanies": "Toutes les entreprises",
+    "companiesOnPlan_one": "{{count}} entreprise",
+    "companiesOnPlan_other": "{{count}} entreprises",
+    "ceiling": "Plafond de permissions",
+    "ceilingCount": "{{allowed}} permissions sur {{total}} peuvent être accordées",
+    "cat": {
+      "countries": "Pays",
+      "currencies": "Devises",
+      "commodities": "Produits",
+      "questionTypes": "Types de questions",
+      "permissions": "Permissions",
+      "providers": "Opérateurs"
+    },
+    "eudrYes": "Concerné par le RDUE",
+    "cashProvider": "Espèces avec preuve",
+    "smsProviders": "SMS : {{list}}",
+    "leadKind": {
+      "DEMO": "Demande de démo",
+      "CONTACT": "Contact",
+      "SIGNUP": "Inscription"
     }
   },
   "mobileFlows": {
@@ -605,17 +673,16 @@
     "language": "Langue",
     "signOut": "Se déconnecter",
     "signInTitle": "Connexion",
-    "signInBody": "Ouvrez l’application mobile depuis l’application web (barre du haut → Ouvrir l’application mobile) pour vous connecter en tant qu’utilisateur terrain. La connexion par téléphone et code arrive en phase 9.",
-    "chooseUser": "Ou choisissez un utilisateur terrain",
+    "signInBody": "Saisissez votre numéro de téléphone. Nous vous enverrons un code de connexion.",
     "notMember": "Cet utilisateur n’est pas membre de cette entreprise.",
-    "flowPlaceholder": "Ce parcours est construit en phase {{phase}}.",
     "back": "Retour",
     "area_one": "{{count}} zone",
     "area_other": "{{count}} zones",
     "alertConfirmFunds": "Confirmez la réception des fonds pour {{number}}",
     "alertRejected": "{{number}} n’a pas été validée",
     "signedInToast": "Connecté en tant que {{name}}",
-    "tilesTitle": "Saisir"
+    "tilesTitle": "Saisir",
+    "sendCode": "Recevoir le code"
   },
   "help": {
     "shortcutsTitle": "Raccourcis clavier"
@@ -641,5 +708,696 @@
   "carousel": {
     "payments": "Payez les producteurs en quelques minutes, dans toutes les devises.",
     "config": "Configurez votre activité sans écrire de code."
+  },
+  "module": {
+    "dashboard": "Tableau de bord",
+    "ai": "Assistant IA",
+    "farmers": "Producteurs et communautés",
+    "dataQuality": "Qualité des données",
+    "imports": "Importations",
+    "buying": "Achats",
+    "aggregators": "Agrégateurs",
+    "payments": "Paiements",
+    "support": "Appui aux producteurs",
+    "recovery": "Recouvrement",
+    "inventory": "Stocks",
+    "dispatch": "Expéditions",
+    "salesContracts": "Contrats de vente",
+    "traceboard": "Traceboard",
+    "nurseries": "Pépinières",
+    "trees": "Arbres et plants",
+    "plots": "Parcelles",
+    "eudr": "RDUE",
+    "carbon": "Carbone",
+    "forms": "Formulaires",
+    "workshops": "Ateliers",
+    "fieldTeam": "Équipe terrain",
+    "weeklyBudgets": "Budgets hebdomadaires",
+    "allowances": "Indemnités",
+    "commissions": "Commissions",
+    "reports": "Rapports",
+    "notifications": "Notifications",
+    "system": "Système",
+    "settings": "Paramètres",
+    "platform": "Plateforme",
+    "mobile": "Application mobile"
+  },
+  "question": {
+    "shortText": "Texte court",
+    "longText": "Texte long",
+    "number": "Nombre",
+    "decimal": "Décimal",
+    "currency": "Montant",
+    "selectOne": "Choix unique",
+    "selectMany": "Choix multiple",
+    "yesNo": "Oui / Non",
+    "ranking": "Classement",
+    "rating": "Note",
+    "likert": "Échelle de Likert",
+    "nps": "NPS",
+    "date": "Date",
+    "time": "Heure",
+    "dateTime": "Date et heure",
+    "monthYear": "Mois et année",
+    "year": "Année",
+    "image": "Image",
+    "audio": "Audio",
+    "video": "Vidéo",
+    "file": "Fichier",
+    "signature": "Signature",
+    "gpsPoint": "Point GPS",
+    "gpsPolygon": "Polygone GPS / contour à pied",
+    "scanCode": "Scanner un code",
+    "nfcTap": "Lecture NFC",
+    "thumbprint": "Empreinte",
+    "autoId": "ID automatique",
+    "contact": "Coordonnées",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "recordPicker": "Sélection d’enregistrement",
+    "locationPicker": "Sélection de lieu",
+    "calculated": "Calculé",
+    "note": "Note d’information",
+    "repeatGroup": "Groupe répété",
+    "table": "Tableau"
+  },
+  "demo": {
+    "title": "Démo",
+    "subtitle": "Commandes et notes du prototype. Rien ici ne fait partie du produit.",
+    "codes": "Codes et e-mails",
+    "copied": "Copié",
+    "copy": "Copier le code",
+    "aboutPage": "À propos de cette page",
+    "noNotes": "Aucune note pour cette page.",
+    "signInAs": "Se connecter avec un persona",
+    "passwordHint": "Tous les comptes de démo utilisent le mot de passe « {{password}} ».",
+    "tools": "Outils du prototype",
+    "code": {
+      "twoStep": "Code de double authentification",
+      "verifyEmail": "Code de vérification de l’e-mail"
+    },
+    "link": {
+      "reset": "E-mail de réinitialisation",
+      "invite": "E-mail d’invitation"
+    },
+    "note": {
+      "phase": "La version complète de cet écran arrive en phase {{phase}}. En attendant, il affiche les enregistrements de l’entreprise et chaque bouton répond.",
+      "seeded": "{{company}} a {{count}} enregistrements de démo ici, générés depuis src/data.",
+      "settingsPhase": "Les éditeurs de paramètres arrivent en phase {{phase}} ; chaque page montre les valeurs actuelles de l’entreprise.",
+      "dashboardPhase": "Le tableau de bord complet (graphiques, carte, alertes, personnalisation) arrive en phase 4.",
+      "fact": "{{label}} : {{value}}",
+      "flowPhase": "{{flow}} est construit en phase {{phase}}.",
+      "mobileSignIn": "La connexion par téléphone et code arrive en phase 9. Utilisez « Se connecter avec un persona » dans ce panneau pour entrer comme utilisateur terrain."
+    }
+  },
+  "auth": {
+    "home": "Accueil TreeSyt",
+    "slides": "Points forts",
+    "slide1": "Connaissez chaque kilo, de la ferme à l’acheteur.",
+    "slide2": "Payez les producteurs en quelques minutes, dans toutes les devises.",
+    "slide3": "Configurez votre activité sans écrire de code.",
+    "needHelp": "Besoin d’aide ?",
+    "contactSupport": "Contacter le support",
+    "legal": "En continuant, vous acceptez les",
+    "terms": "Conditions d’utilisation",
+    "privacy": "Politique de confidentialité",
+    "signInTitle": "Bon retour",
+    "signInSubtitle": "Connectez-vous à votre espace TreeSyt.",
+    "workEmail": "E-mail professionnel",
+    "emailPlaceholder": "vous@entreprise.com",
+    "password": "Mot de passe",
+    "forgot": "Mot de passe oublié ?",
+    "remember": "Se souvenir de cet appareil",
+    "rememberHint": "Pas de code de double authentification sur ce navigateur pendant 30 jours.",
+    "signIn": "Se connecter",
+    "or": "ou",
+    "sso": "Se connecter avec le SSO",
+    "noAccount": "Nouveau sur TreeSyt ?",
+    "startTrial": "Commencer l’essai gratuit",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "continue": "Continuer",
+    "backToSignIn": "Retour à la connexion",
+    "ssoTitle": "Authentification unique",
+    "ssoSubtitle": "Utilisez votre compte d’entreprise. Nous vous redirigeons vers la page de connexion de votre entreprise.",
+    "ssoHelper": "Nous identifions votre entreprise à partir du domaine de l’e-mail.",
+    "idpSecure": "Connexion sécurisée",
+    "idpTitle": "Connexion à {{app}}",
+    "idpBody": "Continuer en tant que {{email}}. Votre entreprise gère ce compte.",
+    "idpContinue": "Continuer",
+    "twoStepTitle": "Saisissez votre code",
+    "twoStepApp": "Ouvrez votre application d’authentification et saisissez le code à 6 chiffres.",
+    "twoStepSms": "Nous avons envoyé un code à 6 chiffres sur votre téléphone.",
+    "code": "Code",
+    "backupCode": "Code de secours",
+    "verify": "Vérifier",
+    "resend": "Renvoyer",
+    "resendIn": "Renvoyer dans {{seconds}} s",
+    "useBackup": "Utiliser un code de secours",
+    "useCode": "Utiliser un code",
+    "chooseTitle": "Bonjour {{name}}, choisissez une entreprise",
+    "chooseSubtitle": "Vous appartenez à plusieurs entreprises.",
+    "forgotTitle": "Réinitialiser votre mot de passe",
+    "forgotSubtitle": "Saisissez votre e-mail professionnel et nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+    "sendLink": "Envoyer le lien",
+    "sentTitle": "Consultez votre boîte de réception",
+    "sentBody": "Si {{email}} a un compte TreeSyt, un lien de réinitialisation est en route. Il est valable 30 minutes.",
+    "sentAgain": "Nous avons envoyé un nouveau lien.",
+    "noEmail": "Rien reçu ?",
+    "link": {
+      "expiredTitle": "Ce lien a expiré",
+      "usedTitle": "Ce lien a déjà été utilisé",
+      "unknownTitle": "Ce lien n’est pas valide",
+      "reset": {
+        "expired": "Les liens de réinitialisation sont valables 30 minutes. Demandez-en un nouveau.",
+        "used": "Vous avez déjà choisi un nouveau mot de passe avec ce lien. Demandez-en un nouveau si besoin.",
+        "unknown": "Le lien est peut-être incomplet. Demandez-en un nouveau."
+      },
+      "invite": {
+        "expired": "Les invitations sont valables 7 jours. Demandez à votre administrateur d’en envoyer une nouvelle.",
+        "used": "Cette invitation a déjà été acceptée. Connectez-vous.",
+        "unknown": "Le lien d’invitation est peut-être incomplet. Demandez à votre administrateur de le renvoyer."
+      }
+    },
+    "sendNewLink": "Envoyer un nouveau lien",
+    "resetTitle": "Choisissez un nouveau mot de passe",
+    "resetSubtitle": "Pour {{email}}.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "savePassword": "Enregistrer le mot de passe",
+    "resetDoneTitle": "Mot de passe modifié",
+    "resetDoneBody": "Vous pouvez vous connecter avec votre nouveau mot de passe.",
+    "policyTitle": "Règles du mot de passe",
+    "rule": {
+      "minLength": "Au moins {{count}} caractères",
+      "number": "Au moins un chiffre",
+      "symbol": "Au moins un symbole",
+      "mixedCase": "Majuscules et minuscules"
+    },
+    "strength": {
+      "1": "Faible",
+      "2": "Moyen",
+      "3": "Bon",
+      "4": "Fort"
+    },
+    "inviteTitle": "Rejoindre {{company}}",
+    "inviteSubtitle": "Vous avez été invité avec l’adresse {{email}}. Indiquez votre nom et votre mot de passe.",
+    "fullName": "Nom complet",
+    "choosePassword": "Choisissez un mot de passe",
+    "acceptTerms": "J’accepte les conditions d’utilisation et la politique de confidentialité",
+    "joinCompany": "Rejoindre {{company}}",
+    "timeoutTitle": "Toujours là ?",
+    "timeoutBody": "Pour votre sécurité, vous serez déconnecté dans {{seconds}} secondes. Les sessions se terminent après {{minutes}} minutes d’inactivité.",
+    "staySignedIn": "Rester connecté",
+    "timedOut": "Vous avez été déconnecté après une période d’inactivité.",
+    "sessionEnded": "Cette session a été fermée depuis un autre appareil.",
+    "err": {
+      "emailRequired": "Saisissez votre e-mail.",
+      "emailInvalid": "Saisissez une adresse e-mail valide.",
+      "passwordRequired": "Saisissez votre mot de passe.",
+      "passwordShort": "Utilisez au moins 8 caractères.",
+      "invalid_one": "E-mail ou mot de passe incorrect. Encore {{count}} essai avant le verrouillage du compte.",
+      "invalid_other": "E-mail ou mot de passe incorrect. Encore {{count}} essais avant le verrouillage du compte.",
+      "locked": "Ce compte est verrouillé après trop de tentatives. Réinitialisez votre mot de passe ou contactez votre administrateur.",
+      "deactivated": "Ce compte a été désactivé. Contactez votre administrateur.",
+      "invited": "Vous n’avez pas encore accepté votre invitation. Utilisez le lien de l’e-mail d’invitation.",
+      "suspended": "L’espace de votre entreprise est suspendu. Contactez le support TreeSyt.",
+      "noCompany": "Votre compte n’est encore lié à aucune entreprise.",
+      "noSso": "L’authentification unique n’est pas configurée pour {{domain}}. Connectez-vous avec votre mot de passe.",
+      "idpUnknown": "{{idp}} ne connaît pas ce compte.",
+      "code": "Ce code n’est pas correct. Vérifiez-le et réessayez.",
+      "policy": "Le mot de passe ne respecte pas les règles.",
+      "mismatch": "Les mots de passe ne correspondent pas.",
+      "nameRequired": "Saisissez votre nom complet.",
+      "terms": "Acceptez les conditions pour continuer."
+    }
+  },
+  "signup": {
+    "step": {
+      "account": "Compte",
+      "verify": "Vérifier l’e-mail",
+      "company": "Entreprise",
+      "terms": "Conditions"
+    },
+    "title": "Créez votre compte",
+    "subtitle": "Essai gratuit de 30 jours. Sans carte bancaire.",
+    "country": "Pays",
+    "countryHelper": "Définit votre devise, le format des numéros et la langue par défaut",
+    "create": "Créer le compte",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "termsLine": "En créant un compte, vous acceptez les conditions d’utilisation.",
+    "exists": "Un compte existe déjà avec cet e-mail. Connectez-vous.",
+    "verifyTitle": "Vérifiez votre e-mail",
+    "verifyBody": "Nous avons envoyé un code à 6 chiffres à {{email}}.",
+    "changeEmail": "Changer d’e-mail",
+    "companyTitle": "Parlez-nous de votre entreprise",
+    "companySubtitle": "Vous pourrez tout modifier plus tard dans les paramètres.",
+    "companyName": "Nom de l’entreprise",
+    "currency": "Devise",
+    "currencyHelper": "La devise dans laquelle vous payez les producteurs",
+    "language": "Langue",
+    "companyRequired": "Saisissez le nom de votre entreprise.",
+    "termsTitle": "Une dernière chose",
+    "termsSubtitle": "Lisez et acceptez les conditions de l’essai.",
+    "termsText": "Votre essai comprend l’offre Growth pendant 30 jours. Vos données vous appartiennent : vous pouvez les exporter à tout moment, et nous les supprimons 30 jours après la fin de l’essai si vous ne vous abonnez pas. Les données personnelles des producteurs ne sont traitées que pour faire fonctionner votre activité, selon vos instructions, et ne sont jamais vendues. Vous êtes responsable du recueil du consentement des producteurs que vous enregistrez.",
+    "finish": "Créer mon espace",
+    "welcome": "Bienvenue sur TreeSyt, {{company}}"
+  },
+  "demoForm": {
+    "titleDemo": "Demander une démo",
+    "titleContact": "Nous contacter",
+    "subtitle": "Parlez-nous de votre activité, nous vous répondons sous un jour ouvré.",
+    "type": "Type de demande",
+    "kind": {
+      "DEMO": "Demander une démo",
+      "CONTACT": "Nous contacter"
+    },
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "phoneHelper": "Choisissez l’indicatif du pays, puis le numéro.",
+    "business": "Nom de l’entreprise",
+    "industry": "Secteur",
+    "message": "Message",
+    "messagePlaceholder": "Que achetez-vous, où, et auprès de combien de producteurs ?",
+    "submitDemo": "Demander une démo",
+    "submitContact": "Envoyer le message",
+    "doneDemo": "Merci, {{name}} — nous revenons vers vous",
+    "doneContact": "Merci, {{name}} — message reçu",
+    "doneBody": "Nous répondrons à {{email}} sous un jour ouvré.",
+    "backHome": "Retour à l’accueil",
+    "industries": {
+      "cocoa": "Cacao",
+      "cashew": "Cajou",
+      "shea": "Karité",
+      "coffee": "Café",
+      "grains": "Céréales et légumineuses",
+      "tea": "Thé",
+      "other": "Autre"
+    },
+    "err": {
+      "required": "Ce champ est obligatoire.",
+      "phone": "Saisissez un numéro valide pour le pays choisi."
+    }
+  },
+  "legal": {
+    "updated": "Dernière mise à jour : octobre 2026",
+    "terms1": "Ces conditions décrivent l’utilisation de TreeSyt Enterprise. Ce prototype montre leur présentation ; le texte juridique définitif sera fourni par TreeSyt.",
+    "terms2": "Vous restez responsable de l’exactitude des données saisies et du consentement des personnes enregistrées.",
+    "privacy1": "TreeSyt traite les données personnelles uniquement pour faire fonctionner votre activité, selon vos instructions, et sépare les données de chaque entreprise.",
+    "privacy2": "Vous pouvez exporter ou supprimer les données de votre entreprise à tout moment depuis Paramètres → Données et confidentialité."
+  },
+  "landing": {
+    "navLabel": "Principal",
+    "nav": {
+      "how": "Fonctionnement",
+      "modules": "Modules",
+      "companies": "Pour chaque entreprise"
+    },
+    "bookDemo": "Demander une démo",
+    "startTrial": "Essai gratuit",
+    "eyebrow": "Plateforme d’approvisionnement agricole",
+    "title": "Connaissez chaque kilo, de la ferme à l’acheteur.",
+    "subtitle": "TreeSyt gère toute l’activité d’approvisionnement — agents terrain, validations, paiements mobile money, magasins, expéditions et traçabilité pour les acheteurs — pour toute entreprise, dans tout pays.",
+    "trialNote": "Essai gratuit de 30 jours · Sans carte · Français et anglais",
+    "how": {
+      "eyebrow": "Fonctionnement",
+      "title": "Un seul parcours connecté, du terrain à l’acheteur",
+      "field": {
+        "title": "Terrain",
+        "body": "Les agents enregistrent producteurs et achats, même hors ligne."
+      },
+      "approve": {
+        "title": "Valider",
+        "body": "Les demandes suivent vos propres étapes de validation."
+      },
+      "pay": {
+        "title": "Payer",
+        "body": "Mobile money vers agents et producteurs, frais affichés à l’avance."
+      },
+      "store": {
+        "title": "Stocker",
+        "body": "Les sacs sont scannés à l’entrée des magasins ; les pertes sont détectées."
+      },
+      "ship": {
+        "title": "Expédier",
+        "body": "Les ordres d’expédition sont suivis jusqu’à la livraison et la vérification."
+      },
+      "trace": {
+        "title": "Tracer",
+        "body": "Les acheteurs voient l’impact et remontent chaque commande jusqu’aux parcelles."
+      }
+    },
+    "modules": {
+      "eyebrow": "Modules",
+      "title": "Activez ce dont votre activité a besoin",
+      "farmers": {
+        "title": "Producteurs et communautés",
+        "body": "Profils, consentement, identifiants et contrôles qualité."
+      },
+      "buying": {
+        "title": "Achats",
+        "body": "Demandes, achats, sacs et rapprochement."
+      },
+      "payments": {
+        "title": "Paiements",
+        "body": "MTN, Orange, Wave, M-Pesa et plus, avec vérification du nom."
+      },
+      "support": {
+        "title": "Appuis et prêts",
+        "body": "Intrants et préfinancement avec grand livre de recouvrement automatique."
+      },
+      "inventory": {
+        "title": "Stocks",
+        "body": "Réceptions, écarts, transferts et inventaires."
+      },
+      "dispatch": {
+        "title": "Expéditions et contrats",
+        "body": "Chargements, livraisons et exécution des contrats."
+      },
+      "traceboard": {
+        "title": "Traceboard",
+        "body": "Un portail à vos couleurs pour vos acheteurs."
+      },
+      "trees": {
+        "title": "Arbres et pépinières",
+        "body": "Plants, tournées de suivi et taux de survie."
+      },
+      "eudr": {
+        "title": "RDUE",
+        "body": "Polygones des parcelles, contrôle de déforestation et export DDS."
+      },
+      "forms": {
+        "title": "Formulaires et enquêtes",
+        "body": "Créez tout formulaire ; il fonctionne sur web et mobile."
+      },
+      "mobile": {
+        "title": "Application mobile",
+        "body": "Conçue pour les agents terrain, en ligne ou hors ligne."
+      },
+      "ai": {
+        "title": "Interrogez vos opérations",
+        "body": "Des réponses claires à partir de vos propres données."
+      }
+    },
+    "config": {
+      "eyebrow": "Configuré, pas codé",
+      "title": "Vos mots, votre devise, vos règles",
+      "body": "Un acheteur de karité au Ghana et une union cacaoyère en Côte d’Ivoire utilisent la même plateforme avec des paramètres totalement différents.",
+      "workflow": {
+        "title": "Des validations à votre façon",
+        "body": "Étapes, seuils et séparation des tâches par document."
+      },
+      "language": {
+        "title": "Votre langue et vos termes",
+        "body": "Français et anglais, et votre propre mot pour « agent » ou « communauté »."
+      },
+      "places": {
+        "title": "Vos localisations",
+        "body": "Régions, districts et villages tels que votre pays les définit."
+      },
+      "controls": {
+        "title": "Contrôles d’entreprise",
+        "body": "Rôles, piste d’audit, SSO et partages de données."
+      }
+    },
+    "cta": {
+      "title": "Découvrez TreeSyt avec votre propre activité",
+      "body": "Commencez un essai gratuit, ou demandez une démo et nous le configurons avec vous."
+    },
+    "footer": "© 2026 TreeSyt Technologies Ltd",
+    "contact": "Contact"
+  },
+  "checklist": {
+    "title": "Configurer {{company}}",
+    "subtitle": "{{done}} étapes sur {{total}} terminées. Chaque étape se coche toute seule.",
+    "dismiss": "Masquer la liste",
+    "step": {
+      "profile": {
+        "title": "Profil de l’entreprise",
+        "desc": "Nom, pays, devise et langue."
+      },
+      "branding": {
+        "title": "Ajoutez votre logo et votre couleur",
+        "desc": "Affichés dans l’application, les e-mails, les reçus et le portail acheteur."
+      },
+      "locations": {
+        "title": "Configurez vos localisations",
+        "desc": "Ajoutez les régions, districts et villages où vous travaillez."
+      },
+      "commodities": {
+        "title": "Choisissez ce que vous achetez",
+        "desc": "Produits, unités et critères de qualité."
+      },
+      "priceLists": {
+        "title": "Publiez une grille de prix",
+        "desc": "Prix par produit et zone, avec tolérance."
+      },
+      "approvals": {
+        "title": "Vérifiez vos validations",
+        "desc": "Qui valide les demandes d’achat et les dépenses."
+      },
+      "team": {
+        "title": "Invitez votre équipe",
+        "desc": "Le personnel de bureau avec les bons rôles."
+      },
+      "agents": {
+        "title": "Ajoutez les agents terrain",
+        "desc": "Attribuez zones, responsables et portefeuilles."
+      },
+      "farmers": {
+        "title": "Importez les producteurs",
+        "desc": "Téléversez un tableur ou enregistrez-les sur mobile."
+      },
+      "mobile": {
+        "title": "Installez l’application mobile",
+        "desc": "Les agents se connectent avec leur numéro de téléphone."
+      }
+    }
+  },
+  "account": {
+    "profile": "Profil",
+    "profileDesc": "Comment votre équipe vous voit.",
+    "security": "Sécurité",
+    "sessions": "Sessions",
+    "phoneHelper": "Format international, vérifié pour {{country}}.",
+    "language": "Langue",
+    "languageHelper": "La langue utilisée par TreeSyt pour vous, dans chaque entreprise.",
+    "saved": "Profil enregistré",
+    "password": "Mot de passe",
+    "passwordDesc": "Utilisez un mot de passe que vous n’utilisez nulle part ailleurs.",
+    "passwordChangedAt": "Dernière modification : {{when}}.",
+    "currentPassword": "Mot de passe actuel",
+    "changePassword": "Changer le mot de passe",
+    "passwordChanged": "Mot de passe modifié",
+    "err": {
+      "current": "Votre mot de passe actuel n’est pas correct."
+    },
+    "twoStep": "Double authentification",
+    "twoStepDesc": "Ajoutez un code d’une application d’authentification à la connexion.",
+    "twoStepRequired": "Obligatoire pour {{role}} dans cette entreprise.",
+    "twoStepActive": "La double authentification est activée.",
+    "backupCodes": "Codes de secours",
+    "backupHint": "Chaque code ne sert qu’une fois. Conservez-les en lieu sûr.",
+    "twoStepOff": "Désactiver la double authentification",
+    "cannotDisable": "Votre entreprise impose la double authentification pour votre rôle.",
+    "setUp": "Configurer la double authentification",
+    "setup1": "Scannez le QR code avec une application d’authentification (ou saisissez la clé).",
+    "setup2": "Saisissez le code à 6 chiffres affiché par l’application.",
+    "secret": "Clé de configuration",
+    "turnOn": "Activer",
+    "twoStepOn": "Double authentification activée",
+    "sessionsDesc": "Les appareils où vous êtes connecté. Déconnectez ceux que vous ne reconnaissez pas.",
+    "thisSession": "Cet appareil",
+    "thisDevice": "Ce navigateur",
+    "activeNow": "actif maintenant",
+    "signOutDevice": "Déconnecter",
+    "deviceSignedOut": "Appareil déconnecté",
+    "signOutAll": "Se déconnecter de tous les appareils",
+    "protected": "Double authentification"
+  },
+  "audit": {
+    "company": {
+      "created": "Entreprise créée",
+      "planChanged": "Offre modifiée",
+      "suspended": "Entreprise suspendue",
+      "reactivated": "Entreprise réactivée"
+    },
+    "grant": {
+      "created": "Partage de données créé"
+    },
+    "settings": {
+      "updated": "Paramètres modifiés"
+    },
+    "user": {
+      "invited": "Utilisateur invité",
+      "locked": "Compte verrouillé",
+      "inviteAccepted": "Invitation acceptée"
+    }
+  },
+  "email": {
+    "reset": {
+      "subject": "Réinitialisez votre mot de passe TreeSyt",
+      "body": "Bonjour {{name}}, utilisez ce lien pour choisir un nouveau mot de passe : {{link}} — il est valable {{minutes}} minutes. Si vous n’avez rien demandé, ignorez cet e-mail."
+    },
+    "invite": {
+      "subject": "Vous êtes invité à rejoindre {{company}} sur TreeSyt",
+      "body": "Bonjour {{name}}, {{company}} vous invite sur TreeSyt en tant qu’administrateur. Acceptez ici : {{link}}"
+    }
+  },
+  "wizard": {
+    "step": {
+      "describe": "Description",
+      "basics": "Informations",
+      "plan": "Offre et modules",
+      "template": "Modèle",
+      "commodities": "Produits",
+      "approvals": "Validations",
+      "admins": "Administrateurs",
+      "review": "Récapitulatif"
+    },
+    "back": "Retour",
+    "next": "Continuer",
+    "create": "Créer l’entreprise",
+    "edit": "Modifier",
+    "created": "{{company}} créée",
+    "defaultSignature": "L’équipe",
+    "describe": {
+      "title": "Décrivez l’entreprise",
+      "body": "Quelques phrases suffisent. Le brouillon IA remplit le reste ; vous pouvez tout modifier.",
+      "label": "Description",
+      "placeholder": "ex. Un exportateur de cajou au Ghana avec 30 agents terrain qui achète à 5 000 producteurs. Nous préfinançons les intrants.",
+      "aiHint": "L’IA lit votre description et remplit pays, devise, langue, offre, modules, modèle, produits et validations.",
+      "draft": "Brouillon IA",
+      "drafting": "Rédaction…",
+      "filled": "Ce que l’IA a rempli",
+      "review": "Vérifiez chaque étape avant de créer l’entreprise."
+    },
+    "ai": {
+      "country": "Pays {{country}} → {{currency}}, {{language}}, {{timezone}}",
+      "commodities_one": "{{count}} produit, donc le modèle « {{template}} »",
+      "commodities_other": "{{count}} produits, donc le modèle « {{template}} »",
+      "type": "Type d’entreprise : {{type}}",
+      "plan": "Offre : {{plan}} ({{agents}} agents, {{farmers}} producteurs)",
+      "modules": "{{count}} modules activés",
+      "approvals": "Validations : {{approvals}}",
+      "nameFound": "Nom : {{name}}",
+      "nameSuggested": "Nom suggéré : {{name}}",
+      "admin": "Invitation administrateur à {{email}}"
+    },
+    "basics": {
+      "title": "Informations",
+      "body": "Le pays définit la devise, la langue et le fuseau horaire par défaut.",
+      "name": "Nom commercial",
+      "legalName": "Raison sociale",
+      "weekStart": "Début de semaine",
+      "countries": "Pays",
+      "countriesHelper": "Le premier pays est le pays principal.",
+      "timezone": "Fuseau horaire"
+    },
+    "day": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "6": "Samedi"
+    },
+    "plan": {
+      "title": "Offre et modules",
+      "body": "L’offre fixe les limites et ce qui peut être activé.",
+      "modules": "Modules",
+      "notInPlan": "Pas dans {{plan}}",
+      "needs": "{{module}} nécessite {{needs}}"
+    },
+    "template": {
+      "title": "Partir d’un modèle",
+      "body": "Les modèles copient des paramètres — circuits, numérotation, produits, listes de dépenses — pour que l’entreprise fonctionne dès le premier jour.",
+      "reference": "Référence",
+      "vitara": {
+        "title": "Modèle Vitara",
+        "body": "La configuration TreeSyt complète d’aujourd’hui : karité et céréales, validations PRE à 4 niveaux, numérotation Ghana."
+      },
+      "blank": {
+        "title": "Vierge",
+        "body": "L’essentiel seulement. Vous configurez tout."
+      },
+      "cocoa": {
+        "title": "Cacao",
+        "body": "Fèves de cacao, parcelles RDUE et sections coopératives."
+      },
+      "cashew": {
+        "title": "Cajou",
+        "body": "Noix de cajou brutes avec contrôle qualité KOR."
+      },
+      "shea": {
+        "title": "Karité",
+        "body": "Noix de karité avec groupements de femmes et AVEC."
+      },
+      "grains": {
+        "title": "Céréales et légumineuses",
+        "body": "Maïs, soja, mil et sorgho."
+      },
+      "coffee": {
+        "title": "Café",
+        "body": "Café vert avec traçabilité RDUE."
+      }
+    },
+    "commodities": {
+      "title": "Que achète l’entreprise ?",
+      "body": "Vous pourrez ajouter codes, unités, qualités et limites plus tard dans les paramètres."
+    },
+    "approvals": {
+      "title": "Validation des demandes d’achat",
+      "body": "Combien de personnes valident une demande avant tout mouvement d’argent.",
+      "one": {
+        "title": "Une étape",
+        "body": "Les opérations valident."
+      },
+      "two": {
+        "title": "Deux étapes",
+        "body": "Les opérations, puis la finance."
+      },
+      "threeThreshold": {
+        "title": "Deux étapes + direction au-delà d’un seuil",
+        "body": "Les grosses demandes passent aussi par la direction."
+      },
+      "threshold": "Validation de la direction au-delà de ({{currency}})",
+      "sod": "Le demandeur ne peut pas valider, et personne ne valide deux étapes",
+      "sodHint": "Séparation des tâches, recommandée.",
+      "preview": "Aperçu"
+    },
+    "flow": {
+      "submitted": "Soumise",
+      "ops": "Opérations",
+      "director": "Direction si > {{amount}}",
+      "finance": "Finance",
+      "approved": "Validée"
+    },
+    "admins": {
+      "title": "Invitez les administrateurs",
+      "body": "Ils reçoivent un e-mail pour choisir leur mot de passe et terminer la configuration.",
+      "add": "Ajouter un administrateur",
+      "remove": "Retirer",
+      "hint": "Les invitations expirent après 7 jours."
+    },
+    "review": {
+      "title": "Vérifier et créer",
+      "body": "Vérifiez la configuration. Vous pourrez tout modifier plus tard.",
+      "company": "Entreprise",
+      "where": "Pays et langue",
+      "plan": "Offre",
+      "template": "Modèle",
+      "commodities": "Produits",
+      "approvals": "Validations",
+      "admins": "Administrateurs"
+    },
+    "err": {
+      "basics": "Ajoutez un nom, une raison sociale et au moins un pays.",
+      "admins": "Ajoutez au moins un administrateur avec un nom et un e-mail valide.",
+      "threshold": "Indiquez le montant au-delà duquel la direction valide."
+    },
+    "doneTitle": "{{company}} est prête",
+    "doneBody_one": "Nous avons envoyé {{count}} invitation. L’entreprise démarre avec une liste de mise en route sur son tableau de bord.",
+    "doneBody_other": "Nous avons envoyé {{count}} invitations. L’entreprise démarre avec une liste de mise en route sur son tableau de bord.",
+    "viewCompany": "Voir l’entreprise",
+    "openCompany": "Ouvrir {{company}}"
   }
 }

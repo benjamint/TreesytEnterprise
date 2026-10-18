@@ -14,6 +14,48 @@ export interface User {
   /** Persona users appear in the role switcher. */
   persona?: boolean;
   lastActiveAt?: ISODate;
+  /** Demo only: stored in clear so the prototype can sign people in. Every persona uses "demo1234". */
+  password: string;
+  passwordChangedAt?: ISODate;
+  twoFactor: { enabled: boolean; method: 'APP' | 'SMS'; backupCodes: string[] };
+  failedAttempts: number;
+  /** Devices that skip the 2-step code ("Remember this device"). */
+  trustedDevices: string[];
+}
+
+export interface Invite {
+  id: string;
+  token: string;
+  orgId: string;
+  email: string;
+  name?: string;
+  roleIds: string[];
+  invitedBy: string;
+  createdAt: ISODate;
+  expiresAt: ISODate;
+  status: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'REVOKED';
+}
+
+export interface Session {
+  id: string;
+  userId: string;
+  orgId: string;
+  device: string;
+  browser: string;
+  os: string;
+  location: string;
+  ip: string;
+  createdAt: ISODate;
+  lastActiveAt: ISODate;
+  revokedAt?: ISODate;
+}
+
+export interface ResetToken {
+  token: string;
+  userId: string;
+  createdAt: ISODate;
+  expiresAt: ISODate;
+  usedAt?: ISODate;
 }
 
 export interface Membership {

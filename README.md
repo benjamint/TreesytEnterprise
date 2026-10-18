@@ -30,8 +30,7 @@ Deploy: Vercel static build; `vercel.json` rewrites every path to `index.html` (
 
 ## Demo tips
 
+- Every demo account uses the password **`demo1234`** (e.g. `kwame.asante@vitara.example`).
+- **Demo panel** (flask icon, bottom-right, on every screen): sign in as any persona, see the one-time codes and emails the simulated gateways "sent", read notes about the current page, open the mobile window, mobile previews, "view as" mode and reset demo data. Every section starts closed; the product UI carries no prototype controls.
 - **Company switcher** (top-left pill): Vitara (Ghana, GHS, EN) ↔ Kakao Ivoire (Côte d'Ivoire, XOF, FR) ↔ Nordic Shea Butter AB (buyer).
-- **Persona switcher** (avatar, top-right): any demo persona from PRD 2.2.
-- **Open mobile app** (phone icon): opens `/m` in a phone-sized window, signed in as the company's field agent.
-- **Help (?) → Reset demo data**: clears every `treesyt-demo:*` key and reseeds all tabs.
 - The store registry is exposed as `window.__treesytStores` for debugging.

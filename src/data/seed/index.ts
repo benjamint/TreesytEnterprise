@@ -1,18 +1,19 @@
 import type {
   ActivityEvent, Agent, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
-  GroupMembership, Lead, LoanAccount, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
+  AuditEntry, GroupMembership, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
   Purchase, PurchaseRequest, Role, Supplier, User, Wallet, Warehouse, WorkflowDefinition,
 } from '@/types';
 import { canAct, type WorkflowRecord, type WorkflowUser } from '@/engines/workflow';
 import { COUNTRIES, CURRENCIES } from '@/data/catalogs/countries';
 import { Rng, makeClock, pad } from './rng';
 import { ORG, kakaoSettings, minimalSettings, roleId, vitaraSettings } from './templates';
-import { PERSONAS, PLANS, STAFF, grants, leads, makeMembership, makeUser, organisations, rolesFor, type PersonaSeed } from './platform';
+import { PERSONAS, PLANS, STAFF, auditSeed, extraMemberships, grants, invites, leads, makeMembership, makeUser, organisations, rolesFor, sessions, type PersonaSeed } from './platform';
+import { QUESTION_TYPES } from '@/engines/forms';
 import { generateOperations, priceRisk, type AgentSeed, type OpsResult } from './operations';
 import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
 
-export const SEED_VERSION = 1;
+export const SEED_VERSION = 2;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -25,6 +26,11 @@ export interface SeedData {
   users: User[];
   memberships: Membership[];
   roles: Role[];
+  invites: Invite[];
+  sessions: Session[];
+  resetTokens: ResetToken[];
+  audit: AuditEntry[];
+  questionTypes: Record<string, boolean>;
   settings: Record<string, OrgSettings>;
   sequences: Record<string, Record<string, number>>;
   nodes: LocationNode[];
@@ -100,7 +106,7 @@ export function buildSeed(now = new Date()): SeedData {
   const users: User[] = allPeople.map((p, i) =>
     makeUser(p, i, PERSONAS.some((x) => x.id === p.id), clock.iso(new Date(clock.today.getTime() - rng.int(1, 96) * 3_600_000))),
   );
-  const memberships: Membership[] = allPeople.map(makeMembership);
+  const memberships: Membership[] = [...allPeople.map(makeMembership), ...extraMemberships()];
   // Persona titles from agent types.
   for (const m of memberships) {
     if (!m.title) {
@@ -171,6 +177,8 @@ export function buildSeed(now = new Date()): SeedData {
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
   return {
     orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: grants(clock), users, memberships, roles, settings,
+    invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: auditSeed(clock),
+    questionTypes: Object.fromEntries(QUESTION_TYPES.map((q) => [q, true])),
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),

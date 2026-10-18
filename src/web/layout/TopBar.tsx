@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Menu, Moon, Search, Smartphone, Sparkles, Sun } from 'lucide-react';
+import { Menu, Moon, Search, Sparkles, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tooltip';
 import { routeByKey } from '@/app/routes';
@@ -12,9 +12,10 @@ import { NotificationsBell } from './NotificationsBell';
 import { HelpMenu } from './HelpMenu';
 
 /**
- * Top bar (PRD 7): company switcher · search (⌘K) · Ask AI · EN/FR · theme · bell · Open mobile app · persona.
+ * Top bar (PRD 7): company switcher · search (⌘K) · Ask AI · EN/FR · theme · bell · help · account.
+ * "Open mobile app" lives in the Demo panel with the other prototype-only controls.
  */
-export function TopBar({ onMenu, onSearch, onOpenMobile }: { onMenu: () => void; onSearch: () => void; onOpenMobile: () => void }) {
+export function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () => void }) {
   const { language, setLanguage, theme, setTheme } = useSessionStore();
   const navigate = useNavigate();
   const access = useRouteAccessFn();
@@ -47,11 +48,6 @@ export function TopBar({ onMenu, onSearch, onOpenMobile }: { onMenu: () => void;
             <Sparkles className="text-lime" /> {t('shell.askAi')}
           </Button>
         )}
-        <Tip label={t('shell.openMobile')}>
-            <Button variant="secondary" size="sm" onClick={onOpenMobile} aria-label={t('shell.openMobile')} data-tour="open-mobile">
-              <Smartphone /> <span className="hidden xl:inline">{t('shell.openMobile')}</span>
-            </Button>
-        </Tip>
         <div className="hidden items-center rounded-ctl border border-line p-0.5 sm:flex" role="group" aria-label={t('shell.language')}>
           {langs.map((l) => (
             <button

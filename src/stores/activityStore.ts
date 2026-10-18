@@ -5,9 +5,9 @@ import { defineStore } from './persistence';
 export const useActivityStore = defineStore(
   'activity',
   { activity: [] as ActivityEvent[], audit: [] as AuditEntry[] },
-  (s) => ({ activity: s.activity, audit: [] }),
+  (s) => ({ activity: s.activity, audit: s.audit }),
   (set) => ({
     log: (e: ActivityEvent) => set((st) => ({ activity: [...st.activity, e] })),
-    addAudit: (e: AuditEntry) => set((st) => ({ audit: [...st.audit, e] })),
+    addAudit: (e: AuditEntry) => set((st) => ({ audit: [e, ...st.audit] })),
   }),
 );

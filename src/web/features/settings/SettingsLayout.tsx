@@ -1,6 +1,6 @@
 import { NavLink, Navigate, useParams } from 'react-router-dom';
 import { RotateCcw, Save } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/PageHeader';
@@ -51,13 +51,14 @@ export function SettingsLayout() {
   const org = useCurrentOrg();
   const { t } = useT();
   const route = APP_ROUTES.find((r) => r.key === 'settings')!;
+  useDemoNotes([{ id: 'phase', key: 'demo.note.settingsPhase', params: { phase: route.phase } }]);
   if (!page || !(SETTINGS_PAGES as readonly string[]).includes(page)) return <Navigate to="/app/settings/profile" replace />;
   const p = page as SettingsPage;
   const usedBy = APP_ROUTES.filter((r) => r.configurable?.includes(p));
 
   return (
     <>
-      <PageHeader title={t('settings.title')} description={t('pages.settings', { company: org.name })} actions={<Badge tone="brand">{t('common.phaseChip', { phase: route.phase })}</Badge>} />
+      <PageHeader title={t('settings.title')} description={t('pages.settings', { company: org.name })} />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[240px_1fr]">
         <nav aria-label={t('settings.title')} className="space-y-6">
           {SETTINGS_GROUPS.map((g) => (

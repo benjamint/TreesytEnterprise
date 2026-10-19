@@ -5,17 +5,19 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 2._
+_Last updated: Phase 3._
+
+Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
 Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", reset demo data, page notes) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
 ## Foundations (Scope 1)
 
-- [~] Company profile — profile fields on every company, read-only peek in Settings → Company profile [3]
+- [x] Company profile — Settings → Company profile: legal/trading name, registration and tax ID, contacts, countries, currency, languages, time zone, week start, fiscal year, company code, live money/date/number preview
 - [x] Platform owner role (replaces org 21) — `platformOwner` role, sees every company, Platform console gated by `platform.*`
 - [x] Company list — Platform → Companies: logo, countries, type, plan, modules, active agents, farmers, status, created; View / View as company / Suspend / Reactivate / Change plan; company detail with usage charts, plan limits, modules, admins, grants, audit
 - [x] Onboarding wizard — 7 steps + review with AI draft; template (Vitara / blank / cocoa / cashew / shea / grains / coffee); creates company, settings, roles, admin invites; setup checklist on the new company's dashboard
-- [~] Company edit — plan and status from the console; profile editors in Settings [3]
+- [x] Company edit — plan and status from the console; profile and branding (logo upload, colour, email/receipt/portal previews) in Settings
 - [x] Deactivate / suspend — suspend and reactivate (members of a suspended company can't sign in), audited
 - [x] Plan permission ceiling — Platform → Plans shows module bundles, limits and ceiling; enforced in every permission check; Change plan applies it immediately
 - [~] Company switching (web + mobile) — web switcher, command palette, persona switcher; mobile company switch from Me [9]
@@ -31,14 +33,14 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Change password — My account → Security
 - [x] Sign out (this device / all) — My account → Sessions, works across tabs
 - [x] Email verification — sign-up step 2
-- [~] Users list / add / bulk invite / edit / remove — admin invites from the wizard; user management screens [3]
-- [~] Roles CRUD per company — every company gets its own roles copied from the 14 templates (Kakao Ivoire renames them) [3]
-- [ ] Permission matrix [3]
+- [x] Users list / add / bulk invite / edit / remove — Settings → Users: invite, bulk CSV with validation preview, role change, deactivate/reactivate, remove, resend/revoke invite, unlock, last active
+- [x] Roles CRUD per company — Settings → Roles: user counts, create (blank or copy), rename, mobile sign-in flag, delete when unused
+- [x] Permission matrix — grouped by module with search, select all per module, plan ceiling greys out what the plan excludes; compare up to 4 roles (differences only)
 - [x] Permission checks per company — `can(user, permission, orgId)`, route guards, `<PermissionGate>` with "View as" mode
 - [x] Public role list removed — no public role endpoint exists in the prototype
-- [~] Modules catalogue + toggles + enforcement — catalogue with dependencies; sidebar, routes and mobile tiles respect modules; toggles UI [3]
-- [ ] Company-specific switches (orgs 96/97 cases as settings) [3]
-- [~] Business rules settings — buying rules, loan terms, packaging, tolerances stored per company [3]
+- [x] Modules catalogue + toggles + enforcement — Settings → Plan & modules: toggles within the plan, dependency errors with one-click fixes; sidebar, routes, mobile tiles and dashboard follow instantly (all tabs)
+- [x] Company-specific switches (orgs 96/97 cases as settings) — sub-feature switches per module (voice purchase, consolidated bags, direct payment, bulk pay, name lookup, group scoring, auto write-off…)
+- [x] Business rules settings — Buying rules, Support & loans (live ledger example), Inventory rules (tolerance check), Field team, Data quality (test on sample), Biometrics, Security, Mobile app
 - [x] Per-company sequences — numbering engine with company / year / month / client / agent / community scopes
 - [x] Time zone / week start — all dates via `formatDate()` in the company time zone; week start per company
 - [x] Languages + terminology — EN/FR via i18next; company terms (`{{term.agent}}` → "Délégué")
@@ -46,26 +48,26 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Countries catalogue — Platform → Global catalogues: countries, currencies, commodities, question types on/off, permission catalogue, providers per country
 - [ ] API versions / docs page [17]
 - [x] Removed unauthenticated debug routes — no backend; nothing to expose
-- [ ] NFC keys server-held [3]
+- [x] NFC keys server-held — Settings → Biometrics & consent shows server-held card keys and rotation
 
 ## Places and people (Scope 2)
 
-- [~] Location levels + explorer + zones — per-country levels, location tree and zones seeded; explorer [5]
+- [~] Location levels + explorer + zones — Settings → Locations: level labels per language, tree editor (add / rename / recode), CSV import, zones; explorer page [5]
 - [~] Agent multi-area assignment — agents hold many area nodes in the data [16]
 - [~] Community profile (v1–v3 fields) — Vitara template fields seeded as `customFields` [5]
-- [~] Community code pattern — `{region}-{seq:3}` (Daffiama = WA-014) [5]
+- [~] Community code pattern — `{region}-{seq:3}` (Daffiama = WA-014), editable in Settings → Farmer ID & codes [5]
 - [ ] Leaders [5]
 - [ ] Documents [5]
 - [ ] Groups in community sync (upsert) [9]
 - [~] Community list / detail / map / dashboard / edit — seeded preview table [5]
 - [~] Community score — scoring engine scaffolded and tested [5]
 - [~] Farmer profile (all fields) — Vitara and Kakao Ivoire template fields seeded [5]
-- [~] Farmer ID pattern — `{community}-{initials}-{seq}` (WA-014-AI-0023), `KI-{region}-{seq:5}` [5]
+- [~] Farmer ID pattern — `{community}-{initials}-{seq}` (WA-014-AI-0023), `KI-{region}-{seq:5}`; editable with live preview in Settings → Farmer ID & codes [5]
 - [~] Thumbprints — identity status seeded [5]
 - [~] Consent audio / signature — consent type seeded [5]
 - [~] ID card and photo — identity status seeded [5]
 - [~] NFC card lifecycle — card status seeded (Issued / Replaced / Revoked) [5]
-- [~] Data-quality rules + review — rules engine scaffolded [5]
+- [~] Data-quality rules + review — Settings → Data quality: rule editor with test on a sample of real records; review queue [5]
 - [ ] Farmer score [5]
 - [~] Farmer list / detail / export / profiling report / dashboard — seeded preview table [5]
 - [ ] Shared farmers / communities [5]
@@ -143,9 +145,9 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [ ] Delivery details [10]
 - [ ] Proof of delivery [10]
 - [ ] Aggregator refunds / reconciliation [10]
-- [~] Commodity catalogue — per company, with codes, aliases, HS codes, quality parameters, thresholds [3]
-- [~] Units — units engine with conversions (tested) [3]
-- [~] Price lists — per commodity × zone, with tolerance [3]
+- [x] Commodity catalogue — Settings → Commodities: names per language, codes, aliases, HS codes, units, quality parameters, grades, thresholds, EUDR and scoring flags
+- [x] Units — Settings → Units & packaging: units and conversions, packaging profiles, conversion check
+- [x] Price lists — Settings → Price lists: commodity × zone × grade, effective dates, tolerance, premiums, change approval switch, price history
 
 ## Money (Scope 5)
 
@@ -158,8 +160,8 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [~] Status check — one payment seeded in Unknown status [8]
 - [~] Payment history / stats / export — preview table [8]
 - [~] Wallet balance — wallets seeded per provider, one below threshold [8]
-- [~] Providers per company / country — MTN / Telecel / AirtelTigo (GH), Orange / Wave / MTN CI (CI) [3]
-- [~] Fee tiers / tax — different tiers per company [3]
+- [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits
+- [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker, batch size, live fee calculator
 - [~] Phone validation by country — libphonenumber-js helper [5]
 - [ ] Collections [8]
 - [ ] Weekly budget / allowance / support payouts [8, 11, 16]
@@ -301,4 +303,4 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Hard-coded values (Scope 11)
 
-- [~] Every item in Scope 11 appears as an editable setting with the Vitara value as the template default — Vitara template stored as company settings (workflows, numbering, commodities, packaging, providers, fee tiers, buying rules, loan terms, agent types, expense catalogue); editors arrive in phase 3
+- [x] Every item in Scope 11 appears as an editable setting with the Vitara value as the template default — 27 Settings pages edit workflows (visual builder with drag-to-reorder, conditions, parallel, auto, separation of duties, flow diagram, try-a-record), numbering, commodities, packaging, price lists, providers, fee tiers, buying rules, loan terms, inventory tolerances, agent types, budgets and penalties, notifications and templates, SMS/email, integrations, security, privacy and mobile; Reset to template restores the company's starting values

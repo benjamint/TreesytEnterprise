@@ -1,4 +1,4 @@
-import type { Invite, Membership, Organisation, User } from '@/types';
+import type { Invite, Organisation } from '@/types';
 import { uid } from '@/lib/utils';
 import i18n from '@/i18n';
 import { buildCompanySettings, type CompanyDraft } from '@/data/templates/companyTemplates';
@@ -8,8 +8,7 @@ import { usePlatformStore } from '@/stores/platformStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useAccessStore } from '@/stores/accessStore';
 import { useActivityStore } from '@/stores/activityStore';
-import { useDemoStore } from '@/stores/demoStore';
-import { sendEmail } from './emailGateway';
+import { inviteUser } from './userService';
 
 // Brand colours for new companies: never a status hue (red/amber/blue are reserved for state).
 const PALETTE = ['#14583F', '#1F4E79', '#7A3E12', '#0F6E6E', '#5B3FA0', '#2C5282', '#6B4E16', '#3D6B2F'];
@@ -39,7 +38,7 @@ export function createCompany(d: CompanyDraft, actorId: string, via: 'WIZARD' | 
     onboarding: { via, template: d.template, dismissed: false, done: [], description: d.description || undefined },
   };
   platform.addOrg(org);
-  useSettingsStore.getState().addSettings(buildCompanySettings(orgId, d));
+  useSettingsStore.getState().addSettings(buildCompanySettings(orgId, d), org);
   const access = useAccessStore.getState();
   access.addRoles(rolesFor(orgId, d.type === 'BUYER' ? 'buyer' : 'supplier'));
   const audit = useActivityStore.getState().addAudit;
@@ -47,28 +46,8 @@ export function createCompany(d: CompanyDraft, actorId: string, via: 'WIZARD' | 
 
   const invites: Invite[] = [];
   for (const a of d.admins.filter((x) => x.email.trim())) {
-    const email = a.email.trim().toLowerCase();
-    let user = useAccessStore.getState().users.find((u) => u.email.toLowerCase() === email);
-    if (!user) {
-      user = {
-        id: uid('u'), name: a.name.trim() || email, email, phone: '', language: d.language, status: 'INVITED', avatarColor: PALETTE[(invites.length + 3) % PALETTE.length]!,
-        password: '', twoFactor: { enabled: false, method: 'APP', backupCodes: [] }, failedAttempts: 0, trustedDevices: [],
-      } satisfies User;
-      access.addUser(user);
-    }
-    const membership: Membership = { id: `mem_${user.id}_${orgId}`, userId: user.id, orgId, roleIds: [roleId(orgId, 'companyAdmin')], status: 'INVITED' };
-    access.addMembership(membership);
-    const invite: Invite = {
-      id: uid('inv'), token: uid('inv'), orgId, email, name: a.name.trim() || undefined, roleIds: membership.roleIds, invitedBy: actorId,
-      createdAt: now, expiresAt: new Date(Date.now() + 7 * 86_400_000).toISOString(), status: 'PENDING',
-    };
-    access.addInvite(invite);
-    invites.push(invite);
-    const link = `${window.location.origin}/accept-invite?token=${invite.token}`;
-    const lng = d.language;
-    sendEmail({ orgId, to: email, templateId: 'invite', language: lng, subject: i18n.t('email.invite.subject', { lng, company: org.name }), body: i18n.t('email.invite.body', { lng, name: a.name.split(' ')[0] || '', company: org.name, link }) });
-    useDemoStore.getState().pushLink({ label: 'invite', to: email, href: `/accept-invite?token=${invite.token}` });
-    audit({ id: uid('aud'), orgId, actorId, entity: 'invite', entityId: invite.id, key: 'user.invited', after: { email }, at: now });
+    const res = inviteUser(orgId, { name: a.name, email: a.email, roleIds: [roleId(orgId, 'companyAdmin')] }, actorId);
+    if (res.ok) invites.push(res.invite);
   }
   return { org, invites };
 }

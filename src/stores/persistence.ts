@@ -15,7 +15,7 @@ export const storageKey = (store: string) => `${KEY_PREFIX}${store}`;
 const CHANNEL = 'treesyt-demo';
 
 // ---------- Compressed storage ----------
-const hasCompression = typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined';
+const hasCompression = typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined' && typeof Blob !== 'undefined' && typeof Blob.prototype.stream === 'function';
 
 function bytesToBase64(bytes: Uint8Array): string {
   let s = '';

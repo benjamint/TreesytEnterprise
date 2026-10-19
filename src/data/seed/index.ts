@@ -13,7 +13,7 @@ import { generateOperations, priceRisk, type AgentSeed, type OpsResult } from '.
 import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
 
-export const SEED_VERSION = 2;
+export const SEED_VERSION = 3;
 export const SEED = 20261018;
 
 export interface SeedData {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { WorkflowDefinition } from '@/types';
-import { apply, canAct, getAllowedActions, pendingSteps, start, WorkflowError, type WorkflowUser } from '.';
+import { apply, canAct, getAllowedActions, pendingSteps, rehome, start, WorkflowError, type WorkflowUser } from '.';
 
 const base = {
   holdAllowed: true,
@@ -167,5 +167,18 @@ describe('workflow engine', () => {
     expect(r.wf.currentStepId).toBe('a');
     r = apply(r, def, 'APPROVE', u('a2', 'x.a')).record;
     expect(r.wf.currentStepId).toBe('c');
+  });
+
+  it('rehomes in-flight records when a step is removed in Settings', () => {
+    const atMgmt = newRecord(100_000);
+    const atFin = apply(newRecord(100_000), prDef, 'APPROVE', kwame).record;
+    const noMgmt: WorkflowDefinition = { ...prDef, steps: prDef.steps.filter((s) => s.id !== 'mgmt') };
+    expect(rehome(noMgmt, atMgmt).wf.currentStepId).toBe('fin');
+    expect(canAct(rehome(noMgmt, atMgmt), noMgmt, efua)).toBe(true);
+    expect(rehome(noMgmt, atFin)).toBe(atFin);
+    const none: WorkflowDefinition = { ...prDef, steps: [] };
+    expect(rehome(none, atMgmt).status).toBe('FINANCE_APPROVED');
+    const held = apply(atMgmt, prDef, 'HOLD', kwame, { comment: 'Check price' }).record;
+    expect(rehome(noMgmt, held).wf.heldAtStepId).toBe('fin');
   });
 });

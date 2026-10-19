@@ -19,7 +19,25 @@ export interface Organisation {
   weekStart: 0 | 1 | 6;
   planId: string;
   status: OrgStatus;
-  branding: { primaryColor: string; logoText: string; senderName: string; signatureName: string };
+  branding: {
+    primaryColor: string;
+    logoText: string;
+    senderName: string;
+    signatureName: string;
+    /** Uploaded logo as a data URL (prototype only). */
+    logoDataUrl?: string;
+    replyTo?: string;
+    emailHeader?: string;
+    emailFooter?: string;
+    receiptFooter?: string;
+    social?: { website?: string; facebook?: string; linkedin?: string; x?: string };
+  };
+  tradingName?: string;
+  registrationNo?: string;
+  taxId?: string;
+  address?: string;
+  /** Month the fiscal year starts (1 = January). */
+  fiscalYearStart?: number;
   createdAt: ISODate;
   email?: string;
   phone?: string;

@@ -42,7 +42,7 @@ export function RouteGuard({ routeKey, children }: { routeKey: string; children:
   const access = useRouteAccessFn()(route);
   const org = useCurrentOrg();
   const { t } = useT();
-  if (access === 'module') return <Blocked icon={PowerOff} title={t('errors.moduleOffTitle')} body={t('common.moduleOff', { module: t(`nav.${route.key}`), company: org.name })} />;
+  if (access === 'module') return <Blocked icon={PowerOff} title={t('errors.moduleOffTitle')} body={t('common.moduleOff', { module: t(`module.${route.module}`), company: org.name })} />;
   if (access === 'permission') return <Blocked icon={Lock} title={t('errors.noAccessTitle')} body={t('common.missingPermission', { permission: route.permission })} />;
   return <>{children}</>;
 }

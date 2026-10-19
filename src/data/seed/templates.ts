@@ -5,6 +5,7 @@ import { allModules } from '@/engines/permissions';
 import { DEFAULT_UNITS } from '@/engines/units';
 import { VITARA_LOAN_TERMS } from '@/engines/loans';
 import { PROVIDER_CATALOG } from '@/data/catalogs/providers';
+import { genericExtras, kakaoExtras, vitaraExtras } from './settingsExtras';
 
 /**
  * Company settings templates. The Vitara template reproduces today's hard-coded behaviour as
@@ -242,7 +243,7 @@ export function vitaraSettings(): OrgSettings {
     loanTerms: VITARA_LOAN_TERMS,
     agentTypes: VITARA_AGENT_TYPES,
     expenseTypes: VITARA_EXPENSES,
-    mobile: { otpLength: 4, minAppVersion: '3.8.0' },
+    mobile: { otpLength: 4, minAppVersion: '3.8.0', loginMethod: 'PHONE_SMS', offline: { maxDays: 7, maxRecords: 2000, maxMediaMb: 500 } },
     security: {
       sessionMinutes: 60,
       passwordPolicy: { minLength: 8, requireNumber: true, requireSymbol: false, requireMixedCase: false },
@@ -253,6 +254,7 @@ export function vitaraSettings(): OrgSettings {
     makerChecker: true,
     bulkBatchSize: 20,
     landUnitId: 'acre',
+    ...vitaraExtras(ORG.vitara, VITARA_COMMODITIES),
   };
 }
 
@@ -292,7 +294,7 @@ export function kakaoSettings(): OrgSettings {
     loanTerms: { ...VITARA_LOAN_TERMS, interestType: 'simple', rate: 0.02, penalty: { type: 'none', trigger: 'onCashRepayment', rate: 0 }, rounding: 'nearest' },
     agentTypes: KAKAO_AGENT_TYPES,
     expenseTypes: KAKAO_EXPENSES,
-    mobile: { otpLength: 6, minAppVersion: '3.8.0' },
+    mobile: { otpLength: 6, minAppVersion: '3.8.0', loginMethod: 'PHONE_SMS', offline: { maxDays: 5, maxRecords: 1500, maxMediaMb: 300 } },
     security: {
       sessionMinutes: 30,
       passwordPolicy: { minLength: 10, requireNumber: true, requireSymbol: true, requireMixedCase: true },
@@ -303,6 +305,7 @@ export function kakaoSettings(): OrgSettings {
     makerChecker: true,
     bulkBatchSize: 25,
     landUnitId: 'ha',
+    ...kakaoExtras(ORG.kakao, KAKAO_COMMODITIES),
   };
 }
 
@@ -324,5 +327,6 @@ export function minimalSettings(orgId: string, modulesOn: string[], landUnitId =
     expenseTypes: [],
     security: { ...base.security, sso: { enabled: false, protocol: 'SAML', domain: '', idpName: '' }, twoFactorRoles: [] },
     landUnitId,
+    ...genericExtras(orgId, [], 'EUR'),
   };
 }

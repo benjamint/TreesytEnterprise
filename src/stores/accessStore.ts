@@ -15,6 +15,8 @@ export const useAccessStore = defineStore(
     addMembership: (m: Membership) => set((st) => ({ memberships: [...st.memberships.filter((x) => x.id !== m.id), m] })),
     updateMembership: (id: string, patch: Partial<Membership>) => set((st) => ({ memberships: st.memberships.map((m) => (m.id === id ? { ...m, ...patch } : m)) })),
     addRoles: (roles: Role[]) => set((st) => ({ roles: [...st.roles, ...roles] })),
+    /** Replace one company's roles (Settings → Roles & permissions). */
+    setOrgRoles: (orgId: string, roles: Role[]) => set((st) => ({ roles: [...st.roles.filter((r) => r.orgId !== orgId), ...roles] })),
     addInvite: (i: Invite) => set((st) => ({ invites: [i, ...st.invites] })),
     updateInvite: (id: string, patch: Partial<Invite>) => set((st) => ({ invites: st.invites.map((i) => (i.id === id ? { ...i, ...patch } : i)) })),
     addSession: (s: Session) => set((st) => ({ sessions: [s, ...st.sessions] })),

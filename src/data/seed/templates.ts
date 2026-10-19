@@ -181,7 +181,8 @@ const xofTiers = (provider: string, pct: number, cap: number, payer: 'company' |
 const providers = (ids: [string, number][], walletPrefix: string): PaymentProvider[] =>
   ids.map(([id, share]) => {
     const p = PROVIDER_CATALOG.find((x) => x.id === id)!;
-    return { ...p, share, walletName: p.kind === 'MOBILE_MONEY' ? `${walletPrefix} ${p.name}` : p.walletName };
+    const withdrawal = p.kind !== 'MOBILE_MONEY' ? undefined : id === 'wave_ci' ? { type: 'flat' as const, value: 0 } : { type: 'percent' as const, value: id === 'airteltigo_gh' ? 0.75 : 1 };
+    return { ...p, share, withdrawal, walletName: p.kind === 'MOBILE_MONEY' ? `${walletPrefix} ${p.name}` : p.walletName };
   });
 
 export const VITARA_EXPENSES: ExpenseType[] = [
@@ -252,6 +253,7 @@ export function vitaraSettings(): OrgSettings {
       ipAllowList: [],
     },
     makerChecker: true,
+    makerCheckerMinMinor: 500_000,
     bulkBatchSize: 20,
     landUnitId: 'acre',
     ...vitaraExtras(ORG.vitara, VITARA_COMMODITIES),
@@ -303,6 +305,7 @@ export function kakaoSettings(): OrgSettings {
       ipAllowList: [],
     },
     makerChecker: true,
+    makerCheckerMinMinor: 500_000,
     bulkBatchSize: 25,
     landUnitId: 'ha',
     ...kakaoExtras(ORG.kakao, KAKAO_COMMODITIES),

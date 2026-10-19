@@ -588,13 +588,17 @@ export function generateOperations(cfg: OpsConfig, rng: Rng, clock: Clock, peopl
   const pay = (p: { type: Payment['payableType']; payableId: string; name: string; number: string; amount: Money; at: Date; forceStatus?: Payment['status'] }) => {
     const prov = providerOfPhone(p.number);
     const quote = calculateFees(p.amount, settings.feeTiers, prov.id, { taxPct: settings.taxPct });
-    const mk = (status: Payment['status'], at: Date, failureReason?: string): Payment => ({
+    const mk = (status: Payment['status'], when: Date, failureReason?: string): Payment => {
+      // Never in the future (a PRE paid "two days later" may still be today).
+      const at = new Date(Math.min(when.getTime(), clock.today.getTime() - 3_600_000));
+      return {
       id: `${idp}_pay_${payments.length + 1}`, orgId, reference: issue('payment', at), payableType: p.type, payableId: p.payableId,
-      payee: { name: p.name, number: p.number }, providerId: prov.id, amount: p.amount, fee: quote.fee, tax: quote.tax, total: quote.total,
+      payee: { name: p.name, number: p.number }, providerId: prov.id, amount: p.amount, fee: quote.fee, tax: quote.tax, total: quote.total, received: quote.received,
       status, failureReason, initiatedBy: cfg.financeUserId,
       approvedBy: settings.makerChecker && p.amount.amountMinor > toMinor(currency === 'XOF' ? 500_000 : 5_000, currency) ? cfg.checkerUserId : undefined,
       createdAt: iso(at),
-    });
+      };
+    };
     if (p.forceStatus) { payments.push(mk(p.forceStatus, p.at)); return p.forceStatus; }
     if (rng.chance(1 / 12)) {
       payments.push(mk('FAILED', p.at, rng.pick(failureReasons)));

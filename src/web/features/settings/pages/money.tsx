@@ -14,12 +14,12 @@ import { bind, useSettingsDraft } from '../draft';
 import { AddRow, EditTable, Grid, Mini, MoneyInput, NumberInput, RowDelete, Rows, Section, Select, SettingsFrame, SwitchRow, TextInput } from '../kit';
 
 const NO_LIMIT = 1e12;
-const PAY_KEYS = ['paymentProviders', 'feeTiers', 'taxPct', 'extraCharges', 'makerChecker', 'bulkBatchSize'] as const;
+const PAY_KEYS = ['paymentProviders', 'feeTiers', 'taxPct', 'extraCharges', 'makerChecker', 'makerCheckerMinMinor', 'bulkBatchSize'] as const;
 
 /** Settings → Payments (PRD A4, E1): providers, credentials, limits, fee tiers, taxes, extra charges, maker/checker. */
 export function PaymentsPage() {
   const d = useSettingsDraft('payments', PAY_KEYS);
-  const { paymentProviders: providers, feeTiers, taxPct, extraCharges, makerChecker, bulkBatchSize } = d.value;
+  const { paymentProviders: providers, feeTiers, taxPct, extraCharges, makerChecker, makerCheckerMinMinor, bulkBatchSize } = d.value;
   const org = useCurrentOrg();
   const { t } = useT();
   const f = useFormat();
@@ -83,6 +83,16 @@ export function PaymentsPage() {
                     )}
                     <Mini label={t('set.pay.perPayment')}><MoneyInput minor={limits.perPaymentMinor} currency={org.currency} onChange={(perPaymentMinor) => setP(p.id, { limits: { ...limits, perPaymentMinor } })} /></Mini>
                     <Mini label={t('set.pay.daily')}><MoneyInput minor={limits.dailyMinor} currency={org.currency} onChange={(dailyMinor) => setP(p.id, { limits: { ...limits, dailyMinor } })} /></Mini>
+                    {p.kind === 'MOBILE_MONEY' && (
+                      <Mini label={t('set.pay.withdrawal')}>
+                        <div className="flex gap-2">
+                          <Select value={p.withdrawal?.type ?? 'percent'} onChange={(type) => setP(p.id, { withdrawal: { type, value: p.withdrawal?.value ?? 0 } })} options={(['percent', 'flat'] as const).map((v) => ({ value: v, label: t(`set.pay.typeName.${v}`) }))} aria-label={t('set.pay.withdrawalType')} className="w-32" />
+                          {(p.withdrawal?.type ?? 'percent') === 'percent'
+                            ? <NumberInput value={p.withdrawal?.value ?? 0} step={0.05} min={0} max={20} suffix="%" onChange={(value) => setP(p.id, { withdrawal: { type: 'percent', value } })} aria-label={t('set.pay.withdrawal')} />
+                            : <MoneyInput minor={p.withdrawal?.value ?? 0} currency={org.currency} onChange={(value) => setP(p.id, { withdrawal: { type: 'flat', value } })} aria-label={t('set.pay.withdrawal')} />}
+                        </div>
+                      </Mini>
+                    )}
                   </Grid>
                 )}
               </div>
@@ -152,6 +162,7 @@ export function PaymentsPage() {
         <Rows>
           <SwitchRow label={t('set.pay.makerChecker')} description={t('set.pay.makerCheckerHint')} checked={makerChecker} onChange={(v) => d.set('makerChecker', v)} />
         </Rows>
+        {makerChecker && <Mini label={t('set.pay.checkerFrom')} className="mt-5 w-56"><MoneyInput minor={makerCheckerMinMinor ?? 0} currency={org.currency} onChange={(v) => d.set('makerCheckerMinMinor', v)} /></Mini>}
         <Mini label={t('set.pay.batch')} className="mt-5 w-56"><NumberInput value={bulkBatchSize} min={1} max={500} onChange={(v) => d.set('bulkBatchSize', Math.round(v))} /></Mini>
       </Section>
     </SettingsFrame>

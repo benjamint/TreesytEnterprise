@@ -13,8 +13,9 @@ import { DataTable } from '@/components/shared/DataTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
 import { useDemoActions, useDemoNotes } from '@/components/shared/useDemoNotes';
-import { activateTicket, archiveRequest, confirmFundsReceived, confirmRate, disburseManual, disburseMomo, reconSummary, simulateAgentRequest, simulateAgentSync } from '@/services/buyingService';
-import { quotePayout } from '@/services/payoutService';
+import { activateTicket, archiveRequest, confirmFundsReceived, confirmRate, disburseManual, reconSummary, simulateAgentRequest, simulateAgentSync } from '@/services/buyingService';
+import { inFlight } from '@/services/paymentService';
+import { PayDialog } from '@/web/features/payments/PayDialog';
 import { workflowUser } from '@/services/workflowService';
 import { cn } from '@/lib/utils';
 import { useAccessStore } from '@/stores/accessStore';
@@ -22,7 +23,7 @@ import { useBuyingStore } from '@/stores/buyingStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useActor, useCan, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, DocumentsPanel, useLookups } from '@/web/features/people/shared';
-import { AmountDialog, ApprovalTimeline, Panel, PayoutFailed, PriceCompare, RiskBadge, RiskList, SignatureImage, WorkflowButtons, mono, useFarmerNames, usePrintReceipt, useWorkflowDef } from './common';
+import { AmountDialog, ApprovalTimeline, Panel, PaymentState, PriceCompare, RiskBadge, RiskList, SignatureImage, WorkflowButtons, mono, useFarmerNames, usePrintReceipt, useWorkflowDef } from './common';
 import { NewRequestSheet, RecordPurchaseSheet, UpdatePriceDialog } from './RequestForms';
 import { ReconDetail } from './ReconciliationPage';
 
@@ -236,8 +237,6 @@ function RequestDrawer({ request: r, onClose }: { request: PurchaseRequest; onCl
   const expenses = useMemo(() => allExpenses.filter((e) => e.requestId === r.id), [allExpenses, r.id]);
   const attempts = useMemo(() => payments.filter((p) => p.payableId === r.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [payments, r.id]);
   const [dialog, setDialog] = useState<'momo' | 'manual' | 'price' | 'purchase' | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState<{ reference: string; reason?: string; unknown?: boolean; amountMinor: number; weightKg?: number } | null>(null);
   const print = usePrintReceipt();
   const agentRec = lk.agents.find((a) => a.id === r.agentId);
   const given = r.disbursements.reduce((s, d) => s + d.amount.amountMinor, 0);
@@ -248,25 +247,11 @@ function RequestDrawer({ request: r, onClose }: { request: PurchaseRequest; onCl
   const canDisburse = cash && ['RATE_CONFIRMED', 'PARTIAL_DISBURSEMENT'].includes(r.status) && remaining > 0 && (r.status !== 'PARTIAL_DISBURSEMENT' || r.disbursements.length < (settings.buyingRules.maxPartialCount ?? 3) + 1);
   const priceEditable = ['PENDING', 'MANAGEMENT_APPROVED', 'ZONE_APPROVED', 'OPS_APPROVED', 'FINANCE_APPROVED', 'ON_HOLD', 'PRICE_UPDATE', 'RATE_CONFIRMED'].includes(r.status);
   const buying = (r.fundsReceived || r.status === 'TICKET_ACTIVATED') && r.reconciliationStatus !== 'RECONCILED';
-  const quote = agentRec ? quotePayout(r.orgId, { amountMinor: remaining || r.total.amountMinor, currency: r.total.currency }, agentRec.wallet.number) : null;
-
-  const pay = async (amountMinor: number, weightKg?: number) => {
-    setBusy(true);
-    setDialog(null);
-    const id = toast.loading(t('buy.toast.paying', { amount: f.money({ amountMinor, currency: r.total.currency }), name: lk.agent(r.agentId) }));
-    setFailed(null);
-    const p = await disburseMomo(r.id, amountMinor, weightKg, userId ?? 'system');
-    setBusy(false);
-    if (p.status === 'SUCCESSFUL') toast.success(t('buy.toast.paid', { reference: p.reference }), { id });
-    else {
-      toast.error(t(p.status === 'UNKNOWN' ? 'buy.toast.payUnknown' : 'buy.toast.payFailed', { reference: p.reference, reason: p.failureReason ?? '' }), { id });
-      setFailed({ reference: p.reference, reason: p.failureReason, unknown: p.status === 'UNKNOWN', amountMinor, weightKg });
-    }
-  };
+  const busy = inFlight(r.id) && attempts.some((p) => ['AWAITING_CHECKER', 'PENDING', 'PROCESSING'].includes(p.status));
 
   const actions = (
     <>
-      <PayoutFailed failure={failed} busy={busy} onRetry={() => failed && void pay(failed.amountMinor, failed.weightKg)} />
+      <PaymentState payableId={r.id} />
       <WorkflowButtons docType="purchaseRequest" record={r as unknown as WorkflowRecord & { number: string }} def={def} />
       {r.status === 'FINANCE_APPROVED' && <PermissionGate permission="purchaseRequests.confirmRate"><Button size="sm" onClick={() => { confirmRate(r.id, userId ?? 'system'); toast.success(t('buy.toast.rateConfirmed', { number: r.number })); }}><BadgeCheck /> {t('buy.confirmRate')}</Button></PermissionGate>}
       {canDisburse && <PermissionGate permission="purchaseRequests.disburse"><Button size="sm" disabled={busy} onClick={() => setDialog('momo')}><Smartphone /> {t('buy.payMomo')}</Button></PermissionGate>}
@@ -407,21 +392,13 @@ function RequestDrawer({ request: r, onClose }: { request: PurchaseRequest; onCl
         { key: 'activity', label: t('buy.tab.activity'), content: <ActivityFeed entity="purchaseRequest" entityId={r.id} /> },
       ]}
     />
-      {dialog === 'momo' && quote && (
-        <AmountDialog
-          open
+      {dialog === 'momo' && agentRec && (
+        <PayDialog
+          request={{
+            type: 'AGENT_CASH_ADVANCE', payableId: r.id, title: t('buy.payMomoTitle', { number: r.number }), editableMaxMinor: remaining, withWeight: settings.buyingRules.partialDisbursements,
+            payees: [{ name: agentRec.wallet.verifiedName, number: agentRec.wallet.number, providerId: agentRec.wallet.providerId, amount: { amountMinor: remaining, currency: r.total.currency }, label: `${lk.agent(r.agentId)} · ${terms.agent}` }],
+          }}
           onClose={() => setDialog(null)}
-          title={t('buy.payMomoTitle', { number: r.number })}
-          description={t('buy.payMomoHint', { name: agentRec?.wallet.verifiedName ?? '', number: agentRec?.wallet.number ?? '', provider: quote.provider?.name ?? '' })}
-          initialMinor={remaining}
-          maxMinor={remaining}
-          currency={r.total.currency}
-          withWeight={settings.buyingRules.partialDisbursements}
-          reasonLabel={undefined}
-          confirm={t('buy.pay')}
-          busy={busy}
-          extra={<p className="text-[13px] text-muted">{t('buy.feeLine', { fee: f.money(quote.fee), tax: f.money(quote.tax) })}</p>}
-          onConfirm={(v) => void pay(v.amountMinor, v.weightKg)}
         />
       )}
       {dialog === 'manual' && (

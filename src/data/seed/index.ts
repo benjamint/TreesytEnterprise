@@ -15,10 +15,10 @@ import { generateOperations, priceRisk, type AgentSeed, type OpsResult } from '.
 import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
 import { seedFormData } from './forms';
-import { enrichBuying } from './buying';
+import { enrichBuying, enrichPayments } from './buying';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 9;
+export const SEED_VERSION = 10;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -134,6 +134,8 @@ export function buildSeed(now = new Date()): SeedData {
 
   enrichBuying(vit, settings[ORG.vitara]!, 'u_efua', clock.today, 'en');
   enrichBuying(ki, settings[ORG.kakao]!, 'u_jeanmarc', clock.today, 'fr');
+  enrichPayments(vit, settings[ORG.vitara]!, { financeUserId: 'u_efua', gapAgentUserId: 'u_yaw', today: clock.today });
+  enrichPayments(ki, settings[ORG.kakao]!, { financeUserId: 'u_jeanmarc', today: clock.today });
 
   // ---- Fixed demo moments (PRD 12.5) ----
   // 1. A Vitara request priced 18% above list → HIGH risk, waiting in Kwame's queue.

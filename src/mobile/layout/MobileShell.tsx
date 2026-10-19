@@ -11,6 +11,7 @@ import { BottomTabs } from './BottomTabs';
 import { RecordSheet } from './RecordSheet';
 import { MobileSignIn } from '@/mobile/flows/auth/MobileSignIn';
 import { DemoDock } from '@/components/shared/DemoDock';
+import { CollectionPrompt } from '@/mobile/flows/money/CollectionPrompt';
 
 /**
  * Mobile app shell (PRD 4.1–4.2): centred 390×844 viewport with a subtle device frame on desktop,
@@ -62,6 +63,7 @@ export function MobileShell() {
             </div>
             {!immersive && <BottomTabs onRecord={() => setRecordOpen(true)} />}
             <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />
+            <CollectionPrompt />
           </ActorContext.Provider>
         ) : (
           <MobileSignIn />

@@ -17,18 +17,20 @@ import { DataTable } from '@/components/shared/DataTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
-import { comingSoon } from '@/components/shared/coming-soon';
+import { Tip } from '@/components/ui/tooltip';
 import { Field } from '@/components/shared/Field';
 import { Photo } from '@/components/forms/media';
 import { Donut, HBars, StackedColumns } from '@/components/charts/charts';
 import { debtCheck } from '@/services/buyingService';
-import { providerOfPhone } from '@/services/payoutService';
+import { providerOfPhone } from '@/services/paymentService';
+import { PayDialog, type PayRequest } from '@/web/features/payments/PayDialog';
+import type { Farmer, OrgSettings, PurchaseRequest } from '@/types';
 import { formatPhone } from '@/lib/format';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useActor, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, logActivity, useLookups } from '@/web/features/people/shared';
-import { EvidenceIcons, Panel, SignatureImage, VoicePlayer, mono, useFarmerNames } from './common';
+import { EvidenceIcons, Panel, PaymentState, SignatureImage, VoicePlayer, mono, useFarmerNames } from './common';
 import { QrCode } from './qr';
 
 type Tab = 'cash' | 'direct' | 'unpaid';
@@ -81,7 +83,16 @@ export function PurchasesPage() {
   ], [t, f, lk, fn, terms, reqById]);
 
   const current = purchases.find((p) => p.id === openId);
-  const maxBulk = 20;
+  const maxBulk = settings.bulkBatchSize || 20;
+  const [paying, setPaying] = useState<PayRequest | null>(null);
+  const country = f.org.countries[0] ?? 'GH';
+  const startPay = (sel: Purchase[], clear?: () => void) => {
+    const unpaid = sel.filter((p) => ['NOT_PAID', 'FAILED'].includes(p.paymentStatus));
+    const req = reqById.get(unpaid[0]?.requestId ?? '');
+    if (!req) return;
+    setPaying(farmerPayRequest(unpaid, req, settings, country, fn.get, t));
+    clear?.();
+  };
   return (
     <>
       <PageHeader eyebrow={t('nav.section.buying')} title={t('nav.purchases')} description={t('pages.purchases')} />
@@ -112,11 +123,12 @@ export function PurchasesPage() {
             getRowId={(p) => p.id}
             columnPicker
             initialHidden={['unitPrice', 'commodity', 'plot', 'request']}
-            bulkActions={tab === 'cash' ? undefined : (sel) => (
-              <PermissionGate permission="purchases.pay">
-                <Button size="sm" disabled={!sel.some((p) => p.paymentStatus !== 'PAID') || sel.length > maxBulk} onClick={() => comingSoon(t('buy.bulkPayPhase'))}><Send /> {t('buy.bulkPay', { count: sel.filter((p) => p.paymentStatus !== 'PAID').length })}</Button>
-              </PermissionGate>
-            )}
+            bulkActions={tab === 'cash' ? undefined : (sel, clear) => {
+              const unpaid = sel.filter((p) => ['NOT_PAID', 'FAILED'].includes(p.paymentStatus) && model(p) === 'DIRECT_PAYMENT');
+              const reason = !unpaid.length ? t('buy.bulk.noneUnpaid') : new Set(unpaid.map((p) => p.requestId)).size > 1 ? t('buy.bulk.sameRequest') : unpaid.length > maxBulk ? t('buy.bulk.tooMany', { max: maxBulk }) : '';
+              const btn = <Button size="sm" disabled={!!reason} onClick={() => startPay(unpaid, clear)}><Send /> {t('buy.bulkPay', { count: unpaid.length })}</Button>;
+              return <PermissionGate permission="purchases.pay">{reason ? <Tip label={reason}><span>{btn}</span></Tip> : btn}</PermissionGate>;
+            }}
             exportCsv={{ fileName: 'purchases.csv', columns: [
               { header: t('col.number'), value: (p) => p.number }, { header: t('col.date'), value: (p) => p.createdAt.slice(0, 10) }, { header: terms.farmer, value: (p) => fn.name(p.farmerId) },
               { header: terms.community, value: (p) => lk.community(p.communityId) }, { header: terms.agent, value: (p) => lk.agent(p.agentId) }, { header: t('col.quantity'), value: (p) => p.quantity },
@@ -127,12 +139,13 @@ export function PurchasesPage() {
         </TabsContent>
         <TabsContent value="dashboard"><PurchasesDashboard purchases={purchases} /></TabsContent>
       </Tabs>
-      {current && <PurchaseDrawer key={current.id} purchase={current} onClose={close} />}
+      {current && <PurchaseDrawer key={current.id} purchase={current} onClose={close} onPay={(sel) => startPay(sel)} />}
+      {paying && <PayDialog request={paying} onClose={() => setPaying(null)} />}
     </>
   );
 }
 
-function PurchaseDrawer({ purchase: p, onClose }: { purchase: Purchase; onClose: () => void }) {
+function PurchaseDrawer({ purchase: p, onClose, onPay }: { purchase: Purchase; onClose: () => void; onPay: (sel: Purchase[]) => void }) {
   const { orgId, userId } = useActor();
   const { t, terms } = useT();
   const f = useFormat();
@@ -154,6 +167,9 @@ function PurchaseDrawer({ purchase: p, onClose }: { purchase: Purchase; onClose:
   const locked = p.paymentStatus !== 'NOT_PAID' || attempts.length > 0;
   const [editing, setEditing] = useState(false);
   const direct = req?.sourcingModel === 'DIRECT_PAYMENT';
+  const unpaid = (x: Purchase) => ['NOT_PAID', 'FAILED'].includes(x.paymentStatus);
+  const related = direct ? allPurchases.filter((x) => x.requestId === p.requestId && x.id !== p.id && unpaid(x)) : [];
+  const canPay = direct && unpaid(p) && !attempts.some((x) => ['AWAITING_CHECKER', 'PENDING', 'PROCESSING'].includes(x.status));
   return (
     <>
       <DetailDrawer
@@ -251,6 +267,16 @@ function PurchaseDrawer({ purchase: p, onClose }: { purchase: Purchase; onClose:
             key: 'payment', label: t('buy.tab.payment'), count: attempts.length, content: (
               <div className="space-y-4">
                 {!direct && <p className="text-[14px] text-muted">{t('buy.cashPaidNote', { farmer: terms.farmer.toLocaleLowerCase() })}</p>}
+                <PaymentState payableId={p.id} />
+                {canPay && (
+                  <PermissionGate permission="purchases.pay">
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => onPay([p])}><Send /> {t('buy.payFarmer', { farmer: terms.farmer.toLocaleLowerCase() })}</Button>
+                      {related.length > 0 && <Button size="sm" variant="secondary" onClick={() => onPay([p, ...related].slice(0, settings.bulkBatchSize || 20))}>{t('buy.payRelated', { count: related.length + 1 })}</Button>}
+                    </div>
+                  </PermissionGate>
+                )}
+                {canPay && related.length > 0 && <p className="text-[13px] text-muted">{t('buy.relatedUnpaid', { count: related.length })}</p>}
                 {wallet && (
                   <div className="rounded-ctl border border-line p-4">
                     <div className="flex items-center justify-between gap-2">
@@ -376,4 +402,15 @@ function PurchasesDashboard({ purchases }: { purchases: Purchase[] }) {
       </Panel>
     </div>
   );
+}
+
+/** Payees for direct farmer payments: the purchase's wallet, else the farmer's phone. */
+export function farmerPayRequest(sel: Purchase[], req: PurchaseRequest, settings: OrgSettings, country: string, farmerOf: (id: string) => Farmer | undefined, t: (k: string, o?: Record<string, unknown>) => string): PayRequest {
+  const payees = sel.map((p) => {
+    const fa = farmerOf(p.farmerId);
+    const name = p.wallet?.name ?? (fa ? `${fa.firstName} ${fa.lastName}`.toUpperCase() : p.number);
+    const number = p.wallet?.number ?? fa?.phone ?? '';
+    return { name, number, providerId: p.wallet?.providerId ?? providerOfPhone(settings, number, country)?.id, amount: p.paidToFarmer, payableId: p.id, label: `${p.number} · ${p.quantity} kg` };
+  });
+  return { type: sel.length > 1 ? 'BULK_FARMER_PURCHASE' : 'FARMER_PURCHASE', payableId: sel.length > 1 ? req.id : sel[0]!.id, title: sel.length > 1 ? t('pay.titleBulk', { count: sel.length, number: req.number }) : t('pay.titleFarmer', { number: sel[0]!.number }), payees };
 }

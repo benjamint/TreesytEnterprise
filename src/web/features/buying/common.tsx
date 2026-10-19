@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { AlertTriangle, Check, CircleDot, Clock, MapPin, Mic, Pause, PenLine, Play, Scale, X } from 'lucide-react';
+import { AlertTriangle, Check, CircleDot, Clock, MapPin, Mic, Pause, PenLine, Play, Scale, ShieldCheck, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { DocType, Money, Purchase, RiskFlag, WorkflowDefinition } from '@/types';
 import { getAllowedActions, pendingSteps, activeSteps, type WorkflowAction, type WorkflowRecord } from '@/engines/workflow';
@@ -8,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tooltip';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { act, workflowUser } from '@/services/workflowService';
+import { checkStatus, retry } from '@/services/paymentService';
+import { usePaymentStore } from '@/stores/paymentStore';
 import { cn } from '@/lib/utils';
 import { useFarmerStore } from '@/stores/farmerStore';
 import { useActor, useCurrentOrg, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
@@ -319,15 +322,26 @@ export function Panel({ title, children, actions, className }: { title?: ReactNo
 }
 
 
-/** Inline result of a failed payout with a Retry button (toasts sit outside the drawer, so the retry lives here). */
-export function PayoutFailed({ failure, onRetry, busy }: { failure: { reference: string; reason?: string; unknown?: boolean } | null; onRetry: () => void; busy?: boolean }) {
+/**
+ * The latest payment attempt for a record, inline in its drawer: Retry when it failed, Check status
+ * when the provider didn't answer, a note while it waits for a checker or is on its way.
+ */
+export function PaymentState({ payableId }: { payableId: string }) {
+  const { userId } = useActor();
   const { t } = useT();
-  if (!failure) return null;
+  const all = usePaymentStore((s) => s.payments);
+  const [busy, setBusy] = useState(false);
+  const last = useMemo(() => all.filter((p) => p.payableId === payableId).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0], [all, payableId]);
+  if (!last || last.status === 'SUCCESSFUL' || last.status === 'REVERSED') return null;
+  const run = async (fn: () => Promise<unknown>) => { setBusy(true); await fn(); setBusy(false); };
+  const tone = last.status === 'FAILED' ? 'border-danger/30 bg-danger/5' : last.status === 'UNKNOWN' ? 'border-unknown/30 bg-unknown/5' : 'border-info/30 bg-info/5';
   return (
-    <div className="flex w-full flex-wrap items-center gap-3 rounded-ctl border border-danger/30 bg-danger/5 px-3 py-2 text-[14px] text-ink" role="alert">
-      <AlertTriangle className="h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
-      <span className="min-w-0 flex-1">{t(failure.unknown ? 'buy.toast.payUnknown' : 'buy.toast.payFailed', { reference: failure.reference, reason: failure.reason ?? '' })}</span>
-      <Button size="xs" variant="danger" disabled={busy} onClick={onRetry}>{t('buy.retry')}</Button>
+    <div className={cn('flex w-full flex-wrap items-center gap-3 rounded-ctl border px-3 py-2 text-[14px] text-ink', tone)} role={last.status === 'FAILED' ? 'alert' : 'status'}>
+      {last.status === 'FAILED' ? <AlertTriangle className="h-4 w-4 shrink-0 text-danger" aria-hidden="true" /> : last.status === 'AWAITING_CHECKER' ? <ShieldCheck className="h-4 w-4 shrink-0 text-info" aria-hidden="true" /> : <Clock className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />}
+      <span className="min-w-0 flex-1">{t(`pay.state.${last.status}`, { reference: last.reference, reason: last.failureReason ?? '' })}</span>
+      {last.status === 'FAILED' && <Button size="xs" variant="danger" disabled={busy} onClick={() => void run(() => retry(last.id, userId ?? 'system'))}>{t('buy.retry')}</Button>}
+      {last.status === 'UNKNOWN' && <Button size="xs" variant="secondary" disabled={busy} onClick={() => void run(() => checkStatus(last.id, userId ?? 'system'))}>{t('pay.checkStatus')}</Button>}
+      {last.status === 'AWAITING_CHECKER' && <Link to={`/app/payments?view=AWAITING_CHECKER&open=${last.id}`} className="text-link text-[13px]">{t('pay.openPayment')}</Link>}
     </div>
   );
 }

@@ -124,6 +124,8 @@ export interface PaymentProvider {
   /** Stored server-side in the full product; the prototype keeps masked demo values. */
   credentials?: { merchantId: string; apiKey: string };
   limits?: { perPaymentMinor: number; dailyMinor: number };
+  /** Charge for the payee to cash out, added on top when "include withdrawal charges" is ticked. */
+  withdrawal?: { type: 'percent' | 'flat'; value: number };
 }
 
 export interface ExtraCharge {
@@ -336,6 +338,8 @@ export interface OrgSettings {
     ipAllowList: string[];
   };
   makerChecker: boolean;
+  /** Payments at or above this amount need a checker (0 = every payment). */
+  makerCheckerMinMinor: number;
   bulkBatchSize: number;
   landUnitId: string;
   /** Sub-feature switches inside modules (Settings → Plan & modules). */

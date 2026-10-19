@@ -16,14 +16,16 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { Checkbox, Field } from '@/components/shared/Field';
-import { canEditPre, createPre, payPre, payPreManual, preLineCap, updatePre } from '@/services/buyingService';
+import { canEditPre, createPre, payPreManual, preLineCap, updatePre } from '@/services/buyingService';
+import { inFlight } from '@/services/paymentService';
+import { PayDialog } from '@/web/features/payments/PayDialog';
 import { cn } from '@/lib/utils';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useWarehouseStore } from '@/stores/warehouseStore';
 import { useActor, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
-import { AmountDialog, ApprovalTimeline, PayoutFailed, WorkflowButtons, mono, usePrintReceipt, useWorkflowDef } from './common';
+import { AmountDialog, ApprovalTimeline, PaymentState, WorkflowButtons, mono, usePrintReceipt, useWorkflowDef } from './common';
 
 type View = 'all' | 'pending' | 'approved' | 'toPay' | 'rejected';
 
@@ -114,24 +116,12 @@ function PreDrawer({ pre: e, onClose, onEdit }: { pre: PreExpense; onClose: () =
   const warehouses = useWarehouseStore((s) => s.warehouses);
   const req = requests.find((r) => r.id === e.requestId);
   const attempts = payments.filter((p) => p.payableId === e.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const [busy, setBusy] = useState(false);
   const [manual, setManual] = useState(false);
-  const [failed, setFailed] = useState<{ reference: string; reason?: string; unknown?: boolean } | null>(null);
+  const [paying, setPaying] = useState(false);
+  const busy = inFlight(e.id) && attempts.some((p) => ['AWAITING_CHECKER', 'PENDING', 'PROCESSING'].includes(p.status));
   const print = usePrintReceipt();
   const typeName = (id: string) => settings.expenseTypes.find((x) => x.id === id)?.name ?? id;
   const payable = e.status === 'APPROVED' && e.paymentStatus !== 'PAID' && e.paymentStatus !== 'PENDING';
-  const pay = async () => {
-    setBusy(true);
-    const id = toast.loading(t('buy.toast.paying', { amount: f.money(e.total), name: e.payee.name }));
-    setFailed(null);
-    const p = await payPre(e.id, userId ?? 'system');
-    setBusy(false);
-    if (p.status === 'SUCCESSFUL') toast.success(t('buy.toast.prePaid', { number: e.number, reference: p.reference }), { id });
-    else {
-      toast.error(t(p.status === 'UNKNOWN' ? 'buy.toast.payUnknown' : 'buy.toast.payFailed', { reference: p.reference, reason: p.failureReason ?? '' }), { id });
-      setFailed({ reference: p.reference, reason: p.failureReason, unknown: p.status === 'UNKNOWN' });
-    }
-  };
   const rows: [string, string][] = [
     [terms.purchaseRequest, req?.number ?? '—'], [terms.agent, lk.agent(e.agentId)], [t('col.bags'), f.number(e.bags)],
     ...e.lines.map((l) => [`${typeName(l.expenseTypeId)} (${f.number(l.quantity)} × ${f.money(l.rate)})`, f.money(l.amount)] as [string, string]),
@@ -147,10 +137,10 @@ function PreDrawer({ pre: e, onClose, onEdit }: { pre: PreExpense; onClose: () =
         badges={<><StatusBadge status={e.status} /><StatusBadge status={e.paymentStatus} />{e.costDiscussed && <Badge tone="neutral">{t('buy.costDiscussed')}</Badge>}</>}
         actions={
           <>
-            <PayoutFailed failure={failed} busy={busy} onRetry={() => void pay()} />
+            <PaymentState payableId={e.id} />
             <WorkflowButtons docType="preExpense" record={e as unknown as WorkflowRecord & { number: string }} def={def} />
             {canEditPre(e) && <PermissionGate permission="expenses.edit"><Button size="sm" variant="secondary" onClick={onEdit}><Pencil /> {t('people.edit')}</Button></PermissionGate>}
-            {payable && <PermissionGate permission="expenses.disburse"><Button size="sm" disabled={busy} onClick={() => void pay()}><Smartphone /> {t('buy.payMomo')}</Button></PermissionGate>}
+            {payable && <PermissionGate permission="expenses.disburse"><Button size="sm" disabled={busy} onClick={() => setPaying(true)}><Smartphone /> {t('buy.payMomo')}</Button></PermissionGate>}
             {payable && <PermissionGate permission="expenses.disburse"><Button size="sm" variant="secondary" disabled={busy} onClick={() => setManual(true)}><Banknote /> {t('buy.manualDisbursement')}</Button></PermissionGate>}
             <Button size="sm" variant="ghost" onClick={() => print(terms.pre, e.number, rows)}><Printer /> {t('buy.printReceipt')}</Button>
           </>
@@ -192,6 +182,7 @@ function PreDrawer({ pre: e, onClose, onEdit }: { pre: PreExpense; onClose: () =
           { key: 'activity', label: t('buy.tab.activity'), content: <ActivityFeed entity="preExpense" entityId={e.id} /> },
         ]}
       />
+      {paying && <PayDialog request={{ type: 'PRE_EXPENSE', payableId: e.id, title: t('pay.titlePre', { number: e.number }), payees: [{ name: e.payee.name, number: e.payee.number, providerId: e.payee.providerId, amount: e.total, label: lk.agent(e.agentId) }] }} onClose={() => setPaying(false)} />}
       {manual && (
         <AmountDialog open onClose={() => setManual(false)} title={t('buy.manualTitle', { number: e.number })} description={t('buy.manualHint')} initialMinor={e.total.amountMinor} maxMinor={e.total.amountMinor} currency={e.total.currency} proof confirm={t('buy.markDisbursed')}
           onConfirm={(v) => { payPreManual(e.id, v.proof ?? '', userId ?? 'system'); setManual(false); toast.success(t('buy.toast.prePaidManual', { number: e.number })); }} />

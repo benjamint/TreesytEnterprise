@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 7._
+_Last updated: Phase 8._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -118,7 +118,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Price update — above the list price the request goes back for approval (PRICE_UPDATE), price history kept
 - [x] Rate confirmation
 - [x] Full / partial disbursement — tranches with amount and weight, partial count limit from Buying rules
-- [~] Cash advance payout — single mobile-money payout with fee/tax quote, failure + retry (Demo panel → "Next payout fails"); full payments engine [8]
+- [x] Cash advance payout — 3-step pay modal (lookup, charges, maker–checker), failure + retry (Demo panel → "Next payout fails"), partial tranches with weight
 - [x] Manual disbursement + funds received — proof upload; agent's "funds received" simulated from the Demo panel until mobile [9]
 - [x] Ticket activation — direct-payment requests
 - [x] Receipts + signature — printable receipt (company legal name), agent signature image
@@ -136,7 +136,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Wallet edit — payout wallet on a purchase, permission-gated, locked once payment starts
 - [x] Purchase list tabs — Cash-advance, Direct-payment, Unpaid; every PRD column incl. evidence icons and consolidated reference
 - [x] Purchases dashboard (aggregator thresholds) — volume, spend, farmers, averages, smallholder vs aggregator split, top 3 agents and communities, cost per bag from PREs, purchases over time
-- [~] Related unpaid purchases — selection with bulk pay button (same request, max N); the bulk pay flow itself [8]
+- [x] Related unpaid purchases — purchase drawer offers paying the request's other unpaid purchases together; bulk pay from the list (same request, up to the company batch size)
 - [x] Sourcing export — CSV export of purchases and requests
 - [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt
 - [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
@@ -153,20 +153,23 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Money (Scope 5)
 
-- [~] Payable types — all 12 types modelled [8]
-- [ ] Payment preview + name lookup [8]
-- [~] Disburse with charges — fee calculator (tiers, caps, tax, payer) tested [8]
-- [~] Extra charges — supported by the fee calculator [8]
-- [ ] Bulk farmer payment [8]
-- [ ] Webhook / status updates (simulated) [8]
-- [~] Status check — one payment seeded in Unknown status [8]
-- [~] Payment history / stats / export — preview table [8]
-- [~] Wallet balance — wallets seeded per provider, one below threshold [8]
-- [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits
-- [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker, batch size, live fee calculator
+- [~] Payable types — all 12 types in the engine; agent cash advance, PRE, single and bulk farmer purchase pay through it now; the others with their modules [10, 11, 16]
+- [x] Payment preview + name lookup — Payees step: network detected from the number, provider override, "Name on wallet ✓" or mismatch warning that must be confirmed
+- [x] Disburse with charges — Charges step: provider fee (tiers, caps, payer), withdrawal charge per provider (% or flat, "include withdrawal charges"), tax, extra charges, total, who pays
+- [x] Extra charges — picked per payment from the company list (company- or payee-paid)
+- [x] Bulk farmer payment — select unpaid direct-payment purchases → one batch, progress and result per payee
+- [x] Webhook / status updates (simulated) — Processing → provider callback (Successful / Failed with reason / Unknown), timeline and raw provider response on every payment
+- [x] Status check — "Check status" on Unknown payments (pay modal results, drawer, list)
+- [x] Payment history / stats / export — Payments page: every column, filters (type, provider, initiated by, period), views, stat cards, by type / by provider charts, CSV export, retry selected
+- [x] Maker–checker — above the company threshold a second person with payments.check approves (never the maker), bulk approve or reject from the Awaiting checker view; notifications to checkers
+- [x] Limits & controls — per-payment and daily limits per role (Settings → Roles) and per provider, wallet balance check, blocked with an explanation
+- [x] Reversal — mark a successful payment reversed (reason), wallet credited back, payable reset
+- [x] Wallet balance — Wallets & balances: card per provider wallet, low-balance alert, paid out today, transactions (payouts, reversals, collections, top-ups), simulated top-up request
+- [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits, withdrawal charge
+- [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker with threshold, batch size, live fee calculator
 - [~] Phone validation by country — libphonenumber-js helper [5]
-- [ ] Collections [8]
-- [ ] Weekly budget / allowance / support payouts [8, 11, 16]
+- [x] Collections — mobile-money collection request (agent refund from Reconciliation); the agent's phone shows the approval prompt (PIN); approved money credits the wallet and records the refund; Collections view on Payments
+- [ ] Weekly budget / allowance / support payouts [11, 16]
 - [x] Money storage and formatting — integer minor units + currency, only through `formatMoney()`
 
 ## Farmer support (Scope 6)

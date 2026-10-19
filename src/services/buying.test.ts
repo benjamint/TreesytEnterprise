@@ -28,7 +28,7 @@ function load() {
   useFarmerStore.setState({ farmers: s.farmers, seeded: true });
   useLoanStore.setState({ loans: s.loans, seeded: true } as never);
   useBuyingStore.setState({ requests: s.requests, purchases: s.purchases, bags: s.bags, expenses: s.expenses, suppliers: s.suppliers, aggregatorPurchases: s.aggregatorPurchases, seeded: true });
-  usePaymentStore.setState({ payments: s.payments, wallets: s.wallets, seeded: true });
+  usePaymentStore.setState({ payments: s.payments, wallets: s.wallets, collections: [], topUps: [], seeded: true });
   useActivityStore.setState({ audit: [], activity: [], seeded: true });
   useNotificationStore.setState({ notifications: [], outbox: [], seeded: true });
 }

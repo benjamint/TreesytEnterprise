@@ -543,7 +543,12 @@
     "fixTask_one": "{{count}} enregistrement à corriger — ouvrez la tâche",
     "fixTask_other": "{{count}} enregistrements à corriger — ouvrez la tâche",
     "surveyFix": "La réponse {{number}} vous a été renvoyée pour correction",
-    "fundsSent": "{{amount}} envoyé pour {{number}} — confirmez à la réception"
+    "fundsSent": "{{amount}} envoyé pour {{number}} — confirmez à la réception",
+    "paymentToCheck_one": "Le paiement {{reference}} ({{amount}}) attend votre vérification",
+    "paymentToCheck_other": "{{count}} paiements ({{amount}}) attendent votre vérification",
+    "collectionRequested": "Validez la collecte de {{amount}} ({{reference}}) sur votre téléphone",
+    "collectionApproved": "{{name}} a validé la collecte de {{amount}}",
+    "collectionDeclined": "{{name}} a refusé la collecte de {{amount}}"
   },
   "activity": {
     "workflow": {
@@ -635,7 +640,9 @@
       "refunded": "Remboursement de l’agent de {{amount}} enregistré ({{method}})",
       "differencePaid": "Différence de {{amount}} payée à l’agent",
       "writtenOff": "{{amount}} passé en perte : {{reason}}",
-      "reconciled": "Marqué comme rapproché"
+      "reconciled": "Marqué comme rapproché",
+      "payoutUnknown": "Le paiement {{reference}} a un statut inconnu",
+      "payoutAwaitingChecker": "Le paiement {{reference}} de {{amount}} attend un vérificateur"
     },
     "pre": {
       "created": "{{number}} soumise pour {{total}}",
@@ -646,7 +653,8 @@
     },
     "purchase": {
       "recorded": "Achat {{number}} : {{kg}} kg pour {{amount}}",
-      "walletChanged": "Portefeuille de paiement changé pour {{number}}"
+      "walletChanged": "Portefeuille de paiement changé pour {{number}}",
+      "paid": "{{amount}} payé au producteur ({{reference}})"
     },
     "bag": {
       "replaced": "Sac {{from}} remplacé par {{to}} (écart {{variance}} kg)"
@@ -654,12 +662,26 @@
     "payment": {
       "successful": "Paiement {{reference}} de {{amount}} à {{name}} réussi",
       "failed": "Paiement {{reference}} de {{amount}} à {{name}} échoué",
-      "unknown": "Le paiement {{reference}} à {{name}} a un statut inconnu"
+      "unknown": "Le paiement {{reference}} à {{name}} a un statut inconnu",
+      "initiated": "Paiement {{reference}} de {{amount}} à {{name}} lancé",
+      "awaitingChecker": "Le paiement {{reference}} de {{amount}} à {{name}} attend un vérificateur",
+      "checked": "Paiement {{reference}} validé par le vérificateur",
+      "rejected": "Paiement {{reference}} rejeté par le vérificateur : {{reason}}",
+      "reversed": "Paiement {{reference}} marqué annulé : {{reason}}"
     },
     "method": {
       "MOMO": "mobile money",
       "MANUAL": "manuel",
       "MOMO_COLLECT": "collecte mobile money"
+    },
+    "collection": {
+      "requested": "Collecte {{reference}} de {{amount}} demandée à {{name}}",
+      "approved": "{{name}} a validé la collecte {{reference}} ({{amount}})",
+      "declined": "{{name}} a refusé la collecte {{reference}} ({{amount}})"
+    },
+    "wallet": {
+      "topUpRequested": "Rechargement de {{amount}} demandé",
+      "toppedUp": "Portefeuille rechargé de {{amount}}"
     }
   },
   "settings": {
@@ -1012,6 +1034,14 @@
       "review": "Vérification",
       "formVersion_one": "{{name}} v{{n}} · {{count}} question",
       "formVersion_other": "{{name}} v{{n}} · {{count}} questions"
+    },
+    "collection": {
+      "title": "Valider le paiement de {{amount}} ?",
+      "body": "{{company}} vous demande ce montant pour {{reason}} ({{reference}}).",
+      "pin": "Code PIN mobile money",
+      "pinHint": "Prototype : 4 chiffres au choix.",
+      "approve": "Valider",
+      "decline": "Refuser"
     }
   },
   "help": {
@@ -1149,11 +1179,13 @@
       "forms": "Parcours 9 : connectez-vous en tant qu’Aïcha (Kakao Ivoire) → Formulaires → Profil producteur → ajoutez un Choix unique « Certification » avec la liste partagée « Certifications » → Publier. La question apparaît alors dans l’enregistrement web, le parcours mobile Enregistrer un producteur, le menu Colonnes de la liste des producteurs et la liste des champs des rapports.",
       "builder": "Glissez un type depuis la palette ou cliquez pour l’ajouter. Le brouillon s’enregistre au fil de l’eau ; Publier crée la version suivante, et chaque enregistrement garde la version avec laquelle il a été saisi. Aperçu mobile ouvre le brouillon dans la fenêtre mobile.",
       "purchaseRequests": "Parcours 2 (côté web) : utilisez les Actions de la page de ce panneau pour le téléphone de l’agent. 1) « soumet une demande ». 2) Connectez-vous en validateur → Valider. 3) Connectez-vous en finance → Valider, Confirmer le prix, Payer par mobile money — activez d’abord « Le prochain paiement échoue », puis Relancer. 4) « L’agent confirme la réception des fonds ». 5) « Synchroniser 3 achats hors ligne » (un achat vocal, un sac consolidé). La demande est rapprochée automatiquement avec un petit remboursement : onglet Rapprochement → Enregistrer le remboursement.",
-      "purchases": "Les achats viennent des téléphones des agents (synchronisation) ou du web (Enregistrer un achat sur une demande). Un achat qui partage un sac avec un autre producteur porte une référence de sac consolidé. Le paiement groupé des achats en paiement direct arrive avec le moteur de paiements en phase 8.",
+      "purchases": "Les achats viennent des téléphones des agents (synchronisation) ou du web (Enregistrer un achat sur une demande). Paiement direct → sélectionnez des achats non payés d’une même demande → Payer par mobile money, dans la limite de la taille de lot de l’entreprise.",
       "bags": "Chaque code de sac issu des achats. Remplacez un sac abîmé : le nouveau code reprend le contenu, l’écart de poids et l’auteur sont journalisés, et les achats pointent vers le nouveau code.",
       "expenses": "Les validations des PRE suivent le circuit de l’entreprise. La modification n’est possible qu’avant la première validation humaine. Payer une PRE dont le type de dépense déclenche une entrée crée une livraison attendue au magasin de l’agent.",
       "reconciliation": "Les écarts dans la tolérance de l’entreprise (Paramètres → Règles d’achat) se rapprochent automatiquement. Les écarts plus grands sont appariés et attendent un remboursement, un complément ou une passation en perte dans la limite.",
-      "priceBoard": "En lecture seule pour les responsables. Les prix payés viennent des achats de chaque zone sur 30 jours. Suggérer un prix utilise la médiane des prix payés dans la bande de tolérance ; appliquez-le dans Paramètres → Listes de prix."
+      "priceBoard": "En lecture seule pour les responsables. Les prix payés viennent des achats de chaque zone sur 30 jours. Suggérer un prix utilise la médiane des prix payés dans la bande de tolérance ; appliquez-le dans Paramètres → Listes de prix.",
+      "payments": "Les paiements au-dessus du seuil de vérification (Paramètres → Paiements) attendent une deuxième personne ayant la permission « vérifier » — l’initiateur ne peut pas vérifier son propre paiement. Les paiements échoués ont Relancer, les inconnus Vérifier le statut, les réussis peuvent être marqués annulés.",
+      "wallets": "Les soldes baissent à chaque paiement réussi et remontent avec les annulations, collectes et rechargements. Demander un rechargement simule le virement de trésorerie : l’argent arrive quelques secondes plus tard."
     },
     "pageActions": "Actions de la page",
     "failNext": "Le prochain paiement échoue",
@@ -1161,7 +1193,9 @@
     "action": {
       "agentRequest": "{{name}} soumet une demande depuis le téléphone",
       "fundsReceived": "L’agent confirme la réception des fonds pour {{number}}",
-      "syncPurchases": "Synchroniser 3 achats hors ligne pour {{number}} depuis le téléphone"
+      "syncPurchases": "Synchroniser 3 achats hors ligne pour {{number}} depuis le téléphone",
+      "approveCollection": "{{name}} valide la collecte de {{amount}} sur le téléphone",
+      "declineCollection": "{{name}} refuse la collecte"
     }
   },
   "auth": {
@@ -2612,7 +2646,10 @@
       "makerCheckerHint": "Une deuxième personne doit libérer chaque lot de paiements.",
       "batch": "Taille des lots de paiement",
       "errNone": "Activez au moins un opérateur.",
-      "errTier": "Une tranche commence après sa fin."
+      "errTier": "Une tranche commence après sa fin.",
+      "checkerFrom": "Vérification requise à partir de",
+      "withdrawal": "Frais de retrait",
+      "withdrawalType": "Type de frais de retrait"
     },
     "msg": {
       "sms": "Fournisseurs SMS",
@@ -2664,7 +2701,9 @@
       "copyFrom": "Une copie de {{name}}",
       "create": "Créer le rôle",
       "errNoAdmin": "Au moins un rôle attribué doit garder « Gérer les rôles ».",
-      "errName": "Chaque rôle doit avoir un nom."
+      "errName": "Chaque rôle doit avoir un nom.",
+      "payLimits": "Limites de paiement",
+      "payLimitsHint": "Par paiement et par jour pour les personnes ayant ce rôle. 0 = pas de limite liée au rôle."
     },
     "users": {
       "invite": "Inviter",
@@ -4481,7 +4520,8 @@
       "preCreated": "{{number}} soumise",
       "preSaved": "{{number}} enregistrée",
       "prePaid": "{{number}} payée ({{reference}})",
-      "prePaidManual": "{{number}} marquée payée"
+      "prePaidManual": "{{number}} marquée payée",
+      "collectionSent": "Collecte de {{amount}} envoyée sur le téléphone de {{name}} ({{reference}})"
     },
     "retry": "Relancer",
     "confirmRate": "Confirmer le prix",
@@ -4803,6 +4843,203 @@
     },
     "applyInSettings": "Ouvrir les listes de prix",
     "volumeShortSmall": "{{diff}} de moins que prévu ({{planned}} prévus, {{bought}} achetés).",
-    "volumeOverSmall": "{{diff}} de plus que prévu ({{planned}} prévus, {{bought}} achetés)."
+    "volumeOverSmall": "{{diff}} de plus que prévu ({{planned}} prévus, {{bought}} achetés).",
+    "bulk": {
+      "noneUnpaid": "Sélectionnez des achats en paiement direct non payés.",
+      "sameRequest": "Le paiement groupé porte sur des achats d’une même demande.",
+      "tooMany": "{{max}} achats au maximum à la fois."
+    },
+    "payFarmer": "Payer le {{farmer}} par mobile money",
+    "payRelated": "Payer les {{count}} ensemble",
+    "relatedUnpaid_one": "{{count}} autre achat de cette demande n’est pas payé.",
+    "relatedUnpaid_other": "{{count}} autres achats de cette demande ne sont pas payés."
+  },
+  "pay": {
+    "subtitle_one": "{{count}} bénéficiaire · {{total}}",
+    "subtitle_other": "{{count}} bénéficiaires · {{total}}",
+    "steps": "Étapes",
+    "step": {
+      "payees": "Bénéficiaires",
+      "charges": "Frais",
+      "confirm": "Confirmation"
+    },
+    "walletNumber": "Numéro de portefeuille de {{name}}",
+    "network": "Réseau de {{name}}",
+    "walletNumberShort": "Numéro de portefeuille",
+    "lookingUp": "Recherche du nom du titulaire…",
+    "nameOnWallet": "Titulaire : {{name}} ✓",
+    "nameMismatch": "Le titulaire est {{name}}, pas {{expected}}",
+    "confirmMismatch_one": "J’ai vérifié avec le bénéficiaire : le portefeuille est bon",
+    "confirmMismatch_other": "J’ai vérifié les {{count}} noms qui ne correspondent pas",
+    "fee": "Frais de l’opérateur",
+    "withdrawal": "Frais de retrait",
+    "tax": "Taxe",
+    "extraCharges": "Frais supplémentaires",
+    "received": "Reçu par le bénéficiaire",
+    "totalCompany": "Total payé par l’entreprise",
+    "includeWithdrawal": "Inclure les frais de retrait",
+    "includeWithdrawalHint": "Ajoute les frais de retrait pour que le bénéficiaire reçoive le montant complet en main.",
+    "whoPays": {
+      "company": "L’entreprise paie les frais de l’opérateur.",
+      "payee": "Les frais de l’opérateur sont déduits de ce que reçoit le bénéficiaire."
+    },
+    "limit": {
+      "perPayment": "Au-dessus de votre limite par paiement de {{limit}}.",
+      "daily": "Au-dessus de votre limite journalière de {{limit}} ({{used}} déjà envoyés aujourd’hui).",
+      "providerPerPayment": "Au-dessus de la limite par paiement de l’opérateur ({{limit}}).",
+      "providerDaily": "Au-dessus de la limite journalière de l’opérateur ({{limit}}, {{used}} envoyés aujourd’hui).",
+      "balance": "Solde insuffisant dans le portefeuille de l’entreprise ({{limit}} disponibles).",
+      "permission": "Vous n’avez pas la permission de lancer des paiements."
+    },
+    "requestTopUp": "Demander un rechargement",
+    "payees": "Bénéficiaires",
+    "payeesN_one": "{{count}} bénéficiaire",
+    "payeesN_other": "{{count}} bénéficiaires",
+    "balanceAfter": "{{before}} → {{after}} après ce paiement",
+    "checkerNeeded": "À partir de {{amount}}, une deuxième personne doit vérifier ce paiement avant l’envoi. Il attendra dans Paiements → À vérifier.",
+    "sendsNow": "L’argent part dès votre confirmation.",
+    "back": "Retour",
+    "next": "Suivant",
+    "done": "Terminé",
+    "submitForCheck": "Envoyer pour vérification",
+    "sendNow": "Envoyer {{total}}",
+    "summary": "{{ok}} réussi(s) · {{failed}} échoué(s) · {{unknown}} inconnu(s) · {{waiting}} à vérifier",
+    "checkStatus": "Vérifier le statut",
+    "retriedAs": "Relancé sous {{reference}}",
+    "titlePre": "Payer {{number}}",
+    "titleDifference": "Payer la différence sur {{number}}",
+    "titleFarmer": "Payer le producteur pour {{number}}",
+    "titleBulk": "Payer {{count}} producteurs sur {{number}}",
+    "state": {
+      "FAILED": "Le paiement {{reference}} a échoué : {{reason}}",
+      "UNKNOWN": "Le paiement {{reference}} a un statut inconnu — vérifiez auprès de l’opérateur",
+      "AWAITING_CHECKER": "Le paiement {{reference}} attend la vérification d’une deuxième personne",
+      "PENDING": "Le paiement {{reference}} va être envoyé",
+      "PROCESSING": "Le paiement {{reference}} est chez l’opérateur…"
+    },
+    "openPayment": "Ouvrir le paiement",
+    "type": {
+      "AGENT_CASH_ADVANCE": "Avance de fonds à l’agent",
+      "PRE_EXPENSE": "Dépense PRE",
+      "AGGREGATOR_PURCHASE": "Achat collecteur",
+      "AGGREGATOR_EXPENSE": "Dépense collecteur",
+      "FARMER_SUPPORT": "Appui aux producteurs",
+      "FARMER_PURCHASE": "Achat producteur",
+      "BULK_FARMER_PURCHASE": "Achats producteurs groupés",
+      "WEEKLY_BUDGET": "Budget hebdomadaire",
+      "MONTHLY_ALLOWANCE": "Indemnité mensuelle",
+      "COMMISSION": "Commission",
+      "FARMER_REFUND": "Remboursement au producteur",
+      "WAREHOUSE_EXPENSE": "Dépense de magasin"
+    },
+    "kpi": {
+      "paid": "Total payé",
+      "count": "Paiements",
+      "successRate": "{{pct}} % réussis",
+      "failed": "Échoués",
+      "awaiting": "À vérifier"
+    },
+    "breakdown": "Par type et par opérateur",
+    "byType": "Payé par type",
+    "byProvider": "Payé par opérateur",
+    "empty": "Aucun paiement ne correspond à ces filtres.",
+    "search": "Rechercher référence, bénéficiaire ou numéro",
+    "view": {
+      "all": "Tous",
+      "AWAITING_CHECKER": "À vérifier",
+      "inProgress": "En cours",
+      "FAILED": "Échoués",
+      "UNKNOWN": "Inconnus",
+      "REVERSED": "Annulés",
+      "collections": "Collectes"
+    },
+    "initiatedBy": "Initié par",
+    "approvedBy": "Vérifié par",
+    "period": "Période",
+    "currency": "Devise",
+    "approveSend": "Valider et envoyer {{count}}",
+    "approveSendOne": "Valider et envoyer",
+    "reject": "Rejeter",
+    "retrySelected": "Relancer {{count}}",
+    "rejectTitle_one": "Rejeter {{count}} paiement",
+    "rejectTitle_other": "Rejeter {{count}} paiements",
+    "toast": {
+      "sending_one": "Envoi de {{count}} paiement…",
+      "sending_other": "Envoi de {{count}} paiements…",
+      "checked": "{{ok}} sur {{count}} envoyés avec succès",
+      "ownBlocked_one": "{{count}} ignoré : vous ne pouvez pas vérifier votre propre paiement",
+      "ownBlocked_other": "{{count}} ignorés : vous ne pouvez pas vérifier vos propres paiements",
+      "rejected_one": "{{count}} paiement rejeté",
+      "rejected_other": "{{count}} paiements rejetés",
+      "retried_one": "{{count}} paiement relancé",
+      "retried_other": "{{count}} paiements relancés",
+      "reversed": "{{reference}} marqué annulé"
+    },
+    "payer": "Payeur",
+    "collectionFor": "Pour",
+    "requestedBy": "Demandé par",
+    "noCollections": "Aucune collecte pour l’instant.",
+    "collectionStatus": {
+      "PENDING": "En attente du payeur",
+      "SUCCESSFUL": "Collecté",
+      "DECLINED": "Refusé",
+      "EXPIRED": "Expiré"
+    },
+    "collectionWaiting": "En attente de la validation de {{name}} sur le téléphone pour la collecte de {{amount}} ({{reference}}).",
+    "collectionDeclinedNote": "{{name}} a refusé la collecte {{reference}}. Enregistrez un remboursement manuel ou redemandez.",
+    "bulk": "Groupé",
+    "retryBadge": "Relance",
+    "ownPayment": "Vous avez lancé ce paiement : quelqu’un d’autre doit le vérifier.",
+    "markReversed": "Marquer annulé",
+    "openPayable": "Ouvrir la fiche",
+    "timeline": "Chronologie",
+    "otherAttempts": "Autres tentatives pour cette fiche",
+    "response": "Réponse de l’opérateur",
+    "event": {
+      "initiated": "Initié",
+      "awaitingChecker": "En attente d’un vérificateur",
+      "checked": "Vérifié et validé",
+      "rejectedByChecker": "Rejeté par le vérificateur",
+      "accepted": "Accepté par l’opérateur",
+      "callback": {
+        "successful": "Retour : réussi",
+        "failed": "Retour : échoué",
+        "unknown": "Pas de retour — statut inconnu"
+      },
+      "statusCheck": {
+        "successful": "Vérification : réussi",
+        "failed": "Vérification : échoué"
+      },
+      "retried": "Relancé",
+      "reversed": "Annulé"
+    },
+    "reverseTitle": "Marquer {{reference}} comme annulé",
+    "reverseHint": "À utiliser quand l’opérateur a annulé le transfert. Le portefeuille de l’entreprise est recrédité."
+  },
+  "wal": {
+    "low": "Solde bas",
+    "threshold": "Alerte sous",
+    "lastTopUp": "Dernier rechargement",
+    "outToday": "Payé aujourd’hui",
+    "pendingTopUp": "Rechargement en route",
+    "transactions": "Transactions · {{wallet}}",
+    "party": "Bénéficiaire / payeur",
+    "noTxns": "Aucune transaction.",
+    "kind": {
+      "payout": "Paiement",
+      "reversal": "Annulation",
+      "topUp": "Rechargement",
+      "collection": "Collecte"
+    },
+    "status": {
+      "SUCCESSFUL": "Réussi",
+      "REVERSED": "Annulé",
+      "REQUESTED": "Demandé",
+      "CREDITED": "Crédité"
+    },
+    "topUpTitle": "Demander un rechargement · {{wallet}}",
+    "topUpHint": "La trésorerie envoie l’argent depuis le compte bancaire de l’entreprise (simulé).",
+    "topUpNote": "Note pour la trésorerie",
+    "topUpSent": "Rechargement de {{amount}} demandé"
   }
 }

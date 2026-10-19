@@ -1,4 +1,6 @@
 import type { OrgSettings, PriceChange, PurchaseRequest } from '@/types';
+import { nextNumber } from '@/engines/numbering';
+import { calculateFees } from '@/engines/money';
 import type { OpsResult } from './operations';
 
 /**
@@ -80,4 +82,40 @@ export function enrichBuying(ops: OpsResult, settings: OrgSettings, financeUserI
     if (i % 4 === 0) history.push({ id: `${p.id}_ch0`, entryId: p.id, at: new Date(new Date(p.effectiveFrom).getTime() - 120 * DAY).toISOString(), by: financeUserId, fromMinor: from - step, toMinor: from });
   });
   settings.pricing = { ...settings.pricing, history: history.sort((a, b) => b.at.localeCompare(a.at)) };
+}
+
+/**
+ * Phase 8 demo moments (RNG-free): payments waiting for a checker, and Journey 3's direct-payment
+ * request with unpaid purchases ready for bulk pay.
+ */
+export function enrichPayments(ops: OpsResult, settings: OrgSettings, opts: { financeUserId: string; gapAgentUserId?: string; today: Date }): void {
+  const pattern = settings.numbering.find((p) => p.docType === 'payment')!;
+  const issue = (date: Date) => {
+    const r = nextNumber(pattern, ops.sequences, { date });
+    ops.sequences = r.sequences;
+    return r.number;
+  };
+  const providers = settings.paymentProviders;
+  // 1. Cash advances above the checker threshold, initiated by finance and waiting for a second person.
+  const waiting = ops.requests.filter((r) => r.status === 'RATE_CONFIRMED' && r.sourcingModel === 'CASH_ADVANCE' && r.total.amountMinor >= settings.makerCheckerMinMinor).slice(0, 2);
+  for (const [i, r] of waiting.entries()) {
+    const agent = ops.agents.find((a) => a.id === r.agentId)!;
+    const at = new Date(opts.today.getTime() - (i + 2) * 3_600_000);
+    const q = calculateFees(r.total, settings.feeTiers, agent.wallet.providerId, { taxPct: settings.taxPct });
+    ops.payments.unshift({
+      id: `${r.id}_pay_check`, orgId: r.orgId, reference: issue(at), payableType: 'AGENT_CASH_ADVANCE', payableId: r.id, payee: { name: agent.wallet.verifiedName, number: agent.wallet.number },
+      providerId: agent.wallet.providerId || providers[0]!.id, amount: r.total, fee: q.fee, tax: q.tax, total: q.total, received: q.received, status: 'AWAITING_CHECKER', initiatedBy: opts.financeUserId,
+      createdAt: at.toISOString(), events: [{ at: at.toISOString(), key: 'initiated', by: opts.financeUserId }, { at: at.toISOString(), key: 'awaitingChecker' }],
+    });
+  }
+  // 2. Journey 3: the newest direct-payment request with a ticket has 4 purchases still to pay.
+  const ticket = ops.requests
+    .filter((r) => r.status === 'TICKET_ACTIVATED' && (!opts.gapAgentUserId || ops.agents.find((a) => a.id === r.agentId)?.userId === opts.gapAgentUserId))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  if (ticket) {
+    const unpaid = ops.purchases.filter((p) => p.requestId === ticket.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 4);
+    const ids = new Set(unpaid.map((p) => p.id));
+    for (const p of unpaid) p.paymentStatus = 'NOT_PAID';
+    ops.payments = ops.payments.filter((p) => !ids.has(p.payableId));
+  }
 }

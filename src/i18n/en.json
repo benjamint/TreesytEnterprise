@@ -543,7 +543,12 @@
     "fixTask_one": "{{count}} record needs fixing — open the task",
     "fixTask_other": "{{count}} records need fixing — open the task",
     "surveyFix": "Response {{number}} was sent back to fix",
-    "fundsSent": "{{amount}} sent for {{number}} — confirm when you receive it"
+    "fundsSent": "{{amount}} sent for {{number}} — confirm when you receive it",
+    "paymentToCheck_one": "Payment {{reference}} ({{amount}}) is waiting for your check",
+    "paymentToCheck_other": "{{count}} payments ({{amount}}) are waiting for your check",
+    "collectionRequested": "Approve the {{amount}} collection ({{reference}}) on your phone",
+    "collectionApproved": "{{name}} approved the {{amount}} collection",
+    "collectionDeclined": "{{name}} declined the {{amount}} collection"
   },
   "activity": {
     "workflow": {
@@ -635,7 +640,9 @@
       "refunded": "Agent refund of {{amount}} recorded ({{method}})",
       "differencePaid": "Difference of {{amount}} paid to the agent",
       "writtenOff": "{{amount}} written off: {{reason}}",
-      "reconciled": "Marked as reconciled"
+      "reconciled": "Marked as reconciled",
+      "payoutUnknown": "Payout {{reference}} has an unknown status",
+      "payoutAwaitingChecker": "Payout {{reference}} of {{amount}} is waiting for a checker"
     },
     "pre": {
       "created": "{{number}} submitted for {{total}}",
@@ -646,7 +653,8 @@
     },
     "purchase": {
       "recorded": "Purchase {{number}}: {{kg}} kg for {{amount}}",
-      "walletChanged": "Payout wallet changed to {{number}}"
+      "walletChanged": "Payout wallet changed to {{number}}",
+      "paid": "Paid {{amount}} to the farmer ({{reference}})"
     },
     "bag": {
       "replaced": "Bag {{from}} replaced by {{to}} (variance {{variance}} kg)"
@@ -654,12 +662,26 @@
     "payment": {
       "successful": "Payment {{reference}} of {{amount}} to {{name}} succeeded",
       "failed": "Payment {{reference}} of {{amount}} to {{name}} failed",
-      "unknown": "Payment {{reference}} to {{name}} has an unknown status"
+      "unknown": "Payment {{reference}} to {{name}} has an unknown status",
+      "initiated": "Payment {{reference}} of {{amount}} to {{name}} started",
+      "awaitingChecker": "Payment {{reference}} of {{amount}} to {{name}} is waiting for a checker",
+      "checked": "Payment {{reference}} approved by the checker",
+      "rejected": "Payment {{reference}} rejected by the checker: {{reason}}",
+      "reversed": "Payment {{reference}} marked as reversed: {{reason}}"
     },
     "method": {
       "MOMO": "mobile money",
       "MANUAL": "manual",
       "MOMO_COLLECT": "mobile-money collection"
+    },
+    "collection": {
+      "requested": "Collection {{reference}} of {{amount}} requested from {{name}}",
+      "approved": "{{name}} approved collection {{reference}} ({{amount}})",
+      "declined": "{{name}} declined collection {{reference}} ({{amount}})"
+    },
+    "wallet": {
+      "topUpRequested": "Top-up of {{amount}} requested",
+      "toppedUp": "Wallet topped up with {{amount}}"
     }
   },
   "settings": {
@@ -1012,6 +1034,14 @@
       "review": "Review",
       "formVersion_one": "{{name}} v{{n}} · {{count}} question",
       "formVersion_other": "{{name}} v{{n}} · {{count}} questions"
+    },
+    "collection": {
+      "title": "Approve payment of {{amount}}?",
+      "body": "{{company}} is requesting this from your wallet for {{reason}} ({{reference}}).",
+      "pin": "Mobile money PIN",
+      "pinHint": "Prototype: any 4 digits.",
+      "approve": "Approve",
+      "decline": "Decline"
     }
   },
   "help": {
@@ -1149,11 +1179,13 @@
       "forms": "Journey 9: sign in as Aïcha (Kakao Ivoire) → Forms → Profil producteur → add Select one “Certification” using the shared list “Certifications” → Publish. It then appears in web registration, the mobile Register farmer flow, the farmer list’s Columns menu and the Reports field list.",
       "builder": "Drag types from the palette or click to add. The draft saves as you go; Publish creates the next version, and records keep the version they were captured with. Preview mobile opens the draft in the mobile window.",
       "purchaseRequests": "Journey 2 (web side): use Page actions in this panel for Yaw’s phone. 1) “Yaw submits a request”. 2) Sign in as Kwame → Approve. 3) Sign in as Efua → Approve, Confirm rate, Pay by mobile money — switch on “Next payout fails” first, then use Retry. 4) “Agent confirms funds received”. 5) “Sync 3 offline purchases” (one voice purchase, a consolidated bag). The request is auto-matched with a small refund: open the Reconciliation tab → Record refund.",
-      "purchases": "Purchases come from agents’ phones (Sync) or the web (Record purchase on a request). A purchase sharing a bag with another farmer has a consolidated bag reference. Bulk pay for direct-payment purchases arrives with the payments engine in phase 8.",
+      "purchases": "Purchases come from agents’ phones (Sync) or the web (Record purchase on a request). Journey 3: Direct-payment purchases → select the 4 unpaid purchases of Yaw’s ticket → Pay 4 by mobile money. Up to the company’s bulk batch size, all from the same request.",
       "bags": "Every bag code from purchases. Replace a damaged bag: the new code takes the contents, the weight variance and who did it are logged, and the purchases point to the new code.",
       "expenses": "PRE approvals use the company workflow (Vitara: level 1 automatic, then levels 2–4). Edit is only possible before the first human approval. Paying a PRE whose expense type triggers inbound creates an expected delivery at the agent’s warehouse.",
       "reconciliation": "Gaps within the company tolerance (Settings → Buying rules) reconcile automatically. Larger gaps are matched and wait for a refund, a top-up or a write-off within the limit.",
-      "priceBoard": "Read-only for managers. Paid prices come from purchases in each zone over the last 30 days. Suggest price uses the median paid price within the tolerance band; apply it in Settings → Price lists."
+      "priceBoard": "Read-only for managers. Paid prices come from purchases in each zone over the last 30 days. Suggest price uses the median paid price within the tolerance band; apply it in Settings → Price lists.",
+      "payments": "Payments over the company’s checker threshold (Settings → Payments) wait for a second person with the “check” permission — the person who started a payment can’t check it. Two seeded cash advances are waiting: sign in as Ama to approve them. Failed payments have Retry, Unknown ones Check status, successful ones can be marked reversed.",
+      "wallets": "Balances go down with every successful payout and up with reversals, collections and top-ups. Request top-up simulates the treasury transfer: the money lands a few seconds later."
     },
     "pageActions": "Page actions",
     "failNext": "Next payout fails",
@@ -1161,7 +1193,9 @@
     "action": {
       "agentRequest": "{{name}} submits a request from the phone",
       "fundsReceived": "Agent confirms funds received for {{number}}",
-      "syncPurchases": "Sync 3 offline purchases for {{number}} from the phone"
+      "syncPurchases": "Sync 3 offline purchases for {{number}} from the phone",
+      "approveCollection": "{{name}} approves the {{amount}} collection on the phone",
+      "declineCollection": "{{name}} declines the collection"
     }
   },
   "auth": {
@@ -2612,7 +2646,10 @@
       "makerCheckerHint": "A second person must release every payment batch.",
       "batch": "Bulk payment batch size",
       "errNone": "Switch on at least one provider.",
-      "errTier": "A fee tier starts above where it ends."
+      "errTier": "A fee tier starts above where it ends.",
+      "checkerFrom": "Checker needed from",
+      "withdrawal": "Withdrawal charge",
+      "withdrawalType": "Withdrawal charge type"
     },
     "msg": {
       "sms": "SMS providers",
@@ -2664,7 +2701,9 @@
       "copyFrom": "A copy of {{name}}",
       "create": "Create role",
       "errNoAdmin": "At least one role with people in it must keep “Manage roles”.",
-      "errName": "Every role needs a name."
+      "errName": "Every role needs a name.",
+      "payLimits": "Payment limits",
+      "payLimitsHint": "Per payment and per day for people with this role. 0 means no limit from the role."
     },
     "users": {
       "invite": "Invite",
@@ -4481,7 +4520,8 @@
       "preCreated": "{{number}} submitted",
       "preSaved": "{{number}} saved",
       "prePaid": "{{number}} paid ({{reference}})",
-      "prePaidManual": "{{number}} marked as paid"
+      "prePaidManual": "{{number}} marked as paid",
+      "collectionSent": "{{amount}} collection sent to {{name}}’s phone ({{reference}})"
     },
     "retry": "Retry",
     "confirmRate": "Confirm rate",
@@ -4803,6 +4843,203 @@
     },
     "applyInSettings": "Open price lists",
     "volumeShortSmall": "{{diff}} less than planned ({{planned}} planned, {{bought}} bought).",
-    "volumeOverSmall": "{{diff}} more than planned ({{planned}} planned, {{bought}} bought)."
+    "volumeOverSmall": "{{diff}} more than planned ({{planned}} planned, {{bought}} bought).",
+    "bulk": {
+      "noneUnpaid": "Select unpaid direct-payment purchases.",
+      "sameRequest": "Bulk pay works on purchases from the same request.",
+      "tooMany": "Up to {{max}} purchases at a time."
+    },
+    "payFarmer": "Pay {{farmer}} by mobile money",
+    "payRelated": "Pay all {{count}} together",
+    "relatedUnpaid_one": "{{count}} other purchase on this request is unpaid.",
+    "relatedUnpaid_other": "{{count}} other purchases on this request are unpaid."
+  },
+  "pay": {
+    "subtitle_one": "{{count}} payee · {{total}}",
+    "subtitle_other": "{{count}} payees · {{total}}",
+    "steps": "Steps",
+    "step": {
+      "payees": "Payees",
+      "charges": "Charges",
+      "confirm": "Confirm"
+    },
+    "walletNumber": "Wallet number for {{name}}",
+    "network": "Network for {{name}}",
+    "walletNumberShort": "Wallet number",
+    "lookingUp": "Looking up the name on the wallet…",
+    "nameOnWallet": "Name on wallet: {{name}} ✓",
+    "nameMismatch": "Name on wallet is {{name}}, not {{expected}}",
+    "confirmMismatch_one": "I checked with the payee: the wallet is right",
+    "confirmMismatch_other": "I checked the {{count}} names that don’t match",
+    "fee": "Provider fee",
+    "withdrawal": "Withdrawal charge",
+    "tax": "Tax",
+    "extraCharges": "Extra charges",
+    "received": "Payee receives",
+    "totalCompany": "Total paid by the company",
+    "includeWithdrawal": "Include withdrawal charges",
+    "includeWithdrawalHint": "Add the payee’s cash-out charge so they receive the full amount in hand.",
+    "whoPays": {
+      "company": "The company pays the provider fee.",
+      "payee": "The provider fee is deducted from what the payee receives."
+    },
+    "limit": {
+      "perPayment": "Above your per-payment limit of {{limit}}.",
+      "daily": "Above your daily limit of {{limit}} ({{used}} already sent today).",
+      "providerPerPayment": "Above the provider’s per-payment limit of {{limit}}.",
+      "providerDaily": "Above the provider’s daily limit of {{limit}} ({{used}} sent today).",
+      "balance": "Not enough money in the company wallet ({{limit}} available).",
+      "permission": "You don’t have the permission to start payments."
+    },
+    "requestTopUp": "Request top-up",
+    "payees": "Payees",
+    "payeesN_one": "{{count}} payee",
+    "payeesN_other": "{{count}} payees",
+    "balanceAfter": "{{before}} → {{after}} after this payment",
+    "checkerNeeded": "From {{amount}} a second person must check this payment before it is sent. It will wait in Payments → Awaiting checker.",
+    "sendsNow": "The money is sent as soon as you confirm.",
+    "back": "Back",
+    "next": "Next",
+    "done": "Done",
+    "submitForCheck": "Submit for checking",
+    "sendNow": "Send {{total}}",
+    "summary": "{{ok}} successful · {{failed}} failed · {{unknown}} unknown · {{waiting}} waiting for a checker",
+    "checkStatus": "Check status",
+    "retriedAs": "Retried as {{reference}}",
+    "titlePre": "Pay {{number}}",
+    "titleDifference": "Pay the difference on {{number}}",
+    "titleFarmer": "Pay farmer for {{number}}",
+    "titleBulk": "Pay {{count}} farmers on {{number}}",
+    "state": {
+      "FAILED": "Payout {{reference}} failed: {{reason}}",
+      "UNKNOWN": "Payout {{reference}} has an unknown status — check with the provider",
+      "AWAITING_CHECKER": "Payout {{reference}} is waiting for a second person to check it",
+      "PENDING": "Payout {{reference}} is about to be sent",
+      "PROCESSING": "Payout {{reference}} is with the provider…"
+    },
+    "openPayment": "Open payment",
+    "type": {
+      "AGENT_CASH_ADVANCE": "Agent cash advance",
+      "PRE_EXPENSE": "PRE expense",
+      "AGGREGATOR_PURCHASE": "Aggregator purchase",
+      "AGGREGATOR_EXPENSE": "Aggregator expense",
+      "FARMER_SUPPORT": "Farmer support",
+      "FARMER_PURCHASE": "Farmer purchase",
+      "BULK_FARMER_PURCHASE": "Bulk farmer purchase",
+      "WEEKLY_BUDGET": "Weekly budget",
+      "MONTHLY_ALLOWANCE": "Monthly allowance",
+      "COMMISSION": "Commission",
+      "FARMER_REFUND": "Refund to farmer",
+      "WAREHOUSE_EXPENSE": "Warehouse expense"
+    },
+    "kpi": {
+      "paid": "Total paid",
+      "count": "Payments",
+      "successRate": "{{pct}}% successful",
+      "failed": "Failed",
+      "awaiting": "Awaiting checker"
+    },
+    "breakdown": "By type and provider",
+    "byType": "Paid by type",
+    "byProvider": "Paid by provider",
+    "empty": "No payments match these filters.",
+    "search": "Search reference, payee or number",
+    "view": {
+      "all": "All",
+      "AWAITING_CHECKER": "Awaiting checker",
+      "inProgress": "In progress",
+      "FAILED": "Failed",
+      "UNKNOWN": "Unknown",
+      "REVERSED": "Reversed",
+      "collections": "Collections"
+    },
+    "initiatedBy": "Initiated by",
+    "approvedBy": "Checked by",
+    "period": "Period",
+    "currency": "Currency",
+    "approveSend": "Approve and send {{count}}",
+    "approveSendOne": "Approve and send",
+    "reject": "Reject",
+    "retrySelected": "Retry {{count}}",
+    "rejectTitle_one": "Reject {{count}} payment",
+    "rejectTitle_other": "Reject {{count}} payments",
+    "toast": {
+      "sending_one": "Sending {{count}} payment…",
+      "sending_other": "Sending {{count}} payments…",
+      "checked": "{{ok}} of {{count}} sent successfully",
+      "ownBlocked_one": "{{count}} skipped: you can’t check your own payment",
+      "ownBlocked_other": "{{count}} skipped: you can’t check your own payments",
+      "rejected_one": "{{count}} payment rejected",
+      "rejected_other": "{{count}} payments rejected",
+      "retried_one": "{{count}} payment retried",
+      "retried_other": "{{count}} payments retried",
+      "reversed": "{{reference}} marked as reversed"
+    },
+    "payer": "Payer",
+    "collectionFor": "For",
+    "requestedBy": "Requested by",
+    "noCollections": "No collections yet.",
+    "collectionStatus": {
+      "PENDING": "Waiting for the payer",
+      "SUCCESSFUL": "Collected",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "collectionWaiting": "Waiting for {{name}} to approve the {{amount}} collection on the phone ({{reference}}).",
+    "collectionDeclinedNote": "{{name}} declined collection {{reference}}. Record a manual refund or ask again.",
+    "bulk": "Bulk",
+    "retryBadge": "Retry",
+    "ownPayment": "You started this payment, so someone else must check it.",
+    "markReversed": "Mark as reversed",
+    "openPayable": "Open record",
+    "timeline": "Timeline",
+    "otherAttempts": "Other attempts for this record",
+    "response": "Provider response",
+    "event": {
+      "initiated": "Initiated",
+      "awaitingChecker": "Waiting for a checker",
+      "checked": "Checked and approved",
+      "rejectedByChecker": "Rejected by the checker",
+      "accepted": "Accepted by the provider",
+      "callback": {
+        "successful": "Callback: successful",
+        "failed": "Callback: failed",
+        "unknown": "No callback — status unknown"
+      },
+      "statusCheck": {
+        "successful": "Status check: successful",
+        "failed": "Status check: failed"
+      },
+      "retried": "Retried",
+      "reversed": "Reversed"
+    },
+    "reverseTitle": "Mark {{reference}} as reversed",
+    "reverseHint": "Use this when the provider has reversed the transfer. The company wallet is credited back."
+  },
+  "wal": {
+    "low": "Low balance",
+    "threshold": "Alert below",
+    "lastTopUp": "Last top-up",
+    "outToday": "Paid out today",
+    "pendingTopUp": "Top-up on its way",
+    "transactions": "Transactions · {{wallet}}",
+    "party": "Payee / payer",
+    "noTxns": "No transactions yet.",
+    "kind": {
+      "payout": "Payout",
+      "reversal": "Reversal",
+      "topUp": "Top-up",
+      "collection": "Collection"
+    },
+    "status": {
+      "SUCCESSFUL": "Successful",
+      "REVERSED": "Reversed",
+      "REQUESTED": "Requested",
+      "CREDITED": "Credited"
+    },
+    "topUpTitle": "Request top-up · {{wallet}}",
+    "topUpHint": "Treasury sends the money from the company bank account (simulated).",
+    "topUpNote": "Note for treasury",
+    "topUpSent": "Top-up of {{amount}} requested"
   }
 }

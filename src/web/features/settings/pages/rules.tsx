@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 import { FlaskConical, KeyRound, Send } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'sonner';
-import type { FormBinding, Lang } from '@/types';
+import type { FormBindingKey, Lang } from '@/types';
+import { BINDING_OF_KEY } from '@/data/forms/library';
+import { useFormStore } from '@/stores/formStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -116,27 +118,30 @@ export function DataQualityPage() {
 
 // ---------------------------------------------------------------- Forms
 
-const FORM_KEYS = ['formBindings', 'formLibrary'] as const;
-const BINDINGS: FormBinding[] = ['farmer', 'community', 'farmerGroup', 'nursery', 'plot', 'plotMonitoring', 'treeMonitoring', 'nurseryMonitoring', 'workshopFeedback', 'recoveryFeedback', 'agentReport'];
+const FORM_KEYS = ['formBindings'] as const;
+const BINDINGS: FormBindingKey[] = ['farmer', 'community', 'farmerGroup', 'nursery', 'plot', 'plotMonitoring', 'treeMonitoring', 'nurseryMonitoring', 'workshopFeedback', 'recoveryFeedback', 'agentReport'];
 
 export function FormsPage() {
   const d = useSettingsDraft('forms', FORM_KEYS);
-  const { formBindings, formLibrary } = d.value;
+  const { formBindings } = d.value;
+  const { orgId } = useActor();
+  const allForms = useFormStore((s) => s.forms);
+  const forms = useMemo(() => allForms.filter((f) => f.orgId === orgId), [allForms, orgId]);
   const { t } = useT();
   return (
     <SettingsFrame page="forms" {...bind(d)} actions={<Button variant="secondary" asChild><NavLink to="/app/forms">{t('set.forms.open')}</NavLink></Button>}>
       <Section title={t('set.forms.bindings')} description={t('set.forms.bindingsHint')}>
         <EditTable head={[t('set.forms.profile'), t('set.forms.form'), t('set.forms.version')]} className="[&_table]:min-w-0">
           {BINDINGS.map((b) => {
-            const options = formLibrary.filter((x) => x.binding === b);
-            const current = formLibrary.find((x) => x.id === formBindings[b]);
+            const options = forms.filter((x) => x.binding === BINDING_OF_KEY[b] && x.versions.length);
+            const current = options.find((x) => x.id === formBindings[b]);
             return (
               <tr key={b}>
                 <td className="font-medium text-ink">{t(`set.forms.binding.${b}`)}</td>
                 <td className="w-80">
                   <Select value={formBindings[b] ?? ''} onChange={(id) => d.set('formBindings', { ...formBindings, [b]: id || undefined })} options={[{ value: '', label: t('set.forms.noForm') }, ...options.map((o) => ({ value: o.id, label: o.name }))]} aria-label={t('set.forms.form')} />
                 </td>
-                <td className="w-28">{current ? <Badge tone="neutral">{t('set.forms.v', { n: current.version })}</Badge> : <span className="text-muted">—</span>}</td>
+                <td className="w-28">{current ? <NavLink to={`/app/forms/${current.id}`}><Badge tone="neutral">{t('set.forms.v', { n: current.versions[current.versions.length - 1]!.version })}</Badge></NavLink> : <span className="text-muted">—</span>}</td>
               </tr>
             );
           })}

@@ -163,8 +163,9 @@ export interface FieldTask {
   orgId: string;
   agentId: string;
   userId: string;
-  kind: 'qualityFix';
-  entity: QualityEntity;
+  kind: 'qualityFix' | 'surveyFix';
+  /** For survey fixes the record is the response. */
+  entity: QualityEntity | 'response';
   recordId: string;
   issueIds: string[];
   fields: string[];

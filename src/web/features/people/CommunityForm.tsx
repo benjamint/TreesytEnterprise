@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/shared/Field';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { FormFields } from '@/components/forms/FormFields';
-import { communityProfileForm } from '@/data/forms/profiles';
+import { useLiveForm } from '@/services/formService';
 import { validateAnswers } from '@/engines/forms';
 import { ancestorAtLevel, levelLabel, pathLabel } from '@/engines/locations';
 import { recheck } from '@/services/qualityService';
@@ -25,7 +25,7 @@ export function CommunityForm({ open, onClose, community }: { open: boolean; onC
   const settings = useOrgSettings();
   const nodes = useOrgRows(useLocationStore((s) => s.nodes));
   const lk = useLookups();
-  const form = useMemo(() => communityProfileForm(orgId), [orgId]);
+  const form = useLiveForm('communityProfile');
   const leafLevel = settings.locationLevels[settings.locationLevels.length - 1]?.id;
   const parentLevel = settings.locationLevels[settings.locationLevels.length - 2]?.id;
   const parents = useMemo(() => nodes.filter((n) => n.levelId === parentLevel).sort((a, b) => a.name.localeCompare(b.name)), [nodes, parentLevel]);

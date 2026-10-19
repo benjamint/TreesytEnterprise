@@ -16,7 +16,7 @@ import { usePageTour } from '@/components/shared/PageTour';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { AnswersView } from '@/components/forms/FormFields';
 import { Donut, HBars, StackedColumns } from '@/components/charts/charts';
-import { farmerProfileForm } from '@/data/forms/profiles';
+import { useLiveForm } from '@/services/formService';
 import { buildLedger } from '@/engines/loans';
 import { FARMER_MODEL, farmerScore } from '@/services/scoreService';
 import { formatPhone } from '@/lib/format';
@@ -203,7 +203,7 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
   const groups = useOrgRows(useGroupStore((s) => s.groups));
   const issues = useOrgRows(useQualityStore((s) => s.issues));
   const activity = useActivityStore((s) => s.activity);
-  const form = useMemo(() => farmerProfileForm(orgId), [orgId]);
+  const form = useLiveForm('farmerProfile');
   const mine = useMemo(() => {
     const ps = purchases.filter((p) => p.farmerId === row.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     const ids = new Set(ps.map((p) => p.id));
@@ -391,8 +391,8 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
 function FarmerDashboard({ rows }: { rows: FarmerRow[] }) {
   const { t, terms } = useT();
   const f = useFormat();
-  const { orgId, lang } = useActor();
-  const form = useMemo(() => farmerProfileForm(orgId), [orgId]);
+  const { lang } = useActor();
+  const form = useLiveForm('farmerProfile');
   const optionLabel = (qid: string, value: string) => {
     const q = form.sections.flatMap((s) => s.questions).find((x) => x.id === qid);
     const o = q?.options?.find((x) => x.value === value);

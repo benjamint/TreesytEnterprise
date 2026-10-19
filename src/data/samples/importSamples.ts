@@ -1,5 +1,5 @@
 import type { Community, Farmer, Lang } from '@/types';
-import { farmerProfileForm } from '@/data/forms/profiles';
+import { getLiveForm } from '@/services/formService';
 import { ORG } from '@/data/seed/templates';
 
 /**
@@ -40,7 +40,7 @@ export function sampleFarmersCsv(opts: { orgId: string; lang: Lang; communities:
   const yes = head === HEAD.fr ? 'Oui' : 'Yes';
   const sex = head === HEAD.fr ? { F: 'F', M: 'H' } : { F: 'F', M: 'M' };
   const coms = [...opts.communities].sort((a, b) => b.agentIds.length - a.agentIds.length || a.name.localeCompare(b.name)).filter((c) => c.agentIds.length).slice(0, 5);
-  const edu = farmerProfileForm(orgId).sections.flatMap((s) => s.questions).find((q) => q.id === 'educationLevel')?.options ?? [];
+  const edu = getLiveForm(orgId, 'farmerProfile').sections.flatMap((s) => s.questions).find((q) => q.id === 'educationLevel')?.options ?? [];
   const eduLabel = (i: number) => { const o = edu[i % Math.min(3, edu.length)]; return o ? o.label[head === HEAD.fr ? 'fr' : 'en'] ?? o.value : ''; };
   const taken = new Set(farmers.map((f) => f.phone));
   const prefixes = ci ? ['7', '5', '1'] : ['24', '54', '20', '27'];

@@ -1,4 +1,5 @@
-import type { Commodity, FormRef, Lang, OrgSettings } from '@/types';
+import type { Commodity, Lang, OrgSettings } from '@/types';
+import { formBindingsFor } from '@/data/forms/library';
 import type { NotificationRule } from '@/engines/notify';
 import type { MessageTemplate } from '@/engines/templates';
 import type { QualityRule } from '@/engines/rules';
@@ -10,7 +11,7 @@ import { toMinor } from '@/engines/money';
  */
 export type ExtraSettings = Pick<
   OrgSettings,
-  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'support' | 'fieldTeam' | 'qualityRules' | 'formLibrary'
+  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'support' | 'fieldTeam' | 'qualityRules'
   | 'formBindings' | 'biometrics' | 'notificationRules' | 'templates' | 'messaging' | 'integrations' | 'privacy'
 >;
 
@@ -27,20 +28,6 @@ export const SUB_FEATURES: { module: string; key: string }[] = [
   { module: 'ai', key: 'voiceQuestions' },
   { module: 'fieldTeam', key: 'geofences' },
 ];
-
-const FORM_BINDINGS = [
-  'farmer', 'community', 'farmerGroup', 'nursery', 'plot', 'plotMonitoring', 'treeMonitoring', 'nurseryMonitoring',
-  'workshopFeedback', 'recoveryFeedback', 'agentReport',
-] as const;
-
-function formLibrary(prefix: string, names: Record<(typeof FORM_BINDINGS)[number], string>, versions: Partial<Record<string, number>> = {}): FormRef[] {
-  const base = FORM_BINDINGS.map((b) => ({ id: `${prefix}_frm_${b}`, name: names[b], binding: b, version: versions[b] ?? 1 }));
-  // A second, older form for the main profiles so the binding is a real choice.
-  const extra = (['farmer', 'community', 'farmerGroup'] as const).map((b) => ({ id: `${prefix}_frm_${b}_lite`, name: `${names[b]} (short)`, binding: b, version: 1 }));
-  return [...base, ...extra];
-}
-
-const bindAll = (lib: FormRef[]) => Object.fromEntries(lib.filter((f) => !f.id.endsWith('_lite')).map((f) => [f.binding, f.id]));
 
 /** Vitara's rules today (PRD C5); the Vitara-specific ones ship disabled with a note. */
 function rules(): QualityRule[] {
@@ -129,11 +116,6 @@ const consent: Record<Lang, string> = {
 
 export function vitaraExtras(orgId: string, commodities: Commodity[], currency = 'GHS'): ExtraSettings {
   const m = (major: number) => toMinor(major, currency);
-  const lib = formLibrary('vit', {
-    farmer: 'Farmer profile', community: 'Community profile', farmerGroup: 'Farmer group profile', nursery: 'Nursery registration',
-    plot: 'Plot registration', plotMonitoring: 'Plot monitoring', treeMonitoring: 'Tree monitoring visit', nurseryMonitoring: 'Nursery monitoring round',
-    workshopFeedback: 'Workshop feedback', recoveryFeedback: 'Recovery feedback', agentReport: 'Agent report',
-  }, { farmer: 3, community: 3, farmerGroup: 2 });
   return {
     features: Object.fromEntries(SUB_FEATURES.map((f) => [f.key, true])),
     extraCharges: [
@@ -184,8 +166,7 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       ],
     },
     qualityRules: rules(),
-    formLibrary: lib,
-    formBindings: bindAll(lib),
+    formBindings: formBindingsFor(orgId),
     biometrics: { thumbprint: true, consentType: 'AUDIO', consentText: consent, nfcCards: true, cardKeyRotatedAt: '2026-06-01T09:00:00.000Z' },
     notificationRules: notificationRules(orgId),
     templates: templates(),

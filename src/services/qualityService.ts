@@ -133,7 +133,7 @@ export function applyFix(taskId: string, values: Record<string, unknown>, actorI
     }
   }
   useActivityStore.getState().log(makeEvent(task.orgId, task.entity, task.recordId, 'quality.fixed', { fields: Object.keys(values).join(', ') }, actorId, { device }));
-  recheck(task.orgId, task.entity, [task.recordId], 'MOBILE', actorId);
+  if (task.entity !== 'response') recheck(task.orgId, task.entity, [task.recordId], 'MOBILE', actorId);
   // Anything still failing goes back to the review queue.
   const still = useQualityStore.getState().issues.filter((i) => task.issueIds.includes(i.id) && ACTIVE.has(i.status)).map((i) => i.id);
   if (still.length) store.updateIssues(still, { status: 'OPEN', taskId: undefined });

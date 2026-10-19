@@ -6,17 +6,17 @@ import { ORG } from '@/data/seed/templates';
  * until then they are the published v1/v3 forms. Answers live in `customFields`.
  */
 
-type L = Partial<Record<'en' | 'fr', string>>;
-const l = (en: string, fr: string): L => ({ en, fr });
-const opt = (value: string, en: string, fr: string) => ({ value, label: l(en, fr) });
-const q = (id: string, type: Question['type'], label: L, extra: Partial<Question> = {}): Question => ({ id, type, label, mapsTo: `customFields.${id}`, ...extra });
-const yes = (id: string, label: L, extra: Partial<Question> = {}) => q(id, 'yesNo', label, extra);
+export type L = Partial<Record<'en' | 'fr', string>>;
+export const l = (en: string, fr: string): L => ({ en, fr });
+export const opt = (value: string, en: string, fr: string) => ({ value, label: l(en, fr) });
+export const q = (id: string, type: Question['type'], label: L, extra: Partial<Question> = {}): Question => ({ id, type, label, mapsTo: `customFields.${id}`, ...extra });
+export const yes = (id: string, label: L, extra: Partial<Question> = {}) => q(id, 'yesNo', label, extra);
 
 const MARITAL = [opt('married', 'Married', 'Marié(e)'), opt('single', 'Single', 'Célibataire'), opt('widowed', 'Widowed', 'Veuf/veuve'), opt('divorced', 'Divorced', 'Divorcé(e)')];
 const married = { combinator: 'AND' as const, conditions: [{ questionId: 'maritalStatus', op: 'equals' as const, value: 'married' }] };
 const hasId = { combinator: 'AND' as const, conditions: [{ questionId: 'idType', op: 'notEquals' as const, value: 'none' }] };
 
-const VITARA_FARMER: Question[] = [
+export const VITARA_FARMER: Question[] = [
   q('maritalStatus', 'selectOne', l('Marital status', 'Situation matrimoniale'), { options: MARITAL }),
   q('spouseName', 'shortText', l('Spouse name', 'Nom du conjoint'), { showIf: married }),
   q('spousePhone', 'phone', l('Spouse phone', 'Téléphone du conjoint'), { showIf: married }),
@@ -47,22 +47,21 @@ const VITARA_FARMER: Question[] = [
   }),
 ];
 
-const KAKAO_FARMER: Question[] = [
+export const KAKAO_FARMER: Question[] = [
   q('maritalStatus', 'selectOne', l('Marital status', 'Situation matrimoniale'), { options: MARITAL.slice(0, 3) }),
   q('numberOfChildren', 'number', l('Number of children', 'Nombre d’enfants'), { validation: { min: 0, max: 30 } }),
   q('householdSize', 'number', l('Household size', 'Taille du ménage'), { required: true, validation: { min: 1, max: 40 } }),
   q('language', 'selectOne', l('Language', 'Langue'), { options: ['Bété', 'Baoulé', 'Dioula', 'Sénoufo', 'Malinké', 'Français'].map((x) => opt(x, x, x)) }),
   q('educationLevel', 'selectOne', l('Education level', 'Niveau d’études'), { options: [opt('none', 'None', 'Aucun'), opt('primary', 'Primary', 'Primaire'), opt('secondary', 'Secondary', 'Secondaire'), opt('tertiary', 'Tertiary', 'Supérieur')] }),
-  q('certification', 'selectOne', l('Certification', 'Certification'), { options: [opt('rainforestAlliance', 'Rainforest Alliance', 'Rainforest Alliance'), opt('fairtrade', 'Fairtrade', 'Fairtrade'), opt('none', 'None', 'Aucune')] }),
   q('cocoaHectares', 'decimal', l('Cocoa area (ha)', 'Surface cacao (ha)'), { validation: { min: 0, max: 200 } }),
   q('landOwnership', 'selectOne', l('Land ownership', 'Propriété foncière'), { options: [opt('owned', 'Owned', 'Propriétaire'), opt('family', 'Family land', 'Terre familiale'), opt('sharecropping', 'Sharecropping', 'Métayage')] }),
   q('idType', 'selectOne', l('ID type', 'Type de pièce'), { options: [opt('cni', 'National ID card', 'CNI'), opt('carteProducteur', 'Producer card', 'Carte producteur'), opt('none', 'None', 'Aucune')] }),
   q('idNumber', 'shortText', l('ID number', 'Numéro de pièce'), { showIf: hasId }),
 ];
 
-const GENERIC_FARMER: Question[] = [VITARA_FARMER[0]!, VITARA_FARMER[3]!, VITARA_FARMER[4]!, VITARA_FARMER[11]!, VITARA_FARMER[13]!, q('idNumber', 'shortText', l('ID number', 'Numéro de pièce'))];
+export const GENERIC_FARMER: Question[] = [VITARA_FARMER[0]!, VITARA_FARMER[3]!, VITARA_FARMER[4]!, VITARA_FARMER[11]!, VITARA_FARMER[13]!, q('idNumber', 'shortText', l('ID number', 'Numéro de pièce'))];
 
-const COMMUNITY: Question[] = [
+export const COMMUNITY: Question[] = [
   yes('organisedGroups', l('Has organised groups', 'A des groupements organisés')),
   q('groupsCount', 'number', l('Number of groups', 'Nombre de groupements'), { showIf: { combinator: 'AND', conditions: [{ questionId: 'organisedGroups', op: 'equals', value: true }] }, validation: { min: 0, max: 50 } }),
   yes('vslaAvailable', l('VSLA available', 'AVEC disponible')),
@@ -79,7 +78,7 @@ const COMMUNITY: Question[] = [
   yes('landForTreePlanting', l('Land for tree planting', 'Terrain pour planter des arbres')),
 ];
 
-const GROUP: Question[] = [
+export const GROUP: Question[] = [
   q('composition', 'selectOne', l('Membership composition', 'Composition'), { options: [opt('women', 'Women only', 'Femmes uniquement'), opt('men', 'Men only', 'Hommes uniquement'), opt('mixed', 'Mixed', 'Mixte')] }),
   yes('organisedLeadership', l('Has organised leadership', 'A une direction organisée')),
   yes('previousLoan', l('Took a previous loan', 'A déjà pris un prêt')),

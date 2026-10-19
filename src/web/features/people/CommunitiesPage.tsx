@@ -16,7 +16,7 @@ import { usePageTour } from '@/components/shared/PageTour';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { AnswersView } from '@/components/forms/FormFields';
 import { HBars, StackedColumns } from '@/components/charts/charts';
-import { communityProfileForm } from '@/data/forms/profiles';
+import { useLiveForm } from '@/services/formService';
 import { pathLabel } from '@/engines/locations';
 import { COMMUNITY_MODEL, communityScore } from '@/services/scoreService';
 import { formatPhone } from '@/lib/format';
@@ -193,7 +193,7 @@ function CommunityDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => vo
   const groups = useOrgRows(useGroupStore((s) => s.groups));
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
   const leaders = useOrgRows(useRecordsStore((s) => s.leaders));
-  const form = useMemo(() => communityProfileForm(orgId), [orgId]);
+  const form = useLiveForm('communityProfile');
   const mine = useMemo(() => ({
     farmers: farmers.filter((x) => x.communityId === row.id),
     groups: groups.filter((g) => g.communityId === row.id),

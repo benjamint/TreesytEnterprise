@@ -4,7 +4,7 @@ import type { Question } from '@/engines/forms';
 import { ancestorAtLevel, importLocations } from '@/engines/locations';
 import { initialsOf } from '@/engines/numbering';
 import { makeEvent } from '@/engines/activity';
-import { communityProfileForm, farmerProfileForm } from '@/data/forms/profiles';
+import { getLiveForm } from './formService';
 import { isValidPhone } from '@/lib/format';
 import { uid } from '@/lib/utils';
 import { useActivityStore } from '@/stores/activityStore';
@@ -56,7 +56,7 @@ const labelFor = (q: Question, lang: Lang) => q.label[lang] ?? q.label.en ?? q.i
 /** Fields for each import type, generated from the company's current forms and levels. */
 export function importFields(type: ImportType, orgId: string, settings: OrgSettings, lang: Lang): ImportField[] {
   if (type === 'farmers') {
-    const form = farmerProfileForm(orgId);
+    const form = getLiveForm(orgId, 'farmerProfile');
     const qs = form.sections.flatMap((s) => s.questions);
     return [
       { key: 'farmerCode', label: { key: 'imp.field.farmerCode' }, kind: 'text', aliases: ['farmer id', 'farmer code', 'id producteur', 'code'], path: 'farmerCode' },
@@ -73,7 +73,7 @@ export function importFields(type: ImportType, orgId: string, settings: OrgSetti
     ];
   }
   if (type === 'communities') {
-    const qs = communityProfileForm(orgId).sections.flatMap((s) => s.questions);
+    const qs = getLiveForm(orgId, 'communityProfile').sections.flatMap((s) => s.questions);
     return [
       { key: 'name', label: { key: 'imp.field.name' }, required: true, kind: 'text', aliases: ['name', 'community', 'community name', 'nom', 'village'], path: 'name' },
       { key: 'parent', label: { key: 'imp.field.parent' }, required: true, kind: 'parent', aliases: ['district', 'parent', 'location', 'departement', 'département', 'area'], path: 'locationNodeId' },

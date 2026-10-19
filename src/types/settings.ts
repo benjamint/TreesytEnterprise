@@ -240,16 +240,11 @@ export interface FieldTeamSettings {
   issueCategories: { id: string; name: string; consequence: 'NOTE' | 'WARNING' | 'PENALTY' | 'SUSPENSION' }[];
 }
 
-export type FormBinding =
+/** Settings → Forms: which form is the profile form for each kind of record. */
+export type FormBindingKey =
   | 'farmer' | 'community' | 'farmerGroup' | 'nursery' | 'plot' | 'plotMonitoring' | 'treeMonitoring'
   | 'nurseryMonitoring' | 'workshopFeedback' | 'recoveryFeedback' | 'agentReport';
 
-export interface FormRef {
-  id: string;
-  name: string;
-  binding: FormBinding;
-  version: number;
-}
 
 export interface Biometrics {
   thumbprint: boolean;
@@ -351,8 +346,7 @@ export interface OrgSettings {
   support: SupportSettings;
   fieldTeam: FieldTeamSettings;
   qualityRules: QualityRule[];
-  formLibrary: FormRef[];
-  formBindings: Partial<Record<FormBinding, string>>;
+  formBindings: Partial<Record<FormBindingKey, string>>;
   biometrics: Biometrics;
   notificationRules: NotificationRule[];
   templates: MessageTemplate[];

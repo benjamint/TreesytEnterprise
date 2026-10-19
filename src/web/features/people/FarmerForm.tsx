@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { FormFields } from '@/components/forms/FormFields';
-import { farmerProfileForm } from '@/data/forms/profiles';
+import { useLiveForm } from '@/services/formService';
 import { validateAnswers } from '@/engines/forms';
 import { ancestorAtLevel } from '@/engines/locations';
 import { initialsOf } from '@/engines/numbering';
@@ -46,7 +46,7 @@ export function FarmerForm({ open, onClose, farmer, onOpenFarmer }: { open: bool
   const settings = useOrgSettings();
   const lk = useLookups();
   const farmers = useOrgRows(useFarmerStore((s) => s.farmers));
-  const form = useMemo(() => farmerProfileForm(orgId), [orgId]);
+  const form = useLiveForm('farmerProfile');
   const country = org.countries[0] ?? 'GH';
   const communities = useMemo(() => [...lk.communities].sort((a, b) => a.name.localeCompare(b.name)), [lk.communities]);
   const [firstName, setFirstName] = useState(farmer?.firstName ?? '');

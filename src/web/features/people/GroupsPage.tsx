@@ -16,7 +16,7 @@ import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/comp
 import { usePageTour } from '@/components/shared/PageTour';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { AnswersView, FormFields } from '@/components/forms/FormFields';
-import { groupProfileForm } from '@/data/forms/profiles';
+import { useLiveForm } from '@/services/formService';
 import { validateAnswers } from '@/engines/forms';
 import { toMinor } from '@/engines/money';
 import { GROUP_MODEL, groupScore, type ManualScores } from '@/services/scoreService';
@@ -145,7 +145,7 @@ function GroupForm({ group, onClose }: { group?: FarmerGroup; onClose: (id?: str
   const { orgId, userId } = useActor();
   const { t, terms } = useT();
   const lk = useLookups();
-  const form = useMemo(() => groupProfileForm(orgId), [orgId]);
+  const form = useLiveForm('groupProfile');
   const [g, setG] = useState<FarmerGroup>(group ?? {
     id: uid('grp'), orgId, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), createdBy: userId ?? 'system', name: '', type: 'COOPERATIVE',
     communityId: [...lk.communities].sort((a, b) => a.name.localeCompare(b.name))[0]?.id ?? '', established: new Date().toISOString().slice(0, 10), paymentOption: 'MOMO', score: 0, scoreStatus: 'PENDING_REVIEW', customFields: {},
@@ -198,7 +198,7 @@ function GroupDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => void; 
   const farmers = useOrgRows(useFarmerStore((s) => s.farmers));
   const memberships = useOrgRows(useGroupStore((s) => s.groupMemberships));
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
-  const form = useMemo(() => groupProfileForm(orgId), [orgId]);
+  const form = useLiveForm('groupProfile');
   const [adding, setAdding] = useState(false);
   const canEdit = useCan()('groups.edit');
   const mine = useMemo(() => memberships.filter((m) => m.groupId === row.id).sort((a, b) => (a.leftAt ? 1 : 0) - (b.leftAt ? 1 : 0) || ROLES.indexOf(b.role) - ROLES.indexOf(a.role)), [memberships, row.id]);

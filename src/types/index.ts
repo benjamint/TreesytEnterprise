@@ -6,3 +6,4 @@ export * from './people';
 export * from './buying';
 export * from './money';
 export * from './system';
+export * from './forms';

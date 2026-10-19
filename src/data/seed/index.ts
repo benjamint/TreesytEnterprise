@@ -1,4 +1,5 @@
 import type {
+  FormRecord, OptionList, SurveyResponse,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
   AuditEntry, GroupMembership, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
@@ -13,9 +14,10 @@ import { QUESTION_TYPES } from '@/engines/forms';
 import { generateOperations, priceRisk, type AgentSeed, type OpsResult } from './operations';
 import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
+import { seedFormData } from './forms';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 5;
+export const SEED_VERSION = 6;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -58,6 +60,9 @@ export interface SeedData {
   documents: RecordDocument[];
   qualityIssues: QualityIssue[];
   fieldTasks: FieldTask[];
+  forms: FormRecord[];
+  optionLists: OptionList[];
+  responses: SurveyResponse[];
   savings: SavingsEntry[];
 }
 
@@ -181,7 +186,7 @@ export function buildSeed(now = new Date()): SeedData {
   );
 
   // ---- Phase 5: ID numbers, leaders, documents, savings, data-quality issues ----
-  const extra = { leaders: [] as Leader[], documents: [] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[] };
+  const extra = { leaders: [] as Leader[], documents: [] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[], forms: [] as FormRecord[], optionLists: [] as OptionList[], responses: [] as SurveyResponse[], fieldTasks: [] as FieldTask[] };
   for (const [o, orgId, lang, currency] of [[vit, ORG.vitara, 'en', 'GHS'], [ki, ORG.kakao, 'fr', 'XOF']] as const) {
     assignIdNumbers(o.farmers);
     const agentUser = new Map(o.agents.map((a) => [a.id, a.userId]));
@@ -190,6 +195,20 @@ export function buildSeed(now = new Date()): SeedData {
     scoreGroups(o.groups, o.groupMemberships, o.farmers, o.purchases, clock.iso(clock.daysAgo(40)));
     extra.savings.push(...seedSavings(orgId, currency, o.groups, o.groupMemberships, clock.today));
     extra.qualityIssues.push(...seedIssues(orgId, settings[orgId]!, o.farmers, o.communities, clock.today));
+    // ---- Phase 6: forms, option lists, responses; survey fixes waiting on agents' phones ----
+    const owner = orgId === ORG.vitara ? 'u_ama' : 'u_aicha';
+    const fd = seedFormData({
+      orgId, prefix: orgId === ORG.vitara ? 'vit' : 'ki', ownerId: owner, now: clock.today, seed: orgId === ORG.vitara ? 6061 : 6062,
+      pattern: settings[orgId]!.numbering.find((p) => p.docType === 'surveyResponse')!, sequences: o.sequences,
+      farmers: o.farmers, communities: o.communities, groups: o.groups, agents: o.agents,
+    });
+    o.sequences = fd.sequences;
+    extra.forms.push(...fd.forms);
+    extra.optionLists.push(...fd.optionLists);
+    extra.responses.push(...fd.responses);
+    for (const r of fd.responses.filter((x) => x.status === 'NEEDS_FIX' && x.agentId)) {
+      extra.fieldTasks.push({ id: `task_${r.id}`, orgId, agentId: r.agentId!, userId: r.userId, kind: 'surveyFix', entity: 'response', recordId: r.id, issueIds: [], fields: [], note: r.reviews[0]?.comment, status: 'OPEN', createdAt: r.reviews[0]?.at ?? r.submittedAt, createdBy: owner });
+    }
   }
 
   const ops = [vit, ki];
@@ -202,7 +221,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, fieldTasks: [],
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra,
   };
 }
 

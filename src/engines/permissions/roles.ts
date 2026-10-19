@@ -8,7 +8,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
     permissions: [
       '*.view', '*.export', '!platform.*', '!settings.*', 'dashboard.customise', 'purchaseRequests.approveManagement',
       'purchaseRequests.create', 'purchaseRequests.edit', 'expenses.approveLevel3', 'aggregators.approve',
-      'aggregators.create', 'support.approve', 'recovery.reviewManager', 'weeklyPlans.*', 'agents.edit',
+      'aggregators.create', 'aggregators.edit', 'support.approve', 'recovery.reviewManager', 'weeklyPlans.*', 'agents.edit',
       'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score',
     ],
   },

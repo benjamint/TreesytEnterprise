@@ -122,8 +122,26 @@ export interface Supplier extends OrgEntity {
   phone: string;
   address: string;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'BLOCKED';
-  payout: { method: 'MOMO' | 'BANK'; providerOrBank: string; number: string };
+  payout: { method: 'MOMO' | 'BANK'; providerOrBank: string; number: string; accountName?: string };
+  contactPerson?: string;
+  email?: string;
+  /** KYC: ID type and number (the documents themselves are record documents). */
+  idType?: string;
+  idNumber?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  blockedReason?: string;
 }
+
+/** Truck loading for an aggregator purchase (PRD D4): sets the order In transit. */
+export interface AggDelivery { driver: string; contact: string; plate: string; bags: number; kg: number; waybill?: string; at: string; by: string }
+/** Proof of delivery at the destination: sets the order Delivered and computes the result. */
+export interface AggProof { customer: string; bags: number; kg: number; unitPrice: Money; weighbridge?: string; invoice?: string; qualityReport?: string; at: string; by: string }
+/**
+ * Settling a gap. RECEIVE: the supplier owes the company — in goods (a new PO with bags and kg)
+ * or money. SUPPLIER: the company pays the supplier what it still owes, with proof.
+ */
+export interface AggRefund { id: string; kind: 'RECEIVE' | 'SUPPLIER'; method: 'GOODS' | 'MONEY'; amount?: Money; poNumber?: string; bags?: number; kg?: number; proof?: string; note?: string; at: string; by: string }
 
 export interface AggregatorPurchase extends OrgEntity {
   number: string;
@@ -134,14 +152,42 @@ export interface AggregatorPurchase extends OrgEntity {
   weightPerBagKg: number;
   expectedBags: number;
   expectedKg: number;
+  /** Price per kg and total, in the deal currency. */
   unitPrice: Money;
   total: Money;
   dealCurrency: string;
+  /** Company currency per one unit of the deal currency (1 when they are the same). */
   exchangeRate: number;
   includesPre: boolean;
+  listPrice?: Money;
+  overrideReason?: string;
+  poFile?: string;
+  weighbridgeFile?: string;
   status: string;
   wf: WorkflowState;
   approvals: ApprovalRecord[];
+  /** Money paid to the supplier, in the company currency. */
+  disbursements: Disbursement[];
+  delivery?: AggDelivery;
+  proof?: AggProof;
+  refunds?: AggRefund[];
+  reconciledAt?: string;
+  reconciledBy?: string;
   orderStatus: 'NONE' | 'IN_TRANSIT' | 'DELIVERED';
   paymentStatus: 'NONE' | 'FULFILLED' | 'RECEIVE_REFUND' | 'REFUND_SUPPLIER' | 'RECONCILED';
+}
+
+/** Aggregator expense (ACSPRE): logistics lines for an aggregator purchase, approved then paid. */
+export interface AggregatorExpense extends OrgEntity {
+  number: string;
+  aggregatorPurchaseId: string;
+  bags: number;
+  lines: ExpenseLine[];
+  total: Money;
+  payee: { name: string; providerId: string; number: string };
+  status: string;
+  wf: WorkflowState;
+  approvals: ApprovalRecord[];
+  paymentStatus: 'NOT_PAID' | 'PENDING' | 'PAID' | 'FAILED';
+  disbursement?: { method: 'MOMO' | 'MANUAL'; at: string; by: string; paymentId?: string; proof?: string };
 }

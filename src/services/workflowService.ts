@@ -14,11 +14,12 @@ import { useSettingsStore } from '@/stores/settingsStore';
  * record, writes activity events and notifies whoever can act next.
  */
 
-type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases';
+type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases' | 'aggregatorExpenses';
 export const DOC_SOURCES: Partial<Record<DocType, { key: BuyingKey; entity: string; path: string }>> = {
   purchaseRequest: { key: 'requests', entity: 'purchaseRequest', path: '/app/purchase-requests' },
   preExpense: { key: 'expenses', entity: 'preExpense', path: '/app/expenses' },
   aggregatorPurchase: { key: 'aggregatorPurchases', entity: 'aggregatorPurchase', path: '/app/aggregators' },
+  aggregatorExpense: { key: 'aggregatorExpenses', entity: 'aggregatorExpense', path: '/app/aggregators/expenses' },
 };
 
 export function workflowUser(userId: string, orgId: string): WorkflowUser {

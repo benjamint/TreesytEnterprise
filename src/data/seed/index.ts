@@ -1,7 +1,7 @@
 import type {
   FormRecord, OptionList, SurveyResponse,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
-  ActivityEvent, Agent, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
+  ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
   AuditEntry, GroupMembership, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
   Purchase, PurchaseRequest, Role, Supplier, User, Wallet, Warehouse, WorkflowDefinition,
 } from '@/types';
@@ -16,9 +16,10 @@ import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
 import { seedFormData } from './forms';
 import { enrichBuying, enrichPayments } from './buying';
+import { enrichAggregators } from './aggregators';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 10;
+export const SEED_VERSION = 11;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -51,6 +52,7 @@ export interface SeedData {
   expenses: PreExpense[];
   suppliers: Supplier[];
   aggregatorPurchases: AggregatorPurchase[];
+  aggregatorExpenses: AggregatorExpense[];
   payments: Payment[];
   wallets: Wallet[];
   loans: LoanAccount[];
@@ -136,6 +138,10 @@ export function buildSeed(now = new Date()): SeedData {
   enrichBuying(ki, settings[ORG.kakao]!, 'u_jeanmarc', clock.today, 'fr');
   enrichPayments(vit, settings[ORG.vitara]!, { financeUserId: 'u_efua', gapAgentUserId: 'u_yaw', today: clock.today });
   enrichPayments(ki, settings[ORG.kakao]!, { financeUserId: 'u_jeanmarc', today: clock.today });
+  const aggDocs = [
+    ...enrichAggregators(vit, settings[ORG.vitara]!, { creatorId: 'u_ibrahim', opsUserId: 'u_kwame', financeUserId: 'u_efua', today: clock.today, lang: 'en', customer: 'Vitara Central Warehouse, Tamale' }),
+    ...enrichAggregators(ki, settings[ORG.kakao]!, { creatorId: 'u_aicha', opsUserId: 'u_serge', financeUserId: 'u_jeanmarc', today: clock.today, lang: 'fr', customer: 'Magasin central Kakao Ivoire, Daloa' }),
+  ];
 
   // ---- Fixed demo moments (PRD 12.5) ----
   // 1. A Vitara request priced 18% above list → HIGH risk, waiting in Kwame's queue.
@@ -166,6 +172,7 @@ export function buildSeed(now = new Date()): SeedData {
       ...ops.requests.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('purchaseRequest'), type: 'purchaseRequest', number: r.number, link: `/app/purchase-requests?open=${r.id}` })),
       ...ops.expenses.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('preExpense'), type: 'preExpense', number: r.number, link: `/app/expenses?open=${r.id}` })),
       ...ops.aggregatorPurchases.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('aggregatorPurchase'), type: 'aggregatorPurchase', number: r.number, link: `/app/aggregators?open=${r.id}` })),
+      ...ops.aggregatorExpenses.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('aggregatorExpense'), type: 'aggregatorExpense', number: r.number, link: `/app/aggregators/expenses?open=${r.id}` })),
     ];
   };
   for (const [ops, orgId] of [[vit, ORG.vitara], [ki, ORG.kakao]] as const) {
@@ -192,7 +199,7 @@ export function buildSeed(now = new Date()): SeedData {
   );
 
   // ---- Phase 5: ID numbers, leaders, documents, savings, data-quality issues ----
-  const extra = { leaders: [] as Leader[], documents: [] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[], forms: [] as FormRecord[], optionLists: [] as OptionList[], responses: [] as SurveyResponse[], fieldTasks: [] as FieldTask[] };
+  const extra = { leaders: [] as Leader[], documents: [...aggDocs] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[], forms: [] as FormRecord[], optionLists: [] as OptionList[], responses: [] as SurveyResponse[], fieldTasks: [] as FieldTask[] };
   for (const [o, orgId, lang, currency] of [[vit, ORG.vitara, 'en', 'GHS'], [ki, ORG.kakao, 'fr', 'XOF']] as const) {
     assignIdNumbers(o.farmers);
     const agentUser = new Map(o.agents.map((a) => [a.id, a.userId]));
@@ -226,7 +233,7 @@ export function buildSeed(now = new Date()): SeedData {
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
-    expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), payments: cat('payments'),
+    expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
     wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra,
   };
 }

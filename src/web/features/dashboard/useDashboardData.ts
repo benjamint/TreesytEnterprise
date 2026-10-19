@@ -38,6 +38,7 @@ export function useDashboardData() {
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
   const expenses = useOrgRows(useBuyingStore((s) => s.expenses));
   const acs = useOrgRows(useBuyingStore((s) => s.aggregatorPurchases));
+  const acsPre = useOrgRows(useBuyingStore((s) => s.aggregatorExpenses));
   const bags = useOrgRows(useBuyingStore((s) => s.bags));
   const payments = useOrgRows(usePaymentStore((s) => s.payments));
   const wallets = useOrgRows(usePaymentStore((s) => s.wallets));
@@ -98,9 +99,9 @@ export function useDashboardData() {
       add(requests as never, 'purchaseRequest', '/app/purchase-requests');
       add(expenses as never, 'preExpense', '/app/expenses');
     }
-    if (settings.modules.aggregators) add(acs as never, 'aggregatorPurchase', '/app/aggregators');
+    if (settings.modules.aggregators) { add(acs as never, 'aggregatorPurchase', '/app/aggregators'); add(acsPre as never, 'aggregatorExpense', '/app/aggregators/expenses'); }
     return items.sort((a, b) => (a.risk === 'HIGH' ? -1 : 0) - (b.risk === 'HIGH' ? -1 : 0) || b.createdAt.localeCompare(a.createdAt));
-  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, agentName, names]);
+  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, agentName, names]);
 
   const charts = useMemo(() => {
     const now = Date.now();

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Plus } from 'lucide-react';
-import type { BuyingRules, Commodity, InventoryRules, MovementType, PackagingProfile, PriceListEntry, Unit } from '@/types';
+import type { BuyingRules, Commodity, ExpenseType, InventoryRules, MovementType, PackagingProfile, PriceListEntry, Unit } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/shared/Field';
@@ -340,7 +340,7 @@ export function PriceListsPage() {
 
 // ---------------------------------------------------------------- Buying rules
 
-const BUYING_KEYS = ['buyingRules'] as const;
+const BUYING_KEYS = ['buyingRules', 'expenseTypes'] as const;
 
 export function BuyingRulesPage() {
   const d = useSettingsDraft('buyingRules', BUYING_KEYS);
@@ -350,6 +350,10 @@ export function BuyingRulesPage() {
   const lang = useLang();
   const { t } = useT();
   const set = (patch: Partial<BuyingRules>) => d.set('buyingRules', { ...r, ...patch });
+  const types = d.value.expenseTypes;
+  const setType = (i: number, patch: Partial<ExpenseType>) => d.set('expenseTypes', types.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const [catalogue, setCatalogue] = useState<'PRE' | 'ACSPRE'>('PRE');
+  const uses = (x: ExpenseType) => x.appliesTo ?? ['PRE'];
   const MODELS = ['CASH_ADVANCE', 'DIRECT_PAYMENT'] as const;
   const errors: string[] = [];
   if (commodities.some((c) => !(r.sourcingModels[c.id]?.length))) errors.push(t('set.buying.errModel'));
@@ -407,6 +411,28 @@ export function BuyingRulesPage() {
           ))}
           <SwitchRow label={t('set.buying.overrideReason')} description={t('set.buying.overrideReasonHint')} checked={r.priceOverrideReasonRequired} onChange={(v) => set({ priceOverrideReasonRequired: v })} />
         </Rows>
+      </Section>
+      <Section
+        title={t('set.buying.catalogue')}
+        description={t('set.buying.catalogueHint')}
+        actions={<Segmented label={t('set.buying.catalogue')} value={catalogue} onChange={setCatalogue} options={(['PRE', 'ACSPRE'] as const).map((k) => ({ value: k, label: t(`set.buying.catalogueFor.${k}`, { count: types.filter((x) => uses(x).includes(k)).length }) }))} />}
+      >
+        <EditTable className="[&_table]:min-w-[1080px]" head={[t('col.name'), t('set.buying.basis'), t('set.buying.rate'), t('set.buying.cap'), t('set.buying.wallet'), t('set.buying.scan'), t('set.buying.inbound'), t('set.buying.alsoOn'), '']}>
+          {types.map((x, i) => (uses(x).includes(catalogue) ? (
+            <tr key={x.id}>
+              <td className="min-w-[200px]"><TextInput value={x.name} onChange={(name) => setType(i, { name })} aria-label={t('col.name')} /></td>
+              <td className="min-w-[150px]"><Select value={x.basis} onChange={(basis) => setType(i, { basis })} aria-label={t('set.buying.basis')} options={(['PER_BAG', 'PER_TRIP', 'PER_KG', 'FLAT'] as const).map((b) => ({ value: b, label: t(`buy.basis.${b}`) }))} /></td>
+              <td className="min-w-[150px]"><MoneyInput minor={x.defaultRate.amountMinor} currency={org.currency} onChange={(v) => setType(i, { defaultRate: { amountMinor: v, currency: org.currency } })} aria-label={t('set.buying.rate')} /></td>
+              <td className="min-w-[150px]"><MoneyInput minor={x.cap?.amountMinor ?? 0} currency={org.currency} onChange={(v) => setType(i, { cap: v > 0 ? { amountMinor: v, currency: org.currency } : undefined })} aria-label={t('set.buying.cap')} /></td>
+              <td><Checkbox label={<span className="sr-only">{t('set.buying.wallet')}</span>} checked={x.requiresWallet} onChange={(e) => setType(i, { requiresWallet: e.target.checked })} /></td>
+              <td><Checkbox label={<span className="sr-only">{t('set.buying.scan')}</span>} checked={x.requiresBagScan} onChange={(e) => setType(i, { requiresBagScan: e.target.checked })} /></td>
+              <td><Checkbox label={<span className="sr-only">{t('set.buying.inbound')}</span>} checked={x.triggersInbound} onChange={(e) => setType(i, { triggersInbound: e.target.checked })} /></td>
+              <td><Checkbox label={t(`set.buying.catalogueShort.${catalogue === 'PRE' ? 'ACSPRE' : 'PRE'}`)} checked={uses(x).includes(catalogue === 'PRE' ? 'ACSPRE' : 'PRE')} onChange={(e) => setType(i, { appliesTo: e.target.checked ? ['PRE', 'ACSPRE'] : [catalogue] })} /></td>
+              <td><RowDelete label={t('set.remove')} onClick={() => d.set('expenseTypes', types.filter((_, j) => j !== i))} /></td>
+            </tr>
+          ) : null))}
+        </EditTable>
+        <div className="mt-3"><AddRow onClick={() => d.set('expenseTypes', [...types, { id: uid('ex'), name: t('set.buying.newLine'), basis: 'PER_BAG', defaultRate: { amountMinor: 0, currency: org.currency }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: [catalogue] }])}>{t('set.buying.addLine')}</AddRow></div>
       </Section>
     </SettingsFrame>
   );

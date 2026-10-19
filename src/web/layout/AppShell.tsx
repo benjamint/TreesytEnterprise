@@ -7,6 +7,7 @@ import { EnvironmentSync } from '@/app/providers';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { useAuthFlowStore } from '@/stores/authFlowStore';
 import { SessionTimeout } from './SessionTimeout';
+import '@/services/aggregatorService';
 import { onAnnounce } from '@/stores/persistence';
 import { useActor, useCurrentOrg, useCurrentUser, useT } from '@/stores/hooks';
 import { Sidebar } from './Sidebar';

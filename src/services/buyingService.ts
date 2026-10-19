@@ -430,6 +430,9 @@ export function markReconciled(id: string, actorId: string) {
 
 export interface NewPre { orgId: string; requestId: string; bags: number; costDiscussed: boolean; lines: { expenseTypeId: string; quantity: number; rateMinor: number }[]; bagCodes?: string[]; actorId: string; device?: 'web' | 'mobile' }
 
+/** Catalogue lines usable on farmer-buying PREs. */
+export const preTypes = (settings: OrgSettings) => settings.expenseTypes.filter((x) => (x.appliesTo ?? ['PRE']).includes('PRE'));
+
 export function preLineCap(settings: OrgSettings, expenseTypeId: string): number | undefined {
   return settings.expenseTypes.find((t) => t.id === expenseTypeId)?.cap?.amountMinor;
 }

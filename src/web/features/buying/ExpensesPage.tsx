@@ -16,7 +16,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
 import { Checkbox, Field } from '@/components/shared/Field';
-import { canEditPre, createPre, payPreManual, preLineCap, updatePre } from '@/services/buyingService';
+import { canEditPre, createPre, payPreManual, preLineCap, preTypes, updatePre } from '@/services/buyingService';
 import { inFlight } from '@/services/paymentService';
 import { PayDialog } from '@/web/features/payments/PayDialog';
 import { cn } from '@/lib/utils';
@@ -80,7 +80,7 @@ export function ExpensesPage() {
         views={(['all', 'pending', 'approved', 'toPay', 'rejected'] as const).map((v) => ({ key: v, label: t(`buy.preView.${v}`), active: view === v, onSelect: () => setView(v), count: expenses.filter((e) => inView(e, v)).length }))}
         filters={[
           { key: 'agent', label: terms.agent, value: agent, onChange: setAgent, options: lk.agents.filter((a) => expenses.some((e) => e.agentId === a.id)).map((a) => ({ value: a.id, label: lk.agent(a.id) })).sort((a, b) => a.label.localeCompare(b.label)) },
-          { key: 'type', label: t('buy.expenseType'), value: type, onChange: setType, options: settings.expenseTypes.map((x) => ({ value: x.id, label: x.name })) },
+          { key: 'type', label: t('buy.expenseType'), value: type, onChange: setType, options: preTypes(settings).map((x) => ({ value: x.id, label: x.name })) },
         ]}
         onClear={() => { setQ(''); setAgent(''); setType(''); setView('all'); }}
       />
@@ -259,7 +259,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
             <div className="mb-2 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('buy.expenseLines')}</h3>
               <select value="" onChange={(e) => e.target.value && add(e.target.value)} aria-label={t('buy.addLine')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 <option value="">{t('buy.addLine')}</option>
-                {settings.expenseTypes.map((x) => <option key={x.id} value={x.id}>{`${x.name} · ${t(`buy.basis.${x.basis}`)}`}</option>)}
+                {preTypes(settings).map((x) => <option key={x.id} value={x.id}>{`${x.name} · ${t(`buy.basis.${x.basis}`)}`}</option>)}
               </select>
             </div>
             {computed.length ? (

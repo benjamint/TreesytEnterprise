@@ -142,12 +142,12 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt; agents create PREs on the phone too (`/m/buying/pre/new`, offline-capable)
 - [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
 - [x] Price board — current price per commodity × zone, change history, paid vs list chart, suggested price (median paid within the tolerance band)
-- [~] Aggregator registry — 6 suppliers seeded [10]
-- [~] Aggregator purchase create / approve / reject / disburse — 15 seeded through the workflow engine [10]
-- [ ] Aggregator expenses [10]
-- [ ] Delivery details [10]
-- [ ] Proof of delivery [10]
-- [ ] Aggregator refunds / reconciliation [10]
+- [x] Aggregator registry — `/app/aggregators/suppliers`: individual / company, contact, address, ID / KYC documents, payout by mobile money or bank (bank list per country), status Pending approval / Approved / Blocked, purchase history; new suppliers need approval by someone other than their creator, blocking needs a reason, payout edits are logged
+- [x] Aggregator purchase create / approve / reject / disburse — `/app/aggregators`: list with every PRD column, views and filters, CSV export; create with supplier search or a new supplier inline, unique PO number, bags × weight per bag, price from the list with tolerance and override reason, deal currency and exchange rate (company-currency total shown), includes PRE, PO file and optional weighbridge report, aggregator-threshold hint; approval through the workflow engine; disburse in part or in full by mobile money / bank (payments engine, maker-checker) or manual proof, never above the total and only once the supplier is approved
+- [x] Aggregator expenses — ACSPRE (`/app/aggregators/expenses`): bags and lines from the company catalogue (Vitara template: the 40 logistics lines, editable in Settings → Buying rules → Expense catalogue alongside PRE lines), caps, payee wallet, two-step approval, edit only before the first approval, mobile-money or manual payment, printable receipt
+- [x] Delivery details — load truck (driver, contact, plate, bags and kg loaded, waybill) → In transit
+- [x] Proof of delivery — customer, bags / kg / t delivered, unit price, weighbridge report, invoice, quality report → Delivered; the result is previewed and computed with the company tolerance
+- [x] Aggregator refunds / reconciliation — receive refund (goods on a new PO with bags and kg, or money with proof), refund the supplier (proof, or pay the difference by mobile money), Fulfilled → Mark reconciled; money and volume reconciliation side by side
 - [x] Commodity catalogue — Settings → Commodities: names per language, codes, aliases, HS codes, units, quality parameters, grades, thresholds, EUDR and scoring flags
 - [x] Units — Settings → Units & packaging: units and conversions, packaging profiles, conversion check
 - [x] Price lists — Settings → Price lists: commodity × zone × grade, effective dates, tolerance, premiums, change approval switch, price history

@@ -182,6 +182,8 @@ export interface ExpenseType {
   requiresWallet: boolean;
   requiresBagScan: boolean;
   triggersInbound: boolean;
+  /** Where the line can be used: farmer-buying PREs, aggregator expenses (ACSPRE), or both. Default PRE. */
+  appliesTo?: ('PRE' | 'ACSPRE')[];
 }
 
 export interface BuyingRules {

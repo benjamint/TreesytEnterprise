@@ -10,7 +10,7 @@ import { SimCapture } from '@/components/forms/media';
 import { MobileHeader } from '@/mobile/layout/MobileHeader';
 import { useMobileAgent } from '@/mobile/layout/useMobileContext';
 import { MField, MList, MSelect, MobileWizard, Segmented, mInput, savedKey } from '@/mobile/components/kit';
-import { debtCheck, preLineCap, type NewPre } from '@/services/buyingService';
+import { debtCheck, preLineCap, preTypes, type NewPre } from '@/services/buyingService';
 import { saveOrQueue } from '@/services/mobileSync';
 import { SPEECH_LANGS, transcribe, type SpeechLang } from '@/services/speechService';
 import { formatPhone } from '@/lib/format';
@@ -117,7 +117,7 @@ export function NewPreScreen() {
   const [lines, setLines] = useState<{ expenseTypeId: string; quantity: string; rate: string }[]>([]);
   const [codes, setCodes] = useState<string[]>([]);
   const qtyFor = (id: string) => { const x = settings.expenseTypes.find((e) => e.id === id); return x?.basis === 'PER_BAG' ? n : x?.basis === 'PER_KG' ? Math.round(n * 85) : 1; };
-  const unused = settings.expenseTypes.filter((x) => !lines.some((l) => l.expenseTypeId === x.id));
+  const unused = preTypes(settings).filter((x) => !lines.some((l) => l.expenseTypeId === x.id));
   const add = (id: string) => { const x = settings.expenseTypes.find((e) => e.id === id)!; setLines([...lines, { expenseTypeId: id, quantity: String(qtyFor(id)), rate: String(x.defaultRate.amountMinor / 10 ** dec) }]); };
   const computed = lines.map((l) => {
     const rateMinor = Math.round(Number(l.rate || 0) * 10 ** dec);

@@ -1,5 +1,5 @@
 import type {
-  ActivityEvent, Agent, AggregatorPurchase, AppNotification, Bag, Community, Disbursement, Farmer, FarmerGroup, GroupMembership,
+  ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Disbursement, Farmer, FarmerGroup, GroupMembership,
   LocationNode, Money, OrgSettings, Payment, PaymentProvider, PreExpense, PriceListEntry, Purchase, PurchaseRequest, RiskFlag,
   SourcingModel, Supplier, Wallet, Warehouse, WorkflowDefinition, Membership, Role,
 } from '@/types';
@@ -92,6 +92,7 @@ export interface OpsResult {
   expenses: PreExpense[];
   suppliers: Supplier[];
   aggregatorPurchases: AggregatorPurchase[];
+  aggregatorExpenses: AggregatorExpense[];
   payments: Payment[];
   wallets: Wallet[];
   activity: ActivityEvent[];
@@ -515,7 +516,7 @@ export function generateOperations(cfg: OpsConfig, rng: Rng, clock: Clock, peopl
     const req = open ? byRecency[i % Math.min(byRecency.length, 12)]! : rng.pick(preEligible);
     const agent = agents.find((a) => a.id === req.agentId)!;
     const bagsN = Math.max(4, Math.round(req.volume / 85 / rng.int(1, 3)));
-    const types = rng.sample(settings.expenseTypes, rng.int(2, 4));
+    const types = rng.sample(settings.expenseTypes.filter((x) => (x.appliesTo ?? ['PRE']).includes('PRE')), rng.int(2, 4));
     const lines = types.map((t) => {
       const quantity = t.basis === 'PER_BAG' ? bagsN : t.basis === 'PER_KG' ? bagsN * 85 : 1;
       const rate = M(Math.round(t.defaultRate.amountMinor * rng.float(0.9, 1.15) / (currency === 'XOF' ? 25 : 5)) * (currency === 'XOF' ? 25 : 5));
@@ -570,7 +571,7 @@ export function generateOperations(cfg: OpsConfig, rng: Rng, clock: Clock, peopl
         poNumber: `PO-${pad(4100 + aggregatorPurchases.length * 7, 5)}`, supplierId: sup.id, commodityId,
         plannedDate: clock.day(new Date(created.getTime() + 5 * DAY)), weightPerBagKg: weightPerBag, expectedBags, expectedKg,
         unitPrice, total: money(unitPrice.amountMinor * expectedKg, unitPrice.currency), dealCurrency: unitPrice.currency,
-        exchangeRate: usd ? 15.2 : 1, includesPre: rng.chance(0.4),
+        exchangeRate: usd ? 15.2 : 1, includesPre: rng.chance(0.4), disbursements: [],
         orderStatus: (status === 'FUNDS_DISBURSED' ? (k % 3 === 0 ? 'IN_TRANSIT' : 'DELIVERED') : 'NONE') as AggregatorPurchase['orderStatus'],
         paymentStatus: (status === 'FUNDS_DISBURSED' && k % 3 !== 0 ? rng.pick(['RECONCILED', 'FULFILLED', 'RECEIVE_REFUND', 'REFUND_SUPPLIER']) : 'NONE') as AggregatorPurchase['paymentStatus'],
       };
@@ -661,7 +662,7 @@ export function generateOperations(cfg: OpsConfig, rng: Rng, clock: Clock, peopl
 
   return {
     nodes, communities, farmers, groups, groupMemberships, agents, warehouses, requests, purchases, bags, expenses, suppliers,
-    aggregatorPurchases, payments, wallets, activity, notifications: [], sequences,
+    aggregatorPurchases, aggregatorExpenses: [], payments, wallets, activity, notifications: [], sequences,
   };
 }
 

@@ -5,7 +5,7 @@ export interface QualityRule {
   id: string;
   entity: 'farmer' | 'community' | 'farmerGroup';
   field: string;
-  operator: 'between' | 'notEmpty' | 'notEquals' | 'unique' | 'lessThanField';
+  operator: 'between' | 'notEmpty' | 'notEquals' | 'notContains' | 'unique' | 'lessThanField';
   value?: unknown;
   crossField?: string;
   duplicateScope?: 'company' | 'community';
@@ -39,14 +39,20 @@ export function runRule(rule: QualityRule, row: Row, all: Row[] = []): QualityFl
     case 'notEquals':
       bad = String(v ?? '').toLowerCase() === String(rule.value).toLowerCase();
       break;
+    case 'notContains':
+      bad = Array.isArray(v) ? v.map((x) => String(x).toLowerCase()).includes(String(rule.value).toLowerCase()) : String(v ?? '').toLowerCase().includes(String(rule.value).toLowerCase());
+      break;
     case 'unique': {
       if (v == null || v === '') break;
       const scopeVal = rule.duplicateScope === 'community' ? getPath(row, 'communityId') : null;
       bad = all.some((o) => o.id !== row.id && getPath(o, rule.field) === v && (scopeVal == null || getPath(o, 'communityId') === scopeVal));
       break;
     }
-    case 'lessThanField':
-      bad = rule.crossField != null && Number(v) >= Number(getPath(row, rule.crossField));
+    case 'lessThanField': {
+      const other = rule.crossField != null ? getPath(row, rule.crossField) : null;
+      bad = v != null && other != null && Number(v) >= Number(other);
+      break;
+    }
       break;
   }
   return bad ? { ruleId: rule.id, recordId: row.id, severity: rule.severity, params: { field: rule.field, value: v } } : null;
@@ -54,4 +60,19 @@ export function runRule(rule: QualityRule, row: Row, all: Row[] = []): QualityFl
 
 export function runRules(rules: QualityRule[], rows: Row[]): QualityFlag[] {
   return rows.flatMap((r) => rules.map((rule) => runRule(rule, r, rows)).filter((f): f is QualityFlag => f !== null));
+}
+
+/** Fields computed for rules that aren't stored (a farmer's age from date of birth). */
+export function withDerived(entity: QualityRule['entity'], row: Row, now = new Date()): Row {
+  if (entity !== 'farmer' || !row.dateOfBirth) return row;
+  const age = Math.floor((now.getTime() - new Date(String(row.dateOfBirth)).getTime()) / 31_557_600_000);
+  return { ...row, age };
+}
+
+/** Run a company's enabled rules for one entity over its records (duplicates checked across all of them). */
+export function checkEntity(rules: QualityRule[], entity: QualityRule['entity'], rows: Row[], now = new Date(), only?: Set<string>): QualityFlag[] {
+  const own = rules.filter((r) => r.entity === entity && r.enabled);
+  if (!own.length) return [];
+  const derived = rows.map((r) => withDerived(entity, r, now));
+  return derived.filter((r) => !only || only.has(r.id)).flatMap((r) => own.map((rule) => runRule(rule, r, derived)).filter((f): f is QualityFlag => f !== null));
 }

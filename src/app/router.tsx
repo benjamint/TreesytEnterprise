@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppShell } from '@/web/layout/AppShell';
 import { DashboardPage } from '@/web/features/dashboard/DashboardPage';
+import { AiPage } from '@/web/features/ai/AiPage';
 import { MobilePreviewsPage } from '@/web/features/help/MobilePreviewsPage';
 import { SettingsLayout } from '@/web/features/settings/SettingsLayout';
 import { PlatformLayout } from '@/web/features/platform/PlatformLayout';
@@ -19,18 +20,32 @@ import { TwoStepPage } from '@/public/auth/TwoStepPage';
 import { ChooseCompanyPage } from '@/public/auth/ChooseCompanyPage';
 import { AcceptInvitePage, ForgotPasswordPage, ForgotSentPage, ResetPasswordPage } from '@/public/auth/PasswordPages';
 import { SignUpPage } from '@/public/auth/SignUpPage';
+import { CommunitiesMapPage, CommunitiesPage } from '@/web/features/people/CommunitiesPage';
+import { FarmersPage } from '@/web/features/people/FarmersPage';
+import { GroupsPage } from '@/web/features/people/GroupsPage';
+import { LocationsExplorerPage } from '@/web/features/people/LocationsPage';
+import { DataQualityPage } from '@/web/features/quality/DataQualityPage';
+import { ImportsPage } from '@/web/features/imports/ImportsPage';
+import { FormsPage } from '@/web/features/forms/FormsPage';
+import { FormBuilderPage } from '@/web/features/forms/FormBuilderPage';
+import { ResponsesPage } from '@/web/features/forms/ResponsesPage';
+import { OptionListsPage } from '@/web/features/forms/OptionListsPage';
+import { SurveysScreen } from '@/mobile/flows/surveys/SurveysScreen';
+import { SurveyFillScreen, SurveyFixScreen, FormPreviewScreen } from '@/mobile/flows/surveys/SurveyFillScreen';
+import { RegisterFarmerScreen } from '@/mobile/flows/farmers/RegisterFarmerScreen';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
 import { TasksScreen } from '@/mobile/flows/home/TasksScreen';
+import { TaskFixScreen } from '@/mobile/flows/home/TaskFixScreen';
 import { SyncScreen } from '@/mobile/flows/home/SyncScreen';
 import { MeScreen } from '@/mobile/flows/me/MeScreen';
 import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'helpMobile', 'settings', 'platform', 'account']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -59,10 +74,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AppIndexRedirect /> },
       { path: 'dashboard', element: <RouteGuard routeKey="dashboard"><DashboardPage /></RouteGuard> },
+      { path: 'ai', element: <RouteGuard routeKey="ai"><AiPage /></RouteGuard> },
       { path: 'help/mobile', element: <MobilePreviewsPage /> },
       { path: 'settings', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'settings/:page', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'account', element: <AccountPage /> },
+      { path: 'communities/map', element: <RouteGuard routeKey="communitiesMap"><CommunitiesMapPage /></RouteGuard> },
+      { path: 'communities', element: <RouteGuard routeKey="communities"><CommunitiesPage /></RouteGuard> },
+      { path: 'farmers', element: <RouteGuard routeKey="farmers"><FarmersPage /></RouteGuard> },
+      { path: 'groups', element: <RouteGuard routeKey="groups"><GroupsPage /></RouteGuard> },
+      { path: 'locations', element: <RouteGuard routeKey="locations"><LocationsExplorerPage /></RouteGuard> },
+      { path: 'data-quality', element: <RouteGuard routeKey="dataQuality"><DataQualityPage /></RouteGuard> },
+      { path: 'imports', element: <RouteGuard routeKey="imports"><ImportsPage /></RouteGuard> },
+      { path: 'forms', element: <RouteGuard routeKey="forms"><FormsPage /></RouteGuard> },
+      { path: 'forms/option-lists', element: <RouteGuard routeKey="optionLists"><OptionListsPage /></RouteGuard> },
+      { path: 'forms/:formId', element: <RouteGuard routeKey="forms"><FormBuilderPage /></RouteGuard> },
+      { path: 'forms/:formId/responses', element: <RouteGuard routeKey="forms"><ResponsesPage /></RouteGuard> },
       {
         path: 'platform',
         element: <RouteGuard routeKey="platform"><PlatformLayout /></RouteGuard>,
@@ -94,6 +121,12 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomeScreen /> },
       { path: 'tasks', element: <TasksScreen /> },
+      { path: 'tasks/:taskId', element: <TaskFixScreen /> },
+      { path: 'surveys', element: <SurveysScreen /> },
+      { path: 'surveys/fix/:responseId', element: <SurveyFixScreen /> },
+      { path: 'surveys/:formId', element: <SurveyFillScreen /> },
+      { path: 'preview/:formId', element: <FormPreviewScreen /> },
+      { path: 'farmers/new', element: <RegisterFarmerScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

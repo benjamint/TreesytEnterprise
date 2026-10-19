@@ -1,3 +1,4 @@
+import { genericExtras, vitaraExtras } from '@/data/seed/settingsExtras';
 import type { AgentType, Commodity, ExpenseType, Lang, ModuleKey, NumberingPattern, OrgSettings, OrgType, PaymentProvider, WorkflowDefinition } from '@/types';
 import { ALL_MODULE_KEYS, allModules } from '@/engines/permissions';
 import { toMinor } from '@/engines/money';
@@ -178,5 +179,6 @@ export function buildCompanySettings(orgId: string, d: CompanyDraft): OrgSetting
     expenseTypes: isVitara ? VITARA_EXPENSES.map((e) => ({ ...e, defaultRate: { ...e.defaultRate, currency: d.currency } })) : genericExpenses(d.currency),
     security: { ...base.security, sso: { enabled: false, protocol: 'SAML', domain: '', idpName: '' }, twoFactorRoles: [] },
     landUnitId: isVitara ? 'acre' : 'ha',
+    ...(isVitara ? vitaraExtras(orgId, commodities, d.currency) : genericExtras(orgId, commodities, d.currency)),
   } as OrgSettings;
 }

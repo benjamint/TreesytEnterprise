@@ -1,4 +1,7 @@
 import type { Lang, Money, WorkflowStep } from './core';
+import type { QualityRule } from '@/engines/rules';
+import type { NotificationRule } from '@/engines/notify';
+import type { MessageTemplate } from '@/engines/templates';
 
 export type ModuleKey =
   | 'dashboard' | 'ai' | 'farmers' | 'dataQuality' | 'imports' | 'buying' | 'aggregators' | 'payments'
@@ -33,6 +36,8 @@ export interface Commodity {
   eudrRelevant: boolean;
   lossTolerancePct: number;
   color: string;
+  /** Counted in farmer and community scores. */
+  inScoring?: boolean;
 }
 
 export interface Unit {
@@ -116,6 +121,17 @@ export interface PaymentProvider {
   /** Number prefixes used to auto-detect the network from a wallet number. */
   prefixes: string[];
   share?: number;
+  /** Stored server-side in the full product; the prototype keeps masked demo values. */
+  credentials?: { merchantId: string; apiKey: string };
+  limits?: { perPaymentMinor: number; dailyMinor: number };
+}
+
+export interface ExtraCharge {
+  id: string;
+  name: string;
+  amountMinor: number;
+  payer: 'company' | 'payee';
+  enabled: boolean;
 }
 
 export interface FeeTier {
@@ -148,6 +164,11 @@ export interface AgentType {
   code: string;
   budgetEligible: boolean;
   mobileTiles: string[];
+  /** Which records an agent of this type sees: their own, their assigned areas, or everything. */
+  visibility?: 'OWN' | 'AREAS' | 'ALL';
+  requiredFields?: string[];
+  scoreModel?: string;
+  rateCard?: string;
 }
 
 export interface ExpenseType {
@@ -175,6 +196,112 @@ export interface BuyingRules {
   agentCashLimitMinor: number;
 }
 
+export type MovementType = 'INBOUND' | 'TRANSFER' | 'STORAGE';
+
+export interface InventoryRules {
+  /** Allowed weight loss per commodity and movement type, in percent. */
+  tolerances: { commodityId: string; movement: MovementType; pct: number }[];
+  /** Allowed difference between transfer-out and transfer-in weights, in percent. */
+  transferBoundsPct: number;
+  autoWriteOff: boolean;
+  stockCount: { frequency: 'WEEKLY' | 'MONTHLY' | 'QUARTERLY'; basis: 'FULL' | 'CYCLE'; blind: boolean };
+  liability: { payer: 'AGENT' | 'TRANSPORTER' | 'COMPANY'; priceBasis: 'PURCHASE' | 'LIST'; includeLogistics: boolean };
+}
+
+export interface SupportType {
+  id: string;
+  name: Partial<Record<Lang, string>>;
+  kind: 'CASH' | 'INPUT' | 'SERVICE';
+  subTypes: string[];
+  groupScoring: boolean;
+  recoverable: boolean;
+  maxAmountMinor: number;
+  enabled: boolean;
+}
+
+export interface SupportSettings {
+  types: SupportType[];
+  abilityToPay: string[];
+  recoveryWindowDays: number;
+  repaymentModes: ('CASH' | 'PRODUCE' | 'MIXED')[];
+  blockOnDebt: boolean;
+  minGroupScore: number;
+}
+
+export interface FieldTeamSettings {
+  plan: { minDays: number; maxDays: number; planAheadWeeks: number };
+  reportingLevels: number;
+  costCategories: { id: string; name: string; maxPerDayMinor: number; maxPerWeekMinor: number; receiptRequired: boolean }[];
+  /** Achievement bands (percent of plan) and the penalty applied to next week's budget. */
+  penaltyBands: { id: string; fromPct: number; toPct: number; penaltyPct: number }[];
+  carryForward: boolean;
+  allowanceTypes: { id: string; name: string; amountMinor: number; frequency: 'WEEKLY' | 'MONTHLY' }[];
+  unusedReasons: string[];
+  issueCategories: { id: string; name: string; consequence: 'NOTE' | 'WARNING' | 'PENALTY' | 'SUSPENSION' }[];
+}
+
+/** Settings → Forms: which form is the profile form for each kind of record. */
+export type FormBindingKey =
+  | 'farmer' | 'community' | 'farmerGroup' | 'nursery' | 'plot' | 'plotMonitoring' | 'treeMonitoring'
+  | 'nurseryMonitoring' | 'workshopFeedback' | 'recoveryFeedback' | 'agentReport';
+
+
+export interface Biometrics {
+  thumbprint: boolean;
+  consentType: 'AUDIO' | 'SIGNATURE' | 'TICK';
+  consentText: Partial<Record<Lang, string>>;
+  nfcCards: boolean;
+  cardKeyRotatedAt: string;
+}
+
+export interface Messaging {
+  sms: { country: string; provider: string; senderId: string; enabled: boolean }[];
+  otpExpiryMinutes: number;
+  emailDomain: string;
+  emailSender: string;
+  domainVerified: boolean;
+}
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  last4: string;
+  scopes: string[];
+  createdAt: string;
+  createdBy: string;
+  lastUsedAt?: string;
+  revokedAt?: string;
+}
+
+export interface WebhookDelivery {
+  id: string;
+  at: string;
+  event: string;
+  status: number;
+  ms: number;
+}
+
+export interface Webhook {
+  id: string;
+  event: string;
+  url: string;
+  secret: string;
+  enabled: boolean;
+  deliveries: WebhookDelivery[];
+}
+
+export type RetentionKey = 'syncLogs' | 'payloads' | 'audio' | 'photos' | 'activity';
+
+export interface PriceChange {
+  id: string;
+  entryId: string;
+  at: string;
+  by: string;
+  fromMinor: number;
+  toMinor: number;
+}
+
 export interface OrgSettings {
   orgId: string;
   modules: Record<ModuleKey, boolean>;
@@ -194,16 +321,36 @@ export interface OrgSettings {
   loanTerms: LoanTerms;
   agentTypes: AgentType[];
   expenseTypes: ExpenseType[];
-  mobile: { otpLength: number; minAppVersion: string };
+  mobile: {
+    otpLength: number;
+    minAppVersion: string;
+    loginMethod: 'PHONE_SMS' | 'PHONE_PIN' | 'EMAIL';
+    offline: { maxDays: number; maxRecords: number; maxMediaMb: number };
+  };
   security: {
     sessionMinutes: number;
     passwordPolicy: { minLength: number; requireNumber: boolean; requireSymbol: boolean; requireMixedCase: boolean };
     /** Role templates that must use 2-step sign-in. */
     twoFactorRoles: string[];
-    sso: { enabled: boolean; protocol: 'SAML' | 'OIDC'; domain: string; idpName: string };
+    sso: { enabled: boolean; protocol: 'SAML' | 'OIDC'; domain: string; idpName: string; metadata?: string };
     ipAllowList: string[];
   };
   makerChecker: boolean;
   bulkBatchSize: number;
   landUnitId: string;
+  /** Sub-feature switches inside modules (Settings → Plan & modules). */
+  features: Record<string, boolean>;
+  extraCharges: ExtraCharge[];
+  pricing: { changeApproval: boolean; premiums: { id: string; name: string; pct: number }[]; history: PriceChange[] };
+  inventoryRules: InventoryRules;
+  support: SupportSettings;
+  fieldTeam: FieldTeamSettings;
+  qualityRules: QualityRule[];
+  formBindings: Partial<Record<FormBindingKey, string>>;
+  biometrics: Biometrics;
+  notificationRules: NotificationRule[];
+  templates: MessageTemplate[];
+  messaging: Messaging;
+  integrations: { apiKeys: ApiKey[]; webhooks: Webhook[]; accounting: 'NONE' | 'XERO' | 'QUICKBOOKS' | 'SAGE' };
+  privacy: { retentionDays: Record<RetentionKey, number>; exportRequestedAt?: string; deletionRequestedAt?: string };
 }

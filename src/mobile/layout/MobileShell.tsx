@@ -37,7 +37,8 @@ export function MobileShell() {
       toast.success(i18n.t('mobile.signedInToast', { name: u.name, lng: u.language }));
     } else toast.error(i18n.t('mobile.notMember'));
     const flow = params.get('flow');
-    navigate(flow && (MOBILE_FLOWS as readonly string[]).includes(flow) ? `/m/flow/${flow}` : '/m', { replace: true });
+    const go = params.get('go');
+    navigate(go?.startsWith('/m/') ? go : flow && (MOBILE_FLOWS as readonly string[]).includes(flow) ? `/m/flow/${flow}` : '/m', { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
@@ -47,6 +48,8 @@ export function MobileShell() {
   );
 
   useEffect(() => setRecordOpen(false), [location.pathname]);
+  // Step-by-step flows take the whole screen; their sticky action button replaces the tab bar.
+  const immersive = /^\/m\/(surveys\/.+|farmers\/new|preview\/.+|tasks\/.+)/.test(location.pathname);
 
   return (
     <div className="min-h-[100dvh] bg-canvas frame:flex frame:items-center frame:justify-center frame:bg-[radial-gradient(ellipse_at_top,_rgb(var(--brand-soft)),_rgb(var(--canvas))_60%)] frame:p-6">
@@ -57,7 +60,7 @@ export function MobileShell() {
             <div className="flex min-h-0 flex-1 flex-col">
               <Outlet />
             </div>
-            <BottomTabs onRecord={() => setRecordOpen(true)} />
+            {!immersive && <BottomTabs onRecord={() => setRecordOpen(true)} />}
             <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />
           </ActorContext.Provider>
         ) : (

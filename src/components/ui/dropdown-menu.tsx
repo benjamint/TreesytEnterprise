@@ -52,6 +52,24 @@ export const DropdownMenuRadioItem = React.forwardRef<React.ElementRef<typeof Dr
 );
 DropdownMenuRadioItem.displayName = 'DropdownMenuRadioItem';
 
+export const DropdownMenuCheckboxItem = React.forwardRef<React.ElementRef<typeof DropdownMenuPrimitive.CheckboxItem>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.CheckboxItem>>(
+  ({ className, children, ...props }, ref) => (
+    <DropdownMenuPrimitive.CheckboxItem
+      ref={ref}
+      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip py-2 pl-8 pr-2.5 text-[14px] outline-none focus:bg-brand-soft', className)}
+      {...props}
+    >
+      <span className="absolute left-2.5 flex h-4 w-4 items-center justify-center">
+        <DropdownMenuPrimitive.ItemIndicator>
+          <Check className="h-4 w-4 text-brand" />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.CheckboxItem>
+  ),
+);
+DropdownMenuCheckboxItem.displayName = 'DropdownMenuCheckboxItem';
+
 export function DropdownMenuLabel({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('eyebrow px-2.5 pb-1 pt-2.5', className)} {...props} />;
 }

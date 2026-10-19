@@ -9,6 +9,11 @@ import { latency } from '@/lib/utils';
 import { useFormat, useT } from '@/stores/hooks';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useOutboxStore } from '@/stores/outboxStore';
+import type { SurveyResponse } from '@/types';
+import { applyFix } from '@/services/qualityService';
+import { fillSchema, getLiveForm, submitResponse } from '@/services/formService';
+import { registerFarmer, type FarmerCore } from '@/services/farmerService';
+import { useFormStore } from '@/stores/formStore';
 
 /** M2 Sync (phase 1 version): outbox, Sync now, offline toggle. Item-by-item sync arrives in phase 9. */
 export function SyncScreen() {
@@ -22,6 +27,28 @@ export function SyncScreen() {
   const syncNow = async () => {
     setSyncing(true);
     await latency(800, 1400);
+    // Data-quality fixes saved offline are applied on sync (other item types arrive in phase 9).
+    const fixes = items.filter((i) => i.type === 'qualityFix');
+    for (const i of fixes) {
+      const p = i.payload as { taskId: string; values: Record<string, unknown> };
+      applyFix(p.taskId, p.values, i.userId, 'mobile');
+    }
+    if (fixes.length) useOutboxStore.getState().remove(fixes.map((i) => i.id));
+    // Surveys and registrations captured offline (Phase 6).
+    const done: string[] = [];
+    for (const i of items.filter((x) => x.type === 'survey' || x.type === 'farmer')) {
+      if (i.type === 'survey') {
+        const p = i.payload as { formId: string; answers: Record<string, unknown>; subject?: SurveyResponse['subject']; gps?: SurveyResponse['gps']; startedAt?: string; agentId?: string };
+        const form = useFormStore.getState().forms.find((f) => f.id === p.formId);
+        if (!form) continue;
+        submitResponse({ form, schema: fillSchema(form, useFormStore.getState().optionLists), answers: p.answers, userId: i.userId, agentId: p.agentId, subject: p.subject, gps: p.gps, startedAt: p.startedAt, device: 'mobile' });
+      } else {
+        const p = i.payload as { core: FarmerCore; answers: Record<string, unknown>; agentId?: string };
+        registerFarmer(i.orgId, i.userId, p.core, getLiveForm(i.orgId, 'farmerProfile'), p.answers, { agentId: p.agentId });
+      }
+      done.push(i.id);
+    }
+    if (done.length) useOutboxStore.getState().remove(done);
     markSynced();
     setSyncing(false);
     toast.success(t('mobile.synced'));

@@ -1,50 +1,95 @@
-import { useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AlertTriangle, ArrowRight, Banknote, ClipboardList, Coins, Scale, ShoppingBasket, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy, sortableKeyboardCoordinates, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { ArrowRight, GripVertical, LayoutGrid, Lock, Plus, Radar, RotateCcw, Save, X } from 'lucide-react';
+import { toast } from 'sonner';
+import type { RoleTemplate } from '@/types';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { PageHeader } from '@/components/shared/PageHeader';
-import { StatCard } from '@/components/shared/StatCard';
-import { StatusBadge } from '@/components/shared/StatusBadge';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
-import { SetupChecklist } from './SetupChecklist';
 import { usePageTour } from '@/components/shared/PageTour';
-import { canAct, type WorkflowRecord } from '@/engines/workflow';
 import { previewNumber } from '@/engines/numbering';
 import { toMinor } from '@/engines/money';
+import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
 import { TOUR_EVENT } from '@/web/layout/HelpMenu';
-import { useActor, useCurrentOrg, useCurrentUser, useFormat, useOrgRows, useOrgSettings, usePermissionPatterns, useT, useLang } from '@/stores/hooks';
-import { useBuyingStore } from '@/stores/buyingStore';
+import { AskBar } from '@/web/features/ai/AskBar';
 import { useAccessStore } from '@/stores/accessStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { useDashboardStore, type WidgetPlacement, type WidgetSize } from '@/stores/dashboardStore';
+import { useActor, useCan, useCurrentOrg, useCurrentUser, useFormat, useLang, useModules, useT } from '@/stores/hooks';
+import { SetupChecklist } from './SetupChecklist';
+import { useDashboardData } from './useDashboardData';
+import { DataContext, WIDGETS, widgetById } from './widgets';
 
-const OPEN_EXCLUDED = new Set(['RECONCILED', 'NOT_APPROVED', 'ARCHIVED']);
+const SPAN: Record<WidgetSize, string> = { third: 'xl:col-span-4', half: 'xl:col-span-6', twoThirds: 'xl:col-span-8', full: 'xl:col-span-12' };
+const SIZE_ORDER: WidgetSize[] = ['third', 'half', 'twoThirds', 'full'];
+const p = (id: string, size: WidgetSize): WidgetPlacement => ({ id, size });
 
-/**
- * Phase 1 dashboard: KPI row and approval queue from the seeded data plus a "company facts" card
- * that makes company switching visible (currency, language, levels, providers, workflow, numbering).
- * The full widget dashboard arrives in phase 4.
- */
+/** Role-based default layouts (PRD B1 "Role-based default layouts"). */
+function roleDefault(template: RoleTemplate | undefined): WidgetPlacement[] {
+  switch (template) {
+    case 'financeOfficer':
+      return [p('kpis', 'full'), p('approvals', 'twoThirds'), p('alerts', 'third'), p('payoutsByProvider', 'half'), p('wallets', 'half'), p('purchasesByWeek', 'twoThirds'), p('recoveryProgress', 'third')];
+    case 'logisticsManager':
+    case 'warehouseManager':
+      return [p('approvals', 'twoThirds'), p('alerts', 'third'), p('stockByWarehouse', 'third'), p('map', 'twoThirds'), p('purchasesByWeek', 'full')];
+    case 'meOfficer':
+    case 'sustainabilityOfficer':
+    case 'fieldSupervisor':
+      return [p('map', 'twoThirds'), p('alerts', 'third'), p('topCommunities', 'half'), p('activity', 'half')];
+    case 'salesOfficer':
+      return [p('stockByWarehouse', 'half'), p('alerts', 'half'), p('activity', 'third'), p('volumeByCommodity', 'third')];
+    case 'auditor':
+      return [p('kpis', 'full'), p('activity', 'half'), p('alerts', 'half')];
+    case 'buyerUser':
+      return [p('activity', 'half'), p('alerts', 'half')];
+    default:
+      return [
+        p('kpis', 'full'), p('approvals', 'twoThirds'), p('alerts', 'third'), p('purchasesByWeek', 'twoThirds'), p('volumeByCommodity', 'third'),
+        p('topCommunities', 'third'), p('payoutsByProvider', 'third'), p('recoveryProgress', 'third'), p('map', 'twoThirds'), p('stockByWarehouse', 'third'),
+      ];
+  }
+}
+
+function useLayout() {
+  const { orgId, userId } = useActor();
+  const memberships = useAccessStore((s) => s.memberships);
+  const roles = useAccessStore((s) => s.roles);
+  const own = useDashboardStore((s) => s.layouts[`${orgId}:${userId}`]);
+  const company = useDashboardStore((s) => s.companyDefaults[orgId]);
+  const template = useMemo(() => {
+    const m = memberships.find((x) => x.userId === userId && x.orgId === orgId);
+    return roles.find((r) => r.id === m?.roleIds[0])?.template;
+  }, [memberships, roles, userId, orgId]);
+  const fallback = useMemo(() => company ?? roleDefault(template), [company, template]);
+  return { layout: own ?? fallback, fallback, custom: !!own, source: own ? 'mine' : company ? 'company' : 'role' };
+}
+
+/** Home dashboard (PRD B1): ask bar, setup checklist, then a customisable widget board. */
 export function DashboardPage() {
   const org = useCurrentOrg();
   const user = useCurrentUser();
-  const settings = useOrgSettings();
-  const { userId } = useActor();
-  const patterns = usePermissionPatterns();
-  const memberships = useAccessStore((s) => s.memberships);
+  const { orgId, userId } = useActor();
+  const settings = useSettingsStore((s) => s.settings[orgId])!;
+  const sequences = useSettingsStore((s) => s.sequences[orgId]);
   const countries = usePlatformStore((s) => s.countries);
-  const allSequences = useSettingsStore((s) => s.sequences);
-  const sequences = useMemo(() => allSequences[org.id] ?? {}, [allSequences, org.id]);
-  const requests = useOrgRows(useBuyingStore((s) => s.requests));
-  const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
-  const expenses = useOrgRows(useBuyingStore((s) => s.expenses));
-  const acs = useOrgRows(useBuyingStore((s) => s.aggregatorPurchases));
   const navigate = useNavigate();
   const lang = useLang();
   const f = useFormat();
   const { t } = useT();
+  const can = useCan();
+  const modules = useModules();
+  const data = useDashboardData();
+  const { layout, fallback, custom, source } = useLayout();
+  const [editing, setEditing] = useState<WidgetPlacement[] | null>(null);
+  const [library, setLibrary] = useState(false);
   const tour = usePageTour();
   const startTour = tour.start;
   useEffect(() => {
@@ -52,133 +97,189 @@ export function DashboardPage() {
     return () => window.removeEventListener(TOUR_EVENT, startTour);
   }, [startTour]);
 
-  const kpis = useMemo(() => {
-    const boughtBy = new Map<string, number>();
-    for (const p of purchases) boughtBy.set(p.requestId, (boughtBy.get(p.requestId) ?? 0) + p.amount.amountMinor);
-    let cash = 0;
-    let gap = 0;
-    for (const r of requests) {
-      if (r.reconciliationStatus === 'RECONCILED') continue;
-      const given = r.disbursements.reduce((s, d) => s + d.amount.amountMinor, 0);
-      const diff = given - (boughtBy.get(r.id) ?? 0);
-      if (r.fundsReceived) cash += diff;
-      if (given > 0) gap += Math.max(0, diff);
-    }
-    return {
-      volume: purchases.reduce((s, p) => s + p.quantity, 0),
-      spend: purchases.reduce((s, p) => s + p.amount.amountMinor, 0),
-      farmersPaid: new Set(purchases.filter((p) => p.paymentStatus === 'PAID').map((p) => p.farmerId)).size,
-      open: requests.filter((r) => !OPEN_EXCLUDED.has(r.status)).length,
-      cash,
-      gap,
-    };
-  }, [purchases, requests]);
+  const isOperational = org.type !== 'BUYER' && org.type !== 'PLATFORM';
+  const allowed = (id: string) => {
+    const w = widgetById(id);
+    if (!w) return 'missing' as const;
+    if (w.module && !modules[w.module]) return 'module' as const;
+    if (!can(w.permission)) return 'permission' as const;
+    if (w.operational && !isOperational) return 'module' as const;
+    return 'ok' as const;
+  };
+  const board = editing ?? layout;
+  const visible = board.filter((w) => allowed(w.id) === 'ok');
 
-  const queue = useMemo(() => {
-    const m = memberships.find((x) => x.userId === userId && x.orgId === org.id);
-    const me = { id: userId ?? '', roleIds: m?.roleIds ?? [], permissions: patterns };
-    const wf = (d: string) => settings.workflows.find((w) => w.docType === d);
-    const items: { id: string; type: string; number: string; status: string; total: number; createdAt: string; link: string }[] = [];
-    const add = (rows: { id: string; number: string; status: string; total: { amountMinor: number }; createdAt: string }[], type: string, path: string) => {
-      const def = wf(type);
-      if (!def) return;
-      for (const r of rows) if (canAct(r as unknown as WorkflowRecord, def, me)) items.push({ id: r.id, type, number: r.number, status: r.status, total: r.total.amountMinor, createdAt: r.createdAt, link: `${path}?open=${r.id}` });
-    };
-    add(requests, 'purchaseRequest', '/app/purchase-requests');
-    add(expenses, 'preExpense', '/app/expenses');
-    add(acs, 'aggregatorPurchase', '/app/aggregators');
-    return items.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }, [memberships, userId, org.id, patterns, settings.workflows, requests, expenses, acs]);
-
+  // How this company is configured — demo-only facts go to the Demo panel, not the page.
   const country = countries.find((c) => c.code === org.countries[0]);
   const prWorkflow = settings.workflows.find((w) => w.docType === 'purchaseRequest');
-  const prPattern = settings.numbering.find((p) => p.docType === 'purchaseRequest');
+  const prPattern = settings.numbering.find((x) => x.docType === 'purchaseRequest');
   const weekLabel = formatDate(new Date(2026, 0, org.weekStart === 0 ? 4 : org.weekStart === 6 ? 10 : 5), org.timezone, lang, 'EEEE');
-  const risky = requests.find((r) => r.riskFlags.some((x) => x.severity === 'HIGH') && queue.some((q) => q.id === r.id));
-
-  const facts: [string, string][] = [
-    ['country', country?.name[lang] ?? org.countries[0]!],
-    ['currency', `${org.currency} · ${f.money(toMinor(1_234_567.5, org.currency))}`],
-    ['language', org.language.toUpperCase()],
-    ['timezone', org.timezone],
-    ['localTime', f.dateTime(new Date())],
-    ['weekStart', weekLabel],
-    ['levels', settings.locationLevels.map((l) => l.label[lang] ?? l.label.en).join(' → ')],
-    ['commodities', settings.commodities.map((c) => c.name[lang] ?? c.name.en).join(', ') || '—'],
-    ['providers', settings.paymentProviders.filter((p) => p.kind === 'MOBILE_MONEY').map((p) => p.name).join(', ') || '—'],
-    ['approval', prWorkflow ? prWorkflow.steps.map((s) => s.name + (s.condition ? ` (> ${f.money(Number(s.condition.value))})` : '')).join(' → ') : '—'],
-    ['numbering', prPattern ? `${prPattern.pattern} → ${previewNumber(prPattern, sequences, { date: new Date() })}` : '—'],
-  ];
-
-  const isOperational = org.type !== 'BUYER' && org.type !== 'PLATFORM';
-  // How this company is configured — useful while demoing, so it goes to the Demo panel.
   useDemoNotes([
-    { id: 'phase', key: 'demo.note.dashboardPhase' },
-    ...facts.map(([k, v]) => ({ id: k, key: 'demo.note.fact', params: { label: t(`dashboard.fact.${k}`), value: v } })),
+    { id: 'dash', key: 'demo.note.dashboardLive' },
+    ...([
+      ['country', country?.name[lang] ?? org.countries[0]!],
+      ['currency', `${org.currency} · ${f.money(toMinor(1_234_567.5, org.currency))}`],
+      ['timezone', `${org.timezone} · ${f.dateTime(new Date())}`],
+      ['weekStart', weekLabel],
+      ['levels', settings.locationLevels.map((l) => l.label[lang] ?? l.label.en).join(' → ')],
+      ['approval', prWorkflow ? prWorkflow.steps.map((s) => s.name).join(' → ') : '—'],
+      ['numbering', prPattern ? previewNumber(prPattern, sequences ?? {}) : '—'],
+    ] as [string, string][]).map(([k, v]) => ({ id: k, key: 'demo.note.fact', params: { label: t(`dashboard.fact.${k}`), value: v } })),
   ]);
 
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
+  const onDragEnd = (e: DragEndEvent) => {
+    if (!editing || !e.over || e.active.id === e.over.id) return;
+    const from = editing.findIndex((w) => w.id === e.active.id);
+    const to = editing.findIndex((w) => w.id === e.over!.id);
+    setEditing(arrayMove(editing, from, to));
+  };
+  const saveMine = () => {
+    useDashboardStore.getState().saveLayout(orgId, userId ?? '', editing!);
+    setEditing(null);
+    toast.success(t('dashboard.savedMine'));
+  };
+  const saveCompany = () => {
+    useDashboardStore.getState().saveCompanyDefault(orgId, editing!);
+    useDashboardStore.getState().resetLayout(orgId, userId ?? '');
+    setEditing(null);
+    toast.success(t('dashboard.savedCompany', { company: org.name }));
+  };
+
   return (
-    <>
+    <DataContext.Provider value={data}>
       {tour.element}
       <PageHeader
         eyebrow={t('dashboard.subtitle', { company: org.name })}
         title={t('dashboard.greeting', { name: user?.name.split(' ')[0] ?? '' })}
         description={t('pages.dashboard')}
         onTour={startTour}
-        primary={
-          <Button onClick={() => navigate('/app/ai')}>
-            {t('nav.ai')} <ArrowRight />
-          </Button>
+        actions={
+          editing ? null : (
+            <Button variant="secondary" onClick={() => setEditing(layout)} data-tour="customise">
+              <LayoutGrid /> {t('dashboard.customise')}
+            </Button>
+          )
         }
       />
 
-      <SetupChecklist />
+      {!editing && <AskBar />}
+      {!editing && <SetupChecklist />}
 
-      {isOperational && purchases.length > 0 && (
-        <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6" aria-label={t('nav.dashboard')}>
-          <StatCard label={t('dashboard.kpi.volume')} value={f.kg(Math.round(kpis.volume))} icon={ShoppingBasket} onClick={() => navigate('/app/purchases')} />
-          <StatCard label={t('dashboard.kpi.spend')} value={f.money(kpis.spend, { compact: true })} hint={f.money(kpis.spend)} icon={Banknote} onClick={() => navigate('/app/purchases')} />
-          <StatCard label={t('dashboard.kpi.farmersPaid')} value={f.number(kpis.farmersPaid)} icon={Users} onClick={() => navigate('/app/farmers')} />
-          <StatCard label={t('dashboard.kpi.openRequests')} value={f.number(kpis.open)} icon={ClipboardList} onClick={() => navigate('/app/purchase-requests')} />
-          <StatCard label={t('dashboard.kpi.cashWithAgents')} value={f.money(kpis.cash, { compact: true })} hint={f.money(kpis.cash)} icon={Coins} onClick={() => navigate('/app/agents')} />
-          <StatCard label={t('dashboard.kpi.reconGap')} value={f.money(kpis.gap, { compact: true })} hint={f.money(kpis.gap)} icon={Scale} onClick={() => navigate('/app/reconciliation')} />
-        </section>
+      {editing && (
+        <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand/30 bg-surface/95 px-5 py-3 shadow-soft backdrop-blur">
+          <span className="text-[14px] text-body">{t('dashboard.editHint')}</span>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" size="sm" onClick={() => setLibrary(true)}><Plus /> {t('dashboard.addWidget')}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setEditing(fallback)}><RotateCcw /> {t('dashboard.resetDefault')}</Button>
+            <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>{t('common.cancel')}</Button>
+            {can('dashboard.setDefault') && <Button variant="secondary" size="sm" onClick={saveCompany}>{t('dashboard.saveCompany')}</Button>}
+            <Button size="sm" onClick={saveMine}><Save /> {t('dashboard.saveMine')}</Button>
+          </div>
+        </div>
       )}
 
-      <Card>
-          <CardHeader>
+      {!isOperational && !editing && (
+        <Card className="mb-6">
+          <CardContent className="flex flex-wrap items-center justify-between gap-4 p-6">
             <div>
-              <CardTitle>{t('dashboard.approvals')}</CardTitle>
-              <p className="mt-1 text-[14px] text-muted">{queue.length ? t('dashboard.approvalsCount', { count: queue.length }) : t('dashboard.approvalsEmpty')}</p>
+              <h2 className="text-xl">{t('dashboard.buyerTitle')}</h2>
+              <p className="mt-1 text-muted">{t('dashboard.buyerBody', { company: org.name })}</p>
             </div>
-          </CardHeader>
-          <CardContent className="pt-4">
-            {risky && (
-              <div className="mb-4 flex items-start gap-3 rounded-ctl border border-danger/30 bg-danger/5 px-4 py-3 text-[14px] text-danger">
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>{t('notification.riskHigh', { number: risky.number, pct: risky.variancePct })}</span>
-              </div>
-            )}
-            {queue.length === 0 ? (
-              <p className="py-6 text-center text-[14px] text-muted">{t('dashboard.approvalsEmptyBody')}</p>
-            ) : (
-              <ul className="divide-y divide-line">
-                {queue.slice(0, 8).map((q) => (
-                  <li key={q.id}>
-                    <Link to={q.link} className="flex items-center gap-4 rounded-ctl px-2 py-3 transition-colors hover:bg-brand-soft/50">
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-mono text-[13px] font-medium text-ink">{q.number}</span>
-                        <span className="block text-[13px] text-muted">{t(`docType.${q.type}`)}</span>
-                      </span>
-                      <StatusBadge status={q.status} />
-                      <span className="tnum w-36 text-right font-medium text-ink">{f.money(q.total)}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {modules.traceboard && <Button onClick={() => navigate('/app/traceboard')}><Radar /> {t('nav.traceboard')} <ArrowRight /></Button>}
           </CardContent>
-      </Card>
-    </>
+        </Card>
+      )}
+
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+        <SortableContext items={visible.map((w) => w.id)} strategy={rectSortingStrategy}>
+          <div className="grid grid-cols-1 gap-5 xl:grid-cols-12" data-tour="widgets">
+            {visible.map((w) => (
+              <WidgetCard
+                key={w.id}
+                placement={w}
+                editing={!!editing}
+                onResize={(size) => setEditing((e) => e!.map((x) => (x.id === w.id ? { ...x, size } : x)))}
+                onRemove={() => setEditing((e) => e!.filter((x) => x.id !== w.id))}
+              />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+      {!visible.length && <p className="rounded-card border border-dashed border-line px-6 py-12 text-center text-muted">{t('dashboard.emptyBoard')}</p>}
+      {!editing && <p className="mt-6 text-center text-[12px] text-muted">{t(`dashboard.layoutSource.${source}`, { company: org.name })}{custom && <Button variant="link" size="xs" onClick={() => useDashboardStore.getState().resetLayout(orgId, userId ?? '')}>{t('dashboard.useDefault')}</Button>}</p>}
+
+      <Sheet open={library} onOpenChange={setLibrary}>
+        <SheetContent closeLabel={t('common.close')} className="overflow-y-auto p-6">
+          <SheetTitle className="text-xl font-semibold text-ink">{t('dashboard.library')}</SheetTitle>
+          <SheetDescription className="mt-1 text-[14px] text-muted">{t('dashboard.libraryHint')}</SheetDescription>
+          <ul className="mt-6 space-y-2">
+            {WIDGETS.map((w) => {
+              const state = allowed(w.id);
+              const on = !!editing?.some((x) => x.id === w.id);
+              return (
+                <li key={w.id} className="flex items-center gap-3 rounded-ctl border border-line p-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-ink">{t(`dashboard.widget.${w.id}`)}</div>
+                    <div className="text-[13px] text-muted">{t(`dashboard.widgetDesc.${w.id}`)}</div>
+                    {state === 'module' && <Badge tone="neutral" className="mt-1">{t('dashboard.needsModule', { module: t(`module.${w.module}`) })}</Badge>}
+                    {state === 'permission' && <Badge tone="neutral" className="mt-1"><Lock className="h-3 w-3" /> {t('common.missingPermission', { permission: w.permission })}</Badge>}
+                  </div>
+                  {on ? (
+                    <Badge tone="brand">{t('dashboard.onBoard')}</Badge>
+                  ) : (
+                    <Button size="sm" variant="secondary" disabled={state !== 'ok'} onClick={() => setEditing((e) => [...(e ?? []), { id: w.id, size: w.sizes[Math.min(1, w.sizes.length - 1)]! }])}>
+                      <Plus /> {t('dashboard.add')}
+                    </Button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </SheetContent>
+      </Sheet>
+    </DataContext.Provider>
+  );
+}
+
+function WidgetCard({ placement, editing, onResize, onRemove }: { placement: WidgetPlacement; editing: boolean; onResize: (s: WidgetSize) => void; onRemove: () => void }) {
+  const def = widgetById(placement.id)!;
+  const { t } = useT();
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: placement.id, disabled: !editing });
+  const Body = def.component;
+  const sizes = SIZE_ORDER.filter((s) => def.sizes.includes(s));
+  return (
+    <section
+      ref={setNodeRef}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
+      className={cn('min-w-0 rounded-card border bg-surface p-5 shadow-soft', SPAN[placement.size], editing ? 'border-dashed border-brand/40' : 'border-line', isDragging && 'z-10 opacity-90 shadow-lift')}
+      aria-label={t(`dashboard.widget.${def.id}`)}
+    >
+      <header className="mb-4 flex items-center gap-2">
+        {editing && (
+          <button type="button" {...attributes} {...listeners} className="cursor-grab rounded p-1 text-muted hover:bg-canvas active:cursor-grabbing" aria-label={t('dashboard.move', { widget: t(`dashboard.widget.${def.id}`) })}>
+            <GripVertical className="h-4 w-4" />
+          </button>
+        )}
+        <h2 className="min-w-0 flex-1 truncate text-[16px] font-semibold text-ink">{t(`dashboard.widget.${def.id}`)}</h2>
+        {editing && sizes.length > 1 && (
+          <div className="flex rounded-chip border border-line p-0.5" role="radiogroup" aria-label={t('dashboard.size')}>
+            {sizes.map((s) => (
+              <button key={s} type="button" role="radio" aria-checked={placement.size === s} onClick={() => onResize(s)} className={cn('rounded-[6px] px-2 py-0.5 text-[12px] font-medium', placement.size === s ? 'bg-brand text-white' : 'text-muted hover:text-ink')}>
+                {t(`dashboard.sizeName.${s}`)}
+              </button>
+            ))}
+          </div>
+        )}
+        {editing && (
+          <button type="button" onClick={onRemove} className="rounded p-1 text-muted hover:bg-danger/10 hover:text-danger" aria-label={t('dashboard.remove', { widget: t(`dashboard.widget.${def.id}`) })}>
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </header>
+      <div className={cn(editing && 'pointer-events-none select-none opacity-80')}>
+        <Body />
+      </div>
+    </section>
   );
 }

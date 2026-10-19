@@ -5,17 +5,19 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 2._
+_Last updated: Phase 6._
+
+Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
 Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", reset demo data, page notes) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
 ## Foundations (Scope 1)
 
-- [~] Company profile — profile fields on every company, read-only peek in Settings → Company profile [3]
+- [x] Company profile — Settings → Company profile: legal/trading name, registration and tax ID, contacts, countries, currency, languages, time zone, week start, fiscal year, company code, live money/date/number preview
 - [x] Platform owner role (replaces org 21) — `platformOwner` role, sees every company, Platform console gated by `platform.*`
 - [x] Company list — Platform → Companies: logo, countries, type, plan, modules, active agents, farmers, status, created; View / View as company / Suspend / Reactivate / Change plan; company detail with usage charts, plan limits, modules, admins, grants, audit
 - [x] Onboarding wizard — 7 steps + review with AI draft; template (Vitara / blank / cocoa / cashew / shea / grains / coffee); creates company, settings, roles, admin invites; setup checklist on the new company's dashboard
-- [~] Company edit — plan and status from the console; profile editors in Settings [3]
+- [x] Company edit — plan and status from the console; profile and branding (logo upload, colour, email/receipt/portal previews) in Settings
 - [x] Deactivate / suspend — suspend and reactivate (members of a suspended company can't sign in), audited
 - [x] Plan permission ceiling — Platform → Plans shows module bundles, limits and ceiling; enforced in every permission check; Change plan applies it immediately
 - [~] Company switching (web + mobile) — web switcher, command palette, persona switcher; mobile company switch from Me [9]
@@ -31,14 +33,14 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Change password — My account → Security
 - [x] Sign out (this device / all) — My account → Sessions, works across tabs
 - [x] Email verification — sign-up step 2
-- [~] Users list / add / bulk invite / edit / remove — admin invites from the wizard; user management screens [3]
-- [~] Roles CRUD per company — every company gets its own roles copied from the 14 templates (Kakao Ivoire renames them) [3]
-- [ ] Permission matrix [3]
+- [x] Users list / add / bulk invite / edit / remove — Settings → Users: invite, bulk CSV with validation preview, role change, deactivate/reactivate, remove, resend/revoke invite, unlock, last active
+- [x] Roles CRUD per company — Settings → Roles: user counts, create (blank or copy), rename, mobile sign-in flag, delete when unused
+- [x] Permission matrix — grouped by module with search, select all per module, plan ceiling greys out what the plan excludes; compare up to 4 roles (differences only)
 - [x] Permission checks per company — `can(user, permission, orgId)`, route guards, `<PermissionGate>` with "View as" mode
 - [x] Public role list removed — no public role endpoint exists in the prototype
-- [~] Modules catalogue + toggles + enforcement — catalogue with dependencies; sidebar, routes and mobile tiles respect modules; toggles UI [3]
-- [ ] Company-specific switches (orgs 96/97 cases as settings) [3]
-- [~] Business rules settings — buying rules, loan terms, packaging, tolerances stored per company [3]
+- [x] Modules catalogue + toggles + enforcement — Settings → Plan & modules: toggles within the plan, dependency errors with one-click fixes; sidebar, routes, mobile tiles and dashboard follow instantly (all tabs)
+- [x] Company-specific switches (orgs 96/97 cases as settings) — sub-feature switches per module (voice purchase, consolidated bags, direct payment, bulk pay, name lookup, group scoring, auto write-off…)
+- [x] Business rules settings — Buying rules, Support & loans (live ledger example), Inventory rules (tolerance check), Field team, Data quality (test on sample), Biometrics, Security, Mobile app
 - [x] Per-company sequences — numbering engine with company / year / month / client / agent / community scopes
 - [x] Time zone / week start — all dates via `formatDate()` in the company time zone; week start per company
 - [x] Languages + terminology — EN/FR via i18next; company terms (`{{term.agent}}` → "Délégué")
@@ -46,35 +48,36 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Countries catalogue — Platform → Global catalogues: countries, currencies, commodities, question types on/off, permission catalogue, providers per country
 - [ ] API versions / docs page [17]
 - [x] Removed unauthenticated debug routes — no backend; nothing to expose
-- [ ] NFC keys server-held [3]
+- [x] NFC keys server-held — Settings → Biometrics & consent shows server-held card keys and rotation
 
 ## Places and people (Scope 2)
 
-- [~] Location levels + explorer + zones — per-country levels, location tree and zones seeded; explorer [5]
-- [~] Agent multi-area assignment — agents hold many area nodes in the data [16]
-- [~] Community profile (v1–v3 fields) — Vitara template fields seeded as `customFields` [5]
-- [~] Community code pattern — `{region}-{seq:3}` (Daffiama = WA-014) [5]
-- [ ] Leaders [5]
-- [ ] Documents [5]
-- [ ] Groups in community sync (upsert) [9]
-- [~] Community list / detail / map / dashboard / edit — seeded preview table [5]
-- [~] Community score — scoring engine scaffolded and tested [5]
-- [~] Farmer profile (all fields) — Vitara and Kakao Ivoire template fields seeded [5]
-- [~] Farmer ID pattern — `{community}-{initials}-{seq}` (WA-014-AI-0023), `KI-{region}-{seq:5}` [5]
-- [~] Thumbprints — identity status seeded [5]
-- [~] Consent audio / signature — consent type seeded [5]
-- [~] ID card and photo — identity status seeded [5]
-- [~] NFC card lifecycle — card status seeded (Issued / Replaced / Revoked) [5]
-- [~] Data-quality rules + review — rules engine scaffolded [5]
-- [ ] Farmer score [5]
-- [~] Farmer list / detail / export / profiling report / dashboard — seeded preview table [5]
-- [ ] Shared farmers / communities [5]
-- [~] Farmer groups profile / members / leaders / documents / payment details — groups, real membership table, group wallets seeded [5]
-- [~] Group scorecard + manual review — one group seeded "Pending review" [5]
-- [ ] VSLA savings [5]
-- [ ] Community import [5]
-- [ ] Farmer import [5]
-- [ ] Other imports [5]
+- [x] Location levels + explorer + zones — Settings → Locations (levels, tree editor, CSV import, zones); Locations explorer `/app/locations`: tree by levels, node detail with community / farmer / agent counts, zones, add / edit / move; boundary drawing is a "coming" stub
+- [~] Agent multi-area assignment — agents hold many area nodes; explorer counts agents per node [16]
+- [x] Community profile (v1–v3 fields) — community profile form (Vitara v3) rendered on create / edit and in the drawer's Profile tab
+- [x] Community code pattern — new communities get `{region}-{seq:3}` from Settings → Farmer ID & codes; issued once, never regenerated on edit
+- [x] Leaders — communities and groups: name, role (company list), phone; add / edit / remove
+- [x] Documents — type from the company list, upload with image / PDF preview, uploaded by / when
+- [ ] Groups in community sync (upsert) [9] — web group create already upserts by name within a community
+- [x] Community list / detail / map / dashboard / edit — filters + saved views, column picker, CSV export, drawer (overview map, profile, leaders, documents, farmers, groups, purchases, activity), `/app/communities/map` with score-coloured pins, dashboard (profiled, average farmers, bought from, top 3s, over time)
+- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); workshops / trees count as zero until phases 14–15
+- [x] Farmer profile (all fields) — Vitara v3 farmer form (incl. spouse show-if, children repeat group, ID type / number); edit creates a new version with a change history
+- [x] Farmer ID pattern — `{community}-{initials}-{seq}` / `KI-{region}-{seq:5}` on registration; "Import existing IDs" keeps a supplied ID
+- [x] Thumbprints — left / right status on the Identity tab (capture itself on mobile, phase 9)
+- [x] Consent audio / signature — Identity tab shows audio player (simulated), signature image or tick; record consent from the web
+- [x] ID card and photo — status on the Identity tab, plus document upload
+- [x] NFC card lifecycle — issue, replace, revoke (permission `farmers.manageNfc`)
+- [x] Data-quality rules + review — `/app/data-quality`: queue (farmers, communities, groups) with rule, severity, agent, source, date; bulk assign to agent (mobile task), mark valid with reason, re-check; charts by rule, by agent, weekly trend; Vitara rules incl. disabled ewe / tertiary / tractor with notes
+- [x] Farmer score — farmer model (consent, identity, purchases, group, no overdue loan) with breakdown and recalculate
+- [x] Farmer list / detail / export / profiling report / dashboard — list with all PRD columns, saved views (Women farmers, No consent, Blocked by debt, Flagged), register with duplicate check (phone / ID number), drawer tabs, CSV export with column picker, profiling report by agent, dashboard (gender, age bands, education, income, real household / children averages, registrations, by agent)
+- [ ] Shared farmers / communities [later — company data sharing, PRD A5]
+- [x] Farmer groups profile / members / leaders / documents / payment details — group type form, membership with roles, joined / left, add / remove; MoMo / bank / cash details
+- [x] Group scorecard + manual review — uploading meeting or contribution records resets that manual score and sets Pending review; reviewer scores 1–4 / 1–18 with a note → Completed; recalculation replaces
+- [x] VSLA savings — Savings tab on VSLA groups: fund, saved, out on loan; contributions, loans, repayments, share-out
+- [x] Community import — wizard: template from the community form, map, match parent locations, validate, import (codes from the pattern), quality re-check, undo
+- [x] Farmer import — Journey 15: template (CSV / Excel) from the farmer form, sample file, auto-map with aliases, transforms (leading 0, dd/mm/yyyy…), fuzzy community matching, inline fixes, warnings for likely duplicates, result report, error file, history, undo last import
+- [~] Other imports — locations import in the wizard; groups, members, leaders, recoveries, warehouse loads, price lists, users, agents show "arrives with its module"
+- [x] Mobile data-fix tasks — fix tasks appear on the agent's phone (home alert, Tasks, `/m/tasks/:id`); saving re-checks the record and resolves the flag on the web; offline fixes wait in the outbox until Sync
 
 ## Field agents (Scope 3)
 
@@ -143,9 +146,9 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [ ] Delivery details [10]
 - [ ] Proof of delivery [10]
 - [ ] Aggregator refunds / reconciliation [10]
-- [~] Commodity catalogue — per company, with codes, aliases, HS codes, quality parameters, thresholds [3]
-- [~] Units — units engine with conversions (tested) [3]
-- [~] Price lists — per commodity × zone, with tolerance [3]
+- [x] Commodity catalogue — Settings → Commodities: names per language, codes, aliases, HS codes, units, quality parameters, grades, thresholds, EUDR and scoring flags
+- [x] Units — Settings → Units & packaging: units and conversions, packaging profiles, conversion check
+- [x] Price lists — Settings → Price lists: commodity × zone × grade, effective dates, tolerance, premiums, change approval switch, price history
 
 ## Money (Scope 5)
 
@@ -158,8 +161,8 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [~] Status check — one payment seeded in Unknown status [8]
 - [~] Payment history / stats / export — preview table [8]
 - [~] Wallet balance — wallets seeded per provider, one below threshold [8]
-- [~] Providers per company / country — MTN / Telecel / AirtelTigo (GH), Orange / Wave / MTN CI (CI) [3]
-- [~] Fee tiers / tax — different tiers per company [3]
+- [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits
+- [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker, batch size, live fee calculator
 - [~] Phone validation by country — libphonenumber-js helper [5]
 - [ ] Collections [8]
 - [ ] Weekly budget / allowance / support payouts [8, 11, 16]
@@ -258,18 +261,18 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Forms and training (Scope 9)
 
-- [~] Form builder — form schema types [6]
-- [~] All question types — all 37 types in the form engine catalogue [6]
-- [~] Skip / display logic — AND/OR show-if logic with all operators (tested) [6]
-- [ ] Assignment + deploy [6]
-- [~] Lifecycle incl. test — statuses and versioned publish in the engine [6]
-- [ ] Mobile survey delivery [10]
-- [ ] Responses + media [6]
-- [ ] Review statuses [6]
-- [ ] Analytics [6]
-- [ ] Summary [6]
-- [ ] Export [6]
-- [~] Subject binding — bindings modelled in the engine [6]
+- [x] Form builder — `/app/forms/:id`: palette (37 types in 7 groups, click or drag), canvas with sections and drag-to-reorder, settings panel (labels and help per language, field key, required / required-if, default, placeholder, validation incl. regex and date range, inline or shared options, "Other", randomise, scales, media limits, record type, table rows × columns, formula, maps-to field, sensitive), preview web (EN/FR) and mobile, version history with restore, publish with change summary; AI draft (scripted topics, Claude when a key is set); shared option lists page
+- [x] All question types — every type renders on web and mobile, with simulated camera, GPS accuracy, boundary walk with area, QR / NFC / thumbprint, audio and signature
+- [x] Skip / display logic — show-if, required-if and jump-to / end-form with AND/OR groups on earlier questions (incl. multi-select), section logic, calculated fields
+- [x] Assignment + deploy — all agents, by role, agent type, location or named users; target per agent and due date; reach count
+- [x] Lifecycle incl. test — Draft → Test (test users, responses tagged) → Live → Closed; schedule start / end; publishing creates version n+1, responses and records keep their version
+- [x] Mobile survey delivery — `/m/surveys`: assigned forms with targets and due dates, subject pick, step-by-step renderer, drafts, offline save to the outbox and send on sync; "needs fix" items return to the phone
+- [x] Responses + media — responses table (ID, version, subject, agent, date, GPS accuracy, status, completion) with filters; detail with photos, map, subject link, edit with history
+- [x] Review statuses — approve, reject, send back with comment (→ mobile task + notification), resubmit keeps the number
+- [x] Analytics — per question by type (choice counts, averages, medians, Likert distribution, NPS), completion, responses per week, map; filters by date, agent, location, status, version
+- [x] Summary — totals, average completion, approval rate, agents
+- [x] Export — Excel with chosen columns; sensitive answers masked without `farmers.viewSensitive`
+- [x] Subject binding — profile forms drive web and mobile registration, farmer list column options and report fields (Journey 9); Settings → Forms picks the form for each record type
 - [ ] Training catalogue / topics [15]
 - [ ] Workshop planning [15]
 - [ ] Status [15]
@@ -281,7 +284,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Platform services (Scope 10)
 
-- [~] Dashboards + caching — Phase 1 dashboard: KPI row, approval queue, company facts [4]
+- [x] Dashboards + caching — widget board: ask bar, setup checklist, KPI row, My approvals with inline Approve / Hold / Reject, purchases by week, volume by commodity, top communities, payouts by provider, recovery progress, stock by warehouse, field map, alerts, wallets, activity; customise (drag, resize, add from the library, remove), saved per person or as the company default, role-based default layouts; every widget gated by module and permission; module dashboards reuse the widget system in their phases
 - [ ] Exports / report builder [17]
 - [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
 - [ ] SMS [17]
@@ -295,10 +298,10 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [ ] Scheduled jobs [17]
 - [ ] Backups (platform) [17]
 - [x] Error reporting — n/a in the prototype (noted)
-- [ ] AI assistant [4]
+- [x] AI assistant — Ask your operations: dashboard bar with 4 suggestions and /app/ai with conversation history; 24 scripted EN/FR intents over company-scoped data (`src/data/ai-intents.ts`, tested for isolation); answer cards with sentence, chart, table, “Open in …” links, “Explain how this was calculated”, CSV export; module and permission checks; optional Claude fallback when `VITE_ANTHROPIC_API_KEY` is set
 - [ ] Knowledge base [17]
 - [x] Book a demo — book-a-demo / contact form with country phone validation → confirmation → Platform → Leads
 
 ## Hard-coded values (Scope 11)
 
-- [~] Every item in Scope 11 appears as an editable setting with the Vitara value as the template default — Vitara template stored as company settings (workflows, numbering, commodities, packaging, providers, fee tiers, buying rules, loan terms, agent types, expense catalogue); editors arrive in phase 3
+- [x] Every item in Scope 11 appears as an editable setting with the Vitara value as the template default — 27 Settings pages edit workflows (visual builder with drag-to-reorder, conditions, parallel, auto, separation of duties, flow diagram, try-a-record), numbering, commodities, packaging, price lists, providers, fee tiers, buying rules, loan terms, inventory tolerances, agent types, budgets and penalties, notifications and templates, SMS/email, integrations, security, privacy and mobile; Reset to template restores the company's starting values

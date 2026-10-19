@@ -288,3 +288,25 @@ export function apply<T extends WorkflowRecord>(
 export function canAct(record: WorkflowRecord, def: WorkflowDefinition, user: WorkflowUser): boolean {
   return getAllowedActions(record, def, user).some((a) => a.allowed && (a.action === 'APPROVE' || a.action === 'RESUME'));
 }
+
+/**
+ * After a definition is edited in Settings → Approvals, move an in-flight record whose current
+ * (or held) step no longer exists to the first remaining step it has not passed. Records with no
+ * steps left are approved. Unchanged records are returned as-is (same reference).
+ */
+export function rehome<T extends WorkflowRecord>(def: WorkflowDefinition, record: T): T {
+  if (record.status === def.approvedStatus || record.status === def.rejectedStatus) return record;
+  const steps = activeSteps(def, record);
+  const nextOpen = () => steps.find((s) => !s.auto && !satisfied(s, record.wf));
+  if (isHeld(def, record)) {
+    if (!record.wf.heldAtStepId || steps.some((s) => s.id === record.wf.heldAtStepId)) return record;
+    const next = nextOpen();
+    if (!next) return { ...record, status: def.approvedStatus, wf: { ...record.wf, heldAtStepId: null, currentStepId: null } };
+    return { ...record, wf: { ...record.wf, heldAtStepId: next.id, currentStepId: next.id } };
+  }
+  const current = record.wf.currentStepId;
+  if (current === null || steps.some((s) => s.id === current)) return record;
+  const next = nextOpen();
+  if (!next) return { ...record, status: def.approvedStatus, wf: { ...record.wf, currentStepId: null } };
+  return { ...record, wf: { ...record.wf, currentStepId: next.id } };
+}

@@ -9,7 +9,8 @@ import { MOBILE_FLOWS } from '@/app/routes';
 import i18n from '@/i18n';
 import { BottomTabs } from './BottomTabs';
 import { RecordSheet } from './RecordSheet';
-import { MobileSignIn } from '@/mobile/flows/auth/MobileSignIn';
+import { MobileSignIn, PinLock } from '@/mobile/flows/auth/MobileSignIn';
+import '@/services/mobileHandlers';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { CollectionPrompt } from '@/mobile/flows/money/CollectionPrompt';
 
@@ -50,7 +51,7 @@ export function MobileShell() {
 
   useEffect(() => setRecordOpen(false), [location.pathname]);
   // Step-by-step flows take the whole screen; their sticky action button replaces the tab bar.
-  const immersive = /^\/m\/(surveys\/.+|farmers\/new|preview\/.+|tasks\/.+)/.test(location.pathname);
+  const immersive = /^\/m\/(surveys\/.+|farmers\/(new|[^/]+\/edit)|communities\/.+|groups\/.+|buying\/(purchase|voice|pre\/new|requests\/new)|preview\/.+|tasks\/.+)/.test(location.pathname);
 
   return (
     <div className="min-h-[100dvh] bg-canvas frame:flex frame:items-center frame:justify-center frame:bg-[radial-gradient(ellipse_at_top,_rgb(var(--brand-soft)),_rgb(var(--canvas))_60%)] frame:p-6">
@@ -64,6 +65,7 @@ export function MobileShell() {
             {!immersive && <BottomTabs onRecord={() => setRecordOpen(true)} />}
             <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />
             <CollectionPrompt />
+            <PinLock />
           </ActorContext.Provider>
         ) : (
           <MobileSignIn />

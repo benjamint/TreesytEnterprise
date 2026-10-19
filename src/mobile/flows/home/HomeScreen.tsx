@@ -28,7 +28,7 @@ export function HomeScreen() {
     () =>
       agent
         ? requests
-            .filter((r) => r.agentId === agent.id && (r.status === 'FULL_DISBURSEMENT' || r.status === 'PARTIAL_DISBURSEMENT' || r.status === 'NOT_APPROVED'))
+            .filter((r) => r.agentId === agent.id && (((r.status === 'FULL_DISBURSEMENT' || r.status === 'PARTIAL_DISBURSEMENT') && !r.fundsReceived) || r.status === 'NOT_APPROVED'))
             .slice(0, 3)
             .map((r) => ({ id: r.id, text: t(r.status === 'NOT_APPROVED' ? 'mobile.alertRejected' : 'mobile.alertConfirmFunds', { number: r.number }) }))
         : [],
@@ -88,9 +88,12 @@ export function HomeScreen() {
             ) : (
               <ul className="space-y-2">
                 {alerts.map((a) => (
-                  <li key={a.id} className="flex items-start gap-3 rounded-ctl bg-warning/10 px-4 py-3 text-[14px] text-ink">
-                    <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
-                    {a.text}
+                  <li key={a.id}>
+                    <button type="button" onClick={() => navigate(`/m/buying/requests/${a.id}`)} className="flex w-full items-start gap-3 rounded-ctl bg-warning/10 px-4 py-3 text-left text-[14px] text-ink active:bg-warning/20">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+                      <span className="flex-1">{a.text}</span>
+                      <ChevronRight className="h-4 w-4 text-muted" aria-hidden="true" />
+                    </button>
                   </li>
                 ))}
               </ul>

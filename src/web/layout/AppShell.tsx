@@ -33,6 +33,8 @@ export function AppShell() {
     () =>
       onAnnounce((key, params) => {
         if (key === 'synced') toast.success(t('shell.syncedToast', params));
+        if (key === 'mobileSynced') toast.success(t('shell.mobileSyncedToast', params));
+        if (key === 'mobileSaved') toast.success(t('shell.mobileSavedToast', params));
       }),
     [t],
   );

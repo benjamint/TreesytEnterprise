@@ -20,14 +20,14 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Company edit — plan and status from the console; profile and branding (logo upload, colour, email/receipt/portal previews) in Settings
 - [x] Deactivate / suspend — suspend and reactivate (members of a suspended company can't sign in), audited
 - [x] Plan permission ceiling — Platform → Plans shows module bundles, limits and ceiling; enforced in every permission check; Change plan applies it immediately
-- [~] Company switching (web + mobile) — web switcher, command palette, persona switcher; mobile company switch from Me [9]
+- [x] Company switching (web + mobile) — web switcher, command palette, persona switcher; mobile Me → Switch company re-downloads that company's data
 - [x] Company code / numbering prefix — `{orgCode}` / `{prefix}` tokens, per-company patterns
 - [x] Public sign-up — account (strength meter) → verify email (6-digit code) → company basics (currency and language from country) → terms → setup checklist
 - [x] Web sign-in — email + password with attempt counter and lockout, SSO (domain lookup → identity provider screen), 2-step code, remember this device, company picker
 - [x] Token / session expiry — idle warning modal with countdown (company session length), sessions revocable; a revoked session signs its tab out
-- [ ] Agent phone + code login [9]
-- [~] OTP by SMS / email — email verification and 2-step codes (simulated, shown in the Demo panel); SMS login for agents [9]
-- [x] Resend code — 2-step (with cooldown) and email verification; agent SMS resend [9]
+- [x] Agent phone + code login — `/m`: phone (country + number) → one-time code (company OTP length, shown in the Demo panel and a toast) → company pick when several → data download per module → 4-digit PIN; auto-lock after 5 minutes idle, unlock with the PIN
+- [x] OTP by SMS / email — email verification, 2-step and agent phone sign-in codes (simulated, shown in the Demo panel)
+- [x] Resend code — 2-step (with cooldown), email verification and agent phone sign-in
 - [x] Forgot / reset password — email sent screen, reset link (expired / used / invalid states), new password with the company policy shown
 - [x] Invite acceptance — separate page: name, password (company policy), terms; expired and used states
 - [x] Change password — My account → Security
@@ -58,18 +58,19 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Community code pattern — new communities get `{region}-{seq:3}` from Settings → Farmer ID & codes; issued once, never regenerated on edit
 - [x] Leaders — communities and groups: name, role (company list), phone; add / edit / remove
 - [x] Documents — type from the company list, upload with image / PDF preview, uploaded by / when
-- [ ] Groups in community sync (upsert) [9] — web group create already upserts by name within a community
+- [x] Groups in community sync (upsert) — groups added during mobile community profiling, and mobile group saves, upsert by name within the community; meeting / contribution records send the group score for review
 - [x] Community list / detail / map / dashboard / edit — filters + saved views, column picker, CSV export, drawer (overview map, profile, leaders, documents, farmers, groups, purchases, activity), `/app/communities/map` with score-coloured pins, dashboard (profiled, average farmers, bought from, top 3s, over time)
 - [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); workshops / trees count as zero until phases 14–15
 - [x] Farmer profile (all fields) — Vitara v3 farmer form (incl. spouse show-if, children repeat group, ID type / number); edit creates a new version with a change history
 - [x] Farmer ID pattern — `{community}-{initials}-{seq}` / `KI-{region}-{seq:5}` on registration; "Import existing IDs" keeps a supplied ID
-- [x] Thumbprints — left / right status on the Identity tab (capture itself on mobile, phase 9)
+- [x] Thumbprints — left / right status on the Identity tab; captured on the phone during registration (simulated reader) with photo, ID card, consent (audio / signature / tick with read-aloud) and NFC card
 - [x] Consent audio / signature — Identity tab shows audio player (simulated), signature image or tick; record consent from the web
 - [x] ID card and photo — status on the Identity tab, plus document upload
 - [x] NFC card lifecycle — issue, replace, revoke (permission `farmers.manageNfc`)
 - [x] Data-quality rules + review — `/app/data-quality`: queue (farmers, communities, groups) with rule, severity, agent, source, date; bulk assign to agent (mobile task), mark valid with reason, re-check; charts by rule, by agent, weekly trend; Vitara rules incl. disabled ewe / tertiary / tractor with notes
 - [x] Farmer score — farmer model (consent, identity, purchases, group, no overdue loan) with breakdown and recalculate
 - [x] Farmer list / detail / export / profiling report / dashboard — list with all PRD columns, saved views (Women farmers, No consent, Blocked by debt, Flagged), register with duplicate check (phone / ID number), drawer tabs, CSV export with column picker, profiling report by agent, dashboard (gender, age bands, education, income, real household / children averages, registrations, by agent)
+- [x] Mobile communities, farmers and groups — `/m/communities` (list, profile with location, GPS, live profile form, leaders, groups, documents), `/m/farmers` (list, detail with loans and balance, purchases, fix task; edit as a new version, conflict-checked on sync), `/m/groups` (details, form, members, leaders, payment, records); all save offline
 - [ ] Shared farmers / communities [later — company data sharing, PRD A5]
 - [x] Farmer groups profile / members / leaders / documents / payment details — group type form, membership with roles, joined / left, add / remove; MoMo / bank / cash details
 - [x] Group scorecard + manual review — uploading meeting or contribution records resets that manual score and sets Pending review; reviewer scores 1–4 / 1–18 with a note → Completed; recalculation replaces
@@ -114,7 +115,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 - [x] Purchase request create / approve / reject / hold — Purchase requests page: list + Kanban, tabs All / Waiting for me / Upcoming / Past / Archived, filters, risk flags; New request sheet (price from the zone list, tolerance warning, override reason, sourcing model, unit conversion); approve / hold / reject / resume from the drawer through the workflow engine
 - [x] All PR statuses — Vitara and Kakao Ivoire status sets, current step, disbursement and reconciliation status columns
-- [ ] Mobile status updates [9]
+- [x] Mobile status updates — `/m/buying`: the agent's requests with status, home alerts link to the request, confirm funds received, sign the receipt, approve / hold / reject when the role allows, approval timeline
 - [x] Price update — above the list price the request goes back for approval (PRICE_UPDATE), price history kept
 - [x] Rate confirmation
 - [x] Full / partial disbursement — tranches with amount and weight, partial count limit from Buying rules
@@ -126,19 +127,19 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Agent refunds — full / partial with proof, or simulated mobile-money collection; pay the agent the difference
 - [x] Manual write-off — within the company limit, permission + reason
 - [x] Archive / export / list filters — archive, CSV export, saved tabs, column picker
-- [~] Farmer purchase sync — web side done (synced purchases appear, evidence, auto-match); the phone's offline outbox [9]
+- [x] Farmer purchase sync — `/m/buying/purchase`: request → farmer (search, NFC tap, card scan) with debt check → weight (manual or read scale) → bags (scan each, or one consolidated bag shared by several farmers with live total vs packaging min / max) → scale photo, voice note, GPS → cash with farmer signature, or direct mobile money (wallet, name check, pay now) → receipt with SMS. Offline purchases wait in the outbox; Sync writes them, sends the SMS receipts, the web shows a toast and auto-reconciliation runs
 - [x] Debt blocking — block / warn / deduct per policy on web purchase entry and the purchase banner; Abena Issah blocked
 - [x] Bags / QR — bag registry (`/app/purchases/bags`), scannable QR codes, status, warehouse, history (purchase → PRE → inbound), per-farmer contributions
 - [x] Consolidated bags — several farmers per bag, kg each, within packaging bounds
 - [x] Barcode replacement — replace a damaged bag: new code, weight variance and who did it logged; purchases follow the new code
-- [~] Voice notes — voice purchase evidence with a simulated player; recording on the phone [9]
-- [~] Scale photo — evidence shown in the purchase drawer; capture on the phone [9]
+- [x] Voice notes — `/m/buying/voice`: Twi / Dagbani / Hausa / French, 3 s waveform, scripted transcript parsed into farmer and kg, continues into the purchase with the voice note attached; simulated player on the web
+- [x] Scale photo — captured on the phone (required step), shown in the purchase drawer
 - [x] Wallet edit — payout wallet on a purchase, permission-gated, locked once payment starts
 - [x] Purchase list tabs — Cash-advance, Direct-payment, Unpaid; every PRD column incl. evidence icons and consolidated reference
 - [x] Purchases dashboard (aggregator thresholds) — volume, spend, farmers, averages, smallholder vs aggregator split, top 3 agents and communities, cost per bag from PREs, purchases over time
 - [x] Related unpaid purchases — purchase drawer offers paying the request's other unpaid purchases together; bulk pay from the list (same request, up to the company batch size)
 - [x] Sourcing export — CSV export of purchases and requests
-- [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt
+- [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt; agents create PREs on the phone too (`/m/buying/pre/new`, offline-capable)
 - [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
 - [x] Price board — current price per commodity × zone, change history, paid vs list chart, suggested price (median paid within the tolerance band)
 - [~] Aggregator registry — 6 suppliers seeded [10]
@@ -294,7 +295,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [ ] SMS [17]
 - [ ] Push [17]
 - [ ] Recovery banner / reminders [11]
-- [~] Offline sync protocol — mobile outbox store, offline toggle, sync screen; stores sync across tabs [9]
+- [x] Offline sync protocol — every phone save goes through one queue: applied at once when online, kept in the outbox when offline; Sync screen with counts by type, data usage, per-item results, errors kept for retry, and conflicts (the office changed the record first) resolved with Keep office version / Send mine; stores sync across tabs
 - [ ] Sync logs (scoped, private, retention) [17]
 - [ ] Devices [17]
 - [~] Activity history (structured) — `{key, params}` events from every seeded approval, rendered via `t('activity.' + key)` [17]

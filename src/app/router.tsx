@@ -50,6 +50,12 @@ import { TaskFixScreen } from '@/mobile/flows/home/TaskFixScreen';
 import { SyncScreen } from '@/mobile/flows/home/SyncScreen';
 import { MeScreen } from '@/mobile/flows/me/MeScreen';
 import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
+import { CommunitiesScreen, CommunityFlowScreen } from '@/mobile/flows/profiling/CommunityScreens';
+import { FarmerDetailScreen, FarmerEditScreen, FarmersScreen } from '@/mobile/flows/farmers/FarmerScreens';
+import { GroupFlowScreen, GroupsScreen } from '@/mobile/flows/farmers/GroupScreens';
+import { BuyingScreen, NewRequestScreen, RequestDetailScreen } from '@/mobile/flows/buying/BuyingScreens';
+import { RecordPurchaseScreen } from '@/mobile/flows/buying/RecordPurchaseScreen';
+import { NewPreScreen, VoicePurchaseScreen } from '@/mobile/flows/buying/VoiceAndPreScreens';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
@@ -142,7 +148,22 @@ export const router = createBrowserRouter([
       { path: 'surveys/fix/:responseId', element: <SurveyFixScreen /> },
       { path: 'surveys/:formId', element: <SurveyFillScreen /> },
       { path: 'preview/:formId', element: <FormPreviewScreen /> },
+      { path: 'communities', element: <CommunitiesScreen /> },
+      { path: 'communities/new', element: <CommunityFlowScreen /> },
+      { path: 'communities/:id', element: <CommunityFlowScreen /> },
+      { path: 'farmers', element: <FarmersScreen /> },
       { path: 'farmers/new', element: <RegisterFarmerScreen /> },
+      { path: 'farmers/:id', element: <FarmerDetailScreen /> },
+      { path: 'farmers/:id/edit', element: <FarmerEditScreen /> },
+      { path: 'groups', element: <GroupsScreen /> },
+      { path: 'groups/new', element: <GroupFlowScreen /> },
+      { path: 'groups/:id', element: <GroupFlowScreen /> },
+      { path: 'buying', element: <BuyingScreen /> },
+      { path: 'buying/requests/new', element: <NewRequestScreen /> },
+      { path: 'buying/requests/:id', element: <RequestDetailScreen /> },
+      { path: 'buying/purchase', element: <RecordPurchaseScreen /> },
+      { path: 'buying/voice', element: <VoicePurchaseScreen /> },
+      { path: 'buying/pre/new', element: <NewPreScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

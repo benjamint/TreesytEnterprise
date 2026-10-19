@@ -1,57 +1,45 @@
 import { useMemo, useState } from 'react';
-import { CheckCircle2, RefreshCw } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, RefreshCw, XCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { useDemoActions, useDemoNotes } from '@/components/shared/useDemoNotes';
 import { MobileHeader } from '@/mobile/layout/MobileHeader';
-import { latency } from '@/lib/utils';
+import { payloadKb, resolveConflict, serverVersionOf, syncOutbox, type SyncResult } from '@/services/mobileSync';
+import { useCommunityStore } from '@/stores/communityStore';
+import { useFarmerStore } from '@/stores/farmerStore';
 import { useFormat, useT } from '@/stores/hooks';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
-import { useOutboxStore } from '@/stores/outboxStore';
-import type { SurveyResponse } from '@/types';
-import { applyFix } from '@/services/qualityService';
-import { fillSchema, getLiveForm, submitResponse } from '@/services/formService';
-import { registerFarmer, type FarmerCore } from '@/services/farmerService';
-import { useFormStore } from '@/stores/formStore';
+import { useOutboxStore, type OutboxItem } from '@/stores/outboxStore';
 
-/** M2 Sync (phase 1 version): outbox, Sync now, offline toggle. Item-by-item sync arrives in phase 9. */
+/** M2 Sync: outbox by type, Sync now with per-item results, conflicts (Keep mine / Keep server), offline toggle. */
 export function SyncScreen() {
-  const { online, setOnline, lastSyncAt, markSynced, userId } = useMobileSessionStore();
+  const { online, setOnline, lastSyncAt, userId } = useMobileSessionStore();
   const allItems = useOutboxStore((s) => s.items);
   const items = useMemo(() => allItems.filter((i) => i.userId === userId), [allItems, userId]);
   const [syncing, setSyncing] = useState(false);
+  const [results, setResults] = useState<SyncResult[]>([]);
   const f = useFormat();
   const { t } = useT();
+  const byType = useMemo(() => { const m = new Map<string, number>(); for (const i of items) m.set(i.type, (m.get(i.type) ?? 0) + 1); return [...m]; }, [items]);
+  const conflicts = items.filter((i) => i.status === 'conflict');
+  useDemoNotes([{ id: 'sync', key: 'demo.note.mobileSync' }]);
+  // Demo: an office user edits the same record, so the next sync shows a conflict.
+  const edit = items.find((i) => i.base && i.status !== 'conflict');
+  const demo = useMemo(() => (edit ? [{ id: 'conflict', key: 'demo.action.officeEdit', params: { label: edit.label }, run: () => bumpServer(edit) }] : []), [edit]);
+  useDemoActions(demo);
 
   const syncNow = async () => {
+    if (!userId) return;
     setSyncing(true);
-    await latency(800, 1400);
-    // Data-quality fixes saved offline are applied on sync (other item types arrive in phase 9).
-    const fixes = items.filter((i) => i.type === 'qualityFix');
-    for (const i of fixes) {
-      const p = i.payload as { taskId: string; values: Record<string, unknown> };
-      applyFix(p.taskId, p.values, i.userId, 'mobile');
-    }
-    if (fixes.length) useOutboxStore.getState().remove(fixes.map((i) => i.id));
-    // Surveys and registrations captured offline (Phase 6).
-    const done: string[] = [];
-    for (const i of items.filter((x) => x.type === 'survey' || x.type === 'farmer')) {
-      if (i.type === 'survey') {
-        const p = i.payload as { formId: string; answers: Record<string, unknown>; subject?: SurveyResponse['subject']; gps?: SurveyResponse['gps']; startedAt?: string; agentId?: string };
-        const form = useFormStore.getState().forms.find((f) => f.id === p.formId);
-        if (!form) continue;
-        submitResponse({ form, schema: fillSchema(form, useFormStore.getState().optionLists), answers: p.answers, userId: i.userId, agentId: p.agentId, subject: p.subject, gps: p.gps, startedAt: p.startedAt, device: 'mobile' });
-      } else {
-        const p = i.payload as { core: FarmerCore; answers: Record<string, unknown>; agentId?: string };
-        registerFarmer(i.orgId, i.userId, p.core, getLiveForm(i.orgId, 'farmerProfile'), p.answers, { agentId: p.agentId });
-      }
-      done.push(i.id);
-    }
-    if (done.length) useOutboxStore.getState().remove(done);
-    markSynced();
+    setResults([]);
+    const out = await syncOutbox(userId, (r) => setResults((rs) => [...rs, r]));
     setSyncing(false);
-    toast.success(t('mobile.synced'));
+    const ok = out.filter((r) => r.outcome === 'synced').length;
+    if (out.some((r) => r.outcome !== 'synced')) toast.warning(t('mobile.sync.partial', { ok, total: out.length }));
+    else toast.success(out.length ? t('mobile.sync.done', { count: ok }) : t('mobile.synced'));
   };
 
   return (
@@ -64,16 +52,48 @@ export function SyncScreen() {
           </motion.div>
           <p className="font-semibold text-ink">{items.length ? t('mobile.outboxCount', { count: items.length }) : t('mobile.synced')}</p>
           <p className="mt-1 text-[14px] text-muted">{lastSyncAt ? t('mobile.lastSync', { when: f.relative(lastSyncAt) }) : t('mobile.neverSynced')}</p>
+          {items.length > 0 && <p className="mt-1 text-[13px] text-muted">{t('mobile.sync.dataUsage', { kb: payloadKb(items) })}</p>}
         </div>
-        {items.length === 0 ? (
-          <p className="text-center text-[14px] text-muted">{t('mobile.outboxEmpty')}</p>
-        ) : (
-          <ul className="divide-y divide-line rounded-card border border-line">
-            {items.map((i) => (
-              <li key={i.id} className="px-4 py-3 text-[14px] text-ink">{i.label}</li>
-            ))}
-          </ul>
+
+        {byType.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {byType.map(([type, n]) => <Badge key={type} tone="neutral">{`${t(`mobile.sync.type.${type}`)} · ${n}`}</Badge>)}
+          </div>
         )}
+
+        {conflicts.map((c) => <ConflictCard key={c.id} item={c} />)}
+
+        {results.length > 0 && (
+          <section>
+            <h2 className="eyebrow mb-2">{t('mobile.sync.results')}</h2>
+            <ul className="divide-y divide-line rounded-card border border-line">
+              {results.map((r) => (
+                <li key={r.id} className="flex items-start gap-3 px-4 py-3 text-[14px]">
+                  {r.outcome === 'synced' ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> : r.outcome === 'conflict' ? <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />}
+                  <span className="flex-1 text-ink">{r.label}{r.error && <span className="block text-[12px] text-danger">{r.error}</span>}</span>
+                  <span className="text-[12px] text-muted">{t(`mobile.sync.outcome.${r.outcome}`)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {items.filter((i) => i.status !== 'conflict').length === 0 && !results.length ? (
+          <p className="text-center text-[14px] text-muted">{t('mobile.outboxEmpty')}</p>
+        ) : items.some((i) => i.status !== 'conflict') && (
+          <section>
+            <h2 className="eyebrow mb-2">{t('mobile.sync.waiting')}</h2>
+            <ul className="divide-y divide-line rounded-card border border-line">
+              {items.filter((i) => i.status !== 'conflict').map((i) => (
+                <li key={i.id} className="px-4 py-3 text-[14px]">
+                  <span className="block text-ink">{i.label}</span>
+                  <span className="block text-[12px] text-muted">{t(`mobile.sync.type.${i.type}`)} · {f.relative(i.createdAt)}{i.status === 'error' ? ` · ${i.error}` : ''}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <label className="flex items-center gap-4 rounded-card border border-line p-4">
           <span className="flex-1">
             <span className="block font-medium text-ink">{t('mobile.workOffline')}</span>
@@ -83,10 +103,35 @@ export function SyncScreen() {
         </label>
       </div>
       <div className="shrink-0 border-t border-line p-4">
-        <Button size="lg" className="w-full" onClick={syncNow} disabled={syncing || !online}>
-          <RefreshCw /> {t('mobile.syncNow')}
+        <Button size="lg" className="w-full" onClick={() => void syncNow()} disabled={syncing || !online || !items.some((i) => i.status !== 'conflict')}>
+          <RefreshCw className={syncing ? 'animate-spin' : ''} /> {online ? t('mobile.syncNow') : t('mobile.sync.goOnline')}
         </Button>
       </div>
     </div>
   );
+}
+
+function ConflictCard({ item }: { item: OutboxItem }) {
+  const { t } = useT();
+  const f = useFormat();
+  const choose = async (c: 'mine' | 'server') => { await resolveConflict(item.id, c); toast.success(t(c === 'mine' ? 'mobile.sync.keptMine' : 'mobile.sync.keptServer')); };
+  return (
+    <div className="rounded-card border border-warning/40 bg-warning/5 p-4" role="alert">
+      <div className="flex items-start gap-2"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" /><div><div className="font-semibold text-ink">{t('mobile.sync.conflictTitle')}</div><p className="text-[14px] text-body">{t('mobile.sync.conflictBody', { label: item.label, when: f.relative(serverVersionOf(item) ?? item.base?.updatedAt ?? item.createdAt) })}</p></div></div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Button variant="secondary" onClick={() => void choose('server')}>{t('mobile.sync.keepServer')}</Button>
+        <Button onClick={() => void choose('mine')}>{t('mobile.sync.keepMine')}</Button>
+      </div>
+    </div>
+  );
+}
+
+/** Simulate someone in the office saving the same record after the phone read it. */
+function bumpServer(item: OutboxItem) {
+  const at = new Date().toISOString();
+  if (item.base?.entity === 'farmer') useFarmerStore.getState().updateFarmers([item.base.id], () => ({ updatedAt: at }));
+  if (item.base?.entity === 'community') {
+    const c = useCommunityStore.getState().communities.find((x) => x.id === item.base!.id);
+    if (c) useCommunityStore.getState().saveCommunity({ ...c, updatedAt: at });
+  }
 }

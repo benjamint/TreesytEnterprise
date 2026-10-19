@@ -7,7 +7,7 @@ import { uid } from '@/lib/utils';
  * links the simulated gateways "sent", plus notes the current page registers about how it works.
  * Kept per browser tab (sessionStorage).
  */
-export interface DemoCode { id: string; label: 'twoStep' | 'verifyEmail'; to: string; code: string; at: string }
+export interface DemoCode { id: string; label: 'twoStep' | 'verifyEmail' | 'mobileCode'; to: string; code: string; at: string }
 export interface DemoLink { id: string; label: 'reset' | 'invite'; to: string; href: string; at: string }
 export interface DemoNote { id: string; key: string; params?: Record<string, unknown> }
 /** A page's demo shortcut (e.g. "sync the agent's purchases"). Not persisted. */

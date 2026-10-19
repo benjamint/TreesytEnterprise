@@ -83,7 +83,8 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
     }
   };
 
-  const pos = placement === 'mobile' ? 'right-3 top-3' : 'bottom-5 right-5';
+  // On the phone it is an edge tab, so it never covers header buttons or the bottom action bar.
+  const pos = placement === 'mobile' ? 'right-0 top-[38%] rounded-l-full rounded-r-none ring-2' : 'bottom-5 right-5';
   return (
     <Popover
       open={open}
@@ -96,7 +97,7 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
       <PopoverTrigger asChild>
         <button
           type="button"
-          className={cn('pointer-events-auto fixed z-[55] flex h-11 w-11 items-center justify-center rounded-full bg-badge-dark text-lime shadow-soft ring-4 ring-surface/80 transition-transform hover:scale-105', pos, placement === 'mobile' ? 'h-9 w-9' : 'demo-dock-web')}
+          className={cn('pointer-events-auto fixed z-[55] flex h-11 w-11 items-center justify-center rounded-full bg-badge-dark text-lime shadow-soft ring-4 ring-surface/80 transition-transform hover:scale-105', pos, placement === 'mobile' ? 'h-10 w-9 pl-0.5 hover:scale-100' : 'demo-dock-web')}
           aria-label={t('demo.title')}
           data-tour="demo-dock"
         >

@@ -6,6 +6,8 @@ import { Toaster } from '@/components/ui/sonner';
 import { LogoBadge } from '@/components/shared/Logo';
 import { termVariables } from '@/engines/terminology';
 import { brandTokens, channels } from '@/lib/color';
+// Every domain store must be registered before boot hydrates them.
+import '@/stores';
 import { bootStores, persistenceEvents, useBootStore } from '@/stores/persistence';
 import { useSessionStore } from '@/stores/sessionStore';
 import { useCurrentOrg, useLang, useTerms } from '@/stores/hooks';

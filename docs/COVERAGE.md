@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 3._
+_Last updated: Phase 4._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -283,7 +283,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Platform services (Scope 10)
 
-- [~] Dashboards + caching — Phase 1 dashboard: KPI row, approval queue, company facts [4]
+- [x] Dashboards + caching — widget board: ask bar, setup checklist, KPI row, My approvals with inline Approve / Hold / Reject, purchases by week, volume by commodity, top communities, payouts by provider, recovery progress, stock by warehouse, field map, alerts, wallets, activity; customise (drag, resize, add from the library, remove), saved per person or as the company default, role-based default layouts; every widget gated by module and permission; module dashboards reuse the widget system in their phases
 - [ ] Exports / report builder [17]
 - [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
 - [ ] SMS [17]
@@ -297,7 +297,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [ ] Scheduled jobs [17]
 - [ ] Backups (platform) [17]
 - [x] Error reporting — n/a in the prototype (noted)
-- [ ] AI assistant [4]
+- [x] AI assistant — Ask your operations: dashboard bar with 4 suggestions and /app/ai with conversation history; 24 scripted EN/FR intents over company-scoped data (`src/data/ai-intents.ts`, tested for isolation); answer cards with sentence, chart, table, “Open in …” links, “Explain how this was calculated”, CSV export; module and permission checks; optional Claude fallback when `VITE_ANTHROPIC_API_KEY` is set
 - [ ] Knowledge base [17]
 - [x] Book a demo — book-a-demo / contact form with country phone validation → confirmation → Platform → Leads
 

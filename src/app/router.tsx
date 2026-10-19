@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppShell } from '@/web/layout/AppShell';
 import { DashboardPage } from '@/web/features/dashboard/DashboardPage';
+import { AiPage } from '@/web/features/ai/AiPage';
 import { MobilePreviewsPage } from '@/web/features/help/MobilePreviewsPage';
 import { SettingsLayout } from '@/web/features/settings/SettingsLayout';
 import { PlatformLayout } from '@/web/features/platform/PlatformLayout';
@@ -30,7 +31,7 @@ import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'helpMobile', 'settings', 'platform', 'account']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -59,6 +60,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AppIndexRedirect /> },
       { path: 'dashboard', element: <RouteGuard routeKey="dashboard"><DashboardPage /></RouteGuard> },
+      { path: 'ai', element: <RouteGuard routeKey="ai"><AiPage /></RouteGuard> },
       { path: 'help/mobile', element: <MobilePreviewsPage /> },
       { path: 'settings', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'settings/:page', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },

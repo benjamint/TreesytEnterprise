@@ -15,7 +15,9 @@ export function formatDate(iso: string | Date, timeZone: string, lang: Lang, pat
 
 export function formatRelative(iso: string | Date, lang: Lang): string {
   const d = typeof iso === 'string' ? new Date(iso) : iso;
-  return formatDistanceToNow(d, { addSuffix: true, locale: LOCALES[lang] });
+  // Seeded or clock-skewed times slightly in the future read as "less than a minute ago".
+  const past = d.getTime() > Date.now() ? new Date() : d;
+  return formatDistanceToNow(past, { addSuffix: true, locale: LOCALES[lang] });
 }
 
 const numCache = new Map<string, Intl.NumberFormat>();

@@ -7,6 +7,9 @@ import { EnvironmentSync } from '@/app/providers';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { useAuthFlowStore } from '@/stores/authFlowStore';
 import { SessionTimeout } from './SessionTimeout';
+import '@/services/aggregatorService';
+import '@/services/supportService';
+import '@/services/recoveryService';
 import { onAnnounce } from '@/stores/persistence';
 import { useActor, useCurrentOrg, useCurrentUser, useT } from '@/stores/hooks';
 import { Sidebar } from './Sidebar';
@@ -33,6 +36,8 @@ export function AppShell() {
     () =>
       onAnnounce((key, params) => {
         if (key === 'synced') toast.success(t('shell.syncedToast', params));
+        if (key === 'mobileSynced') toast.success(t('shell.mobileSyncedToast', params));
+        if (key === 'mobileSaved') toast.success(t('shell.mobileSavedToast', params));
       }),
     [t],
   );

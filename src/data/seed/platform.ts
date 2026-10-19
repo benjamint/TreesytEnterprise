@@ -216,6 +216,9 @@ export function rolesFor(orgId: string, kind: 'platform' | 'supplier' | 'buyer')
         ? [...ROLE_TEMPLATES[template].permissions, 'purchaseRequests.approveManagement']
         : [...ROLE_TEMPLATES[template].permissions],
     mobile: ROLE_TEMPLATES[template].mobile,
+    // Per-payment and daily limits (minor units: GHS pesewas, XOF francs).
+    payLimits: template === 'financeOfficer' ? (orgId === ORG.kakao ? { perPaymentMinor: 5_000_000, dailyMinor: 25_000_000 } : { perPaymentMinor: 5_000_000, dailyMinor: 25_000_000 })
+      : template === 'companyAdmin' ? (orgId === ORG.kakao ? { perPaymentMinor: 10_000_000, dailyMinor: 50_000_000 } : { perPaymentMinor: 10_000_000, dailyMinor: 50_000_000 }) : undefined,
   }));
 }
 

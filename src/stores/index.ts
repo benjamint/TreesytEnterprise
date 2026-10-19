@@ -14,6 +14,7 @@ export * from './buyingStore';
 export * from './paymentStore';
 export * from './warehouseStore';
 export * from './loanStore';
+export * from './supportStore';
 export * from './activityStore';
 export * from './notificationStore';
 export * from './aiStore';

@@ -82,7 +82,9 @@ export interface DrawerTab {
 /** Detail drawer (PRD 6.2): 640 px right sheet with a header and tabs. */
 export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, tabs }: { open: boolean; onClose: () => void; title: ReactNode; subtitle?: ReactNode; badges?: ReactNode; actions?: ReactNode; tabs: DrawerTab[] }) {
   const { t } = useT();
-  const [tab, setTab] = useState(tabs[0]?.key ?? '');
+  const [params] = useSearchParams();
+  // A link can open the drawer on a given tab (`&tab=`).
+  const [tab, setTab] = useState(() => { const want = params.get('tab'); return want && tabs.some((x) => x.key === want) ? want : tabs[0]?.key ?? ''; });
   const current = tabs.find((x) => x.key === tab) ?? tabs[0];
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>

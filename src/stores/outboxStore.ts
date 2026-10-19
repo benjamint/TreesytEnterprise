@@ -10,16 +10,26 @@ export interface OutboxItem {
   id: string;
   orgId: string;
   userId: string;
-  type: 'purchase' | 'purchaseRequest' | 'farmer' | 'community' | 'group' | 'expense' | 'survey' | 'qualityFix' | 'other';
+  type: OutboxType;
   label: string;
   payload: unknown;
   createdAt: string;
+  /** The server record this edit started from: a newer server version is a sync conflict. */
+  base?: { entity: string; id: string; updatedAt: string };
+  /** Set when the last sync attempt hit a conflict or an error. */
+  status?: 'conflict' | 'error';
+  error?: string;
 }
+
+export type OutboxType =
+  | 'purchase' | 'purchaseRequest' | 'fundsReceived' | 'receipt' | 'farmer' | 'farmerEdit' | 'community' | 'group' | 'expense'
+  | 'survey' | 'qualityFix' | 'supportRequest' | 'supportConfirm' | 'supportFulfil' | 'supportAssets' | 'recoveryRequest' | 'repayment' | 'recoveryFeedback' | 'other';
 
 interface OutboxState {
   items: OutboxItem[];
   add: (item: OutboxItem) => void;
   remove: (ids: string[]) => void;
+  update: (id: string, patch: Partial<OutboxItem>) => void;
   clear: (userId: string) => void;
 }
 
@@ -29,6 +39,7 @@ export const useOutboxStore = create<OutboxState>()(
       items: [],
       add: (item) => set((s) => ({ items: [...s.items, item] })),
       remove: (ids) => set((s) => ({ items: s.items.filter((i) => !ids.includes(i.id)) })),
+      update: (id, patch) => set((s) => ({ items: s.items.map((i) => (i.id === id ? { ...i, ...patch } : i)) })),
       clear: (userId) => set((s) => ({ items: s.items.filter((i) => i.userId !== userId) })),
     }),
     { name: storageKey('outbox'), storage: createJSONStorage(() => localStorage) },

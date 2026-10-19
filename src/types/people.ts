@@ -105,8 +105,15 @@ export interface LoanAccount extends OrgEntity {
   principal: Money;
   disbursedAt: string;
   window: { start: string; end: string };
-  repayments: { date: string; amount: Money; mode: 'CASH' | 'PRODUCE' }[];
+  repayments: { date: string; amount: Money; mode: 'CASH' | 'PRODUCE'; repaymentId?: string }[];
   status: 'ACTIVE' | 'SETTLED';
+  /** Where the loan came from: a support request line (or a migrated legacy allocation). */
+  typeId?: string;
+  supportRequestId?: string;
+  lineId?: string;
+  groupId?: string;
+  legacyAllocationId?: string;
+  settledAt?: string;
 }
 
 /** People with a role in a community or farmer group (PRD C2 Leaders, C4 Leaders). */
@@ -126,7 +133,7 @@ export interface Leader {
 export interface RecordDocument {
   id: string;
   orgId: string;
-  entity: 'community' | 'farmerGroup' | 'farmer' | 'purchaseRequest' | 'preExpense';
+  entity: 'community' | 'farmerGroup' | 'farmer' | 'purchaseRequest' | 'preExpense' | 'supplier' | 'aggregatorPurchase' | 'aggregatorExpense';
   entityId: string;
   type: string;
   name: string;

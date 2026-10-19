@@ -1,4 +1,4 @@
-import type { Bag, Farmer, LoanAccount, Money, OrgSettings, PreExpense, Purchase, PurchaseRequest, RiskFlag, SourcingModel } from '@/types';
+import type { Bag, Farmer, LoanAccount, Money, OrgSettings, Payment, PreExpense, Purchase, PurchaseRequest, RiskFlag, SourcingModel } from '@/types';
 import { canAct, start, type WorkflowRecord } from '@/engines/workflow';
 import { buildLedger } from '@/engines/loans';
 import { makeEvent } from '@/engines/activity';
@@ -12,7 +12,7 @@ import { useFarmerStore } from '@/stores/farmerStore';
 import { useLoanStore } from '@/stores/loanStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { payout } from './payoutService';
+import { pay, registerCollection, registerPayable, requestCollection } from './paymentService';
 import { workflowUser } from './workflowService';
 
 /**
@@ -161,10 +161,8 @@ function afterDisbursement(id: string, amountMinor: number, weightKg: number | u
 export async function disburseMomo(id: string, amountMinor: number, weightKg: number | undefined, actorId: string) {
   const r = reqOf(id);
   const agent = useAgentStore.getState().agents.find((a) => a.id === r.agentId)!;
-  const payment = await payout({ orgId: r.orgId, type: 'AGENT_CASH_ADVANCE', payableId: r.id, payee: { name: agent.wallet.verifiedName, number: agent.wallet.number }, amount: m(amountMinor, r.total.currency), actorId });
-  if (payment.status === 'SUCCESSFUL') afterDisbursement(id, amountMinor, weightKg, 'MOMO', actorId, payment.id);
-  else log(r.orgId, 'purchaseRequest', id, 'request.payoutFailed', { reference: payment.reference, reason: payment.failureReason ?? payment.status }, actorId);
-  return payment;
+  const [payment] = await pay({ orgId: r.orgId, type: 'AGENT_CASH_ADVANCE', payableId: r.id, payees: [{ name: agent.wallet.verifiedName, number: agent.wallet.number, providerId: agent.wallet.providerId, amount: m(amountMinor, r.total.currency) }], actorId, meta: { weightKg } });
+  return payment!;
 }
 
 export function disburseManual(id: string, amountMinor: number, weightKg: number | undefined, proof: string, actorId: string) {
@@ -223,6 +221,10 @@ export function nextBagCode(orgId: string, offset = 0): string {
 
 export interface NewPurchase {
   farmerId: string; quantity: number; voiceNote?: boolean; consolidateWith?: string;
+  /** Bag codes scanned on the phone, in fill order (a consolidated bag repeats the open bag's code). */
+  bagCodes?: string[];
+  /** Payout wallet for direct payment when it isn't the farmer's phone. */
+  wallet?: Purchase['wallet'];
   evidence?: Partial<Purchase['evidence']>; createdAt?: string;
 }
 
@@ -244,7 +246,18 @@ export function recordPurchases(requestId: string, items: NewPurchase[], actorId
   const blocked: Farmer[] = [];
   let open: Bag | null = null;
   let codeOffset = 0;
-  const newBag = (): Bag => ({ id: uid('bag'), orgId, code: nextBagCode(orgId, codeOffset++), commodityId: r.commodityId, weightKg: 0, status: 'WITH_AGENT', purchaseIds: [], history: [] });
+  // Codes scanned on the phone are reserved, so a generated code never repeats one. A code shared by
+  // several farmers is a consolidated bag: it fills to the packaging maximum, not the nominal weight.
+  const scanned = items.flatMap((it) => [...new Set(it.bagCodes ?? [])]);
+  const taken = new Set(scanned);
+  const shared = new Set(scanned.filter((c, i) => scanned.indexOf(c) !== i));
+  const capOf = (b: Bag) => (shared.has(b.code) && pack ? pack.maxKg : nominal);
+  const newBag = (code?: string): Bag => {
+    let c = code;
+    while (!c || (c !== code && taken.has(c))) c = nextBagCode(orgId, codeOffset++);
+    taken.add(c);
+    return { id: uid('bag'), orgId, code: c, commodityId: r.commodityId, weightKg: 0, status: 'WITH_AGENT', purchaseIds: [], history: [] };
+  };
   for (const it of items) {
     const farmer = farmers.find((f) => f.id === it.farmerId)!;
     const debt = debtCheck(orgId, farmer.id);
@@ -257,10 +270,13 @@ export function recordPurchases(requestId: string, items: NewPurchase[], actorId
     const codes: string[] = [];
     let left = it.quantity;
     let consolidated = false;
+    const preset = [...(it.bagCodes ?? [])];
     while (left > 0.05) {
-      if (!open) open = newBag();
+      if (open && preset[0] === open.code) preset.shift();
+      else if (open && preset[0]) open = null;
+      if (!open) open = newBag(preset.shift());
       const b: Bag = open;
-      const take = Math.min(left, nominal - b.weightKg);
+      const take = Math.min(left, capOf(b) - b.weightKg);
       b.weightKg = Math.round((b.weightKg + take) * 10) / 10;
       b.purchaseIds.push(id);
       b.contributions = [...(b.contributions ?? []), { purchaseId: id, kg: Math.round(take * 10) / 10 }];
@@ -269,7 +285,7 @@ export function recordPurchases(requestId: string, items: NewPurchase[], actorId
       codes.push(b.code);
       bags.set(b.id, b);
       left = Math.round((left - take) * 10) / 10;
-      if (b.weightKg >= nominal - 0.05) open = null;
+      if (b.weightKg >= capOf(b) - 0.05) open = null;
     }
     const direct = r.sourcingModel === 'DIRECT_PAYMENT';
     out.push({
@@ -280,12 +296,17 @@ export function recordPurchases(requestId: string, items: NewPurchase[], actorId
         scalePhoto: 'scale-1', signature: direct ? undefined : 'sig-1', voiceNote: it.voiceNote ? 'voice-1' : undefined,
         gps: community ? { lat: community.gps.lat + (Math.random() - 0.5) * 0.01, lng: community.gps.lng + (Math.random() - 0.5) * 0.01, accuracy: 6 } : undefined, ...it.evidence,
       },
-      paymentStatus: direct ? 'NOT_PAID' : 'PAID', deductedForLoan: deduction ? m(deduction, r.total.currency) : undefined, syncedFrom: source, createdAt: at, communityId: r.communityId,
+      wallet: it.wallet, paymentStatus: direct ? 'NOT_PAID' : 'PAID', deductedForLoan: deduction ? m(deduction, r.total.currency) : undefined, syncedFrom: source, createdAt: at, communityId: r.communityId,
     });
     if (deduction && debt.loan) {
       const l = debt.loan;
       useLoanStore.getState().addRepayment(l.id, { date: at.slice(0, 10), amount: m(deduction, l.principal.currency), mode: 'PRODUCE' });
     }
+  }
+  // Every purchase in a shared bag is part of the consolidation, including the one that opened it.
+  for (const b of bags.values()) {
+    if (b.purchaseIds.length < 2) continue;
+    for (const p of out) if (b.purchaseIds.includes(p.id) && !p.consolidationRef) p.consolidationRef = b.code;
   }
   store.addPurchases(out);
   store.saveBags([...bags.values()]);
@@ -379,13 +400,15 @@ export async function payDifference(id: string, actorId: string) {
   const s = reconSummary(r, useBuyingStore.getState().purchases, settingsOf(r.orgId));
   const amount = -s.gap;
   const agent = useAgentStore.getState().agents.find((a) => a.id === r.agentId)!;
-  const payment = await payout({ orgId: r.orgId, type: 'AGENT_CASH_ADVANCE', payableId: r.id, payee: { name: agent.wallet.verifiedName, number: agent.wallet.number }, amount: m(amount, r.total.currency), actorId });
-  if (payment.status === 'SUCCESSFUL') {
-    useBuyingStore.getState().updateRequest(id, { topUps: [...(r.topUps ?? []), { id: uid('tu'), amount: m(amount, r.total.currency), at: now(), by: actorId, paymentId: payment.id }] });
-    log(r.orgId, 'purchaseRequest', id, 'request.differencePaid', { amount: m(amount, r.total.currency) }, actorId);
-    closeIfSettled(id, actorId);
-  }
-  return payment;
+  const [payment] = await pay({ orgId: r.orgId, type: 'AGENT_CASH_ADVANCE', payableId: r.id, payees: [{ name: agent.wallet.verifiedName, number: agent.wallet.number, providerId: agent.wallet.providerId, amount: m(amount, r.total.currency) }], actorId, meta: { kind: 'difference' } });
+  return payment!;
+}
+
+/** Ask the agent to send the unspent cash back by mobile money; it is recorded when they approve. */
+export function collectRefund(id: string, amountMinor: number, actorId: string) {
+  const r = reqOf(id);
+  const agent = useAgentStore.getState().agents.find((a) => a.id === r.agentId)!;
+  return requestCollection({ orgId: r.orgId, payer: { name: agent.wallet.verifiedName, number: agent.wallet.number, userId: agent.userId }, providerId: agent.wallet.providerId, amount: m(amountMinor, r.total.currency), reason: r.number, payableType: 'AGENT_REFUND', payableId: r.id, requestedBy: actorId });
 }
 
 export function writeOff(id: string, amountMinor: number, reason: string, actorId: string): boolean {
@@ -406,6 +429,9 @@ export function markReconciled(id: string, actorId: string) {
 // ---------------------------------------------------------------- PRE expenses
 
 export interface NewPre { orgId: string; requestId: string; bags: number; costDiscussed: boolean; lines: { expenseTypeId: string; quantity: number; rateMinor: number }[]; bagCodes?: string[]; actorId: string; device?: 'web' | 'mobile' }
+
+/** Catalogue lines usable on farmer-buying PREs. */
+export const preTypes = (settings: OrgSettings) => settings.expenseTypes.filter((x) => (x.appliesTo ?? ['PRE']).includes('PRE'));
 
 export function preLineCap(settings: OrgSettings, expenseTypeId: string): number | undefined {
   return settings.expenseTypes.find((t) => t.id === expenseTypeId)?.cap?.amountMinor;
@@ -476,11 +502,8 @@ function afterPrePaid(id: string, method: 'MOMO' | 'MANUAL', actorId: string, pa
 
 export async function payPre(id: string, actorId: string) {
   const e = useBuyingStore.getState().expenses.find((x) => x.id === id)!;
-  useBuyingStore.getState().updateExpense(id, { paymentStatus: 'PENDING' });
-  const p = await payout({ orgId: e.orgId, type: 'PRE_EXPENSE', payableId: e.id, payee: { name: e.payee.name, number: e.payee.number }, amount: e.total, actorId });
-  if (p.status === 'SUCCESSFUL') afterPrePaid(id, 'MOMO', actorId, p.id);
-  else useBuyingStore.getState().updateExpense(id, { paymentStatus: 'FAILED' });
-  return p;
+  const [p] = await pay({ orgId: e.orgId, type: 'PRE_EXPENSE', payableId: e.id, payees: [{ name: e.payee.name, number: e.payee.number, providerId: e.payee.providerId, amount: e.total }], actorId });
+  return p!;
 }
 
 export function payPreManual(id: string, proof: string, actorId: string) {
@@ -524,3 +547,44 @@ export function simulateAgentSync(requestId: string): { purchases: Purchase[]; b
   }));
   return recordPurchases(requestId, items, agent.userId, 'MOBILE');
 }
+
+// ---------------------------------------------------------------- What a payment does to its record
+
+const by = (p: Payment) => p.approvedBy ?? p.initiatedBy;
+
+registerPayable('AGENT_CASH_ADVANCE', {
+  onStatus: (p) => {
+    const r = useBuyingStore.getState().requests.find((x) => x.id === p.payableId);
+    if (!r) return;
+    if (p.status === 'SUCCESSFUL') {
+      if (p.meta?.kind === 'difference') {
+        useBuyingStore.getState().updateRequest(r.id, { topUps: [...(r.topUps ?? []), { id: uid('tu'), amount: p.amount, at: now(), by: by(p), paymentId: p.id }] });
+        log(r.orgId, 'purchaseRequest', r.id, 'request.differencePaid', { amount: p.amount }, by(p));
+        closeIfSettled(r.id, by(p));
+      } else afterDisbursement(r.id, p.amount.amountMinor, p.meta?.weightKg as number | undefined, 'MOMO', by(p), p.id);
+    } else if (p.status === 'FAILED' || p.status === 'UNKNOWN') {
+      log(r.orgId, 'purchaseRequest', r.id, p.status === 'FAILED' ? 'request.payoutFailed' : 'request.payoutUnknown', { reference: p.reference, reason: p.failureReason ?? '' }, by(p));
+    } else if (p.status === 'AWAITING_CHECKER') log(r.orgId, 'purchaseRequest', r.id, 'request.payoutAwaitingChecker', { reference: p.reference, amount: p.amount }, p.initiatedBy);
+  },
+});
+
+registerPayable('PRE_EXPENSE', {
+  onStatus: (p) => {
+    const e = useBuyingStore.getState().expenses.find((x) => x.id === p.payableId);
+    if (!e) return;
+    if (p.status === 'SUCCESSFUL') afterPrePaid(e.id, 'MOMO', by(p), p.id);
+    else useBuyingStore.getState().updateExpense(e.id, { paymentStatus: p.status === 'FAILED' ? 'FAILED' : p.status === 'REVERSED' ? 'NOT_PAID' : 'PENDING' });
+  },
+});
+
+const purchasePaid = (p: Payment) => {
+  const pur = useBuyingStore.getState().purchases.find((x) => x.id === p.payableId);
+  if (!pur) return;
+  const status = p.status === 'SUCCESSFUL' ? 'PAID' : p.status === 'FAILED' ? 'FAILED' : p.status === 'REVERSED' ? 'NOT_PAID' : 'PENDING';
+  useBuyingStore.getState().updatePurchases([pur.id], () => ({ paymentStatus: status }));
+  if (p.status === 'SUCCESSFUL') log(pur.orgId, 'purchase', pur.id, 'purchase.paid', { reference: p.reference, amount: p.amount }, by(p));
+};
+registerPayable('FARMER_PURCHASE', { onStatus: purchasePaid });
+registerPayable('BULK_FARMER_PURCHASE', { onStatus: purchasePaid });
+
+registerCollection('AGENT_REFUND', (c) => recordRefund(c.payableId, c.amount.amountMinor, 'MOMO_COLLECT', c.requestedBy, undefined, c.reference));

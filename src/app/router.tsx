@@ -39,7 +39,14 @@ import { BagsPage } from '@/web/features/buying/BagsPage';
 import { ExpensesPage } from '@/web/features/buying/ExpensesPage';
 import { ReconciliationPage } from '@/web/features/buying/ReconciliationPage';
 import { PriceBoardPage } from '@/web/features/buying/PriceBoardPage';
+import { PaymentsPage } from '@/web/features/payments/PaymentsPage';
+import { WalletsPage } from '@/web/features/payments/WalletsPage';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
+import { AggregatorsPage } from '@/web/features/aggregators/AggregatorsPage';
+import { SupportPage } from '@/web/features/support/SupportPage';
+import { ProvidersPage } from '@/web/features/support/ProvidersPage';
+import { AllocationsPage } from '@/web/features/support/AllocationsPage';
+import { RecoveryPage } from '@/web/features/support/RecoveryPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
@@ -48,10 +55,18 @@ import { TaskFixScreen } from '@/mobile/flows/home/TaskFixScreen';
 import { SyncScreen } from '@/mobile/flows/home/SyncScreen';
 import { MeScreen } from '@/mobile/flows/me/MeScreen';
 import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
+import { CommunitiesScreen, CommunityFlowScreen } from '@/mobile/flows/profiling/CommunityScreens';
+import { FarmerDetailScreen, FarmerEditScreen, FarmersScreen } from '@/mobile/flows/farmers/FarmerScreens';
+import { GroupFlowScreen, GroupsScreen } from '@/mobile/flows/farmers/GroupScreens';
+import { BuyingScreen, NewRequestScreen, RequestDetailScreen } from '@/mobile/flows/buying/BuyingScreens';
+import { RecordPurchaseScreen } from '@/mobile/flows/buying/RecordPurchaseScreen';
+import { NewPreScreen, VoicePurchaseScreen } from '@/mobile/flows/buying/VoiceAndPreScreens';
+import { NewSupportScreen, SupportDetailScreen, SupportScreen } from '@/mobile/flows/support/SupportScreens';
+import { NewRecoveryScreen, RecoveryDetailScreen, RecoveryScreen, RepayScreen } from '@/mobile/flows/support/RecoveryScreens';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -99,7 +114,20 @@ export const router = createBrowserRouter([
       { path: 'purchases', element: <RouteGuard routeKey="purchases"><PurchasesPage /></RouteGuard> },
       { path: 'purchases/bags', element: <RouteGuard routeKey="bags"><BagsPage /></RouteGuard> },
       { path: 'expenses', element: <RouteGuard routeKey="expenses"><ExpensesPage /></RouteGuard> },
+      { path: 'aggregators', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="purchases" /></RouteGuard> },
+      { path: 'aggregators/suppliers', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="suppliers" /></RouteGuard> },
+      { path: 'aggregators/expenses', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="expenses" /></RouteGuard> },
+      { path: 'support', element: <RouteGuard routeKey="support"><SupportPage /></RouteGuard> },
+      { path: 'support/providers', element: <RouteGuard routeKey="providers"><ProvidersPage /></RouteGuard> },
+      { path: 'support/allocations', element: <RouteGuard routeKey="allocations"><AllocationsPage /></RouteGuard> },
+      { path: 'recovery', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="requests" /></RouteGuard> },
+      { path: 'recovery/windows', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="windows" /></RouteGuard> },
+      { path: 'recovery/loans', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="loans" /></RouteGuard> },
+      { path: 'recovery/repayments', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="repayments" /></RouteGuard> },
+      { path: 'recovery/dashboard', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="dashboard" /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
+      { path: 'payments', element: <RouteGuard routeKey="payments"><PaymentsPage /></RouteGuard> },
+      { path: 'payments/wallets', element: <RouteGuard routeKey="wallets"><WalletsPage /></RouteGuard> },
       { path: 'price-board', element: <RouteGuard routeKey="priceBoard"><PriceBoardPage /></RouteGuard> },
       { path: 'forms/:formId/responses', element: <RouteGuard routeKey="forms"><ResponsesPage /></RouteGuard> },
       {
@@ -138,7 +166,29 @@ export const router = createBrowserRouter([
       { path: 'surveys/fix/:responseId', element: <SurveyFixScreen /> },
       { path: 'surveys/:formId', element: <SurveyFillScreen /> },
       { path: 'preview/:formId', element: <FormPreviewScreen /> },
+      { path: 'communities', element: <CommunitiesScreen /> },
+      { path: 'communities/new', element: <CommunityFlowScreen /> },
+      { path: 'communities/:id', element: <CommunityFlowScreen /> },
+      { path: 'farmers', element: <FarmersScreen /> },
       { path: 'farmers/new', element: <RegisterFarmerScreen /> },
+      { path: 'farmers/:id', element: <FarmerDetailScreen /> },
+      { path: 'farmers/:id/edit', element: <FarmerEditScreen /> },
+      { path: 'groups', element: <GroupsScreen /> },
+      { path: 'groups/new', element: <GroupFlowScreen /> },
+      { path: 'groups/:id', element: <GroupFlowScreen /> },
+      { path: 'buying', element: <BuyingScreen /> },
+      { path: 'buying/requests/new', element: <NewRequestScreen /> },
+      { path: 'buying/requests/:id', element: <RequestDetailScreen /> },
+      { path: 'buying/purchase', element: <RecordPurchaseScreen /> },
+      { path: 'buying/voice', element: <VoicePurchaseScreen /> },
+      { path: 'buying/pre/new', element: <NewPreScreen /> },
+      { path: 'support', element: <SupportScreen /> },
+      { path: 'support/new', element: <NewSupportScreen /> },
+      { path: 'support/:id', element: <SupportDetailScreen /> },
+      { path: 'recovery', element: <RecoveryScreen /> },
+      { path: 'recovery/new', element: <NewRecoveryScreen /> },
+      { path: 'recovery/:id', element: <RecoveryDetailScreen /> },
+      { path: 'recovery/:id/repay', element: <RepayScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

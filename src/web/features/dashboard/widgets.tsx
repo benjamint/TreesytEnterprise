@@ -74,9 +74,12 @@ function Approvals() {
   const [reason, setReason] = useState<{ item: QueueItem; action: 'REJECT' | 'HOLD' } | null>(null);
   const [comment, setComment] = useState('');
   const [all, setAll] = useState(false);
+  const navigate = useNavigate();
   const shown = all ? queue : queue.slice(0, 6);
 
   const run = (item: QueueItem, action: 'APPROVE' | 'REJECT' | 'HOLD', note?: string) => {
+    // Support approvals set amounts and providers per service, so they open the request instead.
+    if (item.docType === 'supportRequest' && action === 'APPROVE') { navigate(`${item.link}&approve=1`); return; }
     const res = act(orgId, item.docType, item.id, action, userId ?? '', note);
     if (res.ok) toast.success(t(`dashboard.acted.${action}`, { number: item.number }), { description: t('dashboard.actedStatus', { status: t(`status.${res.status}`, { defaultValue: res.status }) }) });
     else if (res.reason === 'reasonRequired') setReason({ item, action: action as 'REJECT' | 'HOLD' });

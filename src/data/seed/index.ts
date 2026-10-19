@@ -1,8 +1,8 @@
 import type {
   FormRecord, OptionList, SurveyResponse,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
-  ActivityEvent, Agent, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
-  AuditEntry, GroupMembership, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
+  ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
+  AuditEntry, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
   Purchase, PurchaseRequest, Role, Supplier, User, Wallet, Warehouse, WorkflowDefinition,
 } from '@/types';
 import { canAct, type WorkflowRecord, type WorkflowUser } from '@/engines/workflow';
@@ -15,10 +15,12 @@ import { generateOperations, priceRisk, type AgentSeed, type OpsResult } from '.
 import { vitaraAgents, vitaraConfig } from './vitara';
 import { kakaoAgents, kakaoConfig } from './kakao';
 import { seedFormData } from './forms';
-import { enrichBuying } from './buying';
+import { enrichBuying, enrichPayments } from './buying';
+import { enrichAggregators } from './aggregators';
+import { seedSupport, type SupportSeed } from './support';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 9;
+export const SEED_VERSION = 13;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -51,9 +53,17 @@ export interface SeedData {
   expenses: PreExpense[];
   suppliers: Supplier[];
   aggregatorPurchases: AggregatorPurchase[];
+  aggregatorExpenses: AggregatorExpense[];
   payments: Payment[];
   wallets: Wallet[];
   loans: LoanAccount[];
+  providers: ServiceProvider[];
+  supportRequests: SupportRequest[];
+  recoveryWindows: RecoveryWindow[];
+  recoveryRequests: RecoveryRequest[];
+  repayments: Repayment[];
+  loanRefunds: LoanRefund[];
+  legacyAllocations: LegacyAllocation[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -134,6 +144,12 @@ export function buildSeed(now = new Date()): SeedData {
 
   enrichBuying(vit, settings[ORG.vitara]!, 'u_efua', clock.today, 'en');
   enrichBuying(ki, settings[ORG.kakao]!, 'u_jeanmarc', clock.today, 'fr');
+  enrichPayments(vit, settings[ORG.vitara]!, { financeUserId: 'u_efua', gapAgentUserId: 'u_yaw', today: clock.today });
+  enrichPayments(ki, settings[ORG.kakao]!, { financeUserId: 'u_jeanmarc', today: clock.today });
+  const aggDocs = [
+    ...enrichAggregators(vit, settings[ORG.vitara]!, { creatorId: 'u_ibrahim', opsUserId: 'u_kwame', financeUserId: 'u_efua', today: clock.today, lang: 'en', customer: 'Vitara Central Warehouse, Tamale' }),
+    ...enrichAggregators(ki, settings[ORG.kakao]!, { creatorId: 'u_aicha', opsUserId: 'u_serge', financeUserId: 'u_jeanmarc', today: clock.today, lang: 'fr', customer: 'Magasin central Kakao Ivoire, Daloa' }),
+  ];
 
   // ---- Fixed demo moments (PRD 12.5) ----
   // 1. A Vitara request priced 18% above list → HIGH risk, waiting in Kwame's queue.
@@ -164,6 +180,7 @@ export function buildSeed(now = new Date()): SeedData {
       ...ops.requests.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('purchaseRequest'), type: 'purchaseRequest', number: r.number, link: `/app/purchase-requests?open=${r.id}` })),
       ...ops.expenses.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('preExpense'), type: 'preExpense', number: r.number, link: `/app/expenses?open=${r.id}` })),
       ...ops.aggregatorPurchases.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('aggregatorPurchase'), type: 'aggregatorPurchase', number: r.number, link: `/app/aggregators?open=${r.id}` })),
+      ...ops.aggregatorExpenses.map((r) => ({ r: r as unknown as WorkflowRecord, def: wf('aggregatorExpense'), type: 'aggregatorExpense', number: r.number, link: `/app/aggregators/expenses?open=${r.id}` })),
     ];
   };
   for (const [ops, orgId] of [[vit, ORG.vitara], [ki, ORG.kakao]] as const) {
@@ -190,7 +207,7 @@ export function buildSeed(now = new Date()): SeedData {
   );
 
   // ---- Phase 5: ID numbers, leaders, documents, savings, data-quality issues ----
-  const extra = { leaders: [] as Leader[], documents: [] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[], forms: [] as FormRecord[], optionLists: [] as OptionList[], responses: [] as SurveyResponse[], fieldTasks: [] as FieldTask[] };
+  const extra = { leaders: [] as Leader[], documents: [...aggDocs] as RecordDocument[], qualityIssues: [] as QualityIssue[], savings: [] as SavingsEntry[], forms: [] as FormRecord[], optionLists: [] as OptionList[], responses: [] as SurveyResponse[], fieldTasks: [] as FieldTask[] };
   for (const [o, orgId, lang, currency] of [[vit, ORG.vitara, 'en', 'GHS'], [ki, ORG.kakao, 'fr', 'XOF']] as const) {
     assignIdNumbers(o.farmers);
     const agentUser = new Map(o.agents.map((a) => [a.id, a.userId]));
@@ -215,6 +232,34 @@ export function buildSeed(now = new Date()): SeedData {
     }
   }
 
+  // ---- Phase 11: farmer support and recovery (PRD F, Journey 6) ----
+  // Journey 6 group: Daffiama Farmers Cooperative, now in Yaw's area, with Abena (overdue loan) as a
+  // member and a new meeting record waiting for a manual score (the support scoring gate).
+  const yawAgent = vit.agents.find((a) => a.userId === 'u_yaw')!;
+  const daffiama = vit.communities.find((c) => c.id === abena.communityId)!;
+  if (!daffiama.agentIds.includes(yawAgent.id)) daffiama.agentIds = [...daffiama.agentIds, yawAgent.id];
+  const jGroup = vit.groups.find((g) => g.communityId === daffiama.id)!;
+  if (!vit.groupMemberships.some((m) => m.groupId === jGroup.id && m.farmerId === abena.id))
+    vit.groupMemberships.push({ id: 'vit_gm_abena', orgId: ORG.vitara, groupId: jGroup.id, farmerId: abena.id, role: 'MEMBER', joinedAt: clock.day(clock.daysAgo(400)) });
+  jGroup.scoreStatus = 'PENDING_REVIEW';
+  jGroup.customFields = { ...jGroup.customFields, manualScores: { ...((jGroup.customFields.manualScores as Record<string, unknown>) ?? {}), meetings: null } };
+  extra.documents.unshift({ id: `${jGroup.id}_doc_meeting_j6`, orgId: ORG.vitara, entity: 'farmerGroup', entityId: jGroup.id, type: 'meetingRecords', name: `${jGroup.name} — meeting minutes (October).pdf`, mime: 'application/pdf', size: 131_000, uploadedBy: 'u_yaw', uploadedAt: clock.iso(clock.daysAgo(2)) });
+  if (!jGroup.wallet) jGroup.wallet = { provider: 'mtn_gh', number: '+233245770011', name: jGroup.name.toUpperCase() };
+  loans[0]!.groupId = jGroup.id;
+  const priceOf = (o: OpsResult, commodityId: string) => o.requests.find((r) => r.commodityId === commodityId)?.unitPrice.amountMinor ?? 100;
+  const sup: SupportSeed[] = [
+    seedSupport(vit, settings[ORG.vitara]!, { orgId: ORG.vitara, seed: 1111, today: clock.today, lang: 'en', currency: 'GHS', commodityId: 'com_shea', opsUserId: 'u_kwame', financeUserId: 'u_efua', journeyGroupId: jGroup.id, produceUnitPriceMinor: priceOf(vit, 'com_shea') }),
+    seedSupport(ki, settings[ORG.kakao]!, { orgId: ORG.kakao, seed: 2222, today: clock.today, lang: 'fr', currency: 'XOF', commodityId: 'com_cocoa', opsUserId: 'u_serge', financeUserId: 'u_jeanmarc', produceUnitPriceMinor: priceOf(ki, 'com_cocoa') }),
+  ];
+  loans.push(...sup.flatMap((x) => x.loans));
+  extra.documents.push(...sup.flatMap((x) => x.documents));
+  vit.activity.push(...sup[0]!.activity);
+  ki.activity.push(...sup[1]!.activity);
+  const supportData = {
+    providers: sup.flatMap((x) => x.providers), supportRequests: sup.flatMap((x) => x.requests), recoveryWindows: sup.flatMap((x) => x.windows), recoveryRequests: sup.flatMap((x) => x.recoveries),
+    repayments: sup.flatMap((x) => x.repayments), loanRefunds: sup.flatMap((x) => x.refunds), legacyAllocations: sup.flatMap((x) => x.legacy),
+  };
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
   return {
@@ -224,8 +269,8 @@ export function buildSeed(now = new Date()): SeedData {
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
-    expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra,
+    expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData,
   };
 }
 

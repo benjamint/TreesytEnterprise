@@ -286,6 +286,7 @@ export function apply<T extends WorkflowRecord>(
 
 /** Which users in a list can act on a record now (for "waiting for me" queues and notifications). */
 export function canAct(record: WorkflowRecord, def: WorkflowDefinition, user: WorkflowUser): boolean {
+  if (!record.wf) return false;
   return getAllowedActions(record, def, user).some((a) => a.allowed && (a.action === 'APPROVE' || a.action === 'RESUME'));
 }
 

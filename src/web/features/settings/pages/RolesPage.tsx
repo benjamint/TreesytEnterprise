@@ -16,7 +16,7 @@ import { cn, uid } from '@/lib/utils';
 import { useAccessStore } from '@/stores/accessStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useActor, useCurrentOrg, usePlanCeiling, useT } from '@/stores/hooks';
-import { Mini, Section, Select, SettingsFrame, TextInput } from '../kit';
+import { Mini, MoneyInput, Section, Select, SettingsFrame, TextInput } from '../kit';
 
 const MODULE_ORDER = [...new Set(RESOURCES.map((r) => r.module))];
 
@@ -102,6 +102,16 @@ export function RolesPage() {
                     </Tip>
                   </div>
                 </div>
+                {hasPermission(expandPermissions(role.permissions), 'payments.initiate') && (
+                  <div className="rounded-card border border-line p-4">
+                    <div className="mb-3 text-[14px] font-semibold text-ink">{t('set.roles.payLimits')}</div>
+                    <div className="flex flex-wrap gap-4">
+                      <Mini label={t('set.pay.perPayment')} className="w-56"><MoneyInput minor={role.payLimits?.perPaymentMinor ?? 0} currency={org.currency} onChange={(perPaymentMinor) => setRole(role.id, { payLimits: { dailyMinor: role.payLimits?.dailyMinor ?? 0, perPaymentMinor } })} /></Mini>
+                      <Mini label={t('set.pay.daily')} className="w-56"><MoneyInput minor={role.payLimits?.dailyMinor ?? 0} currency={org.currency} onChange={(dailyMinor) => setRole(role.id, { payLimits: { perPaymentMinor: role.payLimits?.perPaymentMinor ?? 0, dailyMinor } })} /></Mini>
+                    </div>
+                    <p className="mt-2 text-[12px] text-muted">{t('set.roles.payLimitsHint')}</p>
+                  </div>
+                )}
                 <Matrix role={role} onChange={(permissions) => setRole(role.id, { permissions })} ceiling={ceiling} planName={plan?.name ?? ''} />
               </div>
             )}

@@ -10,6 +10,12 @@ export interface MobileSessionState {
   language: Lang;
   online: boolean;
   lastSyncAt: string | null;
+  /** App PIN set at first sign-in; the app locks after inactivity (PRD M1). */
+  pin: string | null;
+  locked: boolean;
+  setPin: (pin: string) => void;
+  lock: () => void;
+  unlock: () => void;
   signIn: (userId: string, orgId: string, language: Lang) => void;
   setLanguage: (language: Lang) => void;
   setOnline: (online: boolean) => void;
@@ -25,11 +31,16 @@ export const useMobileSessionStore = create<MobileSessionState>()(
       language: 'en',
       online: true,
       lastSyncAt: null,
-      signIn: (userId, orgId, language) => set({ userId, orgId, language, lastSyncAt: new Date().toISOString() }),
+      pin: null,
+      locked: false,
+      setPin: (pin) => set({ pin }),
+      lock: () => set((s) => ({ locked: !!s.pin && !!s.userId })),
+      unlock: () => set({ locked: false }),
+      signIn: (userId, orgId, language) => set({ userId, orgId, language, lastSyncAt: new Date().toISOString(), locked: false }),
       setLanguage: (language) => set({ language }),
       setOnline: (online) => set({ online }),
       markSynced: () => set({ lastSyncAt: new Date().toISOString() }),
-      signOut: () => set({ userId: null, orgId: null }),
+      signOut: () => set({ userId: null, orgId: null, pin: null, locked: false }),
     }),
     { name: storageKey('mobileSession'), storage: createJSONStorage(() => localStorage) },
   ),

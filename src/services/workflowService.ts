@@ -6,6 +6,7 @@ import { uid } from '@/lib/utils';
 import { useAccessStore } from '@/stores/accessStore';
 import { useActivityStore } from '@/stores/activityStore';
 import { useBuyingStore } from '@/stores/buyingStore';
+import { useSupportStore } from '@/stores/supportStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 
@@ -14,12 +15,17 @@ import { useSettingsStore } from '@/stores/settingsStore';
  * record, writes activity events and notifies whoever can act next.
  */
 
-type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases';
-export const DOC_SOURCES: Partial<Record<DocType, { key: BuyingKey; entity: string; path: string }>> = {
+type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases' | 'aggregatorExpenses';
+type Source = { key: BuyingKey; entity: string; path: string; store?: 'buying' | 'support' };
+export const DOC_SOURCES: Partial<Record<DocType, Source>> = {
   purchaseRequest: { key: 'requests', entity: 'purchaseRequest', path: '/app/purchase-requests' },
   preExpense: { key: 'expenses', entity: 'preExpense', path: '/app/expenses' },
   aggregatorPurchase: { key: 'aggregatorPurchases', entity: 'aggregatorPurchase', path: '/app/aggregators' },
+  aggregatorExpense: { key: 'aggregatorExpenses', entity: 'aggregatorExpense', path: '/app/aggregators/expenses' },
+  supportRequest: { key: 'requests', entity: 'supportRequest', path: '/app/support', store: 'support' },
 };
+
+const storeOf = (src: Source) => (src.store === 'support' ? useSupportStore : useBuyingStore) as unknown as { getState: () => Record<string, unknown>; setState: (p: Record<string, unknown>) => void };
 
 export function workflowUser(userId: string, orgId: string): WorkflowUser {
   const { users, memberships, roles } = useAccessStore.getState();
@@ -33,7 +39,8 @@ export function act(orgId: string, docType: DocType, recordId: string, action: W
   const src = DOC_SOURCES[docType];
   const def = useSettingsStore.getState().settings[orgId]?.workflows.find((w) => w.docType === docType);
   if (!src || !def) return { ok: false, reason: 'notAllowed' };
-  const rows = useBuyingStore.getState()[src.key] as unknown as (WorkflowRecord & { orgId: string; number: string })[];
+  const store = storeOf(src);
+  const rows = store.getState()[src.key] as unknown as (WorkflowRecord & { orgId: string; number: string })[];
   const record = rows.find((r) => r.id === recordId && r.orgId === orgId);
   if (!record) return { ok: false, reason: 'notAllowed' };
   let result;
@@ -43,7 +50,7 @@ export function act(orgId: string, docType: DocType, recordId: string, action: W
     return { ok: false, reason: e instanceof WorkflowError ? e.code : 'notAllowed' };
   }
   const next = { ...result.record, updatedAt: new Date().toISOString() };
-  useBuyingStore.setState({ [src.key]: rows.map((r) => (r.id === recordId ? next : r)) } as never);
+  store.setState({ [src.key]: rows.map((r) => (r.id === recordId ? next : r)) });
 
   const log = useActivityStore.getState().log;
   for (const e of result.events) log(makeEvent(orgId, src.entity, recordId, e.key, e.params, userId));

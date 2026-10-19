@@ -156,15 +156,15 @@ export function PolygonCapture({ value, onChange, base, big }: { value?: Polygon
   );
 }
 
-export function SimCapture({ kind, value, onChange, big }: { kind: 'scanCode' | 'nfcTap' | 'thumbprint'; value?: string; onChange: (v: string | undefined) => void; big?: boolean }) {
+export function SimCapture({ kind, value, onChange, big, make: makeValue, label }: { kind: 'scanCode' | 'nfcTap' | 'thumbprint'; value?: string; onChange: (v: string | undefined) => void; big?: boolean; make?: () => string; label?: string }) {
   const { t } = useT();
   const cap = useCapture(kind === 'thumbprint' ? 1800 : 1100);
   const Icon = kind === 'scanCode' ? QrCode : kind === 'nfcTap' ? Nfc : Fingerprint;
-  const make = () => (kind === 'scanCode' ? `TS-${10000 + Math.floor(Math.random() * 89999)}` : kind === 'nfcTap' ? `NFC-${String(Math.floor(Math.random() * 1e6)).padStart(6, '0')}` : `captured:${70 + Math.floor(Math.random() * 28)}`);
+  const make = () => makeValue?.() ?? (kind === 'scanCode' ? `TS-${10000 + Math.floor(Math.random() * 89999)}` : kind === 'nfcTap' ? `NFC-${String(Math.floor(Math.random() * 1e6)).padStart(6, '0')}` : `captured:${70 + Math.floor(Math.random() * 28)}`);
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button type="button" variant="secondary" size={big ? 'lg' : 'sm'} disabled={cap.busy} onClick={() => cap.run(() => onChange(make()))}>
-        <Icon className={cn(cap.busy && 'animate-pulse')} /> {cap.busy ? t(`form.media.${kind}Busy`) : t(`form.media.${kind}`)}
+        <Icon className={cn(cap.busy && 'animate-pulse')} /> {cap.busy ? t(`form.media.${kind}Busy`) : label ?? t(`form.media.${kind}`)}
       </Button>
       {cap.busy && <div className="h-1.5 w-24 overflow-hidden rounded-full bg-canvas"><div className="h-full rounded-full bg-brand" style={{ width: `${cap.progress * 100}%` }} /></div>}
       {value && !cap.busy && (

@@ -61,6 +61,23 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: false, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
+    {
+      id: 'wf_vit_acspre', docType: 'aggregatorExpense', statuses: ['PENDING', 'OPS_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'ops', name: 'Operations approval', roleIds: [], permission: 'aggregators.approve' },
+        { id: 'fin', name: 'Finance approval', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { ops: 'OPS_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_vit_pf', docType: 'supportRequest', statuses: ['PENDING_SCORING', 'PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'AGENT_CONFIRMATION', 'PENDING_DISBURSEMENT', 'DISBURSED', 'FULFILLED'],
+      steps: [{ id: 'prog', name: 'Programme approval', roleIds: [], permission: 'support.approve' }],
+      stepStatus: { prog: 'AGENT_CONFIRMATION' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
   ];
 }
 
@@ -94,6 +111,23 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       stepStatus: { ops: 'APPROVED' },
       initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: false, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_ki_acspre', docType: 'aggregatorExpense', statuses: ['PENDING', 'OPS_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'ops', name: 'Directeur des opérations', roleIds: [], permission: 'aggregators.approve' },
+        { id: 'fin', name: 'Finance', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { ops: 'OPS_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_ki_pf', docType: 'supportRequest', statuses: ['PENDING_SCORING', 'PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'AGENT_CONFIRMATION', 'PENDING_DISBURSEMENT', 'DISBURSED', 'FULFILLED'],
+      steps: [{ id: 'prog', name: 'Responsable des programmes', roleIds: [], permission: 'support.approve' }],
+      stepStatus: { prog: 'AGENT_CONFIRMATION' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
   ];
 }
@@ -181,22 +215,63 @@ const xofTiers = (provider: string, pct: number, cap: number, payer: 'company' |
 const providers = (ids: [string, number][], walletPrefix: string): PaymentProvider[] =>
   ids.map(([id, share]) => {
     const p = PROVIDER_CATALOG.find((x) => x.id === id)!;
-    return { ...p, share, walletName: p.kind === 'MOBILE_MONEY' ? `${walletPrefix} ${p.name}` : p.walletName };
+    const withdrawal = p.kind !== 'MOBILE_MONEY' ? undefined : id === 'wave_ci' ? { type: 'flat' as const, value: 0 } : { type: 'percent' as const, value: id === 'airteltigo_gh' ? 0.75 : 1 };
+    return { ...p, share, withdrawal, walletName: p.kind === 'MOBILE_MONEY' ? `${walletPrefix} ${p.name}` : p.walletName };
   });
 
 export const VITARA_EXPENSES: ExpenseType[] = [
-  { id: 'ex_bag', name: 'Empty sack', basis: 'PER_BAG', defaultRate: { amountMinor: 450, currency: 'GHS' }, requiresWallet: false, requiresBagScan: true, triggersInbound: false },
-  { id: 'ex_load', name: 'Loading', basis: 'PER_BAG', defaultRate: { amountMinor: 200, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false },
-  { id: 'ex_tricycle', name: 'Tricycle transport', basis: 'PER_BAG', defaultRate: { amountMinor: 350, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false },
-  { id: 'ex_kia', name: 'Kia transport', basis: 'PER_TRIP', defaultRate: { amountMinor: 35_000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true },
-  { id: 'ex_council', name: 'Council ticket', basis: 'PER_TRIP', defaultRate: { amountMinor: 2_000, currency: 'GHS' }, requiresWallet: false, requiresBagScan: false, triggersInbound: false },
-  { id: 'ex_wh', name: 'Transport to warehouse', basis: 'PER_BAG', defaultRate: { amountMinor: 600, currency: 'GHS' }, requiresWallet: true, requiresBagScan: true, triggersInbound: true },
+  { id: 'ex_bag', name: 'Empty sack', basis: 'PER_BAG', defaultRate: { amountMinor: 450, currency: 'GHS' }, requiresWallet: false, requiresBagScan: true, triggersInbound: false, appliesTo: ['PRE', 'ACSPRE'] },
+  { id: 'ex_load', name: 'Loading', basis: 'PER_BAG', defaultRate: { amountMinor: 200, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['PRE', 'ACSPRE'] },
+  { id: 'ex_tricycle', name: 'Tricycle transport', basis: 'PER_BAG', defaultRate: { amountMinor: 350, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['PRE', 'ACSPRE'] },
+  { id: 'ex_kia', name: 'Kia transport', basis: 'PER_TRIP', defaultRate: { amountMinor: 35_000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['PRE', 'ACSPRE'] },
+  { id: 'ex_council', name: 'Council ticket', basis: 'PER_TRIP', defaultRate: { amountMinor: 2_000, currency: 'GHS' }, requiresWallet: false, requiresBagScan: false, triggersInbound: false, appliesTo: ['PRE', 'ACSPRE'] },
+  { id: 'ex_wh', name: 'Transport to warehouse', basis: 'PER_BAG', defaultRate: { amountMinor: 600, currency: 'GHS' }, requiresWallet: true, requiresBagScan: true, triggersInbound: true, appliesTo: ['PRE', 'ACSPRE'] },
+  // Aggregator logistics (ACSPRE): with the two shared lines above, the 40-item Vitara catalogue.
+  { id: 'acx_transport_warehouse_tema', name: 'Transport warehouse → Tema', basis: 'PER_BAG', defaultRate: { amountMinor: 1800, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['ACSPRE'] },
+  { id: 'acx_truck_escort', name: 'Truck escort', basis: 'PER_TRIP', defaultRate: { amountMinor: 30000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_truck_hire_wa_to_tamale', name: 'Truck hire — Wa to Tamale', basis: 'PER_TRIP', defaultRate: { amountMinor: 220000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['ACSPRE'] },
+  { id: 'acx_truck_hire_tamale_to_kum', name: 'Truck hire — Tamale to Kumasi', basis: 'PER_TRIP', defaultRate: { amountMinor: 380000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['ACSPRE'] },
+  { id: 'acx_truck_hire_kumasi_to_tem', name: 'Truck hire — Kumasi to Tema', basis: 'PER_TRIP', defaultRate: { amountMinor: 420000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['ACSPRE'] },
+  { id: 'acx_offloading_at_warehouse', name: 'Offloading at warehouse', basis: 'PER_BAG', defaultRate: { amountMinor: 150, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_loading_at_supplier_yard', name: 'Loading at supplier yard', basis: 'PER_BAG', defaultRate: { amountMinor: 150, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_stitching_and_sealing', name: 'Stitching and sealing', basis: 'PER_BAG', defaultRate: { amountMinor: 80, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_weighbridge_fee', name: 'Weighbridge fee', basis: 'PER_TRIP', defaultRate: { amountMinor: 8000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_fumigation', name: 'Fumigation', basis: 'PER_TRIP', defaultRate: { amountMinor: 45000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_quality_test_lab', name: 'Quality test (lab)', basis: 'FLAT', defaultRate: { amountMinor: 25000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_moisture_test', name: 'Moisture test', basis: 'PER_TRIP', defaultRate: { amountMinor: 3000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_tarpaulin_hire', name: 'Tarpaulin hire', basis: 'PER_TRIP', defaultRate: { amountMinor: 6000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_pallets', name: 'Pallets', basis: 'PER_BAG', defaultRate: { amountMinor: 120, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_driver_allowance', name: 'Driver allowance', basis: 'PER_TRIP', defaultRate: { amountMinor: 15000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_driver_mate_allowance', name: 'Driver mate allowance', basis: 'PER_TRIP', defaultRate: { amountMinor: 8000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_fuel_top_up', name: 'Fuel top-up', basis: 'PER_TRIP', defaultRate: { amountMinor: 60000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_toll_and_road_levy', name: 'Toll and road levy', basis: 'PER_TRIP', defaultRate: { amountMinor: 4000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_police_checkpoint_fees', name: 'Police checkpoint fees', basis: 'PER_TRIP', defaultRate: { amountMinor: 3000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_district_assembly_levy', name: 'District assembly levy', basis: 'PER_TRIP', defaultRate: { amountMinor: 5000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_market_toll', name: 'Market toll', basis: 'PER_TRIP', defaultRate: { amountMinor: 2000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_storage_at_supplier_per_', name: 'Storage at supplier (per day)', basis: 'FLAT', defaultRate: { amountMinor: 10000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_night_security', name: 'Night security', basis: 'FLAT', defaultRate: { amountMinor: 12000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_cleaning_and_sorting', name: 'Cleaning and sorting', basis: 'PER_KG', defaultRate: { amountMinor: 5, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_re_bagging', name: 'Re-bagging', basis: 'PER_BAG', defaultRate: { amountMinor: 300, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_new_jute_sacks', name: 'New jute sacks', basis: 'PER_BAG', defaultRate: { amountMinor: 600, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_labelling_and_tagging', name: 'Labelling and tagging', basis: 'PER_BAG', defaultRate: { amountMinor: 40, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_transit_insurance', name: 'Transit insurance', basis: 'FLAT', defaultRate: { amountMinor: 35000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_phone_and_data_for_coord', name: 'Phone and data for coordinator', basis: 'FLAT', defaultRate: { amountMinor: 5000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_coordinator_transport', name: 'Coordinator transport', basis: 'PER_TRIP', defaultRate: { amountMinor: 6000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_port_handling_tema', name: 'Port handling — Tema', basis: 'PER_TRIP', defaultRate: { amountMinor: 90000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_weighbridge_recheck', name: 'Weighbridge re-check', basis: 'PER_TRIP', defaultRate: { amountMinor: 5000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_customs_docs', name: 'Customs documentation', basis: 'FLAT', defaultRate: { amountMinor: 40000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_container_stuffing', name: 'Container stuffing — Tema', basis: 'PER_TRIP', defaultRate: { amountMinor: 75000, currency: 'GHS' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
 ];
 
 const KAKAO_EXPENSES: ExpenseType[] = [
   { id: 'ex_sac', name: 'Sac de jute', basis: 'PER_BAG', defaultRate: { amountMinor: 500, currency: 'XOF' }, requiresWallet: false, requiresBagScan: true, triggersInbound: false },
   { id: 'ex_charg', name: 'Chargement', basis: 'PER_BAG', defaultRate: { amountMinor: 150, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false },
   { id: 'ex_camion', name: 'Transport camion vers magasin', basis: 'PER_TRIP', defaultRate: { amountMinor: 60_000, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true },
+  { id: 'acx_camion', name: 'Camion fournisseur → magasin', basis: 'PER_TRIP', defaultRate: { amountMinor: 120_000, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: true, appliesTo: ['ACSPRE'] },
+  { id: 'acx_pesage', name: 'Pont-bascule', basis: 'PER_TRIP', defaultRate: { amountMinor: 10_000, currency: 'XOF' }, requiresWallet: false, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_dechargement', name: 'Déchargement', basis: 'PER_BAG', defaultRate: { amountMinor: 100, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_escorte', name: 'Escorte camion', basis: 'PER_TRIP', defaultRate: { amountMinor: 25_000, currency: 'XOF' }, requiresWallet: true, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
+  { id: 'acx_qualite', name: 'Analyse qualité', basis: 'FLAT', defaultRate: { amountMinor: 30_000, currency: 'XOF' }, requiresWallet: false, requiresBagScan: false, triggersInbound: false, appliesTo: ['ACSPRE'] },
 ];
 
 export const VITARA_AGENT_TYPES: AgentType[] = [
@@ -252,6 +327,7 @@ export function vitaraSettings(): OrgSettings {
       ipAllowList: [],
     },
     makerChecker: true,
+    makerCheckerMinMinor: 500_000,
     bulkBatchSize: 20,
     landUnitId: 'acre',
     ...vitaraExtras(ORG.vitara, VITARA_COMMODITIES),
@@ -303,6 +379,7 @@ export function kakaoSettings(): OrgSettings {
       ipAllowList: [],
     },
     makerChecker: true,
+    makerCheckerMinMinor: 500_000,
     bulkBatchSize: 25,
     landUnitId: 'ha',
     ...kakaoExtras(ORG.kakao, KAKAO_COMMODITIES),

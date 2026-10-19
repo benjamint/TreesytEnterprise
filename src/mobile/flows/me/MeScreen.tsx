@@ -1,4 +1,8 @@
-import { LogOut } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowLeftRight, CircleHelp, Lock, LogOut } from 'lucide-react';
+import { useAccessStore } from '@/stores/accessStore';
+import { usePlatformStore } from '@/stores/platformStore';
+import { DownloadData } from '@/mobile/flows/auth/DownloadData';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/shared/Avatar';
 import { CompanyLogo } from '@/components/shared/Logo';
@@ -15,9 +19,19 @@ export function MeScreen() {
   const org = useCurrentOrg();
   const settings = useOrgSettings();
   const { agent, membership } = useMobileAgent();
-  const { language, setLanguage, signOut } = useMobileSessionStore();
+  const { language, setLanguage, signOut, lock, pin, signIn } = useMobileSessionStore();
   const { t } = useT();
+  const memberships = useAccessStore((s) => s.memberships);
+  const roles = useAccessStore((s) => s.roles);
+  const orgs = usePlatformStore((s) => s.orgs);
+  const [switching, setSwitching] = useState<string | null>(null);
+  const [help, setHelp] = useState(false);
+  const others = useMemo(() => {
+    const ids = memberships.filter((m) => m.userId === user?.id && m.orgId !== org.id && m.status === 'ACTIVE' && roles.some((r) => m.roleIds.includes(r.id) && r.mobile)).map((m) => m.orgId);
+    return orgs.filter((o) => ids.includes(o.id));
+  }, [memberships, roles, orgs, user?.id, org.id]);
   if (!user) return null;
+  if (switching) return <DownloadData orgId={switching} onDone={() => { signIn(user.id, switching, user.language); setSwitching(null); }} />;
   const provider = settings.paymentProviders.find((p) => p.id === agent?.wallet.providerId);
   const rows: [string, React.ReactNode][] = [
     ['mobile.company', <span key="c" className="flex items-center gap-2"><CompanyLogo text={org.branding.logoText} color={org.branding.primaryColor} size={22} />{org.name}</span>],
@@ -46,6 +60,26 @@ export function MeScreen() {
             </div>
           ))}
         </dl>
+        {others.length > 0 && (
+          <div>
+            <div className="eyebrow mb-2">{t('mobile.me.switchCompany')}</div>
+            <ul className="space-y-2">
+              {others.map((o) => (
+                <li key={o.id}><button type="button" onClick={() => setSwitching(o.id)} className="flex min-h-[56px] w-full items-center gap-3 rounded-card border border-line px-4 text-left active:bg-brand-soft"><CompanyLogo text={o.branding.logoText} color={o.branding.primaryColor} size={28} /><span className="flex-1 font-medium text-ink">{o.name}</span><ArrowLeftRight className="h-4 w-4 text-muted" /></button></li>
+              ))}
+            </ul>
+            <p className="mt-1.5 text-[12px] text-muted">{t('mobile.me.switchHint')}</p>
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="secondary" size="lg" disabled={!pin} onClick={lock}><Lock /> {t('mobile.me.lock')}</Button>
+          <Button variant="secondary" size="lg" onClick={() => setHelp(!help)} aria-expanded={help}><CircleHelp /> {t('mobile.me.help')}</Button>
+        </div>
+        {help && (
+          <ul className="space-y-2 rounded-card bg-canvas p-4 text-[14px] text-body">
+            {['offline', 'sync', 'conflict', 'record'].map((k) => <li key={k}>{t(`mobile.me.tip.${k}`)}</li>)}
+          </ul>
+        )}
         <div>
           <div className="eyebrow mb-2">{t('mobile.language')}</div>
           <div className="grid grid-cols-2 gap-2" role="group" aria-label={t('mobile.language')}>

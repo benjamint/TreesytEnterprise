@@ -12,11 +12,12 @@ import { useBuyingStore } from '@/stores/buyingStore';
  * new rules, and leave an audit entry with before/after values. Every tab sees the change at once.
  */
 
-type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases';
+type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases' | 'aggregatorExpenses';
 const WORKFLOW_RECORDS: Partial<Record<DocType, BuyingKey>> = {
   purchaseRequest: 'requests',
   preExpense: 'expenses',
   aggregatorPurchase: 'aggregatorPurchases',
+  aggregatorExpense: 'aggregatorExpenses',
 };
 
 function audit(orgId: string, page: string, before: unknown, after: unknown) {

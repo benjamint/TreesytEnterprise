@@ -82,6 +82,8 @@ export interface Role {
   permissions: string[];
   /** Roles that sign in to the mobile app. */
   mobile?: boolean;
+  /** Payment limits for people with this role (PRD E1 limits & controls). */
+  payLimits?: { perPaymentMinor: number; dailyMinor: number };
 }
 
 export interface Permission {

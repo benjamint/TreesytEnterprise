@@ -10,14 +10,16 @@ import { PageHeader } from '@/components/shared/PageHeader';
 import { PermissionGate } from '@/components/shared/Gates';
 import { DataTable } from '@/components/shared/DataTable';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
-import { useDemoNotes } from '@/components/shared/useDemoNotes';
+import { useDemoActions, useDemoNotes } from '@/components/shared/useDemoNotes';
 import { Waterfall } from '@/components/charts/charts';
-import { autoReconcile, markReconciled, payDifference, reconSummary, recordRefund, writeOff, type ReconStatus } from '@/services/buyingService';
-import { latency } from '@/lib/utils';
+import { autoReconcile, collectRefund, markReconciled, reconSummary, recordRefund, writeOff, type ReconStatus } from '@/services/buyingService';
+import { answerCollection, inFlight } from '@/services/paymentService';
+import { usePaymentStore } from '@/stores/paymentStore';
+import { PayDialog } from '@/web/features/payments/PayDialog';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { useActor, useCan, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
-import { AmountDialog, Panel, PayoutFailed, mono, useFarmerNames } from './common';
+import { AmountDialog, Panel, PaymentState, mono, useFarmerNames } from './common';
 
 const TONE: Record<ReconStatus, 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'done' | 'teal' | 'paid'> = {
   NOT_STARTED: 'neutral', FULFILLED: 'success', OVERPAID: 'danger', REFUND_AGENT: 'warning', RECEIVE_REFUND: 'warning', RECONCILED: 'done', TICKET_ACTIVATED: 'teal', PARTIALLY_PAID: 'info', FULLY_PAID: 'paid',
@@ -36,6 +38,7 @@ export function ReconciliationPage() {
   const f = useFormat();
   const lk = useLookups();
   const settings = useOrgSettings();
+  const orgMoney = f.money;
   const requests = useOrgRows(useBuyingStore((s) => s.requests));
   const purchases = useBuyingStore((s) => s.purchases);
   const [openId, open, close] = useDrawerParam();
@@ -45,6 +48,12 @@ export function ReconciliationPage() {
   const [agent, setAgent] = useState('');
   const [model, setModel] = useState('');
   useDemoNotes([{ id: 'rec', key: 'demo.note.reconciliation' }]);
+  const collections = useOrgRows(usePaymentStore((x) => x.collections));
+  const demo = useMemo(() => collections.filter((c) => c.status === 'PENDING' && c.payableType === 'AGENT_REFUND').slice(0, 3).flatMap((c) => [
+    { id: `ok_${c.id}`, key: 'demo.action.approveCollection', params: { name: c.payer.name, amount: orgMoney(c.amount) }, run: () => answerCollection(c.id, true, c.payer.userId ?? 'system') },
+    { id: `no_${c.id}`, key: 'demo.action.declineCollection', params: { name: c.payer.name }, run: () => answerCollection(c.id, false, c.payer.userId ?? 'system') },
+  ]), [collections, orgMoney]);
+  useDemoActions(demo);
 
   const rows = useMemo(() => requests
     .filter((r) => r.fundsReceived || r.disbursements.length || r.ticketActivatedAt || r.reconciliationStatus === 'RECONCILED')
@@ -152,8 +161,13 @@ export function ReconDetail({ request: r, compact, onOpenPage }: { request: Purc
   const purchases = useBuyingStore((s) => s.purchases);
   const s = reconSummary(r, purchases, settings);
   const [dialog, setDialog] = useState<'refund' | 'writeOff' | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [failed, setFailed] = useState<{ reference: string; reason?: string } | null>(null);
+  const [paying, setPaying] = useState(false);
+  const collections = usePaymentStore((x) => x.collections);
+  const pendingCollection = collections.find((c) => c.payableId === r.id && c.status === 'PENDING');
+  const lastCollection = collections.filter((c) => c.payableId === r.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  const busy = inFlight(r.id) || !!pendingCollection;
+  const agentRec = lk.agents.find((a) => a.id === r.agentId);
+  const agentPayee = (req: PurchaseRequest, amountMinor: number) => ({ name: agentRec?.wallet.verifiedName ?? lk.agent(req.agentId), number: agentRec?.wallet.number ?? '', providerId: agentRec?.wallet.providerId, amount: { amountMinor, currency: req.total.currency }, label: lk.agent(req.agentId) });
   const cur = (minor: number) => f.money({ amountMinor: minor, currency: s.currency });
   const done = s.status === 'RECONCILED';
   const cash = r.sourcingModel === 'CASH_ADVANCE';
@@ -161,26 +175,10 @@ export function ReconDetail({ request: r, compact, onOpenPage }: { request: Purc
   const pack = settings.packaging.find((p) => p.commodityId === r.commodityId);
   const bagsDiff = Math.round(Math.abs(volDiff) / (pack ? Math.round((pack.minKg + pack.maxKg) / 2) : 85));
 
-  const collect = async (amountMinor: number) => {
-    setBusy(true);
+  const collect = (amountMinor: number) => {
     setDialog(null);
-    const id = toast.loading(t('buy.toast.collecting', { amount: cur(amountMinor), name: lk.agent(r.agentId) }));
-    await latency(1500, 2500);
-    recordRefund(r.id, amountMinor, 'MOMO_COLLECT', userId ?? 'system', undefined, t('buy.collectNote'));
-    setBusy(false);
-    toast.success(t('buy.toast.refunded', { amount: cur(amountMinor), number: r.number }), { id });
-  };
-  const pay = async () => {
-    setBusy(true);
-    const id = toast.loading(t('buy.toast.paying', { amount: cur(-s.gap), name: lk.agent(r.agentId) }));
-    setFailed(null);
-    const p = await payDifference(r.id, userId ?? 'system');
-    setBusy(false);
-    if (p.status === 'SUCCESSFUL') toast.success(t('buy.toast.differencePaid', { amount: cur(-s.gap) }), { id });
-    else {
-      toast.error(t('buy.toast.payFailed', { reference: p.reference, reason: p.failureReason ?? '' }), { id });
-      setFailed({ reference: p.reference, reason: p.failureReason });
-    }
+    const c = collectRefund(r.id, amountMinor, userId ?? 'system');
+    toast.success(t('buy.toast.collectionSent', { amount: cur(amountMinor), name: lk.agent(r.agentId), reference: c.reference }));
   };
 
   if (!cash) {
@@ -219,11 +217,13 @@ export function ReconDetail({ request: r, compact, onOpenPage }: { request: Purc
       <p className="text-[14px] text-body">
         {volDiff === 0 ? t('buy.volumeExact', { kg: f.kg(s.plannedKg) }) : t(`${volDiff < 0 ? 'buy.volumeShort' : 'buy.volumeOver'}${bagsDiff ? '' : 'Small'}`, { diff: f.kg(Math.abs(volDiff)), planned: f.kg(s.plannedKg), bought: f.kg(s.boughtKg), count: bagsDiff })}
       </p>
-      <PayoutFailed failure={failed} busy={busy} onRetry={() => void pay()} />
+      <PaymentState payableId={r.id} />
+      {pendingCollection && <p className="rounded-ctl border border-info/30 bg-info/5 px-3 py-2 text-[14px] text-ink" role="status">{t('pay.collectionWaiting', { amount: f.money(pendingCollection.amount), name: pendingCollection.payer.name, reference: pendingCollection.reference })}</p>}
+      {!pendingCollection && lastCollection?.status === 'DECLINED' && <p className="rounded-ctl border border-warning/30 bg-warning/5 px-3 py-2 text-[14px] text-ink" role="status">{t('pay.collectionDeclinedNote', { name: lastCollection.payer.name, reference: lastCollection.reference })}</p>}
       {!done && r.fundsReceived && (
         <div className="flex flex-wrap gap-2">
           {s.gap > 0 && <PermissionGate permission="reconciliation.refund"><Button size="sm" disabled={busy} onClick={() => setDialog('refund')}><Undo2 /> {t('buy.recordRefund')}</Button></PermissionGate>}
-          {s.gap < 0 && <PermissionGate permission="reconciliation.refund"><Button size="sm" disabled={busy} onClick={() => void pay()}><Wallet /> {t('buy.payDifference', { amount: cur(-s.gap) })}</Button></PermissionGate>}
+          {s.gap < 0 && <PermissionGate permission="reconciliation.refund"><Button size="sm" disabled={busy} onClick={() => setPaying(true)}><Wallet /> {t('buy.payDifference', { amount: cur(-s.gap) })}</Button></PermissionGate>}
           {s.gap > 0 && <PermissionGate permission="reconciliation.writeOff"><Button size="sm" variant="secondary" disabled={busy} onClick={() => setDialog('writeOff')}><HandCoins /> {t('buy.writeOff')}</Button></PermissionGate>}
           {s.purchases.length > 0 && <PermissionGate permission="reconciliation.reconcile"><Button size="sm" variant="secondary" disabled={!s.withinTolerance} onClick={() => { markReconciled(r.id, userId ?? 'system'); toast.success(t('buy.toast.reconciled', { number: r.number })); }}><CheckCheck /> {t('buy.markReconciled')}</Button></PermissionGate>}
         </div>
@@ -248,7 +248,8 @@ export function ReconDetail({ request: r, compact, onOpenPage }: { request: Purc
         </ul>
       )}
       {compact && onOpenPage && <Button variant="link" size="sm" onClick={onOpenPage}>{t('buy.openRecon')} <ArrowRight /></Button>}
-      {dialog === 'refund' && <RefundDialog gap={s.gap} currency={s.currency} agent={lk.agent(r.agentId)} canCollect={can('reconciliation.refund')} onClose={() => setDialog(null)} onManual={(amount, proof) => { recordRefund(r.id, amount, 'MANUAL', userId ?? 'system', proof); setDialog(null); toast.success(t('buy.toast.refunded', { amount: cur(amount), number: r.number })); }} onCollect={(amount) => void collect(amount)} />}
+      {dialog === 'refund' && <RefundDialog gap={s.gap} currency={s.currency} agent={lk.agent(r.agentId)} canCollect={can('reconciliation.refund')} onClose={() => setDialog(null)} onManual={(amount, proof) => { recordRefund(r.id, amount, 'MANUAL', userId ?? 'system', proof); setDialog(null); toast.success(t('buy.toast.refunded', { amount: cur(amount), number: r.number })); }} onCollect={(amount) => collect(amount)} />}
+      {paying && <PayDialog request={{ type: 'AGENT_CASH_ADVANCE', payableId: r.id, title: t('pay.titleDifference', { number: r.number }), meta: { kind: 'difference' }, payees: [agentPayee(r, -s.gap)] }} onClose={() => setPaying(false)} />}
       {dialog === 'writeOff' && (
         <AmountDialog
           open

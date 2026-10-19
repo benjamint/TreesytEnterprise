@@ -124,6 +124,8 @@ export interface PaymentProvider {
   /** Stored server-side in the full product; the prototype keeps masked demo values. */
   credentials?: { merchantId: string; apiKey: string };
   limits?: { perPaymentMinor: number; dailyMinor: number };
+  /** Charge for the payee to cash out, added on top when "include withdrawal charges" is ticked. */
+  withdrawal?: { type: 'percent' | 'flat'; value: number };
 }
 
 export interface ExtraCharge {
@@ -180,6 +182,8 @@ export interface ExpenseType {
   requiresWallet: boolean;
   requiresBagScan: boolean;
   triggersInbound: boolean;
+  /** Where the line can be used: farmer-buying PREs, aggregator expenses (ACSPRE), or both. Default PRE. */
+  appliesTo?: ('PRE' | 'ACSPRE')[];
 }
 
 export interface BuyingRules {
@@ -211,12 +215,18 @@ export interface InventoryRules {
 export interface SupportType {
   id: string;
   name: Partial<Record<Lang, string>>;
+  code?: string;
   kind: 'CASH' | 'INPUT' | 'SERVICE';
   subTypes: string[];
   groupScoring: boolean;
   recoverable: boolean;
   maxAmountMinor: number;
   enabled: boolean;
+  /** What the amount is measured in on each farmer line. */
+  unit?: 'MONEY' | 'ACRES' | 'HA' | 'BAGS';
+  needsProvider?: boolean;
+  payout?: 'GROUP_WALLET' | 'FARMER_WALLET' | 'SUPPLIER' | 'IN_KIND';
+  evidence?: { leaderVoice: boolean; witnessVoice: boolean; agreement: boolean; thumbprints: boolean; photo: boolean };
 }
 
 export interface SupportSettings {
@@ -226,6 +236,10 @@ export interface SupportSettings {
   repaymentModes: ('CASH' | 'PRODUCE' | 'MIXED')[];
   blockOnDebt: boolean;
   minGroupScore: number;
+  /** Activating a recovery creates a linked direct-payment purchase request (for excess produce). */
+  linkPurchaseRequest?: boolean;
+  /** Recovery experience question set (PRD F4). */
+  feedback?: { experience: string[]; lendAgain: boolean };
 }
 
 export interface FieldTeamSettings {
@@ -336,6 +350,8 @@ export interface OrgSettings {
     ipAllowList: string[];
   };
   makerChecker: boolean;
+  /** Payments at or above this amount need a checker (0 = every payment). */
+  makerCheckerMinMinor: number;
   bulkBatchSize: number;
   landUnitId: string;
   /** Sub-feature switches inside modules (Settings → Plan & modules). */

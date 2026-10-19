@@ -33,7 +33,7 @@ import { CommunityForm } from './CommunityForm';
 import { ActivityFeed, DocumentsPanel, LeadersPanel, ScoreView, logActivity, useLookups } from './shared';
 
 export const COMMUNITY_DOC_TYPES = ['membershipList', 'meetingRecords', 'contributionRecords', 'paymentRecords', 'partnershipAgreement', 'other'];
-const LEADER_ROLES = { en: ['Chief', 'Magazia (women leader)', 'Assembly member', 'Youth leader'], fr: ['Chef du village', 'Présidente des femmes', 'Notable', 'Président des jeunes'] };
+export const LEADER_ROLES = { en: ['Chief', 'Magazia (women leader)', 'Assembly member', 'Youth leader'], fr: ['Chef du village', 'Présidente des femmes', 'Notable', 'Président des jeunes'] };
 type Band = '' | 'low' | 'mid' | 'high';
 const band = (score: number): Exclude<Band, ''> => (score < 40 ? 'low' : score < 70 ? 'mid' : 'high');
 const BAND_COLOR = { low: '#93A39B', mid: '#3FAF7E', high: '#14583F' };

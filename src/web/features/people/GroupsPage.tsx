@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Plus, Trash2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import { releaseScored } from '@/services/supportService';
 import type { FarmerGroup, GroupMembership, RecordDocument, SavingsEntry } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,8 @@ import { useBuyingStore } from '@/stores/buyingStore';
 import { useFarmerStore } from '@/stores/farmerStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { useRecordsStore } from '@/stores/recordsStore';
+import { useSupportStore } from '@/stores/supportStore';
+import { StatusBadge } from '@/components/shared/StatusBadge';
 import { useActor, useCan, useCurrentOrg, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ScoreChip } from './CommunitiesPage';
 import { Field } from './CommunityForm';
@@ -204,6 +207,8 @@ function GroupDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => void; 
   const mine = useMemo(() => memberships.filter((m) => m.groupId === row.id).sort((a, b) => (a.leftAt ? 1 : 0) - (b.leftAt ? 1 : 0) || ROLES.indexOf(b.role) - ROLES.indexOf(a.role)), [memberships, row.id]);
   const farmerById = useMemo(() => new Map(farmers.map((x) => [x.id, x])), [farmers]);
   const memberIds = useMemo(() => new Set(mine.filter((m) => !m.leftAt).map((m) => m.farmerId)), [mine]);
+  const allSupport = useSupportStore((s) => s.requests);
+  const support = useMemo(() => allSupport.filter((r) => r.groupId === row.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [allSupport, row.id]);
   const memberPurchases = useMemo(() => purchases.filter((p) => memberIds.has(p.farmerId)).sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [purchases, memberIds]);
   const breakdown = useMemo(() => groupScore(row, { memberships, farmers, purchases }), [row, memberships, farmers, purchases]);
   const manual = (row.customFields.manualScores ?? {}) as ManualScores;
@@ -273,7 +278,18 @@ function GroupDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => void; 
         { key: 'leaders', label: t('people.tab.leaders'), content: <LeadersPanel entity="farmerGroup" entityId={row.id} roles={LEADER_POSITIONS[lang]} permission="groups.edit" /> },
         { key: 'documents', label: t('people.tab.documents'), content: <DocumentsPanel entity="farmerGroup" entityId={row.id} types={DOC_TYPES} permission="groups.edit" onUploaded={onDoc} /> },
         { key: 'payment', label: t('people.tab.payment'), content: <PaymentDetails group={row} onSave={(patch) => { save(patch); logActivity(orgId, 'farmerGroup', row.id, 'group.paymentUpdated', {}, userId ?? 'system'); toast.success(t('people.group.paymentSaved')); }} /> },
-        { key: 'support', label: t('nav.support'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
+        {
+          key: 'support', label: t('nav.support'), count: support.length, content: support.length ? (
+            <ul className="divide-y divide-line rounded-ctl border border-line">
+              {support.map((r) => (
+                <li key={r.id}><button type="button" onClick={() => navigate(`/app/support?open=${r.id}`)} className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[14px] hover:bg-canvas">
+                  <span className="min-w-0"><span className="font-mono text-[13px] font-medium text-ink">{r.number}</span><span className="block text-[12px] text-muted">{f.date(r.createdAt)} · {t('sup.farmersN', { count: r.lines.length })}</span></span>
+                  <span className="flex items-center gap-3"><StatusBadge status={r.status} /><span className="tnum font-medium text-ink">{f.money(r.total)}</span></span>
+                </button></li>
+              ))}
+            </ul>
+          ) : <TabEmpty>{t('sup.empty')}</TabEmpty>,
+        },
         {
           key: 'purchases', label: t('nav.purchases'), count: memberPurchases.length, content: memberPurchases.length ? (
             <div className="space-y-3">
@@ -295,7 +311,8 @@ function GroupDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => void; 
                 const total = groupScore(next, { memberships, farmers, purchases }).total;
                 useGroupStore.getState().saveGroup({ ...next, score: total, updatedAt: new Date().toISOString() });
                 logActivity(orgId, 'farmerGroup', row.id, 'group.reviewed', { score: total, note: ms.note || '—' }, userId ?? 'system');
-                toast.success(t('people.group.reviewed', { score: f.number(total) }));
+                const released = releaseScored(orgId, row.id, userId ?? 'system');
+                toast.success(t('people.group.reviewed', { score: f.number(total) }), { description: released ? t('people.group.supportReleased', { count: released }) : undefined });
               }} />
             </div>
           ),

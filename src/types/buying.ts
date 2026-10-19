@@ -42,6 +42,24 @@ export interface PurchaseRequest extends OrgEntity {
   riskFlags: RiskFlag[];
   notes?: string;
   archived: boolean;
+  /** Reason given when the unit price is set outside the list tolerance. */
+  overrideReason?: string;
+  priceHistory?: { at: string; by: string; fromMinor: number; toMinor: number; reason?: string }[];
+  rateConfirmedAt?: string;
+  ticketActivatedAt?: string;
+  fundsReceivedAt?: string;
+  /** Agent returns unspent cash (proof, or a simulated mobile-money collection). */
+  refunds?: { id: string; amount: Money; method: 'MANUAL' | 'MOMO_COLLECT'; at: string; by: string; note?: string; proof?: string }[];
+  /** The company pays the agent the difference when they bought more than they were given. */
+  topUps?: { id: string; amount: Money; at: string; by: string; paymentId?: string }[];
+  writeOffs?: { id: string; amount: Money; reason: string; at: string; by: string }[];
+  reconciledAt?: string;
+  reconciledBy?: string;
+  /** Matched automatically when the gap is within the company tolerance. */
+  autoMatched?: boolean;
+  receipt?: { signature: string; signedAt: string };
+  /** Staff member who keyed it on the web for the agent. */
+  enteredBy?: string;
 }
 
 /** PRD section 11 shape, verbatim, plus date/community denormalised for lists. */
@@ -52,6 +70,8 @@ export interface Purchase {
   evidence: { scalePhoto?: string; voiceNote?: string; gps?: { lat: number; lng: number; accuracy: number }; signature?: string };
   paymentStatus: 'NOT_PAID' | 'PENDING' | 'PAID' | 'FAILED'; deductedForLoan?: Money; syncedFrom?: 'MOBILE' | 'WEB'; createdAt: string;
   communityId: string;
+  /** Payout wallet for direct payment when it differs from the farmer's phone (edit before payment starts). */
+  wallet?: { providerId: string; number: string; name: string };
 }
 
 export interface Bag {
@@ -63,6 +83,11 @@ export interface Bag {
   status: 'IN_STOCK' | 'IN_TRANSIT' | 'OUT_OF_STOCK' | 'REPLACED' | 'WITH_AGENT';
   warehouseId?: string;
   purchaseIds: string[];
+  /** Kg each purchase put in this bag (several farmers share a consolidated bag). */
+  contributions?: { purchaseId: string; kg: number }[];
+  /** Purchase → PRE → inbound → transfer → dispatch. */
+  history?: { at: string; event: 'PURCHASED' | 'PRE' | 'INBOUND' | 'TRANSFER' | 'DISPATCH' | 'REPLACED'; ref: string; by?: string; note?: string }[];
+  replacement?: { oldCode: string; newCode: string; oldKg: number; newKg: number; by: string; at: string; reason: string };
 }
 
 export interface ExpenseLine {
@@ -85,6 +110,10 @@ export interface PreExpense extends OrgEntity {
   wf: WorkflowState;
   approvals: ApprovalRecord[];
   paymentStatus: 'NOT_PAID' | 'PENDING' | 'PAID' | 'FAILED';
+  bagCodes?: string[];
+  disbursement?: { method: 'MOMO' | 'MANUAL'; at: string; by: string; paymentId?: string; proof?: string };
+  /** Expected delivery created at the warehouse when an expense type triggers inbound. */
+  expectedDelivery?: { warehouseId: string; bags: number; createdAt: string };
 }
 
 export interface Supplier extends OrgEntity {

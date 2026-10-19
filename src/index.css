@@ -103,3 +103,8 @@
     scrollbar-color: rgb(var(--line)) transparent;
   }
 }
+
+/* While a side sheet is open, lift the Demo button above the sheet's footer actions. */
+body:has([role='dialog'][data-state='open'].max-w-\[640px\]) .demo-dock-web {
+  bottom: 96px;
+}

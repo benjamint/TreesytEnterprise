@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Table2, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useT } from '@/stores/hooks';
@@ -162,5 +162,67 @@ export function Meter({ value, max, label, detail }: { value: number; max: numbe
       </div>
       {detail && <div className="mt-3 text-[13px] text-body">{detail}</div>}
     </div>
+  );
+}
+
+/** Waterfall: running total from a start value through signed steps to the end value (one axis, brand ends). */
+export function Waterfall({ steps, format, axisFormat }: { steps: { label: string; value: number; total?: boolean }[]; format: (v: number) => string; axisFormat?: (v: number) => string }) {
+  let run = 0;
+  const data = steps.map((s) => {
+    if (s.total) { run = s.value; return { label: s.label, base: 0, value: Math.abs(s.value), raw: s.value, total: true }; }
+    const from = run;
+    run += s.value;
+    return { label: s.label, base: Math.min(from, run), value: Math.abs(s.value), raw: s.value, total: false };
+  });
+  return (
+    <ChartFrame table={{ head: ['', ''], rows: steps.map((s) => [s.label, format(s.value)]) }}>
+      <div className="h-56">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 18, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+            <CartesianGrid vertical={false} stroke="rgb(var(--line))" />
+            <XAxis dataKey="label" tickLine={false} axisLine={false} tick={axisTick} interval={0} />
+            <YAxis tickLine={false} axisLine={false} tick={axisTick} width={64} tickFormatter={(v: number) => (axisFormat ?? format)(v)} />
+            <Tooltip cursor={{ fill: 'rgb(var(--brand-soft))' }} contentStyle={tooltipStyle} formatter={(_v: number, name: string, p: { payload?: { raw: number } }) => (name === 'base' ? [null, null] : [format(p.payload?.raw ?? 0), ''])} separator="" />
+            <Bar dataKey="base" stackId="w" fill="transparent" isAnimationActive={false} />
+            <Bar
+              dataKey="value"
+              stackId="w"
+              radius={[4, 4, 4, 4]}
+              maxBarSize={44}
+              isAnimationActive={false}
+              label={(props: { x?: number; y?: number; width?: number; index?: number }) => (
+                <text x={(props.x ?? 0) + (props.width ?? 0) / 2} y={(props.y ?? 0) - 6} textAnchor="middle" fontSize={12} fill="rgb(var(--body))">{format(data[props.index ?? 0]?.raw || 0)}</text>
+              )}
+            >
+              {data.map((d, i) => <Cell key={i} fill={d.total ? 'rgb(var(--brand))' : d.raw < 0 ? seriesColor(1) : seriesColor(3)} />)}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartFrame>
+  );
+}
+
+/** One or more lines over time on one axis (2px lines, legend for ≥ 2 series). */
+export function Lines({ data, series, format, axisFormat, xKey = 'label' }: { data: Record<string, number | string>[]; series: { key: string; label: string; index: number; dashed?: boolean }[]; format: (v: number) => string; axisFormat?: (v: number) => string; xKey?: string }) {
+  return (
+    <ChartFrame
+      legend={series.length > 1 ? <Legend items={series.map((s) => ({ label: s.label, color: seriesColor(s.index) }))} /> : undefined}
+      table={{ head: ['', ...series.map((s) => s.label)], rows: data.map((d) => [String(d[xKey]), ...series.map((s) => (d[s.key] == null ? '—' : format(Number(d[s.key]))))]) }}
+    >
+      <div className="h-60">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
+            <CartesianGrid vertical={false} stroke="rgb(var(--line))" />
+            <XAxis dataKey={xKey} tickLine={false} axisLine={false} tick={axisTick} interval="preserveStartEnd" />
+            <YAxis tickLine={false} axisLine={false} tick={axisTick} width={64} tickFormatter={(v: number) => (axisFormat ?? format)(v)} domain={['auto', 'auto']} />
+            <Tooltip contentStyle={tooltipStyle} formatter={(v: number, name: string) => [format(v), series.find((s) => s.key === name)?.label ?? name]} />
+            {series.map((s) => (
+              <Line key={s.key} type="monotone" dataKey={s.key} stroke={seriesColor(s.index)} strokeWidth={2} strokeDasharray={s.dashed ? '5 4' : undefined} dot={{ r: 4, strokeWidth: 2, stroke: 'rgb(var(--surface))', fill: seriesColor(s.index) }} activeDot={{ r: 5 }} connectNulls isAnimationActive={false} />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartFrame>
   );
 }

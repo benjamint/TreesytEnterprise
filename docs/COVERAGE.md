@@ -5,11 +5,11 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 6._
+_Last updated: Phase 7._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
-Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", reset demo data, page notes) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
+Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", "next payout fails", reset demo data, page notes and page actions such as the agent's phone steps for Journey 2) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
 ## Foundations (Scope 1)
 
@@ -112,34 +112,35 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Buying (Scope 4)
 
-- [~] Purchase request create / approve / reject / hold — workflow engine (tested); 90 Vitara + 40 Kakao Ivoire requests seeded through it [7]
-- [~] All PR statuses — every Vitara status seeded [7]
+- [x] Purchase request create / approve / reject / hold — Purchase requests page: list + Kanban, tabs All / Waiting for me / Upcoming / Past / Archived, filters, risk flags; New request sheet (price from the zone list, tolerance warning, override reason, sourcing model, unit conversion); approve / hold / reject / resume from the drawer through the workflow engine
+- [x] All PR statuses — Vitara and Kakao Ivoire status sets, current step, disbursement and reconciliation status columns
 - [ ] Mobile status updates [9]
-- [ ] Price update [7]
-- [ ] Rate confirmation [7]
-- [~] Full / partial disbursement — tranches seeded [7]
-- [~] Cash advance payout — payments seeded [8]
-- [ ] Manual disbursement + funds received [7]
-- [ ] Ticket activation [7]
-- [ ] Receipts + signature [7]
-- [~] Reconciliation statuses — seeded [7]
-- [ ] Agent refunds [7]
-- [ ] Manual write-off [7]
-- [~] Archive / export / list filters — sortable, paginated preview table [7]
-- [ ] Farmer purchase sync [9]
-- [~] Debt blocking — Abena Issah's overdue GHS 840 loan seeded; loan engine computes it [7, 11]
-- [~] Bags / QR — bag registry data with consolidated bags [7]
-- [~] Consolidated bags — several farmers per bag in seed [7]
-- [ ] Barcode replacement [12]
-- [~] Voice notes — evidence references seeded [9]
-- [~] Scale photo — evidence references seeded [9]
-- [ ] Wallet edit [7]
-- [ ] Purchase list tabs [7]
-- [~] Purchases dashboard (aggregator thresholds) — thresholds per commodity in settings [7]
-- [ ] Related unpaid purchases [7]
-- [ ] Sourcing export [7]
-- [~] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — Vitara PRE workflow (auto + levels 2–4, hold resumes from previous step) tested; 300 PREs seeded [7]
-- [ ] Pending inbound trigger [12]
+- [x] Price update — above the list price the request goes back for approval (PRICE_UPDATE), price history kept
+- [x] Rate confirmation
+- [x] Full / partial disbursement — tranches with amount and weight, partial count limit from Buying rules
+- [~] Cash advance payout — single mobile-money payout with fee/tax quote, failure + retry (Demo panel → "Next payout fails"); full payments engine [8]
+- [x] Manual disbursement + funds received — proof upload; agent's "funds received" simulated from the Demo panel until mobile [9]
+- [x] Ticket activation — direct-payment requests
+- [x] Receipts + signature — printable receipt (company legal name), agent signature image
+- [x] Reconciliation statuses — Fulfilled, Overpaid, Refund agent, Receive refund, Reconciled; direct payment: Ticket activated / Partially paid / Fully paid; auto-matched chip; tolerance auto-reconciles
+- [x] Agent refunds — full / partial with proof, or simulated mobile-money collection; pay the agent the difference
+- [x] Manual write-off — within the company limit, permission + reason
+- [x] Archive / export / list filters — archive, CSV export, saved tabs, column picker
+- [~] Farmer purchase sync — web side done (synced purchases appear, evidence, auto-match); the phone's offline outbox [9]
+- [x] Debt blocking — block / warn / deduct per policy on web purchase entry and the purchase banner; Abena Issah blocked
+- [x] Bags / QR — bag registry (`/app/purchases/bags`), scannable QR codes, status, warehouse, history (purchase → PRE → inbound), per-farmer contributions
+- [x] Consolidated bags — several farmers per bag, kg each, within packaging bounds
+- [x] Barcode replacement — replace a damaged bag: new code, weight variance and who did it logged; purchases follow the new code
+- [~] Voice notes — voice purchase evidence with a simulated player; recording on the phone [9]
+- [~] Scale photo — evidence shown in the purchase drawer; capture on the phone [9]
+- [x] Wallet edit — payout wallet on a purchase, permission-gated, locked once payment starts
+- [x] Purchase list tabs — Cash-advance, Direct-payment, Unpaid; every PRD column incl. evidence icons and consolidated reference
+- [x] Purchases dashboard (aggregator thresholds) — volume, spend, farmers, averages, smallholder vs aggregator split, top 3 agents and communities, cost per bag from PREs, purchases over time
+- [~] Related unpaid purchases — selection with bulk pay button (same request, max N); the bulk pay flow itself [8]
+- [x] Sourcing export — CSV export of purchases and requests
+- [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt
+- [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
+- [x] Price board — current price per commodity × zone, change history, paid vs list chart, suggested price (median paid within the tolerance band)
 - [~] Aggregator registry — 6 suppliers seeded [10]
 - [~] Aggregator purchase create / approve / reject / disburse — 15 seeded through the workflow engine [10]
 - [ ] Aggregator expenses [10]

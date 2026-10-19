@@ -471,6 +471,7 @@ export function generateOperations(cfg: OpsConfig, rng: Rng, clock: Clock, peopl
         const take = Math.min(left, nominal - b.weightKg);
         b.weightKg = Math.round((b.weightKg + take) * 10) / 10;
         b.purchaseIds.push(pid);
+        (b.contributions ??= []).push({ purchaseId: pid, kg: Math.round(take * 10) / 10 });
         if (b.purchaseIds.length > 1) consolidated = true;
         codes.push(b.code);
         left = Math.round((left - take) * 10) / 10;

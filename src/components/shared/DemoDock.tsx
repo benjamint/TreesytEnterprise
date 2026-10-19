@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, ExternalLink, FlaskConical, RotateCcw, Smartphone, Eye, LayoutGrid } from 'lucide-react';
+import { Copy, ExternalLink, FlaskConical, RotateCcw, Smartphone, Eye, LayoutGrid, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ import { cn } from '@/lib/utils';
 export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' | 'mobile' }) {
   const [open, setOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
-  const { codes, links, notes, unseen, markSeen } = useDemoStore();
+  const { codes, links, notes, actions, unseen, markSeen, failNextPayout: failNext, setFailNextPayout: setFailNext } = useDemoStore();
   const users = useAccessStore((s) => s.users);
   const memberships = useAccessStore((s) => s.memberships);
   const roles = useAccessStore((s) => s.roles);
@@ -96,7 +96,7 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
       <PopoverTrigger asChild>
         <button
           type="button"
-          className={cn('fixed z-[55] flex h-11 w-11 items-center justify-center rounded-full bg-badge-dark text-lime shadow-soft ring-4 ring-surface/80 transition-transform hover:scale-105', pos, placement === 'mobile' && 'h-9 w-9')}
+          className={cn('pointer-events-auto fixed z-[55] flex h-11 w-11 items-center justify-center rounded-full bg-badge-dark text-lime shadow-soft ring-4 ring-surface/80 transition-transform hover:scale-105', pos, placement === 'mobile' ? 'h-9 w-9' : 'demo-dock-web')}
           aria-label={t('demo.title')}
           data-tour="demo-dock"
         >
@@ -154,6 +154,14 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
             )}
           </Disclosure>
 
+          {actions.length > 0 && (
+            <Disclosure title={t('demo.pageActions')} badge={<span className="tnum rounded-full bg-brand-soft px-2 text-[12px] font-semibold text-brand">{actions.length}</span>}>
+              <div className="space-y-2">
+                {actions.map((a) => <Button key={a.id} variant="secondary" size="sm" className="h-auto min-h-10 w-full justify-start whitespace-normal py-2 text-left" onClick={() => { a.run(); setOpen(false); }}><Zap /> {t(a.key, a.params ?? {})}</Button>)}
+              </div>
+            </Disclosure>
+          )}
+
           <Disclosure title={t('demo.signInAs')}>
             {placement !== 'mobile' && <p className="mb-3 text-[12px] text-muted">{t('demo.passwordHint', { password: DEMO_PASSWORD })}</p>}
             <div className="space-y-3">
@@ -198,6 +206,14 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
                   </label>
                 </>
               )}
+              <label className="flex items-center gap-3 rounded-ctl border border-line px-3.5 py-2.5">
+                <Zap className="h-[18px] w-[18px] text-muted" aria-hidden="true" />
+                <span className="flex-1">
+                  <span className="block text-[14px] font-medium text-ink">{t('demo.failNext')}</span>
+                  <span className="block text-[12px] text-muted">{t('demo.failNextHint')}</span>
+                </span>
+                <Switch checked={failNext} onCheckedChange={setFailNext} aria-label={t('demo.failNext')} />
+              </label>
               {confirmReset ? (
                 <div className="rounded-ctl border border-danger/30 bg-danger/5 p-3">
                   <p className="text-[13px] text-body">{t('shell.resetConfirm')}</p>

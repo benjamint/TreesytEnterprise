@@ -33,6 +33,12 @@ import { OptionListsPage } from '@/web/features/forms/OptionListsPage';
 import { SurveysScreen } from '@/mobile/flows/surveys/SurveysScreen';
 import { SurveyFillScreen, SurveyFixScreen, FormPreviewScreen } from '@/mobile/flows/surveys/SurveyFillScreen';
 import { RegisterFarmerScreen } from '@/mobile/flows/farmers/RegisterFarmerScreen';
+import { PurchaseRequestsPage } from '@/web/features/buying/PurchaseRequestsPage';
+import { PurchasesPage } from '@/web/features/buying/PurchasesPage';
+import { BagsPage } from '@/web/features/buying/BagsPage';
+import { ExpensesPage } from '@/web/features/buying/ExpensesPage';
+import { ReconciliationPage } from '@/web/features/buying/ReconciliationPage';
+import { PriceBoardPage } from '@/web/features/buying/PriceBoardPage';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
@@ -45,7 +51,7 @@ import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -89,6 +95,12 @@ export const router = createBrowserRouter([
       { path: 'forms', element: <RouteGuard routeKey="forms"><FormsPage /></RouteGuard> },
       { path: 'forms/option-lists', element: <RouteGuard routeKey="optionLists"><OptionListsPage /></RouteGuard> },
       { path: 'forms/:formId', element: <RouteGuard routeKey="forms"><FormBuilderPage /></RouteGuard> },
+      { path: 'purchase-requests', element: <RouteGuard routeKey="purchaseRequests"><PurchaseRequestsPage /></RouteGuard> },
+      { path: 'purchases', element: <RouteGuard routeKey="purchases"><PurchasesPage /></RouteGuard> },
+      { path: 'purchases/bags', element: <RouteGuard routeKey="bags"><BagsPage /></RouteGuard> },
+      { path: 'expenses', element: <RouteGuard routeKey="expenses"><ExpensesPage /></RouteGuard> },
+      { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
+      { path: 'price-board', element: <RouteGuard routeKey="priceBoard"><PriceBoardPage /></RouteGuard> },
       { path: 'forms/:formId/responses', element: <RouteGuard routeKey="forms"><ResponsesPage /></RouteGuard> },
       {
         path: 'platform',

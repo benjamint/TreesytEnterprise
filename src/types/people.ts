@@ -126,7 +126,7 @@ export interface Leader {
 export interface RecordDocument {
   id: string;
   orgId: string;
-  entity: 'community' | 'farmerGroup' | 'farmer';
+  entity: 'community' | 'farmerGroup' | 'farmer' | 'purchaseRequest' | 'preExpense';
   entityId: string;
   type: string;
   name: string;

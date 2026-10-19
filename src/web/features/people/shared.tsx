@@ -1,7 +1,7 @@
 import { useMemo, useState, type ChangeEvent } from 'react';
 import { Download, FileText, Pencil, Plus, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Leader, RecordDocument } from '@/types';
+import type { Leader, Money, RecordDocument } from '@/types';
 import type { ScoreBreakdown, ScoreModel } from '@/engines/scoring';
 import { makeEvent } from '@/engines/activity';
 import { Badge } from '@/components/ui/badge';
@@ -52,13 +52,15 @@ export function ActivityFeed({ entity, entityId }: { entity: string; entityId: s
   const { t } = useT();
   const f = useFormat();
   const rows = useMemo(() => all.filter((e) => e.entity === entity && e.entityId === entityId).sort((a, b) => b.at.localeCompare(a.at)), [all, entity, entityId]);
+  // Money params are stored as { amountMinor, currency } and shown in the company's format.
+  const params = (p: Record<string, unknown>) => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, v && typeof v === 'object' && 'amountMinor' in v ? f.money(v as Money) : k === 'method' && typeof v === 'string' ? t(`activity.method.${v}`, { defaultValue: v }) : v]));
   if (!rows.length) return <TabEmpty>{t('people.noActivity')}</TabEmpty>;
   return (
     <ol className="relative space-y-4 border-l border-line pl-5">
       {rows.map((e) => (
         <li key={e.id} className="relative">
           <span className="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full border-2 border-surface bg-brand" aria-hidden="true" />
-          <div className="text-[14px] text-ink">{t(`activity.${e.key}`, e.params)}</div>
+          <div className="text-[14px] text-ink">{t(`activity.${e.key}`, params(e.params))}</div>
           <div className="text-[12px] text-muted">{lk.user(e.actorId)} · {f.dateTime(e.at)}{e.meta?.device ? ` · ${t(`people.device.${e.meta.device}`, { defaultValue: e.meta.device })}` : ''}</div>
         </li>
       ))}

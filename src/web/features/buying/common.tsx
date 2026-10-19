@@ -109,7 +109,8 @@ export function ApprovalTimeline({ record, def }: { record: WorkflowRecord; def:
 }
 
 /** Approve / hold / reject / resume buttons from the workflow engine, with reasons for blocked actions. */
-export function WorkflowButtons({ docType, record, def, onDone }: { docType: DocType; record: WorkflowRecord & { number: string }; def: WorkflowDefinition; onDone?: (status: string) => void }) {
+/** `onApprove` replaces the plain Approve with a custom dialog (e.g. support approval per service). */
+export function WorkflowButtons({ docType, record, def, onDone, onApprove }: { docType: DocType; record: WorkflowRecord & { number: string }; def: WorkflowDefinition; onDone?: (status: string) => void; onApprove?: () => void }) {
   const { orgId, userId } = useActor();
   const { t } = useT();
   const [reason, setReason] = useState<WorkflowAction | null>(null);
@@ -130,7 +131,7 @@ export function WorkflowButtons({ docType, record, def, onDone }: { docType: Doc
       {allowed.map((a) => {
         const I = icon[a.action];
         const btn = (
-          <Button size="sm" variant={a.action === 'APPROVE' || a.action === 'RESUME' ? 'primary' : a.action === 'REJECT' ? 'dangerOutline' : 'secondary'} disabled={!a.allowed} onClick={() => (a.action === 'REJECT' || a.action === 'HOLD' ? setReason(a.action) : run(a.action))}>
+          <Button size="sm" variant={a.action === 'APPROVE' || a.action === 'RESUME' ? 'primary' : a.action === 'REJECT' ? 'dangerOutline' : 'secondary'} disabled={!a.allowed} onClick={() => (a.action === 'REJECT' || a.action === 'HOLD' ? setReason(a.action) : a.action === 'APPROVE' && onApprove ? onApprove() : run(a.action))}>
             <I /> {t(`buy.action.${a.action}`)}
           </Button>
         );

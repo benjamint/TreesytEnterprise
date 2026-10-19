@@ -130,13 +130,14 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
     },
     support: {
       types: [
-        { id: 'st_cash', name: { en: 'Cash support', fr: 'Appui en espèces' }, kind: 'CASH', subTypes: ['Farm labour', 'School fees'], groupScoring: true, recoverable: true, maxAmountMinor: m(2_000), enabled: true },
-        { id: 'st_plough', name: { en: 'Ploughing', fr: 'Labour' }, kind: 'SERVICE', subTypes: ['Tractor', 'Bullock'], groupScoring: true, recoverable: true, maxAmountMinor: m(1_500), enabled: true },
-        { id: 'st_input', name: { en: 'Inputs', fr: 'Intrants' }, kind: 'INPUT', subTypes: ['Seed', 'Fertiliser', 'Tarpaulin'], groupScoring: false, recoverable: true, maxAmountMinor: m(1_200), enabled: true },
-        { id: 'st_agro', name: { en: 'Agroforestry', fr: 'Agroforesterie' }, kind: 'INPUT', subTypes: ['Shea seedlings', 'Mango seedlings'], groupScoring: false, recoverable: false, maxAmountMinor: 0, enabled: true },
+        { id: 'st_cash', code: 'CPF', name: { en: 'Cash pre-finance', fr: 'Préfinancement en espèces' }, kind: 'CASH', unit: 'MONEY', subTypes: ['Farm labour', 'School fees', 'Household'], groupScoring: true, recoverable: true, maxAmountMinor: m(2_000), enabled: true, needsProvider: false, payout: 'GROUP_WALLET', evidence: { leaderVoice: true, witnessVoice: true, agreement: true, thumbprints: true, photo: false } },
+        { id: 'st_plough', code: 'PLG', name: { en: 'Ploughing', fr: 'Labour' }, kind: 'SERVICE', unit: 'ACRES', subTypes: ['Tractor', 'Bullock'], groupScoring: true, recoverable: true, maxAmountMinor: m(1_500), enabled: true, needsProvider: true, payout: 'SUPPLIER', evidence: { leaderVoice: true, witnessVoice: false, agreement: true, thumbprints: true, photo: true } },
+        { id: 'st_input', code: 'INP', name: { en: 'Farm input', fr: 'Intrants agricoles' }, kind: 'INPUT', unit: 'BAGS', subTypes: ['Fertilizer', 'Agrochemical', 'Sack', 'Seed', 'Tool/Machine', 'Planter', 'Harvester', 'Others'], groupScoring: false, recoverable: true, maxAmountMinor: m(1_200), enabled: true, needsProvider: true, payout: 'SUPPLIER', evidence: { leaderVoice: true, witnessVoice: false, agreement: true, thumbprints: true, photo: true } },
+        { id: 'st_agro', code: 'AGF', name: { en: 'Agroforestry', fr: 'Agroforesterie' }, kind: 'INPUT', unit: 'MONEY', subTypes: ['Nursery', 'Tree planting', 'Parkland'], groupScoring: false, recoverable: false, maxAmountMinor: m(800), enabled: true, needsProvider: false, payout: 'IN_KIND', evidence: { leaderVoice: false, witnessVoice: false, agreement: false, thumbprints: false, photo: true } },
       ],
       abilityToPay: ['Produce at harvest', 'Cash after market day', 'Mixed cash and produce'],
-      recoveryWindowDays: 180, repaymentModes: ['CASH', 'PRODUCE', 'MIXED'], blockOnDebt: true, minGroupScore: 60,
+      recoveryWindowDays: 180, repaymentModes: ['CASH', 'PRODUCE', 'MIXED'], blockOnDebt: true, minGroupScore: 60, linkPurchaseRequest: true,
+      feedback: { experience: ['Excellent', 'Very good', 'Good', 'Bad', 'Very bad'], lendAgain: true },
     },
     fieldTeam: {
       plan: { minDays: 3, maxDays: 6, planAheadWeeks: 2 },
@@ -207,10 +208,11 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     support: {
       ...base.support,
       types: [
-        { id: 'st_input', name: { en: 'Inputs', fr: 'Intrants' }, kind: 'INPUT', subTypes: ['Engrais', 'Produits phytosanitaires'], groupScoring: true, recoverable: true, maxAmountMinor: m(250_000), enabled: true },
-        { id: 'st_cash', name: { en: 'Cash advance', fr: 'Avance en espèces' }, kind: 'CASH', subTypes: ['Main-d’œuvre'], groupScoring: true, recoverable: true, maxAmountMinor: m(150_000), enabled: true },
+        { id: 'st_input', code: 'INT', name: { en: 'Inputs', fr: 'Intrants' }, kind: 'INPUT', unit: 'BAGS', subTypes: ['Engrais', 'Produits phytosanitaires'], groupScoring: true, recoverable: true, maxAmountMinor: m(250_000), enabled: true, needsProvider: true, payout: 'SUPPLIER', evidence: { leaderVoice: true, witnessVoice: true, agreement: true, thumbprints: true, photo: false } },
+        { id: 'st_cash', code: 'AVE', name: { en: 'Cash advance', fr: 'Avance en espèces' }, kind: 'CASH', unit: 'MONEY', subTypes: ['Main-d’œuvre'], groupScoring: true, recoverable: true, maxAmountMinor: m(150_000), enabled: true, needsProvider: false, payout: 'GROUP_WALLET', evidence: { leaderVoice: true, witnessVoice: true, agreement: true, thumbprints: true, photo: false } },
       ],
-      abilityToPay: ['Fèves à la récolte', 'Espèces'], recoveryWindowDays: 120, repaymentModes: ['PRODUCE', 'MIXED'], minGroupScore: 50,
+      abilityToPay: ['Fèves à la récolte', 'Espèces'], recoveryWindowDays: 120, repaymentModes: ['PRODUCE', 'MIXED'], minGroupScore: 50, linkPurchaseRequest: true,
+      feedback: { experience: ['Excellente', 'Très bonne', 'Bonne', 'Mauvaise', 'Très mauvaise'], lendAgain: true },
     },
     fieldTeam: {
       ...base.fieldTeam,

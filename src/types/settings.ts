@@ -215,12 +215,18 @@ export interface InventoryRules {
 export interface SupportType {
   id: string;
   name: Partial<Record<Lang, string>>;
+  code?: string;
   kind: 'CASH' | 'INPUT' | 'SERVICE';
   subTypes: string[];
   groupScoring: boolean;
   recoverable: boolean;
   maxAmountMinor: number;
   enabled: boolean;
+  /** What the amount is measured in on each farmer line. */
+  unit?: 'MONEY' | 'ACRES' | 'HA' | 'BAGS';
+  needsProvider?: boolean;
+  payout?: 'GROUP_WALLET' | 'FARMER_WALLET' | 'SUPPLIER' | 'IN_KIND';
+  evidence?: { leaderVoice: boolean; witnessVoice: boolean; agreement: boolean; thumbprints: boolean; photo: boolean };
 }
 
 export interface SupportSettings {
@@ -230,6 +236,10 @@ export interface SupportSettings {
   repaymentModes: ('CASH' | 'PRODUCE' | 'MIXED')[];
   blockOnDebt: boolean;
   minGroupScore: number;
+  /** Activating a recovery creates a linked direct-payment purchase request (for excess produce). */
+  linkPurchaseRequest?: boolean;
+  /** Recovery experience question set (PRD F4). */
+  feedback?: { experience: string[]; lendAgain: boolean };
 }
 
 export interface FieldTeamSettings {

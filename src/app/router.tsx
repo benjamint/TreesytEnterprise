@@ -43,6 +43,10 @@ import { PaymentsPage } from '@/web/features/payments/PaymentsPage';
 import { WalletsPage } from '@/web/features/payments/WalletsPage';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
 import { AggregatorsPage } from '@/web/features/aggregators/AggregatorsPage';
+import { SupportPage } from '@/web/features/support/SupportPage';
+import { ProvidersPage } from '@/web/features/support/ProvidersPage';
+import { AllocationsPage } from '@/web/features/support/AllocationsPage';
+import { RecoveryPage } from '@/web/features/support/RecoveryPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
@@ -57,10 +61,12 @@ import { GroupFlowScreen, GroupsScreen } from '@/mobile/flows/farmers/GroupScree
 import { BuyingScreen, NewRequestScreen, RequestDetailScreen } from '@/mobile/flows/buying/BuyingScreens';
 import { RecordPurchaseScreen } from '@/mobile/flows/buying/RecordPurchaseScreen';
 import { NewPreScreen, VoicePurchaseScreen } from '@/mobile/flows/buying/VoiceAndPreScreens';
+import { NewSupportScreen, SupportDetailScreen, SupportScreen } from '@/mobile/flows/support/SupportScreens';
+import { NewRecoveryScreen, RecoveryDetailScreen, RecoveryScreen, RepayScreen } from '@/mobile/flows/support/RecoveryScreens';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -111,6 +117,14 @@ export const router = createBrowserRouter([
       { path: 'aggregators', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="purchases" /></RouteGuard> },
       { path: 'aggregators/suppliers', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="suppliers" /></RouteGuard> },
       { path: 'aggregators/expenses', element: <RouteGuard routeKey="aggregators"><AggregatorsPage tab="expenses" /></RouteGuard> },
+      { path: 'support', element: <RouteGuard routeKey="support"><SupportPage /></RouteGuard> },
+      { path: 'support/providers', element: <RouteGuard routeKey="providers"><ProvidersPage /></RouteGuard> },
+      { path: 'support/allocations', element: <RouteGuard routeKey="allocations"><AllocationsPage /></RouteGuard> },
+      { path: 'recovery', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="requests" /></RouteGuard> },
+      { path: 'recovery/windows', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="windows" /></RouteGuard> },
+      { path: 'recovery/loans', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="loans" /></RouteGuard> },
+      { path: 'recovery/repayments', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="repayments" /></RouteGuard> },
+      { path: 'recovery/dashboard', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="dashboard" /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
       { path: 'payments', element: <RouteGuard routeKey="payments"><PaymentsPage /></RouteGuard> },
       { path: 'payments/wallets', element: <RouteGuard routeKey="wallets"><WalletsPage /></RouteGuard> },
@@ -168,6 +182,13 @@ export const router = createBrowserRouter([
       { path: 'buying/purchase', element: <RecordPurchaseScreen /> },
       { path: 'buying/voice', element: <VoicePurchaseScreen /> },
       { path: 'buying/pre/new', element: <NewPreScreen /> },
+      { path: 'support', element: <SupportScreen /> },
+      { path: 'support/new', element: <NewSupportScreen /> },
+      { path: 'support/:id', element: <SupportDetailScreen /> },
+      { path: 'recovery', element: <RecoveryScreen /> },
+      { path: 'recovery/new', element: <NewRecoveryScreen /> },
+      { path: 'recovery/:id', element: <RecoveryDetailScreen /> },
+      { path: 'recovery/:id/repay', element: <RepayScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

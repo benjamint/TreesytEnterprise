@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import type { DocType } from '@/types';
+import { useSupportStore } from '@/stores/supportStore';
 import { canAct, type WorkflowRecord } from '@/engines/workflow';
 import { useActor, useOrgRows, useOrgSettings, usePermissionPatterns } from '@/stores/hooks';
 import { useAccessStore } from '@/stores/accessStore';
@@ -39,6 +40,7 @@ export function useDashboardData() {
   const expenses = useOrgRows(useBuyingStore((s) => s.expenses));
   const acs = useOrgRows(useBuyingStore((s) => s.aggregatorPurchases));
   const acsPre = useOrgRows(useBuyingStore((s) => s.aggregatorExpenses));
+  const support = useOrgRows(useSupportStore((s) => s.requests));
   const bags = useOrgRows(useBuyingStore((s) => s.bags));
   const payments = useOrgRows(usePaymentStore((s) => s.payments));
   const wallets = useOrgRows(usePaymentStore((s) => s.wallets));
@@ -100,8 +102,9 @@ export function useDashboardData() {
       add(expenses as never, 'preExpense', '/app/expenses');
     }
     if (settings.modules.aggregators) { add(acs as never, 'aggregatorPurchase', '/app/aggregators'); add(acsPre as never, 'aggregatorExpense', '/app/aggregators/expenses'); }
+    if (settings.modules.support) add(support.filter((r) => r.wf) as never, 'supportRequest', '/app/support');
     return items.sort((a, b) => (a.risk === 'HIGH' ? -1 : 0) - (b.risk === 'HIGH' ? -1 : 0) || b.createdAt.localeCompare(a.createdAt));
-  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, agentName, names]);
+  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, support, agentName, names]);
 
   const charts = useMemo(() => {
     const now = Date.now();

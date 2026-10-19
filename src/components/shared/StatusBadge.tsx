@@ -15,6 +15,12 @@ const TONES: Record<string, Tone> = {
   NOT_APPROVED: 'danger', REJECTED: 'danger', SUSPENDED: 'danger', BLOCKED: 'danger',
   ON_HOLD: 'warningOutline',
   FAILED: 'dangerOutline', REVERSED: 'dangerOutline',
+  PENDING_SCORING: 'warning', PENDING_REVIEW: 'warning', LINE_PENDING: 'warning', RECEIPT_PENDING: 'warning', PARTIALLY_PAID: 'warning',
+  AGENT_CONFIRMATION: 'info', FINANCE_REVIEW: 'info', PENDING_DISBURSEMENT: 'info', LINE_CONFIRMED: 'info', RECORDED: 'info', MIGRATED: 'info',
+  LINE_APPROVED: 'success', CONFIRMED: 'success', RECEIPT_CONFIRMED: 'success', FULLY_FULFILLED: 'success', LINE_FULFILLED: 'success', FULLY_RECOVERED: 'success', FULLY_PAID: 'success',
+  ACTIVATED: 'teal', PARTIALLY_RECOVERED: 'teal', PARTIALLY_FULFILLED: 'teal', DISBURSED: 'paid', LINE_PAID: 'paid',
+  SETTLED: 'done', CLOSED: 'done', RECEIPT_NA: 'neutral',
+  LINE_REJECTED: 'danger', LINE_DECLINED: 'dangerOutline', OVERDUE: 'danger',
   UNKNOWN: 'unknown',
 };
 

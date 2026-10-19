@@ -8,8 +8,8 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
     permissions: [
       '*.view', '*.export', '!platform.*', '!settings.*', 'dashboard.customise', 'purchaseRequests.approveManagement',
       'purchaseRequests.create', 'purchaseRequests.edit', 'expenses.approveLevel3', 'aggregators.approve',
-      'aggregators.create', 'aggregators.edit', 'support.approve', 'recovery.reviewManager', 'weeklyPlans.*', 'agents.edit',
-      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score',
+      'aggregators.create', 'aggregators.edit', 'support.approve', 'support.create', 'support.edit', 'recovery.reviewManager', 'recovery.recordRepayment', 'providers.create', 'providers.edit', 'weeklyPlans.*', 'agents.edit',
+      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score', 'groups.reviewScore',
     ],
   },
   financeOfficer: {
@@ -62,7 +62,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
   },
   fieldAgent: {
     mobile: true,
-    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.create', 'notifications.view'],
+    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.view', 'support.create', 'support.fulfil', 'recovery.view', 'recovery.create', 'recovery.recordRepayment', 'notifications.view'],
   },
   warehouseOfficer: {
     mobile: true,

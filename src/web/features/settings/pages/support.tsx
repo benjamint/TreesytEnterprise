@@ -76,6 +76,25 @@ export function SupportLoansPage() {
                 <Mini label={t('set.support.max')} className="w-56"><MoneyInput minor={s.maxAmountMinor} currency={org.currency} onChange={(maxAmountMinor) => setType(s.id, { maxAmountMinor })} /></Mini>
                 <Checkbox label={t('set.support.groupScoring')} checked={s.groupScoring} onChange={(e) => setType(s.id, { groupScoring: e.target.checked })} />
                 <Checkbox label={t('set.support.recoverable')} checked={s.recoverable} onChange={(e) => setType(s.id, { recoverable: e.target.checked })} />
+                <Checkbox label={t('set.support.needsProvider')} checked={!!s.needsProvider} onChange={(e) => setType(s.id, { needsProvider: e.target.checked })} />
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <Mini label={t('set.support.code')}><TextInput value={s.code ?? ''} className="font-mono uppercase" onChange={(code) => setType(s.id, { code: code.toUpperCase() })} /></Mini>
+                <Mini label={t('set.support.unit')}>
+                  <Select value={s.unit ?? 'MONEY'} onChange={(unit) => setType(s.id, { unit })} options={(['MONEY', 'ACRES', 'HA', 'BAGS'] as const).map((k) => ({ value: k, label: t(`set.support.unitName.${k}`) }))} />
+                </Mini>
+                <Mini label={t('set.support.payout')}>
+                  <Select value={s.payout ?? 'GROUP_WALLET'} onChange={(payout) => setType(s.id, { payout })} options={(['GROUP_WALLET', 'FARMER_WALLET', 'SUPPLIER', 'IN_KIND'] as const).map((k) => ({ value: k, label: t(`set.support.payoutName.${k}`) }))} />
+                </Mini>
+              </div>
+              <div className="mt-4">
+                <div className="eyebrow mb-2">{t('set.support.evidence')}</div>
+                <div className="flex flex-wrap gap-x-6 gap-y-2">
+                  {(['leaderVoice', 'witnessVoice', 'agreement', 'thumbprints', 'photo'] as const).map((k) => {
+                    const ev = s.evidence ?? { leaderVoice: false, witnessVoice: false, agreement: false, thumbprints: false, photo: false };
+                    return <Checkbox key={k} label={t(`set.support.evidenceName.${k}`)} checked={ev[k]} onChange={(e) => setType(s.id, { evidence: { ...ev, [k]: e.target.checked } })} />;
+                  })}
+                </div>
               </div>
             </div>
           ))}
@@ -101,7 +120,10 @@ export function SupportLoansPage() {
         <div className="mt-5">
           <Rows>
             <SwitchRow label={t('set.support.block')} description={t('set.support.blockHint')} checked={support.blockOnDebt} onChange={(blockOnDebt) => setS({ blockOnDebt })} />
+            <SwitchRow label={t('set.support.linkPr')} description={t('set.support.linkPrHint')} checked={!!support.linkPurchaseRequest} onChange={(linkPurchaseRequest) => setS({ linkPurchaseRequest })} />
+            <SwitchRow label={t('set.support.lendAgain')} description={t('set.support.lendAgainHint')} checked={support.feedback?.lendAgain ?? false} onChange={(lendAgain) => setS({ feedback: { experience: support.feedback?.experience ?? [], lendAgain } })} />
           </Rows>
+          <Mini label={t('set.support.experience')} className="mt-4"><ChipsInput label={t('set.support.experience')} values={support.feedback?.experience ?? []} onChange={(experience) => setS({ feedback: { lendAgain: support.feedback?.lendAgain ?? false, experience } })} /></Mini>
         </div>
       </Section>
 

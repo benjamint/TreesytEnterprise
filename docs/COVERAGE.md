@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 8._
+_Last updated: Phase 11._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -154,7 +154,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Money (Scope 5)
 
-- [~] Payable types — all 12 types in the engine; agent cash advance, PRE, single and bulk farmer purchase pay through it now; the others with their modules [10, 11, 16]
+- [~] Payable types — all 12 types in the engine; agent cash advance, PRE, single and bulk farmer purchase, aggregator purchase and expense, farmer support and loan refunds pay through it now; the others with their modules [16]
 - [x] Payment preview + name lookup — Payees step: network detected from the number, provider override, "Name on wallet ✓" or mismatch warning that must be confirmed
 - [x] Disburse with charges — Charges step: provider fee (tiers, caps, payer), withdrawal charge per provider (% or flat, "include withdrawal charges"), tax, extra charges, total, who pays
 - [x] Extra charges — picked per payment from the company list (company- or payee-paid)
@@ -170,42 +170,42 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker with threshold, batch size, live fee calculator
 - [~] Phone validation by country — libphonenumber-js helper [5]
 - [x] Collections — mobile-money collection request (agent refund from Reconciliation); the agent's phone shows the approval prompt (PIN); approved money credits the wallet and records the refund; Collections view on Payments
-- [ ] Weekly budget / allowance / support payouts [11, 16]
+- [~] Weekly budget / allowance / support payouts — support payouts built; budgets and allowances [16]
 - [x] Money storage and formatting — integer minor units + currency, only through `formatMoney()`
 
 ## Farmer support (Scope 6)
 
-- [ ] Support intake [11]
-- [ ] Support types / sub-types [11]
-- [ ] Ability to pay [11]
-- [ ] Voice notes [11]
-- [ ] Group scoring gate + board [11]
-- [ ] Approval per service [11]
-- [ ] Reject / hold [11]
-- [ ] Amount edits [11]
-- [ ] Agent confirmation + opt-outs [11]
-- [ ] Group wallet [11]
-- [ ] MoMo and manual disbursement [11]
-- [ ] Fulfilment proof [11]
-- [ ] Group fulfilment status [11]
-- [ ] Declined refunds [11]
-- [ ] Service providers [11]
-- [ ] Support dashboards (all / cash / ploughing / input / agroforestry) [11]
-- [ ] Recovery windows [11]
-- [ ] Recovery request lifecycle [11]
-- [ ] Manager review [11]
-- [ ] Finance activation + implicit purchase request [11]
-- [ ] Repayments cash / produce / mixed [11]
-- [ ] Bag barcode for produce [11]
-- [ ] Excess purchase [11]
-- [ ] Cash confirmation [11]
-- [~] Loan ledger (interest, penalty, waterfall, tolerance, rounding) — loan engine with Vitara and Kakao Ivoire terms (tested) [11]
-- [~] Settlement quote — cash vs produce, with volume needed (tested) [11]
-- [ ] Debt blocking [11]
-- [~] Overpayment refunds — ledger reports overpayment (tested) [11]
-- [ ] Recovery feedback [11]
-- [ ] Recovery views / exports / dashboard [11]
-- [ ] Legacy allocations [11]
+- [x] Support intake — web sheet and phone wizard (M6): group, primary + secondary support, amount per farmer (capped by the type maximum), ability to pay, agroforestry interest, farmers picked from the group, GPS
+- [x] Support types / sub-types — Settings → Support & loans: name per language, code, kind, unit, sub-types, maximum, provider needed, paid to, evidence required, scoring, recoverable (Vitara: cash, ploughing, 8 farm inputs, agroforestry; Kakao Ivoire: inputs, cash)
+- [x] Ability to pay — company list, per farmer line, dashboard donut
+- [x] Voice notes — leader and witness recordings on the request, fulfilment audio per farmer, played back in the drawer
+- [x] Group scoring gate + board — a group with unscored record documents holds the request at "Waiting for score"; the manual review on the group releases it to approval; board and list views with saved views
+- [x] Approval per service — dialog per service: amount per farmer, provider and arrangement, expected kg; also from the dashboard queue (opens the dialog)
+- [x] Reject / hold — workflow buttons with a required reason
+- [x] Amount edits — per farmer before approval, old → new kept on the line and in the activity
+- [x] Agent confirmation + opt-outs — phone: here / absent / opted out per farmer, then confirm
+- [x] Group wallet — confirmed or corrected by the agent at confirmation; used for the MoMo payout
+- [x] MoMo and manual disbursement — pay the group, each farmer, or the provider through the payments engine (maker–checker above the threshold); manual with proof; loans open at payout
+- [x] Fulfilment proof — audio (+ GPS) per farmer on the phone
+- [x] Group fulfilment status — Pending / Partly / Fully fulfilled; the request moves to Fulfilled
+- [x] Declined refunds — refund a farmer who opted out after payment (method, reference, document)
+- [x] Service providers — list, drawer with jobs and amounts, add/edit (services, offers, location, wallet)
+- [x] Support dashboards (all / cash / ploughing / input / agroforestry) — KPIs, disbursed by district (top N) and by year, ability to pay, inputs given
+- [x] Recovery windows — list and calendar, create/edit with overlap and date checks, reminders, days left
+- [x] Recovery request lifecycle — Manager review → Finance review → Activated → Partly / Fully recovered, or Rejected (only before any repayment)
+- [x] Manager review — recovery commodity, price per kg (list price prefilled), excess price
+- [x] Finance activation + implicit purchase request — excess price change needs a reason; a linked direct-payment purchase request is created (company switch)
+- [x] Repayments cash / produce / mixed — web dialog and phone (M7) with quote, mode, weight (scale), cash + receipt photo; receipt with the new ledger
+- [x] Bag barcode for produce — scanned on the phone, typed on the web
+- [x] Excess purchase — produce beyond the balance is bought on the linked request at the excess price
+- [x] Cash confirmation — finance confirms the receipt photo (Repayments → Cash to confirm)
+- [x] Loan ledger (interest, penalty, waterfall, tolerance, rounding) — ledger table per loan, balance chart, print; Vitara and Kakao Ivoire terms (tested)
+- [x] Settlement quote — cash vs produce with volume needed, and a what-if date slider
+- [x] Debt blocking — overdue active loans block (or warn / deduct) at purchase; "Blocked at purchase" view; unblocked when settled
+- [x] Overpayment refunds — "To refund" view, refund by MoMo or manually with proof
+- [x] Recovery feedback — experience, would borrow again, comment (phone); shown in the drawer
+- [x] Recovery views / exports / dashboard — requests board/list, loans and repayments views, CSV exports, expected vs recovered, rate by district / agent / group, ageing
+- [x] Legacy allocations — read-only archive with repayments and voice notes; migrate one into a loan
 
 ## Inventory and sales (Scope 7)
 
@@ -294,7 +294,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
 - [ ] SMS [17]
 - [ ] Push [17]
-- [ ] Recovery banner / reminders [11]
+- [~] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS reminder switches per window (sending with notifications) [17]
 - [x] Offline sync protocol — every phone save goes through one queue: applied at once when online, kept in the outbox when offline; Sync screen with counts by type, data usage, per-item results, errors kept for retry, and conflicts (the office changed the record first) resolved with Keep office version / Send mine; stores sync across tabs
 - [ ] Sync logs (scoped, private, retention) [17]
 - [ ] Devices [17]

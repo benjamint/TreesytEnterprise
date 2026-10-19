@@ -58,6 +58,8 @@ export interface PurchaseRequest extends OrgEntity {
   /** Matched automatically when the gap is within the company tolerance. */
   autoMatched?: boolean;
   receipt?: { signature: string; signedAt: string };
+  /** Created by a recovery activation: excess produce bought from farmers repaying a loan. */
+  recoveryRequestId?: string;
   /** Staff member who keyed it on the web for the agent. */
   enteredBy?: string;
 }

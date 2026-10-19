@@ -27,7 +27,7 @@ export const RESOURCES: ResourceDef[] = [
   { resource: 'payments', module: 'payments', actions: ['view', 'initiate', 'check', 'retry', 'reverse', 'export'] },
   { resource: 'wallets', module: 'payments', actions: ['view', 'topUp'] },
   { resource: 'support', module: 'support', actions: [...CRUD, 'approve', 'disburse', 'fulfil', 'editAmount'] },
-  { resource: 'recovery', module: 'recovery', actions: [...CRUD, 'reviewManager', 'activateFinance', 'confirmCash', 'refund'] },
+  { resource: 'recovery', module: 'recovery', actions: [...CRUD, 'reviewManager', 'activateFinance', 'confirmCash', 'refund', 'recordRepayment'] },
   { resource: 'providers', module: 'support', actions: CRUD },
   { resource: 'warehouses', module: 'inventory', actions: CRUD },
   { resource: 'inbound', module: 'inventory', actions: ['view', 'receive', 'resolve', 'reviewRepayment', 'export'] },

@@ -13,6 +13,8 @@ import { registerSyncHandler } from './mobileSync';
 import { saveCommunity, saveFarmerEdit, saveGroup, saveIdentity, type CommunityPayload, type FarmerEditPayload, type GroupPayload } from './profileService';
 import { applyFix } from './qualityService';
 import type { FarmerIdentity } from '@/types';
+import { confirmRecipients, createSupportRequest, recordFulfilment, saveAssets, type Confirmation, type NewSupportRequest } from './supportService';
+import { createRecoveryRequest, recordRepayment, saveFeedback, type RepaymentInput } from './recoveryService';
 
 /** How each kind of phone save is written to the shared stores (now when online, or on Sync). */
 
@@ -84,3 +86,15 @@ function smsReceipts(orgId: string, purchases: Purchase[]) {
   }
 }
 registerSyncHandler('expense', { apply: (i) => createPre({ ...(i.payload as NewPre), device: 'mobile' }) });
+
+registerSyncHandler('supportRequest', { apply: (i) => createSupportRequest({ ...(i.payload as NewSupportRequest), device: 'mobile' }) });
+registerSyncHandler('supportConfirm', { apply: (i) => { const p = i.payload as { requestId: string } & Confirmation; confirmRecipients(p.requestId, p, i.userId, 'mobile'); } });
+registerSyncHandler('supportFulfil', {
+  apply: (i) => { const p = i.payload as { requestId: string; lineId: string; audioSeconds: number; gps?: { lat: number; lng: number; accuracy: number } }; recordFulfilment(p.requestId, p.lineId, { audioSeconds: p.audioSeconds, gps: p.gps }, i.userId, 'mobile'); },
+});
+registerSyncHandler('supportAssets', { apply: (i) => { const p = i.payload as { requestId: string; agreement?: string; thumbprints?: number }; saveAssets(p.requestId, p, i.userId, 'mobile'); } });
+registerSyncHandler('recoveryRequest', { apply: (i) => createRecoveryRequest({ ...(i.payload as Parameters<typeof createRecoveryRequest>[0]), device: 'mobile' }) });
+registerSyncHandler('repayment', { apply: (i) => recordRepayment({ ...(i.payload as RepaymentInput), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('recoveryFeedback', {
+  apply: (i) => { const p = i.payload as { id: string; experience: string; lendAgain: 'YES' | 'MAYBE' | 'NO'; comment?: string }; saveFeedback(p.id, p, i.userId, 'mobile'); },
+});

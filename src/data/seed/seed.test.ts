@@ -115,8 +115,10 @@ describe('seed data (PRD 12)', () => {
       expect(seed.payments.filter((p) => p.status === 'UNKNOWN')).toHaveLength(1);
     });
 
-    it('a farmer group awaits a manual score review', () => {
-      expect(of(seed.groups, ORG.vitara).filter((g) => g.scoreStatus === 'PENDING_REVIEW')).toHaveLength(1);
+    it('farmer groups await a manual score review (one is the Journey 6 support scoring gate)', () => {
+      const pending = of(seed.groups, ORG.vitara).filter((g) => g.scoreStatus === 'PENDING_REVIEW');
+      expect(pending).toHaveLength(2);
+      expect(pending.some((g) => g.name === 'Daffiama Farmers Cooperative')).toBe(true);
     });
   });
 });

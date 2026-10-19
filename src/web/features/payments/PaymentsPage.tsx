@@ -33,6 +33,9 @@ export function payableLink(type: PayableType, id: string): string | undefined {
     case 'PRE_EXPENSE': return `/app/expenses?open=${id}`;
     case 'FARMER_PURCHASE': case 'BULK_FARMER_PURCHASE': return `/app/purchases?open=${id}`;
     case 'AGGREGATOR_PURCHASE': return `/app/aggregators?open=${id}`;
+    case 'AGGREGATOR_EXPENSE': return `/app/aggregators/expenses?open=${id}`;
+    case 'FARMER_SUPPORT': return `/app/support?open=${id}`;
+    case 'FARMER_REFUND': return `/app/recovery/loans?open=${id}`;
     default: return undefined;
   }
 }

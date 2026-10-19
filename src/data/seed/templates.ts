@@ -71,6 +71,13 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
+    {
+      id: 'wf_vit_pf', docType: 'supportRequest', statuses: ['PENDING_SCORING', 'PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'AGENT_CONFIRMATION', 'PENDING_DISBURSEMENT', 'DISBURSED', 'FULFILLED'],
+      steps: [{ id: 'prog', name: 'Programme approval', roleIds: [], permission: 'support.approve' }],
+      stepStatus: { prog: 'AGENT_CONFIRMATION' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
   ];
 }
 
@@ -113,6 +120,13 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       ],
       stepStatus: { ops: 'OPS_APPROVED', fin: 'APPROVED' },
       initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_ki_pf', docType: 'supportRequest', statuses: ['PENDING_SCORING', 'PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'AGENT_CONFIRMATION', 'PENDING_DISBURSEMENT', 'DISBURSED', 'FULFILLED'],
+      steps: [{ id: 'prog', name: 'Responsable des programmes', roleIds: [], permission: 'support.approve' }],
+      stepStatus: { prog: 'AGENT_CONFIRMATION' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
   ];

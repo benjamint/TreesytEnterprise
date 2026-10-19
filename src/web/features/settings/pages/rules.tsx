@@ -26,11 +26,11 @@ import { AddRow, EditTable, LangInputs, Mini, NumberInput, RowDelete, Rows, Sect
 // ---------------------------------------------------------------- Data quality
 
 const QUALITY_FIELDS: Record<QualityRule['entity'], string[]> = {
-  farmer: ['firstName', 'lastName', 'phone', 'age', 'gender', 'primaryCrop', 'communityId'],
+  farmer: ['firstName', 'lastName', 'phone', 'age', 'gender', 'primaryCrop', 'communityId', 'identity.consent', 'customFields.householdSize', 'customFields.numberOfChildren', 'customFields.idNumber', 'customFields.language', 'customFields.educationLevel', 'customFields.assets'],
   community: ['name', 'code', 'population', 'contactPerson.phone'],
   farmerGroup: ['name', 'score', 'established'],
 };
-const OPERATORS: QualityRule['operator'][] = ['between', 'notEmpty', 'notEquals', 'unique', 'lessThanField'];
+const OPERATORS: QualityRule['operator'][] = ['between', 'notEmpty', 'notEquals', 'notContains', 'unique', 'lessThanField'];
 const DQ_KEYS = ['qualityRules'] as const;
 
 export function DataQualityPage() {
@@ -83,7 +83,7 @@ export function DataQualityPage() {
               <tr key={r.id}>
                 <td className="w-36"><Select value={r.entity} onChange={(entity) => setRule(r.id, { entity, field: QUALITY_FIELDS[entity][0]! })} options={(Object.keys(QUALITY_FIELDS) as QualityRule['entity'][]).map((e) => ({ value: e, label: t(`set.dq.entityName.${e}`) }))} aria-label={t('set.dq.entity')} /></td>
                 <td className="w-40"><Select value={r.field} onChange={(field) => setRule(r.id, { field })} options={QUALITY_FIELDS[r.entity].map((x) => ({ value: x, label: t(`set.dq.fieldName.${x.replace('.', '_')}`) }))} aria-label={t('set.dq.field')} /></td>
-                <td className="w-44"><Select value={r.operator} onChange={(operator) => setRule(r.id, { operator, value: operator === 'between' ? [0, 100] : operator === 'notEquals' ? '' : undefined })} options={OPERATORS.map((o) => ({ value: o, label: t(`set.dq.op.${o}`) }))} aria-label={t('set.dq.check')} /></td>
+                <td className="w-44"><Select value={r.operator} onChange={(operator) => setRule(r.id, { operator, value: operator === 'between' ? [0, 100] : operator === 'notEquals' || operator === 'notContains' ? '' : undefined })} options={OPERATORS.map((o) => ({ value: o, label: t(`set.dq.op.${o}`) }))} aria-label={t('set.dq.check')} /></td>
                 <td className="min-w-48">
                   {r.operator === 'between' && (
                     <div className="flex items-center gap-2">
@@ -92,11 +92,12 @@ export function DataQualityPage() {
                       <NumberInput className="w-24" value={(r.value as [number, number])[1]} onChange={(v) => setRule(r.id, { value: [(r.value as [number, number])[0], v] })} aria-label={t('set.commodities.max')} />
                     </div>
                   )}
-                  {r.operator === 'notEquals' && <TextInput value={String(r.value ?? '')} onChange={(value) => setRule(r.id, { value })} aria-label={t('set.dq.value')} />}
+                  {(r.operator === 'notEquals' || r.operator === 'notContains') && <TextInput value={String(r.value ?? '')} onChange={(value) => setRule(r.id, { value })} aria-label={t('set.dq.value')} />}
                   {r.operator === 'unique' && <Select value={r.duplicateScope ?? 'company'} onChange={(duplicateScope) => setRule(r.id, { duplicateScope })} options={(['company', 'community'] as const).map((x) => ({ value: x, label: t(`set.dq.scope.${x}`) }))} aria-label={t('set.dq.value')} />}
                   {r.operator === 'lessThanField' && <Select value={r.crossField ?? ''} onChange={(crossField) => setRule(r.id, { crossField })} options={QUALITY_FIELDS[r.entity].map((x) => ({ value: x, label: t(`set.dq.fieldName.${x.replace('.', '_')}`) }))} aria-label={t('set.dq.value')} />}
                   {res && <div className="mt-1 text-[12px] text-warning">{t('set.dq.hits', { count: res.count, samples: res.samples.join(', ') })}</div>}
                   {result && !res && r.enabled && <div className="mt-1 text-[12px] text-success">{t('set.dq.noHits')}</div>}
+                  {r.note && <div className="mt-1 text-[12px] text-muted">{r.note}</div>}
                 </td>
                 <td className="w-32"><Select value={r.severity} onChange={(severity) => setRule(r.id, { severity })} options={(['info', 'warning', 'block'] as const).map((x) => ({ value: x, label: t(`set.dq.sev.${x}`) }))} aria-label={t('set.dq.severity')} /></td>
                 <td className="w-20"><Switch checked={r.enabled} onCheckedChange={(enabled) => setRule(r.id, { enabled })} aria-label={t('set.enabled')} /></td>

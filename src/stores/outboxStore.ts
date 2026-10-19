@@ -10,7 +10,7 @@ export interface OutboxItem {
   id: string;
   orgId: string;
   userId: string;
-  type: 'purchase' | 'purchaseRequest' | 'farmer' | 'community' | 'group' | 'expense' | 'survey' | 'other';
+  type: 'purchase' | 'purchaseRequest' | 'farmer' | 'community' | 'group' | 'expense' | 'survey' | 'qualityFix' | 'other';
   label: string;
   payload: unknown;
   createdAt: string;

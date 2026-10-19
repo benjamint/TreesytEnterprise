@@ -20,18 +20,25 @@ import { TwoStepPage } from '@/public/auth/TwoStepPage';
 import { ChooseCompanyPage } from '@/public/auth/ChooseCompanyPage';
 import { AcceptInvitePage, ForgotPasswordPage, ForgotSentPage, ResetPasswordPage } from '@/public/auth/PasswordPages';
 import { SignUpPage } from '@/public/auth/SignUpPage';
+import { CommunitiesMapPage, CommunitiesPage } from '@/web/features/people/CommunitiesPage';
+import { FarmersPage } from '@/web/features/people/FarmersPage';
+import { GroupsPage } from '@/web/features/people/GroupsPage';
+import { LocationsExplorerPage } from '@/web/features/people/LocationsPage';
+import { DataQualityPage } from '@/web/features/quality/DataQualityPage';
+import { ImportsPage } from '@/web/features/imports/ImportsPage';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
 import { TasksScreen } from '@/mobile/flows/home/TasksScreen';
+import { TaskFixScreen } from '@/mobile/flows/home/TaskFixScreen';
 import { SyncScreen } from '@/mobile/flows/home/SyncScreen';
 import { MeScreen } from '@/mobile/flows/me/MeScreen';
 import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -65,6 +72,13 @@ export const router = createBrowserRouter([
       { path: 'settings', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'settings/:page', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'account', element: <AccountPage /> },
+      { path: 'communities/map', element: <RouteGuard routeKey="communitiesMap"><CommunitiesMapPage /></RouteGuard> },
+      { path: 'communities', element: <RouteGuard routeKey="communities"><CommunitiesPage /></RouteGuard> },
+      { path: 'farmers', element: <RouteGuard routeKey="farmers"><FarmersPage /></RouteGuard> },
+      { path: 'groups', element: <RouteGuard routeKey="groups"><GroupsPage /></RouteGuard> },
+      { path: 'locations', element: <RouteGuard routeKey="locations"><LocationsExplorerPage /></RouteGuard> },
+      { path: 'data-quality', element: <RouteGuard routeKey="dataQuality"><DataQualityPage /></RouteGuard> },
+      { path: 'imports', element: <RouteGuard routeKey="imports"><ImportsPage /></RouteGuard> },
       {
         path: 'platform',
         element: <RouteGuard routeKey="platform"><PlatformLayout /></RouteGuard>,
@@ -96,6 +110,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomeScreen /> },
       { path: 'tasks', element: <TasksScreen /> },
+      { path: 'tasks/:taskId', element: <TaskFixScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

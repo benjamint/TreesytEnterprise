@@ -100,6 +100,7 @@ export const APP_ROUTES: AppRoute[] = [
 
   // Detail pages referenced in PRD section 9 (not in the sidebar)
   r('communitiesMap', '/app/communities/map', Map, 'communities.view', 5, 'farmers'),
+  r('locations', '/app/locations', ListTree, 'locations.view', 5, 'farmers', undefined, { configurable: ['locations'] }),
   r('bags', '/app/purchases/bags', QrCode, 'purchases.view', 7, 'buying'),
   r('priceBoard', '/app/price-board', LineChart, 'priceBoard.view', 7, 'buying', undefined, { configurable: ['priceLists'] }),
   r('allocations', '/app/support/allocations', Archive, 'support.view', 11, 'support'),

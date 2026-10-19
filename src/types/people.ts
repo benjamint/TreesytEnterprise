@@ -106,3 +106,101 @@ export interface LoanAccount extends OrgEntity {
   repayments: { date: string; amount: Money; mode: 'CASH' | 'PRODUCE' }[];
   status: 'ACTIVE' | 'SETTLED';
 }
+
+/** People with a role in a community or farmer group (PRD C2 Leaders, C4 Leaders). */
+export interface Leader {
+  id: string;
+  orgId: string;
+  entity: 'community' | 'farmerGroup';
+  entityId: string;
+  name: string;
+  role: string;
+  phone: string;
+  gender?: 'F' | 'M';
+  createdAt: string;
+}
+
+/** Files attached to a record (membership lists, meeting records, agreements…). */
+export interface RecordDocument {
+  id: string;
+  orgId: string;
+  entity: 'community' | 'farmerGroup' | 'farmer';
+  entityId: string;
+  type: string;
+  name: string;
+  mime: string;
+  size: number;
+  /** Small images and PDFs are kept as data URLs in the prototype. */
+  dataUrl?: string;
+  uploadedBy: string;
+  uploadedAt: string;
+}
+
+export type QualityEntity = 'farmer' | 'community' | 'farmerGroup';
+
+/** A data-quality flag raised by a rule (PRD C5). */
+export interface QualityIssue {
+  id: string;
+  orgId: string;
+  entity: QualityEntity;
+  recordId: string;
+  ruleId: string;
+  severity: 'info' | 'warning' | 'block';
+  params: Record<string, unknown>;
+  status: 'OPEN' | 'ASSIGNED' | 'VALID' | 'RESOLVED';
+  agentId?: string;
+  taskId?: string;
+  note?: string;
+  source: 'SEED' | 'IMPORT' | 'WEB' | 'MOBILE' | 'RECHECK';
+  createdAt: string;
+  updatedAt: string;
+  resolvedBy?: string;
+}
+
+/** A job sent to an agent's phone (fix a record, revisit a farmer…). */
+export interface FieldTask {
+  id: string;
+  orgId: string;
+  agentId: string;
+  userId: string;
+  kind: 'qualityFix';
+  entity: QualityEntity;
+  recordId: string;
+  issueIds: string[];
+  fields: string[];
+  note?: string;
+  status: 'OPEN' | 'DONE';
+  createdAt: string;
+  createdBy: string;
+  doneAt?: string;
+}
+
+export type ImportType = 'communities' | 'farmers' | 'groups' | 'members' | 'leaders' | 'recoveries' | 'warehouseLoads' | 'priceLists' | 'locations' | 'users' | 'agents';
+
+export interface ImportRun {
+  id: string;
+  orgId: string;
+  type: ImportType;
+  fileName: string;
+  by: string;
+  at: string;
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: number;
+  createdIds: string[];
+  status: 'DONE' | 'UNDONE';
+}
+
+/** VSLA savings ledger entries (PRD C4 savings group sub-module). */
+export interface SavingsEntry {
+  id: string;
+  orgId: string;
+  groupId: string;
+  cycle: number;
+  date: string;
+  kind: 'CONTRIBUTION' | 'LOAN' | 'REPAYMENT' | 'SHAREOUT';
+  farmerId?: string;
+  amount: Money;
+  note?: string;
+}

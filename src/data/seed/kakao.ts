@@ -53,17 +53,21 @@ export function kakaoConfig(settings: OpsConfig['settings'], agents: AgentSeed[]
     commodityMix: [['com_cocoa', 90], ['com_cashew', 10]],
     farmers: {
       count: 350, womenShare: 0.3, female: CI_FEMALE, male: CI_MALE, surnames: CI_SURNAMES,
-      custom: (rng, _gender, age) => ({
-        maritalStatus: rng.weighted([['married', 6], ['single', 2], ['widowed', 1]] as const),
-        numberOfChildren: rng.int(0, Math.min(9, Math.max(0, age - 18))),
-        householdSize: rng.int(2, 14),
-        language: rng.weighted([['Bété', 3], ['Baoulé', 3], ['Dioula', 3], ['Sénoufo', 1], ['Malinké', 1], ['Français', 2]] as const),
-        educationLevel: rng.weighted([['none', 4], ['primary', 4], ['secondary', 2], ['tertiary', 0.3]] as const),
-        certification: rng.weighted([['rainforestAlliance', 4], ['fairtrade', 2], ['none', 3]] as const),
-        cocoaHectares: Math.round(rng.float(0.8, 7.5) * 10) / 10,
-        landOwnership: rng.pick(['owned', 'family', 'sharecropping']),
-        idType: rng.pick(['cni', 'carteProducteur', 'none']),
-      }),
+      custom: (rng, _gender, age) => {
+        const maritalStatus = rng.weighted([['married', 6], ['single', 2], ['widowed', 1]] as const);
+        const numberOfChildren = rng.int(0, Math.min(9, Math.max(0, age - 18)));
+        // Same RNG draws as before; the household always includes the farmer and their children.
+        const extra = rng.int(2, 14);
+        return {
+          maritalStatus, numberOfChildren, householdSize: Math.min(20, numberOfChildren + Math.max(1, Math.round(extra / 3))),
+          language: rng.weighted([['Bété', 3], ['Baoulé', 3], ['Dioula', 3], ['Sénoufo', 1], ['Malinké', 1], ['Français', 2]] as const),
+          educationLevel: rng.weighted([['none', 4], ['primary', 4], ['secondary', 2], ['tertiary', 0.3]] as const),
+          certification: rng.weighted([['rainforestAlliance', 4], ['fairtrade', 2], ['none', 3]] as const),
+          cocoaHectares: Math.round(rng.float(0.8, 7.5) * 10) / 10,
+          landOwnership: rng.pick(['owned', 'family', 'sharecropping']),
+          idType: rng.pick(['cni', 'carteProducteur', 'none']),
+        };
+      },
     },
     groups: { types: [['COOPERATIVE', 15]], name: (_t, com) => `Section ${com}` },
     agents, fieldAgentTypeIds: ['at_del'],

@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 4._
+_Last updated: Phase 5._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -52,31 +52,32 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Places and people (Scope 2)
 
-- [~] Location levels + explorer + zones — Settings → Locations: level labels per language, tree editor (add / rename / recode), CSV import, zones; explorer page [5]
-- [~] Agent multi-area assignment — agents hold many area nodes in the data [16]
-- [~] Community profile (v1–v3 fields) — Vitara template fields seeded as `customFields` [5]
-- [~] Community code pattern — `{region}-{seq:3}` (Daffiama = WA-014), editable in Settings → Farmer ID & codes [5]
-- [ ] Leaders [5]
-- [ ] Documents [5]
-- [ ] Groups in community sync (upsert) [9]
-- [~] Community list / detail / map / dashboard / edit — seeded preview table [5]
-- [~] Community score — scoring engine scaffolded and tested [5]
-- [~] Farmer profile (all fields) — Vitara and Kakao Ivoire template fields seeded [5]
-- [~] Farmer ID pattern — `{community}-{initials}-{seq}` (WA-014-AI-0023), `KI-{region}-{seq:5}`; editable with live preview in Settings → Farmer ID & codes [5]
-- [~] Thumbprints — identity status seeded [5]
-- [~] Consent audio / signature — consent type seeded [5]
-- [~] ID card and photo — identity status seeded [5]
-- [~] NFC card lifecycle — card status seeded (Issued / Replaced / Revoked) [5]
-- [~] Data-quality rules + review — Settings → Data quality: rule editor with test on a sample of real records; review queue [5]
-- [ ] Farmer score [5]
-- [~] Farmer list / detail / export / profiling report / dashboard — seeded preview table [5]
-- [ ] Shared farmers / communities [5]
-- [~] Farmer groups profile / members / leaders / documents / payment details — groups, real membership table, group wallets seeded [5]
-- [~] Group scorecard + manual review — one group seeded "Pending review" [5]
-- [ ] VSLA savings [5]
-- [ ] Community import [5]
-- [ ] Farmer import [5]
-- [ ] Other imports [5]
+- [x] Location levels + explorer + zones — Settings → Locations (levels, tree editor, CSV import, zones); Locations explorer `/app/locations`: tree by levels, node detail with community / farmer / agent counts, zones, add / edit / move; boundary drawing is a "coming" stub
+- [~] Agent multi-area assignment — agents hold many area nodes; explorer counts agents per node [16]
+- [x] Community profile (v1–v3 fields) — community profile form (Vitara v3) rendered on create / edit and in the drawer's Profile tab
+- [x] Community code pattern — new communities get `{region}-{seq:3}` from Settings → Farmer ID & codes; issued once, never regenerated on edit
+- [x] Leaders — communities and groups: name, role (company list), phone; add / edit / remove
+- [x] Documents — type from the company list, upload with image / PDF preview, uploaded by / when
+- [ ] Groups in community sync (upsert) [9] — web group create already upserts by name within a community
+- [x] Community list / detail / map / dashboard / edit — filters + saved views, column picker, CSV export, drawer (overview map, profile, leaders, documents, farmers, groups, purchases, activity), `/app/communities/map` with score-coloured pins, dashboard (profiled, average farmers, bought from, top 3s, over time)
+- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); workshops / trees count as zero until phases 14–15
+- [x] Farmer profile (all fields) — Vitara v3 farmer form (incl. spouse show-if, children repeat group, ID type / number); edit creates a new version with a change history
+- [x] Farmer ID pattern — `{community}-{initials}-{seq}` / `KI-{region}-{seq:5}` on registration; "Import existing IDs" keeps a supplied ID
+- [x] Thumbprints — left / right status on the Identity tab (capture itself on mobile, phase 9)
+- [x] Consent audio / signature — Identity tab shows audio player (simulated), signature image or tick; record consent from the web
+- [x] ID card and photo — status on the Identity tab, plus document upload
+- [x] NFC card lifecycle — issue, replace, revoke (permission `farmers.manageNfc`)
+- [x] Data-quality rules + review — `/app/data-quality`: queue (farmers, communities, groups) with rule, severity, agent, source, date; bulk assign to agent (mobile task), mark valid with reason, re-check; charts by rule, by agent, weekly trend; Vitara rules incl. disabled ewe / tertiary / tractor with notes
+- [x] Farmer score — farmer model (consent, identity, purchases, group, no overdue loan) with breakdown and recalculate
+- [x] Farmer list / detail / export / profiling report / dashboard — list with all PRD columns, saved views (Women farmers, No consent, Blocked by debt, Flagged), register with duplicate check (phone / ID number), drawer tabs, CSV export with column picker, profiling report by agent, dashboard (gender, age bands, education, income, real household / children averages, registrations, by agent)
+- [ ] Shared farmers / communities [later — company data sharing, PRD A5]
+- [x] Farmer groups profile / members / leaders / documents / payment details — group type form, membership with roles, joined / left, add / remove; MoMo / bank / cash details
+- [x] Group scorecard + manual review — uploading meeting or contribution records resets that manual score and sets Pending review; reviewer scores 1–4 / 1–18 with a note → Completed; recalculation replaces
+- [x] VSLA savings — Savings tab on VSLA groups: fund, saved, out on loan; contributions, loans, repayments, share-out
+- [x] Community import — wizard: template from the community form, map, match parent locations, validate, import (codes from the pattern), quality re-check, undo
+- [x] Farmer import — Journey 15: template (CSV / Excel) from the farmer form, sample file, auto-map with aliases, transforms (leading 0, dd/mm/yyyy…), fuzzy community matching, inline fixes, warnings for likely duplicates, result report, error file, history, undo last import
+- [~] Other imports — locations import in the wizard; groups, members, leaders, recoveries, warehouse loads, price lists, users, agents show "arrives with its module"
+- [x] Mobile data-fix tasks — fix tasks appear on the agent's phone (home alert, Tasks, `/m/tasks/:id`); saving re-checks the record and resolves the flag on the web; offline fixes wait in the outbox until Sync
 
 ## Field agents (Scope 3)
 

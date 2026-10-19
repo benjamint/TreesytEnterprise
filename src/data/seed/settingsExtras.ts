@@ -42,14 +42,21 @@ function formLibrary(prefix: string, names: Record<(typeof FORM_BINDINGS)[number
 
 const bindAll = (lib: FormRef[]) => Object.fromEntries(lib.filter((f) => !f.id.endsWith('_lite')).map((f) => [f.binding, f.id]));
 
+/** Vitara's rules today (PRD C5); the Vitara-specific ones ship disabled with a note. */
 function rules(): QualityRule[] {
   return [
-    { id: 'qr_age', entity: 'farmer', field: 'age', operator: 'between', value: [16, 95], severity: 'warning', enabled: true },
+    { id: 'qr_age', entity: 'farmer', field: 'age', operator: 'between', value: [18, 100], severity: 'warning', enabled: true },
+    { id: 'qr_household', entity: 'farmer', field: 'customFields.householdSize', operator: 'between', value: [1, 20], severity: 'warning', enabled: true },
     { id: 'qr_phone', entity: 'farmer', field: 'phone', operator: 'unique', duplicateScope: 'company', severity: 'warning', enabled: true },
+    { id: 'qr_idnumber', entity: 'farmer', field: 'customFields.idNumber', operator: 'unique', duplicateScope: 'company', severity: 'warning', enabled: true },
+    { id: 'qr_consent', entity: 'farmer', field: 'identity.consent', operator: 'notEmpty', severity: 'warning', enabled: true },
+    { id: 'qr_children', entity: 'farmer', field: 'customFields.numberOfChildren', operator: 'lessThanField', crossField: 'customFields.householdSize', severity: 'info', enabled: true },
     { id: 'qr_name', entity: 'farmer', field: 'firstName', operator: 'notEmpty', severity: 'block', enabled: true },
-    { id: 'qr_dup_name', entity: 'farmer', field: 'lastName', operator: 'unique', duplicateScope: 'community', severity: 'info', enabled: false },
-    { id: 'qr_crop', entity: 'farmer', field: 'primaryCrop', operator: 'notEmpty', severity: 'warning', enabled: true },
+    { id: 'qr_lang_ewe', entity: 'farmer', field: 'customFields.language', operator: 'notEquals', value: 'ewe', severity: 'info', enabled: false, note: 'Vitara-specific: Ewe speakers were outside the 2024 catchment.' },
+    { id: 'qr_edu_tertiary', entity: 'farmer', field: 'customFields.educationLevel', operator: 'notEquals', value: 'tertiary', severity: 'info', enabled: false, note: 'Vitara-specific: tertiary education was checked by hand.' },
+    { id: 'qr_asset_tractor', entity: 'farmer', field: 'customFields.assets', operator: 'notContains', value: 'tractor', severity: 'info', enabled: false, note: 'Vitara-specific: tractor owners are not smallholders.' },
     { id: 'qr_pop', entity: 'community', field: 'population', operator: 'between', value: [20, 20000], severity: 'info', enabled: true },
+    { id: 'qr_contact', entity: 'community', field: 'contactPerson.phone', operator: 'notEmpty', severity: 'warning', enabled: true },
   ];
 }
 

@@ -9,6 +9,7 @@ import { latency } from '@/lib/utils';
 import { useFormat, useT } from '@/stores/hooks';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useOutboxStore } from '@/stores/outboxStore';
+import { applyFix } from '@/services/qualityService';
 
 /** M2 Sync (phase 1 version): outbox, Sync now, offline toggle. Item-by-item sync arrives in phase 9. */
 export function SyncScreen() {
@@ -22,6 +23,13 @@ export function SyncScreen() {
   const syncNow = async () => {
     setSyncing(true);
     await latency(800, 1400);
+    // Data-quality fixes saved offline are applied on sync (other item types arrive in phase 9).
+    const fixes = items.filter((i) => i.type === 'qualityFix');
+    for (const i of fixes) {
+      const p = i.payload as { taskId: string; values: Record<string, unknown> };
+      applyFix(p.taskId, p.values, i.userId, 'mobile');
+    }
+    if (fixes.length) useOutboxStore.getState().remove(fixes.map((i) => i.id));
     markSynced();
     setSyncing(false);
     toast.success(t('mobile.synced'));

@@ -5,6 +5,7 @@ import { CompanyLogo } from '@/components/shared/Logo';
 import { Avatar } from '@/components/shared/Avatar';
 import { useCurrentOrg, useCurrentUser, useFormat, useOrgRows, useT } from '@/stores/hooks';
 import { useBuyingStore } from '@/stores/buyingStore';
+import { useQualityStore } from '@/stores/qualityStore';
 import { agentCashHeld } from '@/stores/selectors';
 import { useMobileAgent } from '@/mobile/layout/useMobileContext';
 import { SyncBar, OfflineBanner } from '@/mobile/layout/SyncBar';
@@ -17,6 +18,8 @@ export function HomeScreen() {
   const requests = useOrgRows(useBuyingStore((s) => s.requests));
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
   const navigate = useNavigate();
+  const tasks = useQualityStore((s) => s.tasks);
+  const fixCount = useMemo(() => tasks.filter((x) => x.agentId === agent?.id && x.status === 'OPEN').length, [tasks, agent?.id]);
   const f = useFormat();
   const { t } = useT();
   const cash = useMemo(() => (agent ? agentCashHeld(agent.id, requests, purchases) : 0), [agent, requests, purchases]);
@@ -72,7 +75,14 @@ export function HomeScreen() {
 
           <section>
             <h2 className="eyebrow mb-2">{t('mobile.alerts')}</h2>
-            {alerts.length === 0 ? (
+            {fixCount > 0 && (
+              <button type="button" onClick={() => navigate('/m/tasks')} className="mb-2 flex w-full items-start gap-3 rounded-ctl bg-warning/10 px-4 py-3 text-left text-[14px] text-ink active:bg-warning/20">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
+                <span className="flex-1">{t('mobile.fix.alert', { count: fixCount })}</span>
+                <ChevronRight className="h-4 w-4 text-muted" aria-hidden="true" />
+              </button>
+            )}
+            {alerts.length === 0 && fixCount === 0 ? (
               <p className="text-[14px] text-muted">{t('mobile.noAlerts')}</p>
             ) : (
               <ul className="space-y-2">

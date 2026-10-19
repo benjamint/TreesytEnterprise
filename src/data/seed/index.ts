@@ -17,7 +17,7 @@ import { kakaoAgents, kakaoConfig } from './kakao';
 import { seedFormData } from './forms';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 6;
+export const SEED_VERSION = 8;
 export const SEED = 20261018;
 
 export interface SeedData {

@@ -72,6 +72,7 @@ export function answerText(q: Question, v: unknown, t: T, lang: 'en' | 'fr', oth
     case 'repeatGroup': return t('form.rows', { count: (v as unknown[]).length });
     case 'rating': case 'likert': return `${String(v)} / ${q.scale?.max ?? 5}`;
     case 'nps': return `${String(v)} / 10`;
+    case 'currency': case 'number': case 'decimal': return Number.isFinite(Number(v)) ? Number(v).toLocaleString(lang === 'fr' ? 'fr-FR' : 'en-GB').replace(/[\u202f\u00a0]/g, ' ') : String(v);
     case 'gpsPoint': { const g = v as { lat: number; lng: number; accuracy: number }; return `${g.lat.toFixed(5)}, ${g.lng.toFixed(5)} (±${g.accuracy} m)`; }
     case 'gpsPolygon': { const p = v as { points: unknown[]; areaHa: number }; return t('form.media.polygon', { n: p.points.length, ha: p.areaHa }); }
     case 'image': case 'video': case 'file': return t('form.files', { count: (v as unknown[]).length });

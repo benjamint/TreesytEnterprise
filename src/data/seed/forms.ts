@@ -14,6 +14,12 @@ const PLAN: Record<string, Record<string, number>> = {
   ki: { rdue: 260, workshop: 70, satisfaction: 6 },
 };
 
+/** Plausible ranges for seeded answers (validation bounds are deliberately wider). */
+const RANGES: Record<string, [number, number]> = {
+  members: [2, 14], childrenCount: [0, 7], waterMinutes: [5, 60], hungryMonths: [0, 4], membersPresent: [8, 28], plots: [1, 4],
+  seedlingsAlive: [8, 30], seedlingsDead: [0, 6], heightM: [1.5, 12], kgPerWeek: [20, 300],
+};
+
 const SAMPLE_PHOTOS = ['sample:farm-1', 'sample:farm-2', 'sample:tree-1', 'sample:group-1', 'sample:nursery-1'];
 
 function answerFor(q: Question, rng: Rng, lists: OptionList[], ctx: { gps: { lat: number; lng: number }; date: Date }): unknown {
@@ -23,18 +29,20 @@ function answerFor(q: Question, rng: Rng, lists: OptionList[], ctx: { gps: { lat
     case 'shortText': return rng.pick(['Good', 'Fine', 'As agreed', 'Checked', 'Seen on site']);
     case 'longText': return rng.pick(['Farmers asked for more training on pruning.', 'Weighing went well; the group was happy.', 'Water is far in the dry season.', 'Will plant more shea seedlings next year.', 'Asked about prices for next season.', '']);
     case 'number': {
+      const range = RANGES[q.id];
+      if (range) return rng.int(range[0], range[1]);
       const lo = q.validation?.min ?? 0;
-      const hi = Math.min(q.validation?.max ?? 20, lo + 25);
-      return rng.int(lo, hi);
+      return rng.int(lo, Math.min(q.validation?.max ?? 20, lo + 12));
     }
-    case 'decimal': return Math.round(rng.float(q.validation?.min ?? 0.5, Math.min(q.validation?.max ?? 12, 12)) * 10) / 10;
+    case 'decimal': if (RANGES[q.id]) return Math.round(rng.float(RANGES[q.id]![0], RANGES[q.id]![1]) * 10) / 10;
+      return Math.round(rng.float(q.validation?.min ?? 0.5, Math.min(q.validation?.max ?? 12, 12)) * 10) / 10;
     case 'currency': return rng.int(2, 60) * 50;
     case 'yesNo': return rng.chance(0.68);
     case 'selectOne': return opts.length ? rng.pick(opts).value : undefined;
-    case 'selectMany': return opts.length ? rng.shuffle(opts.map((x) => x.value)).slice(0, rng.int(1, Math.min(3, opts.length))) : [];
+    case 'selectMany': { const real = opts.map((x) => x.value).filter((v) => v !== 'none'); return real.length ? rng.shuffle(real).slice(0, rng.int(1, Math.min(3, real.length))) : []; }
     case 'ranking': return rng.shuffle(opts.map((x) => x.value));
     case 'rating':
-    case 'likert': return rng.weighted([[max, 3], [max - 1, 4], [Math.ceil(max / 2), 2], [1, 1]] as const);
+    case 'likert': return rng.weighted([[max, 3], [max - 1, 4], [Math.ceil(max / 2), 2], [2, 1], [1, 0.6]] as const);
     case 'nps': return rng.weighted([[10, 3], [9, 3], [8, 2], [7, 2], [5, 1], [3, 1]] as const);
     case 'date': return new Date(ctx.date.getTime() - rng.int(0, 5) * 86_400_000).toISOString().slice(0, 10);
     case 'gpsPoint': return { lat: ctx.gps.lat + rng.float(-0.01, 0.01), lng: ctx.gps.lng + rng.float(-0.01, 0.01), accuracy: rng.int(3, 18) };

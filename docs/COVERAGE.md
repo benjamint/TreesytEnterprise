@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 5._
+_Last updated: Phase 6._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -261,18 +261,18 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Forms and training (Scope 9)
 
-- [~] Form builder — form schema types [6]
-- [~] All question types — all 37 types in the form engine catalogue [6]
-- [~] Skip / display logic — AND/OR show-if logic with all operators (tested) [6]
-- [ ] Assignment + deploy [6]
-- [~] Lifecycle incl. test — statuses and versioned publish in the engine [6]
-- [ ] Mobile survey delivery [10]
-- [ ] Responses + media [6]
-- [ ] Review statuses [6]
-- [ ] Analytics [6]
-- [ ] Summary [6]
-- [ ] Export [6]
-- [~] Subject binding — bindings modelled in the engine [6]
+- [x] Form builder — `/app/forms/:id`: palette (37 types in 7 groups, click or drag), canvas with sections and drag-to-reorder, settings panel (labels and help per language, field key, required / required-if, default, placeholder, validation incl. regex and date range, inline or shared options, "Other", randomise, scales, media limits, record type, table rows × columns, formula, maps-to field, sensitive), preview web (EN/FR) and mobile, version history with restore, publish with change summary; AI draft (scripted topics, Claude when a key is set); shared option lists page
+- [x] All question types — every type renders on web and mobile, with simulated camera, GPS accuracy, boundary walk with area, QR / NFC / thumbprint, audio and signature
+- [x] Skip / display logic — show-if, required-if and jump-to / end-form with AND/OR groups on earlier questions (incl. multi-select), section logic, calculated fields
+- [x] Assignment + deploy — all agents, by role, agent type, location or named users; target per agent and due date; reach count
+- [x] Lifecycle incl. test — Draft → Test (test users, responses tagged) → Live → Closed; schedule start / end; publishing creates version n+1, responses and records keep their version
+- [x] Mobile survey delivery — `/m/surveys`: assigned forms with targets and due dates, subject pick, step-by-step renderer, drafts, offline save to the outbox and send on sync; "needs fix" items return to the phone
+- [x] Responses + media — responses table (ID, version, subject, agent, date, GPS accuracy, status, completion) with filters; detail with photos, map, subject link, edit with history
+- [x] Review statuses — approve, reject, send back with comment (→ mobile task + notification), resubmit keeps the number
+- [x] Analytics — per question by type (choice counts, averages, medians, Likert distribution, NPS), completion, responses per week, map; filters by date, agent, location, status, version
+- [x] Summary — totals, average completion, approval rate, agents
+- [x] Export — Excel with chosen columns; sensitive answers masked without `farmers.viewSensitive`
+- [x] Subject binding — profile forms drive web and mobile registration, farmer list column options and report fields (Journey 9); Settings → Forms picks the form for each record type
 - [ ] Training catalogue / topics [15]
 - [ ] Workshop planning [15]
 - [ ] Status [15]

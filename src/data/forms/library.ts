@@ -233,7 +233,7 @@ function defs(orgId: string, now: Date): Def[] {
           yes('forestBefore2020', l('Was forest after 31 Dec 2020', 'Était une forêt après le 31/12/2020'), { required: true }),
         ])],
       },
-      workshopDef(),
+      workshopDef('Avis sur l’atelier'),
       {
         key: 'rdue', name: 'Enquête RDUE ménage', binding: 'survey', subject: 'farmer', description: 'Enquête ménage pour la conformité RDUE et le travail des enfants.',
         assignment: { mode: 'all', ids: [], targetPerAgent: 20, dueDate: due }, schedule: { start: new Date(now.getTime() - 90 * 86_400_000).toISOString().slice(0, 10), end: due },
@@ -271,9 +271,9 @@ function defs(orgId: string, now: Date): Def[] {
   ];
 }
 
-function workshopDef(): Def {
+function workshopDef(name = 'Workshop feedback'): Def {
   return {
-    key: 'workshop', name: 'Workshop feedback', binding: 'workshopFeedback', assignment: { mode: 'all', ids: [] }, sections: [sec('feedback', l('Feedback', 'Avis'), [
+    key: 'workshop', name, binding: 'workshopFeedback', assignment: { mode: 'all', ids: [] }, sections: [sec('feedback', l('Feedback', 'Avis'), [
       q('overall', 'rating', l('Overall rating', 'Note globale'), { required: true, scale: { max: 5, style: 'stars' } }),
       q('useful', 'likert', l('The training was useful for my farm', 'La formation est utile pour mon exploitation'), { scale: { max: 5, low: l('Disagree', 'Pas d’accord'), high: l('Agree', 'D’accord') } }),
       q('recommend', 'nps', l('Would you recommend this training to a neighbour?', 'Recommanderiez-vous cette formation à un voisin ?')),

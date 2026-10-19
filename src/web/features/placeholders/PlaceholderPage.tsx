@@ -11,6 +11,7 @@ import { useCurrentOrg, useFormat, useT } from '@/stores/hooks';
 import { TOUR_EVENT } from '@/web/layout/HelpMenu';
 import { PREVIEWS, usePreviewCount } from './previews';
 import { AreaSettings } from './AreaSettings';
+import { ReportFieldsPreview } from './ReportFieldsPreview';
 
 /**
  * Page for every route in PRD section 7 until its phase lands: header, primary action, tour and the
@@ -50,6 +51,7 @@ export function PlaceholderPage({ routeKey }: { routeKey: string }) {
         }
       />
       <AreaSettings routeKey={routeKey} />
+      {routeKey === 'reports' && <div className="mb-5"><ReportFieldsPreview /></div>}
       {Preview && count ? (
         <Preview />
       ) : (

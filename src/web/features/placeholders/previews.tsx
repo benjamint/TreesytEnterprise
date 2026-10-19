@@ -1,4 +1,3 @@
-import { ReportFieldsPreview } from './ReportFieldsPreview';
 import { useMemo, type ReactNode } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { AlertTriangle } from 'lucide-react';
@@ -328,5 +327,4 @@ export const PREVIEWS: Record<string, () => ReactNode> = {
   agents: () => <AgentsPreview />,
   warehouses: () => <WarehousesPreview />,
   bags: () => <BagsPreview />,
-  reports: () => <ReportFieldsPreview />,
 };

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, CreditCard, FileText, HandHeart, Languages, Map, Radar, ShieldCheck, ShoppingBasket, Smartphone, Sparkles, Trees, Truck, Users, Warehouse, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Landscape } from '@/components/shared/Landscape';
+import { Illustration } from '@/components/shared/Illustration';
 import { LogoBadge, Wordmark } from '@/components/shared/Logo';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { GlassCarousel, LanguageToggle, useNeutralBrand } from './auth/AuthLayout';
@@ -52,7 +52,7 @@ export function LandingPage() {
           <p className="mt-4 text-[13px] text-muted">{t('landing.trialNote')}</p>
         </div>
         <div className="relative h-[460px] overflow-hidden rounded-panel shadow-soft lg:h-[560px]">
-          <Landscape />
+          <Illustration name="buyer-hero" />
           <div className="absolute inset-x-6 bottom-6"><GlassCarousel className="p-8" /></div>
         </div>
       </section>

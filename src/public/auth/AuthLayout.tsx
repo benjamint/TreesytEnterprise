@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { Landscape } from '@/components/shared/Landscape';
+import { Illustration } from '@/components/shared/Illustration';
 import { LogoBadge, Wordmark } from '@/components/shared/Logo';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { cn } from '@/lib/utils';
@@ -62,7 +62,7 @@ export function AuthLayout({ children, wide }: { children: ReactNode; wide?: boo
   return (
     <div className="flex min-h-screen flex-col bg-surface lg:flex-row">
       <div className="relative h-[200px] shrink-0 overflow-hidden lg:sticky lg:top-0 lg:h-screen lg:w-1/2">
-        <Landscape />
+        <Illustration name="auth-1" />
         <div className="absolute inset-x-8 bottom-8 hidden lg:block xl:inset-x-12 xl:bottom-12">
           <GlassCarousel />
         </div>

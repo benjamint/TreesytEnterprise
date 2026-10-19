@@ -90,7 +90,7 @@ export function FarmerForm({ open, onClose, farmer, onOpenFarmer }: { open: bool
       }),
       orgId, updatedAt: now, farmerCode: code, firstName: firstName.trim(), lastName: lastName.trim(), gender, dateOfBirth: dob, phone: phone ? e164 : '',
       communityId, locationNodeId: community.locationNodeId, registeredAt: new Date(registeredAt).toISOString(), primaryCrop: crop, customFields: answers,
-      version: (farmer?.version ?? 0) + 1,
+      version: (farmer?.version ?? 0) + 1, formVersion: form.version,
     } as Farmer;
     useFarmerStore.getState().saveFarmer(next);
     if (farmer) {

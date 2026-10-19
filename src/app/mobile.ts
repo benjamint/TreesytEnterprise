@@ -14,9 +14,10 @@ export function defaultMobileUser(orgId: string, currentUserId: string | null, m
 }
 
 /** PRD 4.2: the mobile app opens in its own phone-sized window. */
-export function openMobileWindow(orgId: string, userId: string, flow?: string) {
+export function openMobileWindow(orgId: string, userId: string, flow?: string, go?: string) {
   const qs = new URLSearchParams({ org: orgId, user: userId });
   if (flow) qs.set('flow', flow);
+  if (go) qs.set('go', go);
   const w = window.open(`/m?${qs.toString()}`, 'treesyt-mobile', 'width=420,height=880');
   if (!w) toast.error(i18n.t('shell.popupBlocked'));
   else w.focus();

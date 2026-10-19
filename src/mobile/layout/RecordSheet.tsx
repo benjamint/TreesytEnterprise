@@ -1,3 +1,4 @@
+import { tilePath } from '@/mobile/flows/catalog';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
@@ -44,7 +45,7 @@ export function RecordSheet({ open, onClose }: { open: boolean; onClose: () => v
                 <button
                   key={tile.key}
                   type="button"
-                  onClick={() => navigate(`/m/flow/${tile.flow}`)}
+                  onClick={() => navigate(tilePath(tile))}
                   className="flex min-h-[96px] flex-col items-center justify-center gap-2 rounded-card border border-white/70 bg-white/80 p-3 text-center shadow-soft transition-transform active:scale-[0.97] dark:border-line dark:bg-surface"
                 >
                   <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-soft text-brand">

@@ -26,6 +26,13 @@ import { GroupsPage } from '@/web/features/people/GroupsPage';
 import { LocationsExplorerPage } from '@/web/features/people/LocationsPage';
 import { DataQualityPage } from '@/web/features/quality/DataQualityPage';
 import { ImportsPage } from '@/web/features/imports/ImportsPage';
+import { FormsPage } from '@/web/features/forms/FormsPage';
+import { FormBuilderPage } from '@/web/features/forms/FormBuilderPage';
+import { ResponsesPage } from '@/web/features/forms/ResponsesPage';
+import { OptionListsPage } from '@/web/features/forms/OptionListsPage';
+import { SurveysScreen } from '@/mobile/flows/surveys/SurveysScreen';
+import { SurveyFillScreen, SurveyFixScreen, FormPreviewScreen } from '@/mobile/flows/surveys/SurveyFillScreen';
+import { RegisterFarmerScreen } from '@/mobile/flows/farmers/RegisterFarmerScreen';
 import { PlaceholderPage } from '@/web/features/placeholders/PlaceholderPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
@@ -38,7 +45,7 @@ import { FlowPlaceholder } from '@/mobile/flows/FlowPlaceholder';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -79,6 +86,10 @@ export const router = createBrowserRouter([
       { path: 'locations', element: <RouteGuard routeKey="locations"><LocationsExplorerPage /></RouteGuard> },
       { path: 'data-quality', element: <RouteGuard routeKey="dataQuality"><DataQualityPage /></RouteGuard> },
       { path: 'imports', element: <RouteGuard routeKey="imports"><ImportsPage /></RouteGuard> },
+      { path: 'forms', element: <RouteGuard routeKey="forms"><FormsPage /></RouteGuard> },
+      { path: 'forms/option-lists', element: <RouteGuard routeKey="optionLists"><OptionListsPage /></RouteGuard> },
+      { path: 'forms/:formId', element: <RouteGuard routeKey="forms"><FormBuilderPage /></RouteGuard> },
+      { path: 'forms/:formId/responses', element: <RouteGuard routeKey="forms"><ResponsesPage /></RouteGuard> },
       {
         path: 'platform',
         element: <RouteGuard routeKey="platform"><PlatformLayout /></RouteGuard>,
@@ -111,6 +122,11 @@ export const router = createBrowserRouter([
       { index: true, element: <HomeScreen /> },
       { path: 'tasks', element: <TasksScreen /> },
       { path: 'tasks/:taskId', element: <TaskFixScreen /> },
+      { path: 'surveys', element: <SurveysScreen /> },
+      { path: 'surveys/fix/:responseId', element: <SurveyFixScreen /> },
+      { path: 'surveys/:formId', element: <SurveyFillScreen /> },
+      { path: 'preview/:formId', element: <FormPreviewScreen /> },
+      { path: 'farmers/new', element: <RegisterFarmerScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

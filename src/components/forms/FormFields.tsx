@@ -1,129 +1,116 @@
-import { Plus, Trash2 } from 'lucide-react';
 import type { FormSchema, Question, ValidationError } from '@/engines/forms';
-import { evaluateLogic } from '@/engines/forms';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/shared/Field';
+import { DISPLAY_TYPES, formFlow, isRequired, withCalculated } from '@/engines/forms';
 import { cn } from '@/lib/utils';
 import { useLang, useT } from '@/stores/hooks';
+import { Photo } from './media';
+import { OTHER, QuestionInput, optLabel, qLabel } from './QuestionInput';
 
 type Answers = Record<string, unknown>;
+type T = (key: string, opts?: Record<string, unknown>) => string;
 
-const label = (q: Pick<Question, 'label'>, lang: 'en' | 'fr') => q.label[lang] ?? q.label.en ?? '';
+const WIDE: Question['type'][] = ['repeatGroup', 'selectMany', 'longText', 'table', 'note', 'ranking', 'likert', 'nps', 'image', 'gpsPolygon', 'signature', 'contact', 'locationPicker', 'video', 'file'];
+
+export function errorText(t: T, q: Question, code: string) {
+  return t(`form.error.${code}`, { min: q.validation?.min, max: q.validation?.max, date: code === 'minDate' ? q.validation?.minDate : q.validation?.maxDate });
+}
 
 /**
- * Web form renderer for profile forms (Phase 5 subset; the full renderer with every question
- * type arrives with the forms builder in phase 6). Visibility follows the form's show-if logic.
+ * `<FormRenderer>` (PRD 8.3): renders any form on the web with show-if, jump / end-form,
+ * required-if, calculated fields and every question type. Mobile uses the same engine and
+ * inputs in `<MobileFormRenderer>`.
  */
-export function FormFields({ form, answers, onChange, errors = [], columns = 2 }: { form: FormSchema; answers: Answers; onChange: (a: Answers) => void; errors?: ValidationError[]; columns?: 1 | 2 }) {
+export function FormRenderer({ form, answers, onChange, errors = [], columns = 2, titles = true }: { form: FormSchema; answers: Answers; onChange: (a: Answers) => void; errors?: ValidationError[]; columns?: 1 | 2; titles?: boolean }) {
   const lang = useLang();
   const { t } = useT();
+  const flow = formFlow(form, answers);
+  const set = (id: string, v: unknown) => onChange(withCalculated(form, { ...answers, [id]: v }));
+  const multi = flow.length > 1;
   return (
     <div className="space-y-6">
-      {form.sections.filter((s) => evaluateLogic(s.showIf, answers)).map((s) => (
-        <div key={s.id} className={cn('grid gap-4', columns === 2 && 'sm:grid-cols-2')}>
-          {s.questions.filter((q) => evaluateLogic(q.showIf, answers)).map((q) => {
-            const err = errors.find((e) => e.questionId === q.id);
-            return (
-              <div key={q.id} className={cn(q.type === 'repeatGroup' || q.type === 'selectMany' || q.type === 'longText' ? 'sm:col-span-2' : undefined)}>
-                <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">
-                  {label(q, lang)}{q.required && <span className="text-danger"> *</span>}
-                </span>
-                <QuestionInput q={q} value={answers[q.id]} onChange={(v) => onChange({ ...answers, [q.id]: v })} invalid={!!err} />
-                {err && <p className="mt-1 text-[12px] text-danger" role="alert">{t(`form.error.${err.code}`, { min: q.validation?.min, max: q.validation?.max })}</p>}
-              </div>
-            );
-          })}
-        </div>
+      {flow.map(({ section, questions }) => (
+        <section key={section.id}>
+          {titles && multi && <h4 className="mb-3 border-b border-line pb-2 text-[14px] font-semibold text-ink">{section.title[lang] ?? section.title.en}</h4>}
+          <div className={cn('grid gap-4', columns === 2 && 'sm:grid-cols-2')}>
+            {questions.map((q) => {
+              const err = errors.find((e) => e.questionId === q.id);
+              const help = q.help?.[lang] ?? q.help?.en;
+              if (q.type === 'note') {
+                return <p key={q.id} className="rounded-ctl border border-info/30 bg-info/5 px-4 py-3 text-[14px] text-ink sm:col-span-2">{qLabel(q, lang)}</p>;
+              }
+              return (
+                <div key={q.id} className={cn('min-w-0', WIDE.includes(q.type) && 'sm:col-span-2')}>
+                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">
+                    {qLabel(q, lang)}{isRequired(q, answers) && <span className="text-danger"> *</span>}
+                  </span>
+                  {help && <span className="-mt-0.5 mb-1.5 block text-[12px] text-muted">{help}</span>}
+                  <QuestionInput q={q} value={answers[q.id]} answers={answers} onChange={(v) => set(q.id, v)} invalid={!!err} otherText={answers[`${q.id}__other`] as string | undefined} onOtherText={(v) => set(`${q.id}__other`, v)} />
+                  {err && <p className="mt-1 text-[12px] text-danger" role="alert">{errorText(t, q, err.code)}</p>}
+                </div>
+              );
+            })}
+          </div>
+        </section>
       ))}
     </div>
   );
 }
 
-function QuestionInput({ q, value, onChange, invalid }: { q: Question; value: unknown; onChange: (v: unknown) => void; invalid?: boolean }) {
-  const lang = useLang();
-  const { t } = useT();
-  const cls = cn(invalid && 'border-danger');
-  const aria = label(q, lang);
+/** Profile forms on the web use the same renderer. */
+export const FormFields = FormRenderer;
+
+const isBlank = (v: unknown) => v == null || v === '' || (Array.isArray(v) && !v.length);
+
+/** An answer as text, for answer views, exports and analytics. */
+export function answerText(q: Question, v: unknown, t: T, lang: 'en' | 'fr', other?: unknown): string {
+  if (isBlank(v)) return '—';
+  const opt = (x: unknown) => (x === OTHER ? `${t('form.other')}: ${String(other ?? '')}` : (() => { const o = q.options?.find((op) => op.value === x); return o ? optLabel(o, lang) : String(x); })());
   switch (q.type) {
-    case 'number':
-    case 'decimal':
-    case 'currency':
-      return <Input compact type="number" step={q.type === 'number' ? 1 : 'any'} value={value == null ? '' : String(value)} onChange={(e) => onChange(e.target.value === '' ? undefined : Number(e.target.value))} className={cn('tnum', cls)} aria-label={aria} aria-invalid={invalid} />;
-    case 'date':
-      return <Input compact type="date" value={String(value ?? '')} onChange={(e) => onChange(e.target.value || undefined)} className={cls} aria-label={aria} />;
-    case 'longText':
-      return <textarea value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} rows={3} aria-label={aria} className="w-full rounded-ctl border border-line bg-surface p-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft" />;
-    case 'yesNo':
-      return (
-        <div className="flex h-11 items-center gap-1 rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={aria}>
-          {[true, false].map((v) => (
-            <button key={String(v)} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)} className={cn('h-full flex-1 rounded-[8px] text-[13px] font-medium', value === v ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>
-              {t(v ? 'common.yes' : 'common.no')}
-            </button>
-          ))}
-        </div>
-      );
-    case 'selectOne':
-      return (
-        <select value={String(value ?? '')} onChange={(e) => onChange(e.target.value || undefined)} aria-label={aria} className={cn('h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft', cls)}>
-          <option value="">{t('form.choose')}</option>
-          {q.options?.map((o) => <option key={o.value} value={o.value}>{o.label[lang] ?? o.label.en}</option>)}
-        </select>
-      );
-    case 'selectMany': {
-      const list = Array.isArray(value) ? (value as string[]) : [];
-      return (
-        <div className="flex flex-wrap gap-x-5 gap-y-2 rounded-ctl border border-line p-3">
-          {q.options?.map((o) => <Checkbox key={o.value} label={o.label[lang] ?? o.label.en} checked={list.includes(o.value)} onChange={(e) => onChange(e.target.checked ? [...list, o.value] : list.filter((x) => x !== o.value))} />)}
-        </div>
-      );
+    case 'yesNo': return t(v ? 'common.yes' : 'common.no');
+    case 'selectOne': return opt(v);
+    case 'selectMany':
+    case 'ranking': return (v as unknown[]).map(opt).join(q.type === 'ranking' ? ' › ' : ', ');
+    case 'repeatGroup': return t('form.rows', { count: (v as unknown[]).length });
+    case 'rating': case 'likert': return `${String(v)} / ${q.scale?.max ?? 5}`;
+    case 'nps': return `${String(v)} / 10`;
+    case 'gpsPoint': { const g = v as { lat: number; lng: number; accuracy: number }; return `${g.lat.toFixed(5)}, ${g.lng.toFixed(5)} (±${g.accuracy} m)`; }
+    case 'gpsPolygon': { const p = v as { points: unknown[]; areaHa: number }; return t('form.media.polygon', { n: p.points.length, ha: p.areaHa }); }
+    case 'image': case 'video': case 'file': return t('form.files', { count: (v as unknown[]).length });
+    case 'audio': return t('form.media.seconds', { s: (v as { seconds: number }).seconds });
+    case 'signature': return t('form.media.signed');
+    case 'thumbprint': return t('form.media.thumbQuality', { q: String(v).split(':')[1] ?? '' });
+    case 'contact': { const c = v as { name?: string; phone?: string }; return [c.name, c.phone].filter(Boolean).join(' · ') || '—'; }
+    case 'table': {
+      const rows = v as Record<string, Record<string, unknown>>;
+      return (q.rows ?? []).map((r) => `${optLabel(r, lang)}: ${(q.columns ?? []).map((c) => rows[r.value]?.[c.value] ?? '—').join(' / ')}`).join('; ');
     }
-    case 'repeatGroup': {
-      const rows = Array.isArray(value) ? (value as Answers[]) : [];
-      return (
-        <div className="space-y-2">
-          {rows.map((row, i) => (
-            <div key={i} className="flex flex-wrap items-center gap-2 rounded-ctl border border-line p-2">
-              {q.children?.map((c) => (
-                <div key={c.id} className="min-w-[120px] flex-1">
-                  <QuestionInput q={c} value={row[c.id]} onChange={(v) => onChange(rows.map((r, j) => (j === i ? { ...r, [c.id]: v } : r)))} />
-                </div>
-              ))}
-              <Button variant="ghost" size="iconSm" onClick={() => onChange(rows.filter((_, j) => j !== i))} aria-label={t('set.remove')}><Trash2 /></Button>
-            </div>
-          ))}
-          <Button variant="secondary" size="sm" onClick={() => onChange([...rows, {}])}><Plus /> {t('form.addRow', { what: aria.toLocaleLowerCase(lang) })}</Button>
-        </div>
-      );
-    }
-    default:
-      return <Input compact type={q.type === 'phone' ? 'tel' : q.type === 'email' ? 'email' : 'text'} value={String(value ?? '')} onChange={(e) => onChange(e.target.value)} className={cls} aria-label={aria} aria-invalid={invalid} />;
+    default: return String(v);
   }
 }
 
-/** Answers as label → value, for profile tabs. */
-export function AnswersView({ form, answers }: { form: FormSchema; answers: Answers }) {
+/** Answers as label → value (profile tabs, response detail). Photos and signatures show as images. */
+export function AnswersView({ form, answers, masked = [] }: { form: FormSchema; answers: Answers; masked?: string[] }) {
   const lang = useLang();
   const { t } = useT();
-  const display = (q: Question, v: unknown): string => {
-    if (v == null || v === '' || (Array.isArray(v) && !v.length)) return '—';
-    if (q.type === 'yesNo') return t(v ? 'common.yes' : 'common.no');
-    const optLabel = (x: unknown) => { const o = q.options?.find((op) => op.value === x); return o ? o.label[lang] ?? o.label.en ?? String(x) : String(x); };
-    if (q.type === 'selectOne') return optLabel(v);
-    if (q.type === 'selectMany') return (v as unknown[]).map(optLabel).join(', ');
-    if (q.type === 'repeatGroup') return t('form.rows', { count: (v as unknown[]).length });
-    return String(v);
-  };
-  const shown = form.sections.flatMap((s) => s.questions).filter((q) => evaluateLogic(q.showIf, answers));
+  const shown = formFlow(form, answers).flatMap((s) => s.questions).filter((q) => q.type !== 'note');
   return (
     <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
-      {shown.map((q) => (
-        <div key={q.id} className="min-w-0">
-          <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label(q, lang)}</dt>
-          <dd className="mt-0.5 text-[14px] text-ink">{display(q, answers[q.id])}</dd>
-        </div>
-      ))}
+      {shown.map((q) => {
+        const v = answers[q.id];
+        const wide = ['image', 'signature', 'table', 'repeatGroup'].includes(q.type) && !isBlank(v);
+        return (
+          <div key={q.id} className={cn('min-w-0', wide && 'sm:col-span-2')}>
+            <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{qLabel(q, lang)}</dt>
+            <dd className="mt-0.5 text-[14px] text-ink">
+              {masked.includes(q.id) ? <span className="text-muted">{t('form.masked')}</span>
+                : q.type === 'image' && Array.isArray(v) && v.length ? <div className="mt-1 flex flex-wrap gap-2">{(v as string[]).map((p, i) => <Photo key={i} src={p} className="h-20 w-28 rounded-ctl border border-line" />)}</div>
+                : q.type === 'signature' && typeof v === 'string' && v.startsWith('data:') ? <img src={v} alt={t('form.media.signed')} className="mt-1 h-16 rounded-ctl border border-line bg-surface" />
+                : q.type === 'repeatGroup' && Array.isArray(v) && v.length ? (
+                  <ul className="mt-1 space-y-1 text-[13px]">{(v as Answers[]).map((row, i) => <li key={i} className="rounded-ctl bg-canvas px-3 py-1.5">{q.children?.map((c) => `${qLabel(c, lang)}: ${answerText(c, row[c.id], t, lang)}`).join(' · ')}</li>)}</ul>
+                ) : <span className={cn(DISPLAY_TYPES.includes(q.type) && 'tnum font-semibold')}>{answerText(q, v, t, lang, answers[`${q.id}__other`])}</span>}
+            </dd>
+          </div>
+        );
+      })}
     </dl>
   );
 }

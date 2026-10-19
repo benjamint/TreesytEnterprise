@@ -1,3 +1,4 @@
+import { tilePath } from '@/mobile/flows/catalog';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, CalendarRange, ChevronRight } from 'lucide-react';
@@ -101,7 +102,7 @@ export function HomeScreen() {
             <ul className="divide-y divide-line rounded-card border border-line">
               {tiles.slice(0, 4).map((tile) => (
                 <li key={tile.key}>
-                  <button type="button" onClick={() => navigate(`/m/flow/${tile.flow}`)} className="flex min-h-[56px] w-full items-center gap-3 px-4 text-left active:bg-brand-soft">
+                  <button type="button" onClick={() => navigate(tilePath(tile))} className="flex min-h-[56px] w-full items-center gap-3 px-4 text-left active:bg-brand-soft">
                     <tile.icon className="h-5 w-5 text-brand" aria-hidden="true" />
                     <span className="flex-1 font-medium text-ink">{t(`mobile.tile.${tile.key}`)}</span>
                     <ChevronRight className="h-5 w-5 text-muted" aria-hidden="true" />

@@ -14,7 +14,9 @@ import { DataTable, downloadCsv } from '@/components/shared/DataTable';
 import { DetailDrawer, Facts, FilterBar, TabEmpty, useDrawerParam } from '@/components/shared/ListKit';
 import { usePageTour } from '@/components/shared/PageTour';
 import { useDemoNotes } from '@/components/shared/useDemoNotes';
-import { AnswersView } from '@/components/forms/FormFields';
+import { AnswersView, answerText } from '@/components/forms/FormFields';
+import { qLabel } from '@/components/forms/QuestionInput';
+import { allQuestions } from '@/engines/forms';
 import { Donut, HBars, StackedColumns } from '@/components/charts/charts';
 import { useLiveForm } from '@/services/formService';
 import { buildLedger } from '@/engines/loans';
@@ -28,7 +30,7 @@ import { useGroupStore } from '@/stores/groupStore';
 import { useLoanStore } from '@/stores/loanStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useQualityStore } from '@/stores/qualityStore';
-import { useActor, useCurrentOrg, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
+import { useActor, useCurrentOrg, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ScoreChip } from './CommunitiesPage';
 import { FarmerForm } from './FarmerForm';
 import { ActivityFeed, DocumentsPanel, ScoreView, logActivity, useLookups } from './shared';
@@ -78,6 +80,8 @@ export function FarmersPage() {
   const navigate = useNavigate();
   const rows = useFarmerRows();
   const lk = useLookups();
+  const lang = useLang();
+  const liveForm = useLiveForm('farmerProfile');
   const [openId, openDrawer, closeDrawer] = useDrawerParam();
   const [form, setForm] = useState<{ farmer?: Farmer } | null>(null);
   const [q, setQ] = useState('');
@@ -118,7 +122,11 @@ export function FarmersPage() {
     { id: 'nfc', header: t('people.farmer.nfc'), accessorFn: (r) => r.identity.nfcCard?.status === 'ISSUED' || r.identity.nfcCard?.status === 'REPLACED', cell: (c) => <Tick on={c.getValue() as boolean} label={t('people.farmer.nfc')} /> },
     { id: 'quality', header: t('people.quality'), accessorKey: 'qualityStatus', cell: (c) => (c.getValue() === 'FLAGGED' ? <Badge tone="warning"><AlertTriangle className="h-3 w-3" /> {c.row.original.issueRules.length || ''}</Badge> : <Badge tone="success">{t('status.OK')}</Badge>) },
     { id: 'owed', header: t('people.farmer.owed'), accessorKey: 'owed', cell: (c) => ((c.getValue() as number) > 0 ? <span className="tnum whitespace-nowrap text-ink">{f.money({ amountMinor: c.getValue() as number, currency: org.currency })}</span> : <span className="text-muted">—</span>) },
-  ], [t, f, lk, terms, org.currency]);
+    // Every question of the live farmer profile form is a column option (PRD Journey 9).
+    ...allQuestions(liveForm).filter((q) => !['note', 'repeatGroup', 'table', 'image', 'audio', 'video', 'file', 'signature', 'gpsPolygon'].includes(q.type)).map((q): ColumnDef<FarmerRow, unknown> => ({
+      id: `cf_${q.id}`, header: qLabel(q, lang), accessorFn: (r) => answerText(q, r.customFields[q.id], t, lang),
+    })),
+  ], [t, f, lk, terms, org.currency, liveForm, lang]);
 
   const exportProfiling = () => {
     const byAgent = new Map<string, FarmerRow[]>();
@@ -171,6 +179,7 @@ export function FarmersPage() {
             activeId={openId}
             columnPicker
             initialHidden={['crop', 'thumb', 'nfc']}
+            hiddenByDefault={(id) => id.startsWith('cf_')}
             exportCsv={{ fileName: `${org.code.toLowerCase()}-farmers.csv`, columns: [
               { header: t('people.farmer.id'), value: (r) => r.farmerCode }, { header: t('people.farmer.firstName'), value: (r) => r.firstName }, { header: t('people.farmer.lastName'), value: (r) => r.lastName },
               { header: t('col.gender'), value: (r) => r.gender }, { header: t('people.farmer.dob'), value: (r) => r.dateOfBirth }, { header: terms.community, value: (r) => r.community },

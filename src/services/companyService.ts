@@ -1,3 +1,5 @@
+import { optionListsFor, seedForms } from '@/data/forms/library';
+import { useFormStore } from '@/stores/formStore';
 import type { Invite, Organisation } from '@/types';
 import { uid } from '@/lib/utils';
 import i18n from '@/i18n';
@@ -39,6 +41,8 @@ export function createCompany(d: CompanyDraft, actorId: string, via: 'WIZARD' | 
   };
   platform.addOrg(org);
   useSettingsStore.getState().addSettings(buildCompanySettings(orgId, d), org);
+  // Starting forms: farmer, community and group profiles and workshop feedback (PRD G1).
+  if (d.type !== 'BUYER') useFormStore.getState().addForms(seedForms(orgId, actorId, new Date()), optionListsFor(orgId, now));
   const access = useAccessStore.getState();
   access.addRoles(rolesFor(orgId, d.type === 'BUYER' ? 'buyer' : 'supplier'));
   const audit = useActivityStore.getState().addAudit;

@@ -48,6 +48,8 @@ export interface Farmer extends OrgEntity {
   qualityStatus: 'OK' | 'FLAGGED';
   score: number;
   version: number;
+  /** Version of the farmer profile form the answers were captured with. */
+  formVersion?: number;
   customFields: Record<string, unknown>;
 }
 

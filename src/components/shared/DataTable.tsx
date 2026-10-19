@@ -25,6 +25,8 @@ interface Props<T> {
   /** Column picker (columns need an `id` or `accessorKey`). */
   columnPicker?: boolean;
   initialHidden?: string[];
+  /** Columns hidden until picked, including ones added later (e.g. new form questions). */
+  hiddenByDefault?: (columnId: string) => boolean;
   /** CSV export of the filtered rows. */
   exportCsv?: { fileName: string; columns: ExportColumn<T>[] };
   empty?: ReactNode;
@@ -47,7 +49,7 @@ export function downloadCsv(fileName: string, header: string[], rows: (string | 
 }
 
 /** Table with sorting, paging, row selection with bulk actions, column picker and CSV export (PRD 6.2). */
-export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowId, bulkActions, columnPicker, initialHidden = [], exportCsv, empty, activeId }: Props<T>) {
+export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowId, bulkActions, columnPicker, initialHidden = [], hiddenByDefault, exportCsv, empty, activeId }: Props<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selection, setSelection] = useState<RowSelectionState>({});
   const [visibility, setVisibility] = useState<VisibilityState>(() => Object.fromEntries(initialHidden.map((id) => [id, false])));
@@ -71,10 +73,14 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
     ];
   }, [columns, selectable, t]);
 
+  const effectiveVisibility = useMemo<VisibilityState>(() => ({
+    ...Object.fromEntries(columns.map((c) => c.id ?? '').filter((id) => id && hiddenByDefault?.(id)).map((id) => [id, false])),
+    ...visibility,
+  }), [columns, hiddenByDefault, visibility]);
   const table = useReactTable({
     data,
     columns: allColumns,
-    state: { sorting, rowSelection: selection, columnVisibility: visibility },
+    state: { sorting, rowSelection: selection, columnVisibility: effectiveVisibility },
     onSortingChange: setSorting,
     onRowSelectionChange: setSelection,
     onColumnVisibilityChange: setVisibility,

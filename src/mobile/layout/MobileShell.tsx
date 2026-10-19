@@ -37,7 +37,8 @@ export function MobileShell() {
       toast.success(i18n.t('mobile.signedInToast', { name: u.name, lng: u.language }));
     } else toast.error(i18n.t('mobile.notMember'));
     const flow = params.get('flow');
-    navigate(flow && (MOBILE_FLOWS as readonly string[]).includes(flow) ? `/m/flow/${flow}` : '/m', { replace: true });
+    const go = params.get('go');
+    navigate(go?.startsWith('/m/') ? go : flow && (MOBILE_FLOWS as readonly string[]).includes(flow) ? `/m/flow/${flow}` : '/m', { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 

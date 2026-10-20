@@ -22,7 +22,7 @@ import { ActivityFeed, useLookups } from '@/web/features/people/shared';
 import { mono, useFarmerNames } from './common';
 import { QrCode } from './qr';
 
-const TONE = { IN_STOCK: 'success', IN_TRANSIT: 'info', OUT_OF_STOCK: 'neutral', REPLACED: 'warningOutline', WITH_AGENT: 'teal' } as const;
+const TONE = { IN_STOCK: 'success', IN_TRANSIT: 'info', OUT_OF_STOCK: 'neutral', REPLACED: 'warningOutline', WITH_AGENT: 'teal', MISSING: 'danger' } as const;
 type View = 'all' | Bag['status'];
 
 /** Bag registry (PRD D2): every bag code, weight, status, warehouse, history and replacement log. */
@@ -63,7 +63,7 @@ export function BagsPage() {
         search={q}
         onSearch={setQ}
         placeholder={t('buy.searchBags')}
-        views={(['all', 'WITH_AGENT', 'IN_TRANSIT', 'IN_STOCK', 'OUT_OF_STOCK', 'REPLACED'] as const).map((v) => ({ key: v, label: v === 'all' ? t('buy.view.all') : t(`buy.bagStatus.${v}`), active: view === v, onSelect: () => setView(v), count: counts(v) }))}
+        views={(['all', 'WITH_AGENT', 'IN_TRANSIT', 'IN_STOCK', 'OUT_OF_STOCK', 'REPLACED', 'MISSING'] as const).map((v) => ({ key: v, label: v === 'all' ? t('buy.view.all') : t(`buy.bagStatus.${v}`), active: view === v, onSelect: () => setView(v), count: counts(v) }))}
         filters={[
           { key: 'commodity', label: t('col.commodity'), value: commodity, onChange: setCommodity, options: settings.commodities.filter((c) => bags.some((b) => b.commodityId === c.id)).map((c) => ({ value: c.id, label: lk.commodity(c.id) })) },
           { key: 'warehouse', label: t('buy.warehouse'), value: warehouse, onChange: setWarehouse, options: warehouses.map((w) => ({ value: w.id, label: w.name })) },

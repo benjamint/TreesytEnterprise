@@ -127,6 +127,11 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       tolerances: tolerances(commodities), transferBoundsPct: 1, autoWriteOff: true,
       stockCount: { frequency: 'MONTHLY', basis: 'FULL', blind: true },
       liability: { payer: 'AGENT', priceBasis: 'PURCHASE', includeLogistics: true },
+      expenseTypes: [
+        { id: 'wx_in', name: { en: 'Inbound handling', fr: 'Manutention à l’entrée' }, basis: 'PER_BAG', defaultRateMinor: m(1.5) },
+        { id: 'wx_out', name: { en: 'Outbound handling', fr: 'Manutention à la sortie' }, basis: 'PER_BAG', defaultRateMinor: m(1.5) },
+        { id: 'wx_maint', name: { en: 'Maintenance', fr: 'Entretien' }, basis: 'FLAT', defaultRateMinor: m(400) },
+      ],
     },
     support: {
       types: [
@@ -204,7 +209,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     features: { ...base.features, voicePurchase: false },
     extraCharges: [{ id: 'xc_transport', name: 'Transport', amountMinor: m(500), payer: 'company', enabled: true }],
     pricing: { changeApproval: true, premiums: [{ id: 'pm_ra', name: 'Rainforest Alliance', pct: 4 }], history: [] },
-    inventoryRules: { ...base.inventoryRules, transferBoundsPct: 0.5, stockCount: { frequency: 'WEEKLY', basis: 'CYCLE', blind: false }, liability: { payer: 'TRANSPORTER', priceBasis: 'LIST', includeLogistics: false } },
+    inventoryRules: { ...base.inventoryRules, expenseTypes: [{ id: 'wx_in', name: { en: 'Inbound handling', fr: 'Manutention entrée' }, basis: 'PER_BAG', defaultRateMinor: m(250) }, { id: 'wx_fumig', name: { en: 'Fumigation', fr: 'Fumigation' }, basis: 'PER_KG', defaultRateMinor: m(2) }, { id: 'wx_maint', name: { en: 'Maintenance', fr: 'Entretien' }, basis: 'FLAT', defaultRateMinor: m(75_000) }], transferBoundsPct: 0.5, stockCount: { frequency: 'WEEKLY', basis: 'CYCLE', blind: false }, liability: { payer: 'TRANSPORTER', priceBasis: 'LIST', includeLogistics: false } },
     support: {
       ...base.support,
       types: [

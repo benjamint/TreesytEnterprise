@@ -11,7 +11,7 @@ export const TILES: { key: string; icon: LucideIcon; flow: MobileFlow; module: M
   { key: 'buying', icon: ShoppingBasket, flow: 'M5', module: 'buying', path: '/m/buying' },
   { key: 'support', icon: HandHeart, flow: 'M6', module: 'support', path: '/m/support' },
   { key: 'recovery', icon: RotateCcw, flow: 'M7', module: 'recovery', path: '/m/recovery' },
-  { key: 'warehouse', icon: Warehouse, flow: 'M8', module: 'inventory' },
+  { key: 'warehouse', icon: Warehouse, flow: 'M8', module: 'inventory', path: '/m/warehouse' },
   { key: 'trees', icon: Trees, flow: 'M9', module: 'trees' },
   { key: 'plots', icon: Map, flow: 'M9', module: 'plots' },
   { key: 'surveys', icon: ClipboardCheck, flow: 'M10', module: 'forms', path: '/m/surveys' },

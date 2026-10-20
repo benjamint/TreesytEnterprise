@@ -36,6 +36,7 @@ export function payableLink(type: PayableType, id: string): string | undefined {
     case 'AGGREGATOR_EXPENSE': return `/app/aggregators/expenses?open=${id}`;
     case 'FARMER_SUPPORT': return `/app/support?open=${id}`;
     case 'FARMER_REFUND': return `/app/recovery/loans?open=${id}`;
+    case 'WAREHOUSE_EXPENSE': return `/app/inventory/expenses?open=${id.split('#')[0]}`;
     default: return undefined;
   }
 }

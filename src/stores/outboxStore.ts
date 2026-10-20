@@ -23,7 +23,7 @@ export interface OutboxItem {
 
 export type OutboxType =
   | 'purchase' | 'purchaseRequest' | 'fundsReceived' | 'receipt' | 'farmer' | 'farmerEdit' | 'community' | 'group' | 'expense'
-  | 'survey' | 'qualityFix' | 'supportRequest' | 'supportConfirm' | 'supportFulfil' | 'supportAssets' | 'recoveryRequest' | 'repayment' | 'recoveryFeedback' | 'other';
+  | 'survey' | 'qualityFix' | 'supportRequest' | 'supportConfirm' | 'supportFulfil' | 'supportAssets' | 'recoveryRequest' | 'repayment' | 'recoveryFeedback' | 'inboundReceive' | 'transfer' | 'stockCount' | 'warehouseExpense' | 'discrepancyResolve' | 'topUp' | 'agentRepayment' | 'other';
 
 interface OutboxState {
   items: OutboxItem[];

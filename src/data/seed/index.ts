@@ -1,4 +1,5 @@
 import type {
+  AgentRepayment, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
   FormRecord, OptionList, SurveyResponse,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
@@ -18,9 +19,10 @@ import { seedFormData } from './forms';
 import { enrichBuying, enrichPayments } from './buying';
 import { enrichAggregators } from './aggregators';
 import { seedSupport, type SupportSeed } from './support';
+import { seedInventory } from './inventory';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 13;
+export const SEED_VERSION = 14;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -64,6 +66,13 @@ export interface SeedData {
   repayments: Repayment[];
   loanRefunds: LoanRefund[];
   legacyAllocations: LegacyAllocation[];
+  inbounds: Inbound[];
+  discrepancies: Discrepancy[];
+  agentRepayments: AgentRepayment[];
+  movements: StockMovement[];
+  transfers: Transfer[];
+  stockCounts: StockCount[];
+  warehouseExpenses: WarehouseExpense[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -260,6 +269,18 @@ export function buildSeed(now = new Date()): SeedData {
     repayments: sup.flatMap((x) => x.repayments), loanRefunds: sup.flatMap((x) => x.refunds), legacyAllocations: sup.flatMap((x) => x.legacy),
   };
 
+  // ---- Phase 12: inventory (PRD H, Journey 4). Yaw's bags stay with him for the live PRE. ----
+  const inv = [
+    seedInventory(vit, settings[ORG.vitara]!, { orgId: ORG.vitara, seed: 1212, today: clock.today, lang: 'en', currency: 'GHS', approvers: ['u_adwoa', 'u_ibrahim', 'u_kwame', 'u_efua'], financeUserId: 'u_efua', keepAgentIds: [yawAgent.id] }),
+    seedInventory(ki, settings[ORG.kakao]!, { orgId: ORG.kakao, seed: 2323, today: clock.today, lang: 'fr', currency: 'XOF', approvers: ['u_aicha', 'u_jeanmarc'], financeUserId: 'u_jeanmarc', keepAgentIds: [] }),
+  ];
+  vit.activity.push(...inv[0]!.activity);
+  ki.activity.push(...inv[1]!.activity);
+  const inventoryData = {
+    inbounds: inv.flatMap((x) => x.inbounds), discrepancies: inv.flatMap((x) => x.discrepancies), agentRepayments: inv.flatMap((x) => x.agentRepayments),
+    movements: inv.flatMap((x) => x.movements), transfers: inv.flatMap((x) => x.transfers), stockCounts: inv.flatMap((x) => x.stockCounts), warehouseExpenses: inv.flatMap((x) => x.warehouseExpenses),
+  };
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
   return {
@@ -270,7 +291,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData,
   };
 }
 

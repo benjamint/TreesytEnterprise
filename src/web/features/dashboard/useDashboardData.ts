@@ -41,6 +41,7 @@ export function useDashboardData() {
   const acs = useOrgRows(useBuyingStore((s) => s.aggregatorPurchases));
   const acsPre = useOrgRows(useBuyingStore((s) => s.aggregatorExpenses));
   const support = useOrgRows(useSupportStore((s) => s.requests));
+  const wexp = useOrgRows(useWarehouseStore((s) => s.warehouseExpenses));
   const bags = useOrgRows(useBuyingStore((s) => s.bags));
   const payments = useOrgRows(usePaymentStore((s) => s.payments));
   const wallets = useOrgRows(usePaymentStore((s) => s.wallets));
@@ -103,8 +104,9 @@ export function useDashboardData() {
     }
     if (settings.modules.aggregators) { add(acs as never, 'aggregatorPurchase', '/app/aggregators'); add(acsPre as never, 'aggregatorExpense', '/app/aggregators/expenses'); }
     if (settings.modules.support) add(support.filter((r) => r.wf) as never, 'supportRequest', '/app/support');
+    if (settings.modules.inventory) add(wexp.filter((r) => r.wf) as never, 'warehouseExpense', '/app/inventory/expenses');
     return items.sort((a, b) => (a.risk === 'HIGH' ? -1 : 0) - (b.risk === 'HIGH' ? -1 : 0) || b.createdAt.localeCompare(a.createdAt));
-  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, support, agentName, names]);
+  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, support, wexp, agentName, names]);
 
   const charts = useMemo(() => {
     const now = Date.now();

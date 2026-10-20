@@ -21,6 +21,13 @@ const TONES: Record<string, Tone> = {
   ACTIVATED: 'teal', PARTIALLY_RECOVERED: 'teal', PARTIALLY_FULFILLED: 'teal', DISBURSED: 'paid', LINE_PAID: 'paid',
   SETTLED: 'done', CLOSED: 'done', RECEIPT_NA: 'neutral',
   LINE_REJECTED: 'danger', LINE_DECLINED: 'dangerOutline', OVERDUE: 'danger',
+  IN_PENDING: 'warning', IN_CONFIRMED: 'success', IN_DISCREPANCY: 'danger', IN_NEEDS_RESOLUTION: 'warningOutline', IN_REFUND_SUBMITTED: 'info', IN_RESOLVED: 'done',
+  D_OPEN: 'danger', D_AUTO_WRITTEN_OFF: 'neutral', D_RESOLVED: 'done',
+  RP_SUBMITTED: 'warning', RP_APPROVED: 'success', RP_PARTIAL: 'warningOutline', RP_REJECTED: 'danger',
+  BAG_ORIGINAL: 'success', BAG_MISSING: 'danger', BAG_REPLACED: 'warningOutline', BAG_TOP_UP: 'teal',
+  TRANSFER_PENDING: 'info', TRANSFER_COMPLETE: 'done', DISPATCHED: 'paid', SCHEDULED: 'neutral', INCONSISTENT: 'danger',
+  ADJ_PENDING: 'warning', ADJ_APPROVED: 'success', ADJ_REJECTED: 'dangerOutline',
+  WP_PENDING: 'neutral', WP_PARTIAL: 'teal', WP_FULL: 'paid', WP_REJECTED: 'danger',
   UNKNOWN: 'unknown',
 };
 

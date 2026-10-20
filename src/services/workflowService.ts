@@ -6,6 +6,7 @@ import { uid } from '@/lib/utils';
 import { useAccessStore } from '@/stores/accessStore';
 import { useActivityStore } from '@/stores/activityStore';
 import { useBuyingStore } from '@/stores/buyingStore';
+import { useWarehouseStore } from '@/stores/warehouseStore';
 import { useSupportStore } from '@/stores/supportStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useSettingsStore } from '@/stores/settingsStore';
@@ -15,17 +16,18 @@ import { useSettingsStore } from '@/stores/settingsStore';
  * record, writes activity events and notifies whoever can act next.
  */
 
-type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases' | 'aggregatorExpenses';
-type Source = { key: BuyingKey; entity: string; path: string; store?: 'buying' | 'support' };
+type BuyingKey = 'requests' | 'expenses' | 'aggregatorPurchases' | 'aggregatorExpenses' | 'warehouseExpenses';
+type Source = { key: BuyingKey; entity: string; path: string; store?: 'buying' | 'support' | 'warehouse' };
 export const DOC_SOURCES: Partial<Record<DocType, Source>> = {
   purchaseRequest: { key: 'requests', entity: 'purchaseRequest', path: '/app/purchase-requests' },
   preExpense: { key: 'expenses', entity: 'preExpense', path: '/app/expenses' },
   aggregatorPurchase: { key: 'aggregatorPurchases', entity: 'aggregatorPurchase', path: '/app/aggregators' },
   aggregatorExpense: { key: 'aggregatorExpenses', entity: 'aggregatorExpense', path: '/app/aggregators/expenses' },
   supportRequest: { key: 'requests', entity: 'supportRequest', path: '/app/support', store: 'support' },
+  warehouseExpense: { key: 'warehouseExpenses', entity: 'warehouseExpense', path: '/app/inventory/expenses', store: 'warehouse' },
 };
 
-const storeOf = (src: Source) => (src.store === 'support' ? useSupportStore : useBuyingStore) as unknown as { getState: () => Record<string, unknown>; setState: (p: Record<string, unknown>) => void };
+const storeOf = (src: Source) => (src.store === 'support' ? useSupportStore : src.store === 'warehouse' ? useWarehouseStore : useBuyingStore) as unknown as { getState: () => Record<string, unknown>; setState: (p: Record<string, unknown>) => void };
 
 export function workflowUser(userId: string, orgId: string): WorkflowUser {
   const { users, memberships, roles } = useAccessStore.getState();

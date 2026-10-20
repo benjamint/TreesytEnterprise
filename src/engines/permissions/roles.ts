@@ -66,7 +66,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
   },
   warehouseOfficer: {
     mobile: true,
-    permissions: ['mobile.use', 'mobile.warehouse', 'inbound.receive', 'outbound.create', 'outbound.receiveTransfer', 'stockCounts.create', 'warehouseExpenses.create', 'notifications.view'],
+    permissions: ['mobile.use', 'mobile.warehouse', 'warehouses.view', 'inbound.view', 'inbound.receive', 'inbound.resolve', 'stockCounts.view', 'warehouseExpenses.view', 'outbound.create', 'outbound.receiveTransfer', 'stockCounts.create', 'warehouseExpenses.create', 'notifications.view'],
   },
   buyerUser: { permissions: ['traceboard.view', 'traceboard.downloadDocuments', 'traceboard.requestInsights'] },
   auditor: { permissions: ['*.view', '*.export', '!platform.*'] },

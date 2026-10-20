@@ -14,6 +14,7 @@ import { saveCommunity, saveFarmerEdit, saveGroup, saveIdentity, type CommunityP
 import { applyFix } from './qualityService';
 import type { FarmerIdentity } from '@/types';
 import { confirmRecipients, createSupportRequest, recordFulfilment, saveAssets, type Confirmation, type NewSupportRequest } from './supportService';
+import { createTransfer, createWarehouseExpense, receiveInbound, receiveTopUp, resolveDiscrepancy, submitAgentRepayment, submitCount, type NewWarehouseExpense, type ReceiveInput, type TransferInput } from './inventoryService';
 import { createRecoveryRequest, recordRepayment, saveFeedback, type RepaymentInput } from './recoveryService';
 
 /** How each kind of phone save is written to the shared stores (now when online, or on Sync). */
@@ -97,4 +98,16 @@ registerSyncHandler('recoveryRequest', { apply: (i) => createRecoveryRequest({ .
 registerSyncHandler('repayment', { apply: (i) => recordRepayment({ ...(i.payload as RepaymentInput), actorId: i.userId, device: 'mobile' }) });
 registerSyncHandler('recoveryFeedback', {
   apply: (i) => { const p = i.payload as { id: string; experience: string; lendAgain: 'YES' | 'MAYBE' | 'NO'; comment?: string }; saveFeedback(p.id, p, i.userId, 'mobile'); },
+});
+
+registerSyncHandler('inboundReceive', { apply: (i) => { const p = i.payload as { inboundId: string } & ReceiveInput; return receiveInbound(p.inboundId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('transfer', { apply: (i) => createTransfer({ ...(i.payload as TransferInput), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('stockCount', { apply: (i) => { const p = i.payload as { countId: string; codes: string[]; weighed?: Record<string, number>; photos?: string[] }; return submitCount(p.countId, p, i.userId, 'mobile'); } });
+registerSyncHandler('warehouseExpense', { apply: (i) => createWarehouseExpense({ ...(i.payload as NewWarehouseExpense), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('discrepancyResolve', {
+  apply: (i) => { const p = i.payload as { id: string; type: 'BAG_RETURNED' | 'TAG_REPLACED' | 'WRITTEN_OFF'; newCode?: string; kg?: number; note?: string }; resolveDiscrepancy(p.id, p, i.userId, 'mobile'); },
+});
+registerSyncHandler('topUp', { apply: (i) => { const p = i.payload as { inboundId: string; code: string; kg: number }; return receiveTopUp(p.inboundId, p.code, p.kg, i.userId, 'mobile'); } });
+registerSyncHandler('agentRepayment', {
+  apply: (i) => { const p = i.payload as { inboundId: string; amountMinor: number; method: 'MOMO' | 'CASH' | 'BANK'; reference?: string; proof?: string }; return submitAgentRepayment(p.inboundId, p, i.userId, 'mobile'); },
 });

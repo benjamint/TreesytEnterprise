@@ -210,6 +210,8 @@ export interface InventoryRules {
   autoWriteOff: boolean;
   stockCount: { frequency: 'WEEKLY' | 'MONTHLY' | 'QUARTERLY'; basis: 'FULL' | 'CYCLE'; blind: boolean };
   liability: { payer: 'AGENT' | 'TRANSPORTER' | 'COMPANY'; priceBasis: 'PURCHASE' | 'LIST'; includeLogistics: boolean };
+  /** Warehouse expense types (PRD H5). */
+  expenseTypes?: { id: string; name: Partial<Record<Lang, string>>; basis: 'PER_BAG' | 'PER_KG' | 'FLAT'; defaultRateMinor: number }[];
 }
 
 export interface SupportType {

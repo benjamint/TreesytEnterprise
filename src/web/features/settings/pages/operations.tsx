@@ -445,6 +445,8 @@ const MOVEMENTS: MovementType[] = ['INBOUND', 'TRANSFER', 'STORAGE'];
 
 export function InventoryRulesPage() {
   const d = useSettingsDraft('inventoryRules', INVENTORY_KEYS);
+  const org = useCurrentOrg();
+  const langs = org.languages.length ? org.languages : [org.language];
   const r = d.value.inventoryRules;
   const commodities = useCommodities();
   const lang = useLang();
@@ -532,6 +534,20 @@ export function InventoryRulesPage() {
             <SwitchRow label={t('set.inventory.includeLogistics')} checked={r.liability.includeLogistics} onChange={(includeLogistics) => set({ liability: { ...r.liability, includeLogistics } })} />
           </Rows>
         </div>
+      </Section>
+
+      <Section title={t('set.inventory.expenseTypes')} description={t('set.inventory.expenseTypesHint')}>
+        <EditTable head={[t('set.inventory.expenseName'), t('set.inventory.expenseBasis'), t('set.inventory.expenseRate'), '']}>
+          {(r.expenseTypes ?? []).map((x, i) => (
+            <tr key={x.id}>
+              <td><LangInputs label={t('set.inventory.expenseName')} value={x.name} onChange={(name) => set({ expenseTypes: (r.expenseTypes ?? []).map((y, j) => (j === i ? { ...y, name } : y)) })} languages={langs} /></td>
+              <td className="w-44"><Select value={x.basis} onChange={(basis) => set({ expenseTypes: (r.expenseTypes ?? []).map((y, j) => (j === i ? { ...y, basis } : y)) })} options={(['PER_BAG', 'PER_KG', 'FLAT'] as const).map((b) => ({ value: b, label: t(`set.inventory.basisLine.${b}`) }))} aria-label={t('set.inventory.expenseBasis')} /></td>
+              <td className="w-44"><MoneyInput minor={x.defaultRateMinor} currency={org.currency} onChange={(defaultRateMinor) => set({ expenseTypes: (r.expenseTypes ?? []).map((y, j) => (j === i ? { ...y, defaultRateMinor } : y)) })} aria-label={t('set.inventory.expenseRate')} /></td>
+              <td className="w-12"><RowDelete label={t('set.remove')} onClick={() => set({ expenseTypes: (r.expenseTypes ?? []).filter((_, j) => j !== i) })} /></td>
+            </tr>
+          ))}
+        </EditTable>
+        <div className="mt-3"><AddRow onClick={() => set({ expenseTypes: [...(r.expenseTypes ?? []), { id: uid('wx'), name: { [org.language]: t('set.inventory.newExpense') }, basis: 'FLAT', defaultRateMinor: 0 }] })}>{t('set.inventory.addExpense')}</AddRow></div>
       </Section>
     </SettingsFrame>
   );

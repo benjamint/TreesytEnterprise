@@ -5,7 +5,7 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 11._
+_Last updated: Phase 12._
 
 Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
@@ -140,7 +140,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Related unpaid purchases — purchase drawer offers paying the request's other unpaid purchases together; bulk pay from the list (same request, up to the company batch size)
 - [x] Sourcing export — CSV export of purchases and requests
 - [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt; agents create PREs on the phone too (`/m/buying/pre/new`, offline-capable)
-- [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
+- [x] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery at the agent's warehouse (or the company hub) and moves its bags in transit
 - [x] Price board — current price per commodity × zone, change history, paid vs list chart, suggested price (median paid within the tolerance band)
 - [x] Aggregator registry — `/app/aggregators/suppliers`: individual / company, contact, address, ID / KYC documents, payout by mobile money or bank (bank list per country), status Pending approval / Approved / Blocked, purchase history; new suppliers need approval by someone other than their creator, blocking needs a reason, payout edits are logged
 - [x] Aggregator purchase create / approve / reject / disburse — `/app/aggregators`: list with every PRD column, views and filters, CSV export; create with supplier search or a new supplier inline, unique PO number, bags × weight per bag, price from the list with tolerance and override reason, deal currency and exchange rate (company-currency total shown), includes PRE, PO file and optional weighbridge report, aggregator-threshold hint; approval through the workflow engine; disburse in part or in full by mobile money / bank (payments engine, maker-checker) or manual proof, never above the total and only once the supplier is approved
@@ -209,20 +209,20 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Inventory and sales (Scope 7)
 
-- [~] Warehouses — 3 per company seeded, preview table [12]
-- [ ] Stock balances [12]
-- [ ] Pending inbound [12]
-- [ ] Inbound with tag statuses [12]
-- [ ] Discrepancies [12]
-- [ ] Tolerance auto write-off [12]
-- [ ] Physical resolution [12]
-- [ ] Weight reimbursement allocation [12]
-- [ ] Agent repayment + finance review [12]
-- [ ] Outbound [12]
-- [ ] Transfer out / in pipeline [12]
-- [ ] Transfer weight bounds [12]
-- [ ] Stock counts [12]
-- [ ] Warehouse expenses + 4-level approval [12]
+- [x] Warehouses — list and map, type, place, officers, capacity, stock by commodity, utilisation, open discrepancies; detail with stock (by commodity, by bag, ageing), movements, expected, discrepancies, counts, expenses, officers, activity
+- [x] Stock balances — bags in stock per warehouse; every movement keeps the balance before and after
+- [x] Pending inbound — expected deliveries from paid PREs (bag list, source agent, kg) and from transfers; on the officer's phone
+- [x] Inbound with tag statuses — Original / Missing / Replaced tag / Weight top-up per bag, web and phone (M8)
+- [x] Discrepancies — missing and weight, expected vs received, variance kg and %, Open / Auto written off / Resolved, resolution type; list, filters, export
+- [x] Tolerance auto write-off — under the commodity and movement tolerance, with a status and an activity note
+- [x] Physical resolution — bag returned, tag replaced, written off with a reason
+- [x] Weight reimbursement allocation — top-up bags go to the oldest open weight discrepancies first, allocation shown
+- [x] Agent repayment + finance review — owed = lost kg × blended purchase/loan-produce price (or list price) + logistics share for missing bags; agent pays on the phone with proof; finance approves in full, in part (balance stays) or rejects with a reason
+- [x] Outbound — pick or scan bags; bags out of stock
+- [x] Transfer out / in pipeline — bags in transit, expected at the destination for its officer, received with the same bag statuses; the phone shows each step (received, missing, written off, weight, stock)
+- [~] Transfer weight bounds — each bag checked against the packaging min/max and the transfer tolerance; the overall out-vs-in percentage setting is shown but not yet enforced [18]
+- [x] Stock counts — scheduled (company frequency) or ad hoc, scan on the phone (blind option), expected vs counted, by agent and commodity, photos, adjustment request approved by someone else
+- [x] Warehouse expenses + 4-level approval — company expense types (Settings → Inventory rules), lines per payee, Vitara 4 people / Kakao Ivoire 2, MoMo per line or manual proof, Pending / Partial / Full / Rejected
 - [ ] Dispatch (direct + inventory) [13]
 - [ ] Dispatch approval [13]
 - [ ] Shipment statuses + tracking [13]

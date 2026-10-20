@@ -55,6 +55,19 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'previous', separation: sep,
     },
     {
+      // No automatic step: every level is a person (PRD H5).
+      id: 'wf_vit_wsx', docType: 'warehouseExpense', statuses: ['PENDING', 'LEVEL_1_APPROVED', 'LEVEL_2_APPROVED', 'LEVEL_3_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'l1', name: 'Level 1 — Warehouse manager', roleIds: [], permission: 'warehouseExpenses.approve' },
+        { id: 'l2', name: 'Level 2 — Logistics', roleIds: [], permission: 'expenses.approveLevel2' },
+        { id: 'l3', name: 'Level 3 — Operations', roleIds: [], permission: 'expenses.approveLevel3' },
+        { id: 'l4', name: 'Level 4 — Finance', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { l1: 'LEVEL_1_APPROVED', l2: 'LEVEL_2_APPROVED', l3: 'LEVEL_3_APPROVED', l4: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'previous', separation: sep,
+    },
+    {
       id: 'wf_vit_acs', docType: 'aggregatorPurchase', statuses: ['PENDING', 'APPROVED', 'REJECTED', 'PARTIALLY_DISBURSED', 'FUNDS_DISBURSED'],
       steps: [{ id: 'ops', name: 'Operations approval', roleIds: [], permission: 'aggregators.approve' }],
       stepStatus: { ops: 'APPROVED' },
@@ -106,6 +119,16 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
     {
+      id: 'wf_ki_wsx', docType: 'warehouseExpense', statuses: ['PENDING', 'LEVEL_1_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'l1', name: 'Responsable magasin', roleIds: [], permission: 'warehouseExpenses.approve' },
+        { id: 'fin', name: 'Finance', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { l1: 'LEVEL_1_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
       id: 'wf_ki_acs', docType: 'aggregatorPurchase', statuses: ['PENDING', 'APPROVED', 'REJECTED', 'PARTIALLY_DISBURSED', 'FUNDS_DISBURSED'],
       steps: [{ id: 'ops', name: 'Directeur des opérations', roleIds: [], permission: 'aggregators.approve' }],
       stepStatus: { ops: 'APPROVED' },
@@ -139,6 +162,10 @@ export const VITARA_NUMBERING: NumberingPattern[] = [
   { docType: 'aggregatorPurchase', prefix: 'ACS', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'aggregatorExpense', prefix: 'ACSPRE', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'warehouseExpense', prefix: 'WSPRE', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
+  { docType: 'inbound', prefix: 'IN', pattern: '{prefix}-{yymm}-{seq:4}', scope: 'month' },
+  { docType: 'transfer', prefix: 'TRF', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
+  { docType: 'stockCount', prefix: 'CNT', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
+  { docType: 'inventoryRepayment', prefix: 'IRP', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'supportRequest', prefix: 'PF', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'recoveryBatch', prefix: 'RR', pattern: '{prefix}-{seq:4}', scope: 'company' },
   { docType: 'salesContract', prefix: 'SC', pattern: '{prefix}-{yyyy}-{seq:3}', scope: 'year' },

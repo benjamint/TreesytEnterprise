@@ -47,6 +47,11 @@ import { SupportPage } from '@/web/features/support/SupportPage';
 import { ProvidersPage } from '@/web/features/support/ProvidersPage';
 import { AllocationsPage } from '@/web/features/support/AllocationsPage';
 import { RecoveryPage } from '@/web/features/support/RecoveryPage';
+import { WarehousesPage } from '@/web/features/inventory/WarehousesPage';
+import { InboundPage } from '@/web/features/inventory/InboundPage';
+import { OutboundPage } from '@/web/features/inventory/OutboundPage';
+import { StockCountsPage } from '@/web/features/inventory/StockCountsPage';
+import { WarehouseExpensesPage } from '@/web/features/inventory/WarehouseExpensesPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
@@ -63,10 +68,11 @@ import { RecordPurchaseScreen } from '@/mobile/flows/buying/RecordPurchaseScreen
 import { NewPreScreen, VoicePurchaseScreen } from '@/mobile/flows/buying/VoiceAndPreScreens';
 import { NewSupportScreen, SupportDetailScreen, SupportScreen } from '@/mobile/flows/support/SupportScreens';
 import { NewRecoveryScreen, RecoveryDetailScreen, RecoveryScreen, RepayScreen } from '@/mobile/flows/support/RecoveryScreens';
+import { AgentRepayScreen, CountScreen, OutboundScreen, ReceiveScreen, ResolveScreen, WarehouseExpensesScreen, WarehouseScreen } from '@/mobile/flows/warehouse/WarehouseScreens';
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -125,6 +131,11 @@ export const router = createBrowserRouter([
       { path: 'recovery/loans', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="loans" /></RouteGuard> },
       { path: 'recovery/repayments', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="repayments" /></RouteGuard> },
       { path: 'recovery/dashboard', element: <RouteGuard routeKey="recovery"><RecoveryPage tab="dashboard" /></RouteGuard> },
+      { path: 'warehouses', element: <RouteGuard routeKey="warehouses"><WarehousesPage /></RouteGuard> },
+      { path: 'inventory/inbound', element: <RouteGuard routeKey="inbound"><InboundPage /></RouteGuard> },
+      { path: 'inventory/outbound', element: <RouteGuard routeKey="outbound"><OutboundPage /></RouteGuard> },
+      { path: 'inventory/stock-counts', element: <RouteGuard routeKey="stockCounts"><StockCountsPage /></RouteGuard> },
+      { path: 'inventory/expenses', element: <RouteGuard routeKey="warehouseExpenses"><WarehouseExpensesPage /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
       { path: 'payments', element: <RouteGuard routeKey="payments"><PaymentsPage /></RouteGuard> },
       { path: 'payments/wallets', element: <RouteGuard routeKey="wallets"><WalletsPage /></RouteGuard> },
@@ -189,6 +200,14 @@ export const router = createBrowserRouter([
       { path: 'recovery/new', element: <NewRecoveryScreen /> },
       { path: 'recovery/:id', element: <RecoveryDetailScreen /> },
       { path: 'recovery/:id/repay', element: <RepayScreen /> },
+      { path: 'warehouse', element: <WarehouseScreen /> },
+      { path: 'warehouse/receive/:id', element: <ReceiveScreen /> },
+      { path: 'warehouse/outbound', element: <OutboundScreen /> },
+      { path: 'warehouse/count', element: <CountScreen /> },
+      { path: 'warehouse/count/:id', element: <CountScreen /> },
+      { path: 'warehouse/expenses', element: <WarehouseExpensesScreen /> },
+      { path: 'warehouse/resolve/:id', element: <ResolveScreen /> },
+      { path: 'warehouse/repay/:id', element: <AgentRepayScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

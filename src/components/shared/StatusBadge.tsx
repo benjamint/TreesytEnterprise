@@ -28,6 +28,7 @@ const TONES: Record<string, Tone> = {
   TRANSFER_PENDING: 'info', TRANSFER_COMPLETE: 'done', DISPATCHED: 'paid', SCHEDULED: 'neutral', INCONSISTENT: 'danger',
   ADJ_PENDING: 'warning', ADJ_APPROVED: 'success', ADJ_REJECTED: 'dangerOutline',
   WP_PENDING: 'neutral', WP_PARTIAL: 'teal', WP_FULL: 'paid', WP_REJECTED: 'danger',
+  ARRIVED: 'info', VERIFIED: 'done', AGREED: 'teal', ORDER_CREATED: 'info', CANCELLED: 'neutral', INS_OPEN: 'warning', INS_ANSWERED: 'success',
   UNKNOWN: 'unknown',
 };
 

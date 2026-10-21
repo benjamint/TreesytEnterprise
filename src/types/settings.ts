@@ -214,6 +214,20 @@ export interface InventoryRules {
   expenseTypes?: { id: string; name: Partial<Record<Lang, string>>; basis: 'PER_BAG' | 'PER_KG' | 'FLAT'; defaultRateMinor: number }[];
 }
 
+export type ImpactKpi = 'womenShare' | 'childrenPerFarmer' | 'treesPlanted' | 'plotsMapped' | 'eudr';
+
+/** Sales contracts and dispatch (PRD H6–H7): terms, packaging, templates, what buyers see. */
+export interface SalesSettings {
+  paymentTerms: { id: string; name: Partial<Record<Lang, string>>; instalments: { pct: number; trigger: 'SIGNATURE' | 'DELIVERY' | 'AFTER_DELIVERY'; days: number }[] }[];
+  packaging: { id: string; name: Partial<Record<Lang, string>> }[];
+  templates: { id: string; name: string; commodityId: string; unitId: string; paymentTermId: string; packagingId: string; tolerancePct: number; deliveryPoint: string; clauses: string }[];
+  impactKpis: ImpactKpi[];
+  /** Certifications shown to buyers on Traceboard. */
+  certifications: string[];
+  /** Days before a shipment window ends when an open contract is flagged. */
+  overdueAlertDays: number;
+}
+
 export interface SupportType {
   id: string;
   name: Partial<Record<Lang, string>>;
@@ -361,6 +375,7 @@ export interface OrgSettings {
   extraCharges: ExtraCharge[];
   pricing: { changeApproval: boolean; premiums: { id: string; name: string; pct: number }[]; history: PriceChange[] };
   inventoryRules: InventoryRules;
+  sales: SalesSettings;
   support: SupportSettings;
   fieldTeam: FieldTeamSettings;
   qualityRules: QualityRule[];

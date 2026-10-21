@@ -228,19 +228,30 @@ export function seedInventory(ops: OpsResult, settings: OrgSettings, o: Opts): I
     const hubBags = atHub().sort((a, b) => a.code.localeCompare(b.code));
     sendTransfer(hubBags.slice(0, Math.round(hubBags.length * 0.35)), 14, true);
     sendTransfer(atHub().slice(-8), 1, false);
-    // Half of what reached central went out to dispatch.
-    const atCentral = ops.bags.filter((b) => b.status === 'IN_STOCK' && b.warehouseId === central.id);
-    const outBags = atCentral.slice(0, Math.floor(atCentral.length / 2));
-    if (outBags.length) {
-      const at = o.today.getTime() - 5 * DAY;
+    // Outbounds waiting to be loaded on dispatch orders (Phase 13 links them): half of each commodity
+    // at central, and four shipments of the hub's main commodity over the last weeks.
+    const outbound = (wh: Warehouse, outBags: Bag[], daysAgo: number) => {
+      if (!outBags.length) return;
+      const at = o.today.getTime() - daysAgo * DAY;
       const id = `${o.orgId}_trf_${out.transfers.length + 1}`;
       const number = issue('transfer', at);
       const kg = r1(outBags.reduce((s, b) => s + b.weightKg, 0));
-      for (const b of outBags) { b.status = 'OUT_OF_STOCK'; hist(b, 'DISPATCH', number, officerOf(central), iso(at)); }
-      out.transfers.push({ id, orgId: o.orgId, createdAt: iso(at), updatedAt: iso(at), createdBy: officerOf(central), number, kind: 'OUTBOUND', fromWarehouseId: central.id, commodityId: outBags[0]!.commodityId, bagCodes: outBags.map((b) => b.code), sentKg: kg, status: 'DISPATCHED', device: 'web' });
-      movement(central.id, 'OUT', outBags[0]!.commodityId, outBags.length, -kg, number, id, officerOf(central), iso(at));
-      act('transfer', id, 'transfer.outbound', { number, count: outBags.length, kg }, officerOf(central), iso(at));
+      for (const b of outBags) { b.status = 'OUT_OF_STOCK'; hist(b, 'DISPATCH', number, officerOf(wh), iso(at)); }
+      out.transfers.push({ id, orgId: o.orgId, createdAt: iso(at), updatedAt: iso(at), createdBy: officerOf(wh), number, kind: 'OUTBOUND', fromWarehouseId: wh.id, commodityId: outBags[0]!.commodityId, bagCodes: outBags.map((b) => b.code), sentKg: kg, status: 'DISPATCHED', device: 'web' });
+      movement(wh.id, 'OUT', outBags[0]!.commodityId, outBags.length, -kg, number, id, officerOf(wh), iso(at));
+      act('transfer', id, 'transfer.outbound', { number, count: outBags.length, kg }, officerOf(wh), iso(at));
+    };
+    const atCentral = ops.bags.filter((b) => b.status === 'IN_STOCK' && b.warehouseId === central.id);
+    for (const cid of [...new Set(atCentral.map((b) => b.commodityId))]) {
+      const list = atCentral.filter((b) => b.commodityId === cid);
+      if (list.length >= 4) outbound(central, list.slice(0, Math.floor(list.length / 2)), 5);
     }
+    const atSrc = atHub();
+    const counts = new Map<string, number>();
+    for (const b of atSrc) counts.set(b.commodityId, (counts.get(b.commodityId) ?? 0) + 1);
+    const main = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
+    const mainBags = atSrc.filter((b) => b.commodityId === main).sort((a, b) => a.code.localeCompare(b.code));
+    [40, 25, 9, 2].forEach((daysAgo, k) => outbound(hub, mainBags.slice(k * 12, k * 12 + 12), daysAgo));
   }
 
   // ---------- Stock counts: reconciled last month, inconsistent this week (adjustment waiting), one scheduled ----------

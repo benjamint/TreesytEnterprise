@@ -101,7 +101,7 @@ function Approvals() {
               <span className="block truncate text-[13px] text-muted">{t(`docType.${q.docType}`)} · {q.by} · {f.relative(q.createdAt)}</span>
             </Link>
             <StatusBadge status={q.status} />
-            <span className="tnum w-32 text-right font-medium text-ink">{f.money(q.total)}</span>
+            <span className="tnum w-32 text-right font-medium text-ink">{q.kg != null ? f.kg(Math.round(q.kg)) : f.money(q.total)}</span>
             <span className="flex gap-1">
               <Tip label={t('dashboard.approve')}><Button size="iconSm" onClick={() => run(q, 'APPROVE')} aria-label={`${t('dashboard.approve')} ${q.number}`}><Check /></Button></Tip>
               <Tip label={t('dashboard.hold')}><Button size="iconSm" variant="secondary" onClick={() => run(q, 'HOLD')} aria-label={`${t('dashboard.hold')} ${q.number}`}><Pause /></Button></Tip>

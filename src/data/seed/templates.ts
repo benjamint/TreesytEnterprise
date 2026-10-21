@@ -68,6 +68,13 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'previous', separation: sep,
     },
     {
+      id: 'wf_vit_do', docType: 'dispatchOrder', statuses: ['PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'PENDING', 'IN_TRANSIT', 'ARRIVED', 'DELIVERED', 'VERIFIED'],
+      steps: [{ id: 'log', name: 'Logistics approval', roleIds: [], permission: 'dispatch.approve' }],
+      stepStatus: { log: 'PENDING' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'PENDING', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
       id: 'wf_vit_acs', docType: 'aggregatorPurchase', statuses: ['PENDING', 'APPROVED', 'REJECTED', 'PARTIALLY_DISBURSED', 'FUNDS_DISBURSED'],
       steps: [{ id: 'ops', name: 'Operations approval', roleIds: [], permission: 'aggregators.approve' }],
       stepStatus: { ops: 'APPROVED' },
@@ -126,6 +133,13 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       ],
       stepStatus: { l1: 'LEVEL_1_APPROVED', fin: 'APPROVED' },
       initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_ki_do', docType: 'dispatchOrder', statuses: ['PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'PENDING', 'IN_TRANSIT', 'ARRIVED', 'DELIVERED', 'VERIFIED'],
+      steps: [{ id: 'log', name: 'Responsable logistique', roleIds: [], permission: 'dispatch.approve' }],
+      stepStatus: { log: 'PENDING' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'PENDING', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
     {

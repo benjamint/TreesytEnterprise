@@ -5,9 +5,9 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 12._
+_Last updated: Phase 13._
 
-Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
+Every Settings page (28, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
 Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", "next payout fails", reset demo data, page notes and page actions such as the agent's phone steps for Journey 2) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
@@ -223,18 +223,18 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [~] Transfer weight bounds — each bag checked against the packaging min/max and the transfer tolerance; the overall out-vs-in percentage setting is shown but not yet enforced [18]
 - [x] Stock counts — scheduled (company frequency) or ad hoc, scan on the phone (blind option), expected vs counted, by agent and commodity, photos, adjustment request approved by someone else
 - [x] Warehouse expenses + 4-level approval — company expense types (Settings → Inventory rules), lines per payee, Vitara 4 people / Kakao Ivoire 2, MoMo per line or manual proof, Pending / Partial / Full / Rejected
-- [ ] Dispatch (direct + inventory) [13]
-- [ ] Dispatch approval [13]
-- [ ] Shipment statuses + tracking [13]
-- [ ] Verification + documents [13]
-- [~] Sale number — per-client sequence pattern `SN-{clientCode}-{seq:4}` [13]
-- [ ] Impact metrics [13]
-- [ ] Sales contracts (spec, terms, packaging, statuses, fulfilment, documents, officers) [13]
-- [ ] Traceboard supplier view [13]
-- [~] Traceboard buyer view — buyer companies see only Traceboard; data-sharing grant Vitara → Nordic Shea Butter AB seeded [13]
-- [ ] Order detail + document download log [13]
-- [ ] Insights request [13]
-- [ ] Shipment notifications [13]
+- [x] Dispatch (direct + inventory) — from inventory loads pending outbounds (commodity must match the contract) or bought direct from purchase requests; client, optional contract, loading point, driver (name, phone, licence image), truck (plate, image), waybill, expected kg and t; outbounds are marked as loaded
+- [x] Dispatch approval — workflow from Settings → Approvals (Vitara: logistics/operations, Kakao Ivoire: same); the creator can't approve; on the dashboard queue
+- [x] Shipment statuses + tracking — Pending → In transit → Arrived → Delivered → Verified (+ On hold); truck GPS and ETA updates, map with the truck pin, step-by-step timeline
+- [x] Verification + documents — weighbridge report, invoice, optional quality test, delivered weight and bags, unit price, amount; Documents tab with add and download
+- [x] Sale number — issued at verification from the per-client sequence `SN-{clientCode}-{seq:4}`; the buyer and the sales team are told
+- [x] Impact metrics — snapshot on each order and live on Traceboard: farmers, communities, women share, children per farmer, trees planted, plots mapped, EUDR %; which KPIs buyers see is set in Settings → Sales rules
+- [x] Sales contracts (spec, terms, packaging, statuses, fulfilment, documents, officers) — created from templates, quality spec from the commodity, payment schedule from the terms with due dates, mark received, overdue flags, Draft / Agreed / Order created / Fulfilled (with tolerance) / Cancelled, orders and deliveries chart, signed contract upload, printable contract with the company as seller
+- [x] Traceboard supplier view — buyers served, delivered, amount, orders in transit, delivered by month and commodity, top customers; share settings per buyer (orders / traceability / impact) on the data-sharing grant
+- [x] Traceboard buyer view — buyer companies see only Traceboard, branded with the supplier's logo: total weight, amount, orders, crops by weight, upcoming dispatches, farmers and communities, impact, certifications, trace map; only for the buyer's own client record and only while the grant shares orders
+- [x] Order detail + document download log — buyer order drawer with order and sale number, kg and t, driver, truck, timeline, trace to source (communities sized by kg, plot polygons by EUDR status), impact, documents; every download is logged with the person and company
+- [x] Insights request — buyer asks a supplier (optionally about one order); supplier answers from the Traceboard inbox; both are notified
+- [x] Shipment notifications — In transit, Delivered (action required), Verified to the buyer's Traceboard users and the supplier's sales team, with supplier branding in the text
 - [ ] Carbon projects [14]
 
 ## Trees and land (Scope 8)

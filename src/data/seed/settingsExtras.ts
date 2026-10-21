@@ -11,7 +11,7 @@ import { toMinor } from '@/engines/money';
  */
 export type ExtraSettings = Pick<
   OrgSettings,
-  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'support' | 'fieldTeam' | 'qualityRules'
+  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'support' | 'fieldTeam' | 'qualityRules'
   | 'formBindings' | 'biometrics' | 'notificationRules' | 'templates' | 'messaging' | 'integrations' | 'privacy'
 >;
 
@@ -198,6 +198,23 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       accounting: 'NONE',
     },
     privacy: { retentionDays: { syncLogs: 90, payloads: 30, audio: 365, photos: 730, activity: 2555 } },
+    sales: {
+      // Vitara's payment terms and packaging catalogue today (PRD H7).
+      paymentTerms: [
+        { id: 'pt_after', name: { en: '100% after delivery', fr: '100 % après livraison' }, instalments: [{ pct: 100, trigger: 'AFTER_DELIVERY', days: 30 }] },
+        { id: 'pt_on', name: { en: '100% on delivery', fr: '100 % à la livraison' }, instalments: [{ pct: 100, trigger: 'DELIVERY', days: 0 }] },
+        { id: 'pt_5050', name: { en: '50% advance, 50% on delivery', fr: '50 % d’avance, 50 % à la livraison' }, instalments: [{ pct: 50, trigger: 'SIGNATURE', days: 7 }, { pct: 50, trigger: 'DELIVERY', days: 0 }] },
+        { id: 'pt_3070', name: { en: '30% advance, 70% after delivery', fr: '30 % d’avance, 70 % après livraison' }, instalments: [{ pct: 30, trigger: 'SIGNATURE', days: 7 }, { pct: 70, trigger: 'AFTER_DELIVERY', days: 14 }] },
+      ],
+      packaging: [{ id: 'pk_pp', name: { en: 'PP sacks', fr: 'Sacs PP' } }, { id: 'pk_jute', name: { en: 'Jute sacks', fr: 'Sacs de jute' } }, { id: 'pk_box', name: { en: 'Boxes', fr: 'Cartons' } }],
+      templates: commodities.slice(0, 2).map((c, i) => ({
+        id: `ct_${c.id}`, name: `${c.name.en ?? c.code} — export`, commodityId: c.id, unitId: 't', paymentTermId: i ? 'pt_3070' : 'pt_5050', packagingId: i ? 'pk_pp' : 'pk_jute', tolerancePct: 2,
+        deliveryPoint: 'Tema Port', clauses: 'Seller delivers the goods to the delivery point within the shipment window. Weights are as per the buyer’s weighbridge. Quality as per the specification; rejected lots are replaced at the seller’s cost.',
+      })),
+      impactKpis: ['womenShare', 'childrenPerFarmer', 'treesPlanted', 'plotsMapped', 'eudr'],
+      certifications: ['EU Organic', 'Fair for Life'],
+      overdueAlertDays: 14,
+    },
   };
 }
 
@@ -232,6 +249,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     messaging: { sms: [{ country: 'CI', provider: 'Orange SMS API', senderId: 'KAKAOIV', enabled: true }], otpExpiryMinutes: 5, emailDomain: 'kakao-ivoire.example', emailSender: 'ne-pas-repondre@kakao-ivoire.example', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'SAGE' },
     privacy: { retentionDays: { syncLogs: 60, payloads: 14, audio: 180, photos: 365, activity: 1825 } },
+    sales: { ...base.sales, templates: base.sales.templates.map((x) => ({ ...x, deliveryPoint: 'Port de San-Pédro', clauses: 'Le vendeur livre la marchandise au point de livraison pendant la période d’expédition. Les poids sont ceux du pont-bascule de l’acheteur.' })), impactKpis: ['womenShare', 'childrenPerFarmer', 'plotsMapped', 'eudr'], certifications: ['Rainforest Alliance', 'Fairtrade'] },
   };
 }
 

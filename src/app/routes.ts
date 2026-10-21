@@ -63,9 +63,9 @@ export const APP_ROUTES: AppRoute[] = [
   r('outbound', '/app/inventory/outbound', PackageCheck, 'outbound.view', 12, 'inventory', 'inventory', { configurable: ['inventoryRules'] }),
   r('stockCounts', '/app/inventory/stock-counts', ListChecks, 'stockCounts.view', 12, 'inventory', 'inventory'),
   r('warehouseExpenses', '/app/inventory/expenses', Receipt, 'warehouseExpenses.view', 12, 'inventory', 'inventory', { configurable: ['approvals'] }),
-  r('dispatch', '/app/dispatch', Send, 'dispatch.view', 13, 'dispatch', 'inventory', { configurable: ['approvals', 'numbering'] }),
-  r('salesContracts', '/app/sales-contracts', FileSignature, 'salesContracts.view', 13, 'salesContracts', 'inventory'),
-  r('traceboard', '/app/traceboard', Radar, 'traceboard.view', 13, 'traceboard', 'inventory', { configurable: ['privacy', 'branding'] }),
+  r('dispatch', '/app/dispatch', Send, 'dispatch.view', 13, 'dispatch', 'inventory', { configurable: ['approvals', 'numbering', 'salesRules'] }),
+  r('salesContracts', '/app/sales-contracts', FileSignature, 'salesContracts.view', 13, 'salesContracts', 'inventory', { configurable: ['salesRules', 'numbering'] }),
+  r('traceboard', '/app/traceboard', Radar, 'traceboard.view', 13, 'traceboard', 'inventory', { configurable: ['salesRules', 'privacy', 'branding'] }),
 
   r('nurseries', '/app/nurseries', Sprout, 'nurseries.view', 14, 'nurseries', 'trees'),
   r('seedlings', '/app/seedlings', Leaf, 'seedlings.view', 14, 'trees', 'trees', { configurable: ['farmerId'] }),
@@ -124,14 +124,14 @@ export function routeByKey(key: string): AppRoute {
 /** Company settings pages (PRD A4). */
 export const SETTINGS_PAGES = [
   'profile', 'branding', 'modules', 'locations', 'commodities', 'units', 'priceLists', 'approvals', 'numbering', 'payments',
-  'buyingRules', 'supportLoans', 'inventoryRules', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
+  'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
   'terminology', 'notifications', 'smsEmail', 'integrations', 'security', 'privacy', 'mobile',
 ] as const;
 export type SettingsPage = (typeof SETTINGS_PAGES)[number];
 
 export const SETTINGS_GROUPS: { key: string; pages: SettingsPage[] }[] = [
   { key: 'company', pages: ['profile', 'branding', 'modules', 'terminology'] },
-  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'fieldTeam'] },
+  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'fieldTeam'] },
   { key: 'workflows', pages: ['approvals', 'numbering', 'farmerId', 'forms', 'dataQuality', 'notifications'] },
   { key: 'money', pages: ['payments', 'smsEmail'] },
   { key: 'access', pages: ['roles', 'users', 'security', 'biometrics', 'mobile'] },

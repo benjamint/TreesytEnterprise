@@ -52,6 +52,9 @@ import { InboundPage } from '@/web/features/inventory/InboundPage';
 import { OutboundPage } from '@/web/features/inventory/OutboundPage';
 import { StockCountsPage } from '@/web/features/inventory/StockCountsPage';
 import { WarehouseExpensesPage } from '@/web/features/inventory/WarehouseExpensesPage';
+import { DispatchPage } from '@/web/features/sales/DispatchPage';
+import { SalesContractsPage } from '@/web/features/sales/SalesContractsPage';
+import { TraceboardPage } from '@/web/features/sales/TraceboardPage';
 import { LandingPage } from '@/public/LandingPage';
 import { MobileShell } from '@/mobile/layout/MobileShell';
 import { HomeScreen } from '@/mobile/flows/home/HomeScreen';
@@ -72,7 +75,7 @@ import { AgentRepayScreen, CountScreen, OutboundScreen, ReceiveScreen, ResolveSc
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -136,6 +139,9 @@ export const router = createBrowserRouter([
       { path: 'inventory/outbound', element: <RouteGuard routeKey="outbound"><OutboundPage /></RouteGuard> },
       { path: 'inventory/stock-counts', element: <RouteGuard routeKey="stockCounts"><StockCountsPage /></RouteGuard> },
       { path: 'inventory/expenses', element: <RouteGuard routeKey="warehouseExpenses"><WarehouseExpensesPage /></RouteGuard> },
+      { path: 'dispatch', element: <RouteGuard routeKey="dispatch"><DispatchPage /></RouteGuard> },
+      { path: 'sales-contracts', element: <RouteGuard routeKey="salesContracts"><SalesContractsPage /></RouteGuard> },
+      { path: 'traceboard', element: <RouteGuard routeKey="traceboard"><TraceboardPage /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
       { path: 'payments', element: <RouteGuard routeKey="payments"><PaymentsPage /></RouteGuard> },
       { path: 'payments/wallets', element: <RouteGuard routeKey="wallets"><WalletsPage /></RouteGuard> },

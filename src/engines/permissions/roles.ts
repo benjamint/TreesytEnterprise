@@ -9,7 +9,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
       '*.view', '*.export', '!platform.*', '!settings.*', 'dashboard.customise', 'purchaseRequests.approveManagement',
       'purchaseRequests.create', 'purchaseRequests.edit', 'expenses.approveLevel3', 'aggregators.approve',
       'aggregators.create', 'aggregators.edit', 'support.approve', 'support.create', 'support.edit', 'recovery.reviewManager', 'recovery.recordRepayment', 'providers.create', 'providers.edit', 'weeklyPlans.*', 'agents.edit',
-      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score', 'groups.reviewScore',
+      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score', 'groups.reviewScore', 'dispatch.approve',
     ],
   },
   financeOfficer: {

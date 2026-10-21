@@ -1,5 +1,5 @@
 import type {
-  AgentRepayment, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
+  AgentRepayment, Client, DispatchOrder, InsightRequest, Plot, SalesContract, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
   FormRecord, OptionList, SurveyResponse,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
@@ -20,9 +20,10 @@ import { enrichBuying, enrichPayments } from './buying';
 import { enrichAggregators } from './aggregators';
 import { seedSupport, type SupportSeed } from './support';
 import { seedInventory } from './inventory';
+import { seedSales } from './sales';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 14;
+export const SEED_VERSION = 15;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -73,6 +74,11 @@ export interface SeedData {
   transfers: Transfer[];
   stockCounts: StockCount[];
   warehouseExpenses: WarehouseExpense[];
+  clients: Client[];
+  salesContracts: SalesContract[];
+  dispatches: DispatchOrder[];
+  insights: InsightRequest[];
+  plots: Plot[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -281,6 +287,55 @@ export function buildSeed(now = new Date()): SeedData {
     movements: inv.flatMap((x) => x.movements), transfers: inv.flatMap((x) => x.transfers), stockCounts: inv.flatMap((x) => x.stockCounts), warehouseExpenses: inv.flatMap((x) => x.warehouseExpenses),
   };
 
+  // ---- Phase 13: clients, sales contracts, dispatch orders, plots, Traceboard (PRD H6–H8, Journey 5) ----
+  const allTransfers = inventoryData.transfers;
+  const sal = [
+    seedSales(vit, settings[ORG.vitara]!, allTransfers, {
+      orgId: ORG.vitara, seed: 1313, today: clock.today, lang: 'en', officerUserId: 'u_kojo', approverUserId: 'u_ibrahim', financeUserId: 'u_efua', port: { lat: 5.64, lng: 0.01, name: 'Tema Port' },
+      clients: [
+        { code: 'NSB', name: 'Nordic Shea Butter AB', country: 'SE', buyerOrgId: ORG.nordic, contactName: 'Lena Hartmann' },
+        { code: 'AFP', name: 'Accra Food Processors Ltd', country: 'GH', buyerOrgId: ORG.afp, contactName: 'Esi Quaye' },
+        { code: 'HOG', name: 'Hamburg Oilseeds GmbH', country: 'DE', contactName: 'Jonas Becker' },
+        { code: 'LAT', name: 'Lomé Agro Trading', country: 'TG', contactName: 'Edem Agbeko' },
+      ],
+      contracts: [
+        { client: 'NSB', commodityId: 'com_shea', quantityT: 60, pricePerT: 48_000, currency: 'EUR', term: 'pt_5050', packaging: 'pk_jute', status: 'ORDER_CREATED', windowDays: [90, 60], deliveryPoint: 'Tema Port', dispatches: [['DIRECT', 'VERIFIED', 70], ['INVENTORY', 'VERIFIED', 40], ['INVENTORY', 'IN_TRANSIT', 9]] },
+        { client: 'AFP', commodityId: 'com_shea', pricePerT: 650_000, currency: 'GHS', term: 'pt_on', packaging: 'pk_pp', status: 'FULFILLED', windowDays: [170, -20], deliveryPoint: 'AFP factory, Tema', dispatches: [['DIRECT', 'VERIFIED', 150], ['DIRECT', 'VERIFIED', 120], ['DIRECT', 'VERIFIED', 95]] },
+        { client: 'HOG', commodityId: 'com_sesame', quantityT: 25, pricePerT: 120_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_pp', status: 'ORDER_CREATED', windowDays: [75, 45], deliveryPoint: 'Tema Port', dispatches: [['DIRECT', 'VERIFIED', 60], ['DIRECT', 'DELIVERED', 4]] },
+        { client: 'LAT', commodityId: 'com_maize', quantityT: 30, pricePerT: 320_000, currency: 'GHS', term: 'pt_after', packaging: 'pk_pp', status: 'DRAFT', windowDays: [-10, 70], deliveryPoint: 'Lomé, Togo', dispatches: [] },
+        { client: 'NSB', commodityId: 'com_shea', quantityT: 25, pricePerT: 49_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_jute', status: 'AGREED', windowDays: [5, 75], deliveryPoint: 'Tema Port', dispatches: [] },
+      ],
+      loose: [
+        ['AFP', 'com_gnut', 'VERIFIED', 200], ['LAT', 'com_maize', 'VERIFIED', 180], ['HOG', 'com_soy', 'VERIFIED', 140], ['LAT', 'com_gnut', 'VERIFIED', 160], ['LAT', 'com_maize', 'VERIFIED', 110],
+        ['AFP', 'com_cowpea', 'VERIFIED', 85], ['AFP', 'com_millet', 'VERIFIED', 50], ['HOG', 'com_sesame', 'VERIFIED', 220], ['AFP', 'com_gnut', 'REJECTED', 30],
+        ['HOG', 'com_cowpea', 'PENDING', 3], ['AFP', 'com_soy', 'ARRIVED', 2], ['LAT', 'com_maize', 'PENDING_APPROVAL', 1],
+      ],
+      insights: [
+        { buyerOrgId: ORG.nordic, userId: 'u_lena', topic: 'Women in the supply base', message: 'Could you break down the women supplier share by community for last season?', answer: 'Attached by community: 61% across 14 communities; Daffiama and Busa are above 70%.' },
+        { buyerOrgId: ORG.nordic, userId: 'u_lena', topic: 'Plot maps for the next shipment', message: 'Please share the plot polygons for the farmers in the next shea shipment.' },
+      ],
+    }),
+    seedSales(ki, settings[ORG.kakao]!, allTransfers, {
+      orgId: ORG.kakao, seed: 2424, today: clock.today, lang: 'fr', officerUserId: 'u_aicha', approverUserId: 'u_serge', financeUserId: 'u_jeanmarc', port: { lat: 4.75, lng: -6.64, name: 'Port de San-Pédro' },
+      clients: [
+        { code: 'HKG', name: 'Hanse Kakao GmbH', country: 'DE', contactName: 'Mareike Vogt' },
+        { code: 'ECS', name: 'Ébène Cacao SARL', country: 'CI', contactName: 'Adjoua Kouamé' },
+      ],
+      contracts: [
+        { client: 'HKG', commodityId: 'com_cocoa', quantityT: 50, pricePerT: 280_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_jute', status: 'ORDER_CREATED', windowDays: [60, 50], deliveryPoint: 'Port de San-Pédro', dispatches: [['DIRECT', 'VERIFIED', 45], ['INVENTORY', 'IN_TRANSIT', 4]] },
+        { client: 'ECS', commodityId: 'com_cocoa', pricePerT: 1_500_000, currency: 'XOF', term: 'pt_on', packaging: 'pk_jute', status: 'FULFILLED', windowDays: [150, -15], deliveryPoint: 'Abidjan', dispatches: [['DIRECT', 'VERIFIED', 120], ['DIRECT', 'VERIFIED', 90]] },
+        { client: 'HKG', commodityId: 'com_cocoa', quantityT: 40, pricePerT: 285_000, currency: 'EUR', term: 'pt_5050', packaging: 'pk_jute', status: 'DRAFT', windowDays: [-20, 90], deliveryPoint: 'Port de San-Pédro', dispatches: [] },
+      ],
+      loose: [['ECS', 'com_cashew', 'VERIFIED', 70], ['ECS', 'com_cocoa', 'VERIFIED', 160], ['HKG', 'com_cocoa', 'PENDING_APPROVAL', 1]],
+    }),
+  ];
+  vit.activity.push(...sal[0]!.activity);
+  ki.activity.push(...sal[1]!.activity);
+  const salesData = {
+    clients: sal.flatMap((x) => x.clients), salesContracts: sal.flatMap((x) => x.contracts), dispatches: sal.flatMap((x) => x.dispatches),
+    insights: sal.flatMap((x) => x.insights), plots: sal.flatMap((x) => x.plots),
+  };
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
   return {
@@ -291,7 +346,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData,
   };
 }
 

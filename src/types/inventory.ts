@@ -95,6 +95,8 @@ export interface Transfer extends OrgEntity {
   receivedKg?: number;
   /** The receipt at the destination, for transfers. */
   inboundId?: string;
+  /** The dispatch order an outbound was loaded on. */
+  dispatchId?: string;
   status: 'DISPATCHED' | 'TRANSFER_PENDING' | 'TRANSFER_COMPLETE';
   device?: 'web' | 'mobile';
   note?: string;

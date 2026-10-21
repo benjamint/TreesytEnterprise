@@ -1,15 +1,15 @@
-import type { Client, DispatchOrder, InsightRequest, Plot, SalesContract } from '@/types';
+import type { Client, DispatchOrder, InsightRequest, SalesContract } from '@/types';
 import { defineStore } from './persistence';
 
 const upsert = <T extends { id: string }>(list: T[], x: T) => (list.some((y) => y.id === x.id) ? list.map((y) => (y.id === x.id ? x : y)) : [x, ...list]);
 const patchIn = <T extends { id: string }>(list: T[], id: string, patch: Partial<T> | ((x: T) => Partial<T>)) =>
   list.map((x) => (x.id === id ? { ...x, ...(typeof patch === 'function' ? patch(x) : patch), updatedAt: new Date().toISOString() } : x));
 
-/** Clients, sales contracts, dispatch orders, buyer insight requests and mapped plots (PRD H6–H8). */
+/** Clients, sales contracts, dispatch orders and buyer insight requests (PRD H6–H8). */
 export const useSalesStore = defineStore(
   'sales',
-  { clients: [] as Client[], contracts: [] as SalesContract[], dispatches: [] as DispatchOrder[], insights: [] as InsightRequest[], plots: [] as Plot[] },
-  (s) => ({ clients: s.clients, contracts: s.salesContracts, dispatches: s.dispatches, insights: s.insights, plots: s.plots }),
+  { clients: [] as Client[], contracts: [] as SalesContract[], dispatches: [] as DispatchOrder[], insights: [] as InsightRequest[] },
+  (s) => ({ clients: s.clients, contracts: s.salesContracts, dispatches: s.dispatches, insights: s.insights }),
   (set) => ({
     saveClient: (x: Client) => set((st) => ({ clients: upsert(st.clients, x) })),
     saveContract: (x: SalesContract) => set((st) => ({ contracts: upsert(st.contracts, x) })),

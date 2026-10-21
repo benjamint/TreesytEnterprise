@@ -9,6 +9,7 @@ import { useFarmerStore } from '@/stores/farmerStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useSalesStore } from '@/stores/salesStore';
+import { useLandStore } from '@/stores/landStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useSupportStore } from '@/stores/supportStore';
 import { useWarehouseStore } from '@/stores/warehouseStore';
@@ -31,7 +32,8 @@ function load() {
   useBuyingStore.setState({ requests: s.requests, purchases: s.purchases, bags: s.bags, expenses: s.expenses, suppliers: s.suppliers, aggregatorPurchases: s.aggregatorPurchases, aggregatorExpenses: s.aggregatorExpenses, seeded: true });
   useSupportStore.setState({ providers: s.providers, requests: s.supportRequests, windows: s.recoveryWindows, recoveries: s.recoveryRequests, repayments: s.repayments, refunds: s.loanRefunds, legacy: s.legacyAllocations, seeded: true });
   useWarehouseStore.setState({ warehouses: s.warehouses, inbounds: s.inbounds, discrepancies: s.discrepancies, agentRepayments: s.agentRepayments, movements: s.movements, transfers: s.transfers, stockCounts: s.stockCounts, warehouseExpenses: s.warehouseExpenses, seeded: true });
-  useSalesStore.setState({ clients: s.clients, contracts: s.salesContracts, dispatches: s.dispatches, insights: s.insights, plots: s.plots, seeded: true });
+  useSalesStore.setState({ clients: s.clients, contracts: s.salesContracts, dispatches: s.dispatches, insights: s.insights, seeded: true });
+  useLandStore.setState({ plots: s.plots, trees: s.trees, nurseries: s.nurseries, lots: s.seedlingLots, allocations: s.seedlingAllocations, lossZones: s.lossZones, eudrLots: s.eudrLots, statements: s.statements, projects: s.carbonProjects, seeded: true });
   useActivityStore.setState({ audit: [], activity: [], seeded: true });
   useNotificationStore.setState({ notifications: [], outbox: [], seeded: true });
 }

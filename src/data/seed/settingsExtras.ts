@@ -11,7 +11,7 @@ import { toMinor } from '@/engines/money';
  */
 export type ExtraSettings = Pick<
   OrgSettings,
-  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'support' | 'fieldTeam' | 'qualityRules'
+  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'land' | 'support' | 'fieldTeam' | 'qualityRules'
   | 'formBindings' | 'biometrics' | 'notificationRules' | 'templates' | 'messaging' | 'integrations' | 'privacy'
 >;
 
@@ -215,6 +215,85 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       certifications: ['EU Organic', 'Fair for Life'],
       overdueAlertDays: 14,
     },
+    land: vitaraLand(),
+  };
+}
+
+const L = (en: string, fr: string) => ({ en, fr });
+const Q = (id: string, en: string, fr: string, kind: 'YES_NO' | 'TEXT', plotTypeIds: string[]) => ({ id, label: L(en, fr), kind, plotTypeIds });
+
+/** Vitara today: shea parkland trees and fruit trees, raised in community nurseries (PRD I1–I4). */
+function vitaraLand(): OrgSettings['land'] {
+  const all = ['pt_farm', 'pt_park', 'pt_conc', 'pt_block'];
+  return {
+    species: [
+      { id: 'sp_sheag', name: L('Shea (grafted)', 'Karité (greffé)'), codePrefix: 'SHG', type: 'SHEA_GRAFTED', densityPerHa: { pt_farm: 40, pt_park: 25, pt_conc: 100, pt_block: 156 }, co2KgPerYear: 12, enabled: true },
+      { id: 'sp_sheau', name: L('Shea (ungrafted)', 'Karité (non greffé)'), codePrefix: 'SHU', type: 'SHEA_UNGRAFTED', densityPerHa: { pt_farm: 30, pt_park: 20, pt_conc: 80, pt_block: 120 }, co2KgPerYear: 14, enabled: true },
+      { id: 'sp_dawa', name: L('Dawadawa', 'Néré'), codePrefix: 'DWD', type: 'TIMBER', densityPerHa: { pt_farm: 20, pt_park: 15, pt_conc: 60, pt_block: 100 }, co2KgPerYear: 18, enabled: true },
+      { id: 'sp_mango', name: L('Mango', 'Manguier'), codePrefix: 'MGO', type: 'FRUIT', densityPerHa: { pt_farm: 50, pt_park: 20, pt_conc: 100, pt_block: 100 }, co2KgPerYear: 22, enabled: true },
+      { id: 'sp_cashew', name: L('Cashew', 'Anacardier'), codePrefix: 'CSH', type: 'FRUIT', densityPerHa: { pt_farm: 60, pt_park: 25, pt_conc: 100, pt_block: 100 }, co2KgPerYear: 16, enabled: true },
+      { id: 'sp_moringa', name: L('Moringa', 'Moringa'), codePrefix: 'MOR', type: 'MEDICINAL', densityPerHa: { pt_farm: 200, pt_park: 50, pt_conc: 400, pt_block: 400 }, co2KgPerYear: 6, enabled: true },
+    ],
+    nurseryRounds: [
+      { id: 'nr_primary', name: L('Primary', 'Principale'), kind: 'PRIMARY', dueDays: 21, fields: ['polyBags', 'potted', 'germinated'] },
+      { id: 'nr_sec', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 45, fields: ['alive', 'dead', 'newGerminations'] },
+      { id: 'nr_sec2', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 75, fields: ['alive', 'dead', 'newGerminations'] },
+      { id: 'nr_sec3', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 105, fields: ['alive', 'dead', 'newGerminations'] },
+    ],
+    treeRoundDays: [30, 90, 180, 365],
+    maxSeedlingsPerFarmer: 20,
+    plotTypes: [
+      { id: 'pt_farm', name: L('Farmland', 'Terre agricole'), requiresFarmer: true },
+      { id: 'pt_park', name: L('Community parkland', 'Parc communautaire'), requiresFarmer: false },
+      { id: 'pt_conc', name: L('Concession', 'Concession'), requiresFarmer: false },
+      { id: 'pt_block', name: L('Block', 'Bloc'), requiresFarmer: false },
+    ],
+    plotMonitoring: [
+      Q('chemicals', 'Chemical additives used', 'Produits chimiques utilisés', 'YES_NO', all),
+      Q('treeCutting', 'Trees cut on the plot', 'Arbres abattus sur la parcelle', 'YES_NO', all),
+      Q('farmingActivities', 'Farming activities seen', 'Activités agricoles observées', 'TEXT', ['pt_farm', 'pt_park']),
+      Q('livestockPresent', 'Livestock present', 'Bétail présent', 'YES_NO', all),
+      Q('livestockPast', 'Livestock in the past month', 'Bétail le mois dernier', 'YES_NO', all),
+      Q('fenced', 'Plot fenced', 'Parcelle clôturée', 'YES_NO', all),
+      Q('bushfire', 'Bushfire this season', 'Feu de brousse cette saison', 'YES_NO', all),
+      Q('recentBushfire', 'Bushfire in the last 30 days', 'Feu de brousse ces 30 derniers jours', 'YES_NO', all),
+      Q('fireProtection', 'Fire protection measures', 'Mesures de protection contre le feu', 'TEXT', all),
+    ],
+    plotMonitoringDays: 90,
+    eudr: { cutoffDate: '2020-12-31', polygonOverHa: 4, minDecimals: 6, operator: { name: 'Vitara Shea Ltd', eori: 'GH-OP-20418', address: 'Plot 14, Wa Road, Tamale, Ghana' } },
+    exportMaxDays: 366,
+  };
+}
+
+/** Kakao Ivoire: cocoa plots with shade trees (EUDR-relevant). */
+function kakaoLand(): OrgSettings['land'] {
+  const all = ['pt_cocoa', 'pt_fallow', 'pt_block'];
+  return {
+    species: [
+      { id: 'sp_frake', name: L('Frake', 'Fraké'), codePrefix: 'FRK', type: 'TIMBER', densityPerHa: { pt_cocoa: 18, pt_fallow: 60, pt_block: 100 }, co2KgPerYear: 25, enabled: true },
+      { id: 'sp_akpi', name: L('Akpi', 'Akpi'), codePrefix: 'AKP', type: 'SHADE', densityPerHa: { pt_cocoa: 12, pt_fallow: 40, pt_block: 80 }, co2KgPerYear: 20, enabled: true },
+      { id: 'sp_orange', name: L('Orange', 'Oranger'), codePrefix: 'ORA', type: 'FRUIT', densityPerHa: { pt_cocoa: 10, pt_fallow: 30, pt_block: 100 }, co2KgPerYear: 9, enabled: true },
+      { id: 'sp_avocado', name: L('Avocado', 'Avocatier'), codePrefix: 'AVO', type: 'FRUIT', densityPerHa: { pt_cocoa: 10, pt_fallow: 30, pt_block: 100 }, co2KgPerYear: 11, enabled: true },
+    ],
+    nurseryRounds: [
+      { id: 'nr_primary', name: L('Primary', 'Principale'), kind: 'PRIMARY', dueDays: 30, fields: ['polyBags', 'potted', 'germinated'] },
+      { id: 'nr_sec', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 60, fields: ['alive', 'dead'] },
+    ],
+    treeRoundDays: [90, 365],
+    maxSeedlingsPerFarmer: 30,
+    plotTypes: [
+      { id: 'pt_cocoa', name: L('Cocoa plot', 'Parcelle de cacao'), requiresFarmer: true },
+      { id: 'pt_fallow', name: L('Fallow', 'Jachère'), requiresFarmer: true },
+      { id: 'pt_block', name: L('Block', 'Bloc'), requiresFarmer: false },
+    ],
+    plotMonitoring: [
+      Q('chemicals', 'Chemical additives used', 'Produits chimiques utilisés', 'YES_NO', all),
+      Q('treeCutting', 'Trees cut on the plot', 'Arbres abattus sur la parcelle', 'YES_NO', all),
+      Q('fireProtection', 'Fire protection measures', 'Mesures de protection contre le feu', 'TEXT', all),
+    ],
+    plotMonitoringDays: 180,
+    eudr: { cutoffDate: '2020-12-31', polygonOverHa: 4, minDecimals: 6, operator: { name: 'Union des Coopératives Kakao Ivoire SCOOPS', eori: 'CI-OP-55210', address: 'Quartier Commerce, Soubré, Côte d’Ivoire' } },
+    exportMaxDays: 366,
   };
 }
 
@@ -250,6 +329,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     integrations: { apiKeys: [], webhooks: [], accounting: 'SAGE' },
     privacy: { retentionDays: { syncLogs: 60, payloads: 14, audio: 180, photos: 365, activity: 1825 } },
     sales: { ...base.sales, templates: base.sales.templates.map((x) => ({ ...x, deliveryPoint: 'Port de San-Pédro', clauses: 'Le vendeur livre la marchandise au point de livraison pendant la période d’expédition. Les poids sont ceux du pont-bascule de l’acheteur.' })), impactKpis: ['womenShare', 'childrenPerFarmer', 'plotsMapped', 'eudr'], certifications: ['Rainforest Alliance', 'Fairtrade'] },
+    land: kakaoLand(),
   };
 }
 
@@ -263,5 +343,6 @@ export function genericExtras(orgId: string, commodities: Commodity[], currency:
     support: { ...base.support, types: base.support.types.slice(0, 1).map((s) => ({ ...s, subTypes: [] })) },
     messaging: { sms: [], otpExpiryMinutes: 10, emailDomain: '', emailSender: '', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'NONE' },
+    land: { ...base.land, species: base.land.species.slice(0, 2), nurseryRounds: base.land.nurseryRounds.slice(0, 2), eudr: { ...base.land.eudr, operator: { name: '', eori: '', address: '' } } },
   };
 }

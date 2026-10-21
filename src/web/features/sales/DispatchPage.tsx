@@ -22,6 +22,7 @@ import { useAccessStore } from '@/stores/accessStore';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useSalesStore } from '@/stores/salesStore';
+import { useLandStore } from '@/stores/landStore';
 import { useWarehouseStore } from '@/stores/warehouseStore';
 import { useActor, useCurrentOrg, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
@@ -99,7 +100,7 @@ function DispatchDrawer({ dispatch: d, onClose }: { dispatch: DispatchOrder; onC
   const settings = useOrgSettings();
   const def = useWorkflowDef('dispatchOrder')!;
   const purchases = useBuyingStore((s) => s.purchases);
-  const plots = useSalesStore((s) => s.plots);
+  const plots = useLandStore((s) => s.plots);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const trace = useMemo(() => traceOf(d), [d, purchases, plots]);
   const [dialog, setDialog] = useState<'advance' | 'position' | 'verify' | 'doc' | null>(null);

@@ -113,13 +113,3 @@ export interface InsightRequest {
   createdAt: string;
   answer?: { text: string; by: string; at: string };
 }
-
-/** A mapped plot (built out in Phase 14); here for trace to source. */
-export interface Plot extends OrgEntity {
-  farmerId: string;
-  communityId: string;
-  polygon: [number, number][];
-  areaHa: number;
-  eudrStatus: 'COMPLIANT' | 'AT_RISK' | 'PENDING';
-  crop: string;
-}

@@ -228,6 +228,48 @@ export interface SalesSettings {
   overdueAlertDays: number;
 }
 
+/** Trees and land (PRD I1–I6): species, monitoring rounds, plot types, EUDR. */
+export type SpeciesType = 'FRUIT' | 'TIMBER' | 'SHEA_GRAFTED' | 'SHEA_UNGRAFTED' | 'SHADE' | 'MEDICINAL';
+
+export interface Species {
+  id: string;
+  name: Partial<Record<Lang, string>>;
+  /** Seedling and tree codes start with this. */
+  codePrefix: string;
+  type: SpeciesType;
+  /** Trees per hectare, by plot type. */
+  densityPerHa: Record<string, number>;
+  /** kg CO₂ captured per tree per year (carbon estimate). */
+  co2KgPerYear: number;
+  enabled: boolean;
+}
+
+export interface NurseryRoundDef {
+  id: string;
+  name: Partial<Record<Lang, string>>;
+  kind: 'PRIMARY' | 'SECONDARY';
+  /** Due this many days after sowing. */
+  dueDays: number;
+  fields: ('polyBags' | 'potted' | 'germinated' | 'alive' | 'dead' | 'newGerminations')[];
+}
+
+export interface PlotMonitoringQuestion { id: string; label: Partial<Record<Lang, string>>; kind: 'YES_NO' | 'TEXT'; plotTypeIds: string[] }
+
+export interface LandSettings {
+  species: Species[];
+  nurseryRounds: NurseryRoundDef[];
+  /** Tree monitoring rounds, in days after planting. */
+  treeRoundDays: number[];
+  maxSeedlingsPerFarmer: number;
+  plotTypes: { id: string; name: Partial<Record<Lang, string>>; requiresFarmer: boolean }[];
+  plotMonitoring: PlotMonitoringQuestion[];
+  /** Plot monitoring is due this often (days). */
+  plotMonitoringDays: number;
+  eudr: { cutoffDate: string; polygonOverHa: number; minDecimals: number; operator: { name: string; eori: string; address: string } };
+  /** Longest date range allowed in one tree export. */
+  exportMaxDays: number;
+}
+
 export interface SupportType {
   id: string;
   name: Partial<Record<Lang, string>>;
@@ -376,6 +418,7 @@ export interface OrgSettings {
   pricing: { changeApproval: boolean; premiums: { id: string; name: string; pct: number }[]; history: PriceChange[] };
   inventoryRules: InventoryRules;
   sales: SalesSettings;
+  land: LandSettings;
   support: SupportSettings;
   fieldTeam: FieldTeamSettings;
   qualityRules: QualityRule[];

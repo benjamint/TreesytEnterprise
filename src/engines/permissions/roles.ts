@@ -62,7 +62,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
   },
   fieldAgent: {
     mobile: true,
-    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.view', 'support.create', 'support.fulfil', 'recovery.view', 'recovery.create', 'recovery.recordRepayment', 'notifications.view'],
+    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.view', 'support.create', 'support.fulfil', 'recovery.view', 'recovery.create', 'recovery.recordRepayment', 'nurseries.view', 'nurseries.create', 'nurseries.update', 'seedlings.view', 'seedlings.assign', 'trees.view', 'trees.create', 'trees.update', 'plots.view', 'plots.create', 'plots.update', 'notifications.view'],
   },
   warehouseOfficer: {
     mobile: true,

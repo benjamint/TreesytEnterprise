@@ -1,6 +1,6 @@
 import type {
   AgentRepayment, Client, DispatchOrder, InsightRequest, Plot, SalesContract, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
-  FormRecord, OptionList, SurveyResponse,
+  FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
   AuditEntry, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
@@ -21,9 +21,10 @@ import { enrichAggregators } from './aggregators';
 import { seedSupport, type SupportSeed } from './support';
 import { seedInventory } from './inventory';
 import { seedSales } from './sales';
+import { seedLand } from './land';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 15;
+export const SEED_VERSION = 16;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -79,6 +80,14 @@ export interface SeedData {
   dispatches: DispatchOrder[];
   insights: InsightRequest[];
   plots: Plot[];
+  nurseries: Nursery[];
+  seedlingLots: SeedlingLot[];
+  seedlingAllocations: SeedlingAllocation[];
+  trees: Tree[];
+  lossZones: ForestLossZone[];
+  eudrLots: EudrLot[];
+  statements: DueDiligenceStatement[];
+  carbonProjects: CarbonProject[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -333,7 +342,27 @@ export function buildSeed(now = new Date()): SeedData {
   ki.activity.push(...sal[1]!.activity);
   const salesData = {
     clients: sal.flatMap((x) => x.clients), salesContracts: sal.flatMap((x) => x.contracts), dispatches: sal.flatMap((x) => x.dispatches),
-    insights: sal.flatMap((x) => x.insights), plots: sal.flatMap((x) => x.plots),
+    insights: sal.flatMap((x) => x.insights),
+  };
+
+  // ---- Phase 14: nurseries, seedlings, trees, plots, EUDR, carbon (PRD I1–I6, Journeys 11 and 14) ----
+  const lnd = [
+    seedLand(vit, settings[ORG.vitara]!, sal[0]!.plots, {
+      orgId: ORG.vitara, seed: 1414, today: clock.today, lang: 'en', agentTypeId: 'at_cons', mainUserId: 'u_mariama', nurseries: 10, farmersPlanting: 90,
+      externalSupplier: 'Savannah Tree Seed Centre, Bolgatanga', officeUserId: 'u_naa', dispatches: sal[0]!.dispatches, checkedShare: 0.85,
+      project: { name: 'Upper West Shea Parkland Restoration', standard: 'PLAN_VIVO', partner: 'Northern Savannah Trust', plan: 'Survival count every 6 months; height sample of 10% of trees; annual Plan Vivo report.', baselineT: 1250 },
+    }),
+    seedLand(ki, settings[ORG.kakao]!, sal[1]!.plots, {
+      orgId: ORG.kakao, seed: 2525, today: clock.today, lang: 'fr', agentTypeId: 'at_del', mainUserId: 'u_moussa', mapperUserId: 'u_moussa', nurseries: 4, farmersPlanting: 40,
+      externalSupplier: 'Pépinière CNRA, Divo', officeUserId: 'u_aicha', dispatches: sal[1]!.dispatches, checkedShare: 1,
+      project: { name: 'Ombrage cacao Soubré', standard: 'INTERNAL', partner: 'Hanse Kakao GmbH', plan: 'Comptage des arbres d’ombrage une fois par an ; rapport au client.', baselineT: 600 },
+    }),
+  ];
+  vit.activity.push(...lnd[0]!.activity);
+  ki.activity.push(...lnd[1]!.activity);
+  const landData = {
+    plots: lnd.flatMap((x) => x.plots), nurseries: lnd.flatMap((x) => x.nurseries), seedlingLots: lnd.flatMap((x) => x.lots), seedlingAllocations: lnd.flatMap((x) => x.allocations),
+    trees: lnd.flatMap((x) => x.trees), lossZones: lnd.flatMap((x) => x.lossZones), eudrLots: lnd.flatMap((x) => x.eudrLots), statements: lnd.flatMap((x) => x.statements), carbonProjects: lnd.flatMap((x) => x.projects),
   };
 
   const ops = [vit, ki];
@@ -346,7 +375,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData,
   };
 }
 

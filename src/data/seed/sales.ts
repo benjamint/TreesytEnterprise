@@ -61,7 +61,9 @@ export function seedSales(ops: OpsResult, settings: OrgSettings, transfers: Tran
     const polygon = Array.from({ length: n }, (_, k) => {
       const a = (k / n) * Math.PI * 2;
       const rr = r * rng.float(0.75, 1.2);
-      return [Math.round((cLat + Math.sin(a) * rr) * 1e5) / 1e5, Math.round((cLng + Math.cos(a) * rr) * 1e5) / 1e5] as [number, number];
+      // Most plots were mapped with phone GPS (7 decimals); one in ten came from an old 5-decimal import.
+      const q = f.id.charCodeAt(f.id.length - 1) % 10 === 0 ? 1e5 : 1e7;
+      return [Math.round((cLat + Math.sin(a) * rr) * q) / q, Math.round((cLng + Math.cos(a) * rr) * q) / q] as [number, number];
     });
     out.plots.push({
       id: `${f.id}_plot`, orgId: o.orgId, createdAt: f.registeredAt, updatedAt: f.registeredAt, createdBy: f.createdBy, farmerId: f.id, communityId: f.communityId, polygon, areaHa,

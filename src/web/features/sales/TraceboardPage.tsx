@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useAccessStore } from '@/stores/accessStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useSalesStore } from '@/stores/salesStore';
+import { useLandStore } from '@/stores/landStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useActor, useCan, useCurrentOrg, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { mono } from '@/web/features/buying/common';
@@ -194,7 +195,7 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
   const lang = useLang();
   const all = useSalesStore((s) => s.dispatches);
   const clients = useSalesStore((s) => s.clients);
-  const plots = useSalesStore((s) => s.plots);
+  const plots = useLandStore((s) => s.plots);
   const insights = useSalesStore((s) => s.insights).filter((x) => x.fromOrgId === buyer.id);
   const grants = usePlatformStore((s) => s.grants).filter((g) => g.toOrgId === buyer.id && g.status === 'ACTIVE');
   const orgs = usePlatformStore((s) => s.orgs);
@@ -295,7 +296,7 @@ function BuyerOrderDrawer({ dispatch: d, commodityName, kpis, showImpact, showTr
   const f = useFormat();
   const kgT = useKgT();
   const can = useCan();
-  const plots = useSalesStore((s) => s.plots);
+  const plots = useLandStore((s) => s.plots);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const trace = useMemo(() => traceOf(d), [d, plots]);
   const truck = d.position && ['IN_TRANSIT', 'ARRIVED'].includes(d.status) ? { lat: d.position.lat, lng: d.position.lng, label: d.truck.plate } : undefined;

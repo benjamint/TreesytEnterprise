@@ -10,11 +10,11 @@ import { useActivityStore } from '@/stores/activityStore';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { useCommunityStore } from '@/stores/communityStore';
 import { useFarmerStore } from '@/stores/farmerStore';
+import { useLandStore } from '@/stores/landStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { useSalesStore } from '@/stores/salesStore';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { useSupportStore } from '@/stores/supportStore';
 import { useWarehouseStore } from '@/stores/warehouseStore';
 import { workflowUser } from './workflowService';
 
@@ -168,7 +168,7 @@ export function traceOf(d: Pick<DispatchOrder, 'orgId' | 'bagCodes' | 'requestId
   const farmers = useFarmerStore.getState().farmers.filter((f) => farmerIds.has(f.id));
   const communityIds = new Set(farmers.map((f) => f.communityId));
   const communities = useCommunityStore.getState().communities.filter((c) => communityIds.has(c.id));
-  const plots = S().plots.filter((p) => farmerIds.has(p.farmerId));
+  const plots = useLandStore.getState().plots.filter((p) => farmerIds.has(p.farmerId));
   const kgByCommunity = new Map<string, number>();
   for (const p of list) kgByCommunity.set(p.communityId, (kgByCommunity.get(p.communityId) ?? 0) + p.quantity);
   return { purchases: list, farmers, communities, plots, kgByCommunity };
@@ -181,9 +181,8 @@ export function impactOf(d: Pick<DispatchOrder, 'orgId' | 'bagCodes' | 'requestI
   const women = t.farmers.filter((f) => f.gender === 'F').length;
   const children = t.farmers.reduce((s, f) => s + Number(f.customFields.numberOfChildren ?? 0), 0);
   const ids = new Set(t.farmers.map((f) => f.id));
-  // Trees from paid agroforestry support (seedlings handed out per farmer line).
-  const trees = useSupportStore.getState().requests.filter((r) => r.orgId === d.orgId).flatMap((r) => r.lines)
-    .filter((l) => ids.has(l.farmerId) && ['PAID', 'FULFILLED'].includes(l.status) && /agro/i.test(l.typeId)).reduce((s, l) => s + (l.quantity ?? 25), 0);
+  // Trees planted for these farmers (tree register), still standing or not.
+  const trees = useLandStore.getState().trees.filter((x) => x.orgId === d.orgId && ids.has(x.farmerId)).length;
   const farmersWithPlot = new Set(t.plots.map((p) => p.farmerId)).size;
   const compliant = t.plots.filter((p) => p.eudrStatus === 'COMPLIANT').length;
   return {
@@ -351,4 +350,4 @@ export function answerInsight(id: string, text: string, actorId: string) {
   notify(r.fromOrgId, [r.userId], 'insightAnswered', { topic: r.topic }, '/app/traceboard?tab=insights');
 }
 
-export const plotsOf = (orgId: string): Plot[] => S().plots.filter((p) => p.orgId === orgId);
+export const plotsOf = (orgId: string): Plot[] => useLandStore.getState().plots.filter((p) => p.orgId === orgId);

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Agent } from '@/types';
+import type { Agent, CarryForward } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tooltip';
@@ -85,6 +85,19 @@ export function WeekPicker({ value, onChange }: { value: string; onChange: (v: s
 export function PctCell({ pct, children }: { pct: number; children?: React.ReactNode }) {
   const step = pct >= 100 ? 'bg-brand text-white' : pct >= 70 ? 'bg-brand/60 text-white' : pct >= 40 ? 'bg-brand/30 text-ink' : pct > 0 ? 'bg-brand/10 text-ink' : 'bg-canvas text-muted';
   return <span className={`inline-flex min-w-[64px] flex-col items-center rounded-[6px] px-2 py-1 text-[12px] tnum ${step}`}>{children}<span className="font-semibold">{`${pct}%`}</span></span>;
+}
+
+/** A carry-forward's reason in the viewer's language (penalty: week and achievement; under-spend: the budget). */
+export function useCfReason() {
+  const { t } = useT();
+  const f = useFormat();
+  const budgets = useFieldStore((s) => s.budgets);
+  return (c: CarryForward) => {
+    if (c.type === 'PENALTY' && c.penalty) return t('field.reasonPenalty', { date: f.date(c.penalty.weekStart, 'd MMM'), pct: c.penalty.achievementPct });
+    const b = c.sourceBudgetId ? budgets.find((x) => x.id === c.sourceBudgetId) : undefined;
+    if (c.type === 'UNDER_SPEND' && b) return t('field.reasonUnderSpend', { number: b.number });
+    return c.reason;
+  };
 }
 
 export const selectCls = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';

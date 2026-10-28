@@ -56,7 +56,7 @@ export function FieldActivityPage() {
       <div className="mb-4 flex gap-1 border-b border-line" role="tablist">{(['map', 'playback', 'flags'] as const).map((k) => <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn('-mb-px border-b-2 px-4 py-2.5 text-[14px] font-medium', tab === k ? 'border-brand text-ink' : 'border-transparent text-muted hover:text-ink')}>{t(`field.mapTab.${k}`)}</button>)}</div>
       {tab !== 'flags' && (
         <FilterBar search={q} onSearch={setQ} placeholder={t('field.searchActivity')}
-          views={[{ key: 'all', label: t('field.view.all'), active: !onlyFlags, onSelect: () => setOnlyFlags(false) }, { key: 'flags', label: t('field.outOfAreaN'), active: onlyFlags, onSelect: () => setOnlyFlags(true), count: all.filter((p) => p.outOfArea).length }]}
+          views={[{ key: 'all', label: t('field.view.all'), active: !onlyFlags, onSelect: () => setOnlyFlags(false) }, { key: 'flags', label: t('field.outOfAreaN'), active: onlyFlags, onSelect: () => setOnlyFlags(true), count: all.filter((p) => p.outOfArea && p.at.slice(0, 10) >= from && p.at.slice(0, 10) <= to).length }]}
           filters={[
             { key: 'agent', label: t('col.agent'), value: agent, onChange: setAgent, options: [...new Set(all.map((p) => p.agentId))].map((a) => ({ value: a, label: fl.agentName(a) })) },
             { key: 'kind', label: t('field.type'), value: kind, onChange: setKind, options: KINDS.map((k) => ({ value: k, label: t(`field.kind.${k}`) })) },

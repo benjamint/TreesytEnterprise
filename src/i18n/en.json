@@ -8399,7 +8399,21 @@
       "manager": "manager",
       "wallet": "wallet"
     },
-    "source": "Source",
+    "source": {
+      "farmers": "Farmers registered",
+      "communities": "Communities profiled",
+      "groups": "Groups formed",
+      "purchases": "Purchases",
+      "responses": "Survey responses",
+      "workshops": "Workshops held",
+      "attendance": "Workshop attendance",
+      "treeVisits": "Tree visits",
+      "plots": "Plots mapped",
+      "seedlings": "Seedlings given to farmers",
+      "nurseryRounds": "Nursery rounds",
+      "repayments": "Loan repayments",
+      "manual": "Entered by hand"
+    },
     "attrib": {
       "plannedCommunities": "Planned communities only",
       "anywhere": "Anywhere"
@@ -8806,6 +8820,9 @@
     "move": "Move…",
     "moveTo": "Move {{name}} to another supervisor",
     "category": "Category",
-    "inReview": "In review"
+    "inReview": "In review",
+    "sourceCol": "Source",
+    "reasonPenalty": "Week of {{date}}: {{pct}}% of plan",
+    "reasonUnderSpend": "Retirement of {{number}}"
   }
 }

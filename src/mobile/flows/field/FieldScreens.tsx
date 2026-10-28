@@ -20,7 +20,7 @@ import { useNotificationStore } from '@/stores/notificationStore';
 import { useOutboxStore } from '@/stores/outboxStore';
 import { useActor, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { useNotificationText } from '@/web/layout/NotificationsBell';
-import { FieldStatus, useFieldLookups } from '@/web/features/field/shared';
+import { FieldStatus, useCfReason, useFieldLookups } from '@/web/features/field/shared';
 
 type TripDraft = Omit<Trip, 'id'> & { key: string };
 
@@ -303,6 +303,7 @@ export function MyCashScreen() {
   const f = useFormat();
   const { agent } = useMobileAgent();
   useFieldStore((s) => s.carryForwards);
+  const cfReason = useCfReason();
   if (!agent) return null;
   const c = cashPosition(agent.id);
   const cfs = outstanding(agent.id);
@@ -312,7 +313,7 @@ export function MyCashScreen() {
       <div className="flex-1 space-y-4 overflow-y-auto px-5 pb-6 pt-1">
         <div className="rounded-card bg-badge-dark p-5 text-white shadow-soft"><div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/70">{t('mobile.m12.toReconcile')}</div><div className="tnum mt-1 text-[30px] font-semibold">{f.money(c.balance)}</div><div className="text-[13px] text-white/80">{t('mobile.m12.requestsOpen', { count: c.toReconcile })}</div></div>
         <dl className="divide-y divide-line rounded-card border border-line text-[15px]">{([[t('field.advances'), c.advanced], [t('mobile.m12.spent'), c.spent], [t('field.refunds'), c.refunded]] as [string, number][]).map(([k, v]) => <div key={k} className="flex justify-between px-4 py-3"><dt className="text-muted">{k}</dt><dd className="tnum">{f.money(v)}</dd></div>)}</dl>
-        {cfs.length > 0 && <section><h2 className="eyebrow mb-2">{t('nav.carryForwards')}</h2><MList>{cfs.map((x) => <li key={x.id}><ListRow title={t(`field.cfType.${x.type}`)} subtitle={x.reason} right={<span className="tnum text-danger">{f.money(x.remainingMinor)}</span>} /></li>)}</MList><p className="mt-1.5 text-[12px] text-muted">{t('mobile.m12.cfHint')}</p></section>}
+        {cfs.length > 0 && <section><h2 className="eyebrow mb-2">{t('nav.carryForwards')}</h2><MList>{cfs.map((x) => <li key={x.id}><ListRow title={t(`field.cfType.${x.type}`)} subtitle={cfReason(x)} right={<span className="tnum text-danger">{f.money(x.remainingMinor)}</span>} /></li>)}</MList><p className="mt-1.5 text-[12px] text-muted">{t('mobile.m12.cfHint')}</p></section>}
         <section><h2 className="eyebrow mb-2">{t('mobile.m12.advancesList')}</h2><MList>{c.rows.slice(0, 10).map((r) => <li key={r.id}><ListRow title={r.number} subtitle={`${f.money(r.advanced)} → ${f.money(r.spent)}`} right={<span className={cn('tnum', r.balance ? 'font-semibold text-ink' : 'text-muted')}>{f.money(r.balance)}</span>} /></li>)}</MList></section>
       </div>
     </div>

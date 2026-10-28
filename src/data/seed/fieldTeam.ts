@@ -82,7 +82,9 @@ export function seedFieldTeam(ops: OpsResult, settings: OrgSettings, o: Opts): F
       const dates = Array.from({ length: 5 }, (_, i) => day(wk + i * DAY)).filter((_, i) => i < rng.int(ft.plan.minDays, Math.min(5, ft.plan.maxDays)));
       const created = wk - 3 * DAY;
       const pid = `${o.orgId}_wp_${sup}_${weekStart}`;
-      const activities = rng.sample(o.activityIds, Math.min(o.activityIds.length, rng.int(4, 6))).map((activityId) => ({ activityId, target: rng.int(5, 25) }));
+      // Targets sized to the unit: kilograms in hundreds, counts in ones (most weeks are achievable).
+      const sized = (id: string) => { const u = ft.activities.find((a) => a.id === id)?.unit; return u === 'kg' ? rng.int(2, 6) * 100 : u === 'seedlings' || u === 'trees' ? rng.int(2, 8) * 10 : rng.int(1, 4); };
+      const activities = rng.sample(o.activityIds, Math.min(o.activityIds.length, rng.int(4, 6))).map((activityId) => ({ activityId, target: sized(activityId) }));
       if (current && sup === o.journeySupervisor) {
         // Journey 7: the plan Fuseini publishes; the targets suit the week's real work.
         activities.splice(0, activities.length, ...o.activityIds.slice(0, 4).map((activityId, i) => ({ activityId, target: [10, 400, 3, 2][i] ?? 5 })));

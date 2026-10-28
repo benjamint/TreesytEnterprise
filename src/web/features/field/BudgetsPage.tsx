@@ -23,7 +23,7 @@ import { useActor, useCan, useFormat, useOrgRows, useOrgSettings, useT } from '@
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
 import { ApprovalTimeline, PaymentState, WorkflowButtons, mono, useWorkflowDef } from '@/web/features/buying/common';
 import { PayDialog } from '@/web/features/payments/PayDialog';
-import { AgentName, FieldStatus, useFieldLookups } from './shared';
+import { AgentName, FieldStatus, useCfReason, useFieldLookups } from './shared';
 
 const STAGES = ['SUBMITTED', 'MANAGER_APPROVED', 'EXTRA_APPROVED', 'APPROVED', 'PAYING', 'RETIREMENT_OPEN', 'CLOSED', 'ON_HOLD', 'REJECTED'] as const;
 
@@ -124,6 +124,7 @@ function BudgetDrawer({ b, onClose }: { b: BudgetRequest; onClose: () => void })
   const plan = useFieldStore((s) => s.plans.find((p) => p.id === b.planId));
   useFieldStore((s) => s.carryForwards);
   useFieldStore((s) => s.reports);
+  const cfReason = useCfReason();
   const [override, setOverride] = useState(false);
   const [paying, setPaying] = useState(false);
   const [absorbing, setAbsorbing] = useState(false);
@@ -195,7 +196,7 @@ function BudgetDrawer({ b, onClose }: { b: BudgetRequest; onClose: () => void })
                 <p className="text-[13px] text-muted">{b.payStatus === 'UNPAID' ? t('field.deductionsPreview') : t('field.deductionsApplied')}</p>
                 <ul className="divide-y divide-line rounded-ctl border border-line text-[14px]">
                   {(b.payStatus === 'UNPAID' ? outstandingCfs.map((c) => ({ c, amt: b.deductions.find((d) => d.carryForwardId === c.id)?.amountMinor ?? 0 })) : b.deductions.map((d) => ({ c: useFieldStore.getState().carryForwards.find((x) => x.id === d.carryForwardId)!, amt: d.amountMinor }))).filter((x) => x.c).map(({ c, amt }) => (
-                    <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2"><span><span className="block text-ink">{t(`field.cfType.${c.type}`)}</span><span className="text-[12px] text-muted">{c.reason}</span></span><span className="tnum text-danger">{`− ${f.money(amt)}`}</span></li>
+                    <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2"><span><span className="block text-ink">{t(`field.cfType.${c.type}`)}</span><span className="text-[12px] text-muted">{cfReason(c)}</span></span><span className="tnum text-danger">{`− ${f.money(amt)}`}</span></li>
                   ))}
                   {!b.deductions.length && !outstandingCfs.length && <li className="px-3 py-3 text-center text-muted">{t('field.noDeductions')}</li>}
                 </ul>

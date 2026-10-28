@@ -19,7 +19,7 @@ import { toMinor } from '@/engines/money';
 import { useFieldStore } from '@/stores/fieldStore';
 import { useActor, useCan, useCurrentOrg, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed } from '@/web/features/people/shared';
-import { AgentName, FieldStatus, PctCell, WeekPicker, selectCls, useFieldLookups } from './shared';
+import { AgentName, FieldStatus, PctCell, WeekPicker, selectCls, useCfReason, useFieldLookups } from './shared';
 
 /** Carry-forwards and penalties (PRD J5): list with applications, performance penalty run, waive / appeal, manual entries. */
 export function CarryForwardsPage() {
@@ -36,18 +36,19 @@ export function CarryForwardsPage() {
   const [agent, setAgent] = useState(params.get('agent') ?? '');
   const [running, setRunning] = useState(false);
   const [manual, setManual] = useState(false);
+  const cfReason = useCfReason();
   const query = q.trim().toLowerCase();
-  const shown = rows.filter((c) => (!status || c.status === status) && (!type || c.type === type) && (!agent || c.agentId === agent) && (!query || [fl.agentName(c.agentId), c.reason].some((x) => x.toLowerCase().includes(query)))).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const shown = rows.filter((c) => (!status || c.status === status) && (!type || c.type === type) && (!agent || c.agentId === agent) && (!query || [fl.agentName(c.agentId), cfReason(c)].some((x) => x.toLowerCase().includes(query)))).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const columns = useMemo<ColumnDef<CarryForward, unknown>[]>(() => [
     { id: 'agent', header: t('col.agent'), accessorFn: (c) => fl.agentName(c.agentId), cell: (c) => <AgentName id={c.row.original.agentId} /> },
     { id: 'type', header: t('field.type'), accessorKey: 'type', cell: (c) => t(`field.cfType.${c.getValue() as string}`) },
-    { id: 'source', header: t('field.source'), accessorFn: (c) => budgets.find((b) => b.id === c.sourceBudgetId)?.number ?? (c.penalty ? t('field.weekOf', { date: f.date(c.penalty.weekStart, 'd MMM') }) : '—') },
-    { id: 'reason', header: t('field.reason'), accessorKey: 'reason' },
+    { id: 'source', header: t('field.sourceCol'), accessorFn: (c) => budgets.find((b) => b.id === c.sourceBudgetId)?.number ?? (c.penalty ? t('field.weekOf', { date: f.date(c.penalty.weekStart, 'd MMM') }) : '—') },
+    { id: 'reason', header: t('field.reason'), accessorFn: (c) => cfReason(c) },
     { id: 'amount', header: t('field.amount'), accessorFn: (c) => c.amount.amountMinor, cell: (c) => <span className="tnum">{f.money(c.row.original.amount)}</span> },
     { id: 'applied', header: t('field.applied'), accessorFn: (c) => c.applications.reduce((s, a) => s + a.amountMinor, 0), cell: (c) => <span className="tnum">{f.money(c.getValue() as number)}</span> },
     { id: 'remaining', header: t('field.remaining'), accessorKey: 'remainingMinor', cell: (c) => <span className="tnum font-medium text-ink">{f.money(c.getValue() as number)}</span> },
     { id: 'status', header: t('col.status'), accessorKey: 'status', cell: (c) => <span className="flex items-center gap-1.5"><FieldStatus status={c.getValue() as string} />{c.row.original.waiver && !c.row.original.waiver.approvedBy && <Badge tone="warning">{t('field.waiverRequested')}</Badge>}</span> },
-  ], [t, f, fl, budgets]);
+  ], [t, f, fl, budgets, cfReason]);
   const current = rows.find((c) => c.id === openId);
   const open$ = rows.filter((c) => c.status === 'PENDING' || c.status === 'PARTIAL');
   return (
@@ -84,6 +85,7 @@ function CfDrawer({ c, onClose }: { c: CarryForward; onClose: () => void }) {
   const can = useCan();
   const { userId } = useActor();
   const budgets = useFieldStore((s) => s.budgets);
+  const cfReason = useCfReason();
   const [waiving, setWaiving] = useState(false);
   const openWaiver = c.waiver && !c.waiver.approvedBy;
   return (
@@ -98,7 +100,7 @@ function CfDrawer({ c, onClose }: { c: CarryForward; onClose: () => void }) {
             key: 'details', label: t('field.tab.details'), content: (
               <div className="space-y-4">
                 <Facts items={[
-                  [t('field.reason'), c.reason], [t('field.created'), `${fl.user(c.createdBy)} · ${f.dateTime(c.createdAt)}`],
+                  [t('field.reason'), cfReason(c)], [t('field.created'), `${fl.user(c.createdBy)} · ${f.dateTime(c.createdAt)}`],
                   [t('field.amount'), f.money(c.amount)], [t('field.remaining'), f.money({ amountMinor: c.remainingMinor, currency: c.amount.currency })],
                   ...(c.penalty ? [[t('field.achievement'), `${c.penalty.achievementPct}% → ${c.penalty.penaltyPct}% × ${f.money({ amountMinor: c.penalty.baseMinor, currency: c.amount.currency })}`] as [string, string]] : []),
                   ...(c.waiver ? [[t('field.waiver'), `${c.waiver.reason} · ${fl.user(c.waiver.requestedBy)}${c.waiver.approvedBy ? ` → ${t('field.approvedBy', { name: fl.user(c.waiver.approvedBy) })}` : ''}`] as [string, string]] : []),

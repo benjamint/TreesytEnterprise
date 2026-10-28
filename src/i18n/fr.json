@@ -8399,7 +8399,21 @@
       "manager": "responsable",
       "wallet": "portefeuille"
     },
-    "source": "Origine",
+    "source": {
+      "farmers": "Producteurs enregistrés",
+      "communities": "Communautés profilées",
+      "groups": "Groupements formés",
+      "purchases": "Achats",
+      "responses": "Réponses d’enquête",
+      "workshops": "Ateliers tenus",
+      "attendance": "Présences aux ateliers",
+      "treeVisits": "Visites d’arbres",
+      "plots": "Parcelles cartographiées",
+      "seedlings": "Plants remis aux producteurs",
+      "nurseryRounds": "Suivis de pépinière",
+      "repayments": "Remboursements de prêts",
+      "manual": "Saisi à la main"
+    },
     "attrib": {
       "plannedCommunities": "Communautés prévues seulement",
       "anywhere": "Partout"
@@ -8806,6 +8820,9 @@
     "move": "Déplacer…",
     "moveTo": "Rattacher {{name}} à un autre superviseur",
     "category": "Catégorie",
-    "inReview": "En vérification"
+    "inReview": "En vérification",
+    "sourceCol": "Origine",
+    "reasonPenalty": "Semaine du {{date}} : {{pct}} % du plan",
+    "reasonUnderSpend": "Justification de {{number}}"
   }
 }

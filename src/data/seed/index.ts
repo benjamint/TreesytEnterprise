@@ -29,7 +29,7 @@ import { VITARA_SUPERVISORS } from './vitara';
 import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 19;
+export const SEED_VERSION = 20;
 export const SEED = 20261018;
 
 export interface SeedData {

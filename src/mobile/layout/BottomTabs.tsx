@@ -18,7 +18,7 @@ export function BottomTabs({ onRecord }: { onRecord: () => void }) {
           <>
             <span className={cn('relative flex h-8 w-14 items-center justify-center rounded-full transition-colors', isActive ? 'bg-brand-soft text-brand' : 'text-muted')}>
               <Icon className="h-[22px] w-[22px]" aria-hidden="true" />
-              {!!badge && <span className="tnum absolute -right-0.5 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-warning px-1 text-[11px] font-semibold text-white">{badge}</span>}
+              {!!badge && <span className="tnum absolute -right-0.5 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-warning px-1 text-[11px] font-semibold text-white dark:text-canvas">{badge}</span>}
             </span>
             <span className={cn('text-[12px] font-medium', isActive ? 'text-brand' : 'text-muted')}>{label}</span>
           </>
@@ -31,7 +31,7 @@ export function BottomTabs({ onRecord }: { onRecord: () => void }) {
       {tab('/m', Home, t('mobile.tabs.home'))}
       {tab('/m/tasks', ListTodo, t('mobile.tabs.tasks'))}
       <div className="flex flex-1 justify-center">
-        <button type="button" onClick={onRecord} className="-mt-5 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-brand text-white shadow-[0_8px_24px_rgba(20,88,63,0.35)] ring-4 ring-surface transition-transform active:scale-95" aria-label={t('mobile.tabs.record')}>
+        <button type="button" onClick={onRecord} className="-mt-5 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-brand text-on-brand shadow-[0_8px_24px_rgba(20,88,63,0.35)] ring-4 ring-surface transition-transform active:scale-95" aria-label={t('mobile.tabs.record')}>
           <Plus className="h-7 w-7" />
         </button>
       </div>

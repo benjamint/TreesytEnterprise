@@ -117,7 +117,7 @@ export function DocumentsPanel({ entity, entityId, types, permission, onUploaded
           <select value={type} onChange={(e) => setType(e.target.value)} aria-label={t('people.docTypeLabel')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
             {types.map((x) => <option key={x} value={x}>{t(`people.docType.${x}`)}</option>)}
           </select>
-          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-ctl bg-brand px-4 text-[14px] font-medium text-white hover:bg-brand-hover">
+          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-ctl bg-brand px-4 text-[14px] font-medium text-on-brand hover:bg-brand-hover">
             <Upload className="h-4 w-4" /> {t('people.upload')}
             <input type="file" className="sr-only" accept="image/*,application/pdf" onChange={onFile} />
           </label>

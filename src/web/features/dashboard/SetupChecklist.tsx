@@ -80,7 +80,7 @@ export function SetupChecklist() {
               }}
               className="flex w-full items-center gap-4 px-6 py-4 text-left transition-colors hover:bg-brand-soft/40"
             >
-              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold', step.done ? 'border-brand bg-brand text-white' : 'border-line text-muted')}>
+              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[13px] font-semibold', step.done ? 'border-brand bg-brand text-on-brand' : 'border-line text-muted')}>
                 {step.done ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0 flex-1">

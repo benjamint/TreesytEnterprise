@@ -61,7 +61,7 @@ export function LogicEditor({ value, onChange, questions, depth = 0 }: { value?:
     <div className={cn('space-y-2', depth > 0 && 'rounded-ctl border border-dashed border-line p-2')}>
       {g.conditions.length > 1 && (
         <div className="flex items-center gap-1 text-[12px]">
-          {(['AND', 'OR'] as const).map((c) => <button key={c} type="button" onClick={() => onChange({ ...g, combinator: c })} className={cn('rounded-full px-2.5 py-0.5 font-semibold', g.combinator === c ? 'bg-brand text-white' : 'bg-canvas text-muted')}>{t(`forms.logic.${c}`)}</button>)}
+          {(['AND', 'OR'] as const).map((c) => <button key={c} type="button" onClick={() => onChange({ ...g, combinator: c })} className={cn('rounded-full px-2.5 py-0.5 font-semibold', g.combinator === c ? 'bg-brand text-on-brand' : 'bg-canvas text-muted')}>{t(`forms.logic.${c}`)}</button>)}
         </div>
       )}
       {g.conditions.map((c, i) => (

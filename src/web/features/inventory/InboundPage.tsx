@@ -344,7 +344,7 @@ function ResolveDialog({ discrepancy: d, onClose }: { discrepancy: Discrepancy; 
       <DialogContent>
         <DialogHeader><DialogTitle>{t('inv.resolveTitle', { code: d.bagCode })}</DialogTitle><DialogDescription>{t('inv.resolveHint')}</DialogDescription></DialogHeader>
         <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t('inv.resolution.label')}>
-          {options.map((o) => <button key={o} type="button" role="radio" aria-checked={type === o} onClick={() => setType(o)} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium', type === o ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-body')}>{t(`inv.resolution.${o}`)}</button>)}
+          {options.map((o) => <button key={o} type="button" role="radio" aria-checked={type === o} onClick={() => setType(o)} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium', type === o ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body')}>{t(`inv.resolution.${o}`)}</button>)}
         </div>
         {type === 'TAG_REPLACED' && <Field label={t('inv.newTag')}><Input value={newCode} onChange={(e) => setNewCode(e.target.value.toUpperCase())} aria-label={t('inv.newTag')} /></Field>}
         {type !== 'WRITTEN_OFF' && <Field label={t('inv.weightKg')}><Input type="number" value={kg} onChange={(e) => setKg(e.target.value)} aria-label={t('inv.weightKg')} /></Field>}

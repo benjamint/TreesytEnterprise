@@ -14,9 +14,9 @@ const PATHS: Record<AggTab, string> = { purchases: '/app/aggregators', suppliers
 export function AggTabs({ counts }: { counts: Partial<Record<AggTab, number>> }) {
   const { t } = useT();
   return (
-    <nav className="mb-5 inline-flex rounded-ctl border border-line bg-surface p-1" aria-label={t('agg.sections')}>
+    <nav className="mb-5 inline-flex max-w-full overflow-x-auto rounded-ctl border border-line bg-surface p-1 scrollbar-thin" aria-label={t('agg.sections')}>
       {(Object.keys(PATHS) as AggTab[]).map((k) => (
-        <NavLink key={k} to={PATHS[k]} end className={({ isActive }) => cn('inline-flex h-9 items-center gap-2 rounded-[8px] px-4 text-[14px] font-medium transition-colors', isActive ? 'bg-brand text-white' : 'text-body hover:bg-canvas')}>
+        <NavLink key={k} to={PATHS[k]} end className={({ isActive }) => cn('inline-flex h-9 items-center gap-2 rounded-[8px] px-4 text-[14px] font-medium transition-colors', isActive ? 'bg-brand text-on-brand' : 'text-body hover:bg-canvas')}>
           {t(`agg.tab.${k}`)}
           {counts[k] != null && <span className="tnum rounded-full bg-black/10 px-1.5 text-[12px]">{counts[k]}</span>}
         </NavLink>

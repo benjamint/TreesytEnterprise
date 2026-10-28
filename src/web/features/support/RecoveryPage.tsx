@@ -47,7 +47,7 @@ export function RecoveryPage({ tab }: { tab: RecoveryTab }) {
       <PageHeader eyebrow={t('nav.section.support')} title={t('nav.recovery')} description={t('pages.recovery')} />
       <nav className="mb-5 inline-flex flex-wrap rounded-ctl border border-line bg-surface p-1" aria-label={t('rec.sections')}>
         {(Object.keys(PATHS) as RecoveryTab[]).map((k) => (
-          <NavLink key={k} to={PATHS[k]} end className={({ isActive }) => cn('inline-flex h-9 items-center gap-2 rounded-[8px] px-4 text-[14px] font-medium transition-colors', isActive ? 'bg-brand text-white' : 'text-body hover:bg-canvas')}>
+          <NavLink key={k} to={PATHS[k]} end className={({ isActive }) => cn('inline-flex h-9 items-center gap-2 rounded-[8px] px-4 text-[14px] font-medium transition-colors', isActive ? 'bg-brand text-on-brand' : 'text-body hover:bg-canvas')}>
             {t(`rec.tab.${k}`)}{k === 'repayments' && pendingCash > 0 && <span className="tnum rounded-full bg-warning/20 px-1.5 text-[12px]">{pendingCash}</span>}
           </NavLink>
         ))}
@@ -380,7 +380,7 @@ function WindowsTab() {
           <div className="absolute inset-y-0 w-px bg-danger/60" style={{ left: `${pos(Date.now())}%` }} aria-hidden="true"><span className="absolute -top-1 -translate-x-1/2 whitespace-nowrap text-[11px] text-danger">{t('rec.today')}</span></div>
           {sorted.map((w) => (
             <button key={w.id} type="button" onClick={() => setEditing(w)} className="relative block h-8 w-full text-left" aria-label={w.name}>
-              <span className={cn('absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 text-[12px] font-medium', w.status === 'ACTIVE' ? 'bg-brand text-white' : w.status === 'DRAFT' ? 'border border-dashed border-line bg-surface text-body' : 'bg-canvas text-muted')} style={{ left: `${pos(w.start)}%`, width: `${Math.max(6, pos(w.end) - pos(w.start))}%` }}>{w.name}</span>
+              <span className={cn('absolute inset-y-0 flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 text-[12px] font-medium', w.status === 'ACTIVE' ? 'bg-brand text-on-brand' : w.status === 'DRAFT' ? 'border border-dashed border-line bg-surface text-body' : 'bg-canvas text-muted')} style={{ left: `${pos(w.start)}%`, width: `${Math.max(6, pos(w.end) - pos(w.start))}%` }}>{w.name}</span>
             </button>
           ))}
         </div>

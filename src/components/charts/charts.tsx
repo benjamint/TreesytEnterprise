@@ -32,7 +32,7 @@ export function ChartFrame({ table, children, legend, className }: { table: { he
         </button>
       </div>
       {asTable ? (
-        <div className="max-h-72 overflow-auto rounded-ctl border border-line">
+        <div className="max-h-72 overflow-auto rounded-ctl border border-line" tabIndex={0} role="region" aria-label={t('chart.showTable')}>
           <table className="w-full text-[13px]">
             <thead className="sticky top-0 bg-canvas">
               <tr>{table.head.map((h, i) => <th key={i} className={cn('px-3 py-2 text-[12px] font-semibold text-label', i ? 'text-right' : 'text-left')}>{h}</th>)}</tr>
@@ -127,7 +127,7 @@ export function Donut({ data, format, center }: { data: (Datum & { index: number
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={data} dataKey="value" nameKey="label" innerRadius="64%" outerRadius="100%" paddingAngle={1} stroke="rgb(var(--surface))" strokeWidth={2} isAnimationActive={false}>
-                {data.map((d) => <Cell key={d.label} fill={seriesColor(d.index)} />)}
+                {data.map((d) => <Cell key={d.label} fill={seriesColor(d.index)} aria-label={`${d.label}: ${format(d.value)}`} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number, n: string) => [format(v), n]} />
             </PieChart>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { forwardRef, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Code2, Keyboard, Pencil, PlayCircle, Plus, RotateCcw, Search, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
@@ -50,7 +50,7 @@ export function HelpPage() {
       <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <QuickCard icon={Keyboard} title={t('help.quick.shortcuts')} body={t('help.quick.shortcutsHint')} onClick={() => window.dispatchEvent(new Event(SHORTCUTS_EVENT))} />
         <DropdownMenu>
-          <DropdownMenuTrigger asChild><div><QuickCard icon={PlayCircle} title={t('help.quick.tours')} body={t('help.quick.toursHint')} /></div></DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild><QuickCard icon={PlayCircle} title={t('help.quick.tours')} body={t('help.quick.toursHint')} /></DropdownMenuTrigger>
           <DropdownMenuContent align="start">{TOURS.map((x) => <DropdownMenuItem key={x.key} onSelect={() => tour(x.to)}>{t(`help.tour.${x.key}`)}</DropdownMenuItem>)}</DropdownMenuContent>
         </DropdownMenu>
         <QuickCard icon={Smartphone} title={t('help.quick.mobile')} body={t('help.quick.mobileHint')} to="/app/help/mobile" />
@@ -93,11 +93,12 @@ export function HelpPage() {
   );
 }
 
-function QuickCard({ icon: Icon, title, body, onClick, to }: { icon: typeof Keyboard; title: string; body: string; onClick?: () => void; to?: string }) {
+type QuickProps = { icon: typeof Keyboard; title: string; body: string; onClick?: () => void; to?: string } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'title'>;
+const QuickCard = forwardRef<HTMLButtonElement, QuickProps>(function QuickCard({ icon: Icon, title, body, onClick, to, ...rest }, ref) {
   const cls = 'flex h-full w-full items-start gap-3 rounded-card border border-line bg-surface p-4 text-left shadow-soft transition hover:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand';
   const inner = <><span className="rounded-full bg-brand-soft p-2 text-brand"><Icon className="h-4 w-4" aria-hidden="true" /></span><span className="min-w-0"><span className="block text-[14px] font-semibold text-ink">{title}</span><span className="block text-[12px] text-muted">{body}</span></span></>;
-  return to ? <Link to={to} className={cls}>{inner}</Link> : <button type="button" onClick={onClick} className={cls}>{inner}</button>;
-}
+  return to ? <Link to={to} className={cls}>{inner}</Link> : <button ref={ref} type="button" {...rest} onClick={onClick} className={cls}>{inner}</button>;
+});
 
 function ArticleView({ a, onEdit }: { a: KbArticle; onEdit: () => void }) {
   const { t } = useT();

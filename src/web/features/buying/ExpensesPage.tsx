@@ -289,7 +289,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
                 <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-ctl border border-line p-3">
                   {reqBags.map((b) => {
                     const on = codes.includes(b.code);
-                    return <button key={b.id} type="button" aria-pressed={on} onClick={() => setCodes(on ? codes.filter((c) => c !== b.code) : [...codes, b.code])} className={cn('rounded-full border px-2.5 py-1 font-mono text-[12px]', on ? 'border-brand bg-brand text-white' : 'border-line text-body hover:border-brand/40')}>{b.code}</button>;
+                    return <button key={b.id} type="button" aria-pressed={on} onClick={() => setCodes(on ? codes.filter((c) => c !== b.code) : [...codes, b.code])} className={cn('rounded-full border px-2.5 py-1 font-mono text-[12px]', on ? 'border-brand bg-brand text-on-brand' : 'border-line text-body hover:border-brand/40')}>{b.code}</button>;
                   })}
                 </div>
               ) : <p className="text-[13px] text-muted">{t('buy.noBagsToScan')}</p>}

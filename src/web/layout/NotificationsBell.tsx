@@ -35,7 +35,7 @@ export function NotificationsBell() {
         <Button variant="ghost" size="icon" className="relative" aria-label={`${t('shell.notifications')}${unread ? ` (${unread})` : ''}`}>
           <Bell />
           {unread > 0 && (
-            <span className="tnum absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-semibold text-white">{unread > 9 ? '9+' : unread}</span>
+            <span className="tnum absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-semibold text-white dark:text-canvas">{unread > 9 ? '9+' : unread}</span>
           )}
         </Button>
       </DropdownMenuTrigger>

@@ -95,7 +95,7 @@ function Inbox() {
                       {!n.read ? (
                         <button type="button" onClick={() => markRead(n.id)} className="shrink-0 rounded-full px-2 py-1 text-[12px] font-medium text-brand hover:bg-brand-soft">{t('ntf.markRead')}</button>
                       ) : <span className="sr-only">{t('ntf.read')}</span>}
-                      {!n.read && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand" aria-label={t('ntf.unread')} />}
+                      {!n.read && <span role="img" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-brand" aria-label={t('ntf.unread')} />}
                     </li>
                   );
                 })}
@@ -210,7 +210,7 @@ function PushPreview({ m }: { m: OutboxMessage }) {
     <div className="mx-auto w-full max-w-[340px] rounded-[28px] bg-[linear-gradient(160deg,#16382b,#0f2a20)] p-4" aria-label={t('ntf.pushPreview')}>
       <div className="mb-6 text-center text-[32px] font-light text-white/90 tnum">09:41</div>
       <div className="flex items-start gap-3 rounded-2xl bg-white/90 p-3 backdrop-blur">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-white"><Bell className="h-4 w-4" aria-hidden="true" /></span>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand text-on-brand"><Bell className="h-4 w-4" aria-hidden="true" /></span>
         <div className="min-w-0 text-[#1d2b24]">
           <div className="flex justify-between text-[12px]"><span className="font-semibold">{m.subject ?? org.name}</span><span className="text-[#5d6b64]">{t('ntf.now')}</span></div>
           <div className="text-[13px] leading-snug">{m.body}</div>

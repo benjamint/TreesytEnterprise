@@ -279,7 +279,7 @@ export function OutboundScreen() {
                 <MList>
                   {bags.slice(0, 80).map((b) => {
                     const on = picked.includes(b.code);
-                    return <li key={b.id}><button type="button" role="checkbox" aria-checked={on} onClick={() => setPicked(on ? picked.filter((c) => c !== b.code) : [...picked, b.code])} className="flex min-h-[52px] w-full items-center gap-3 px-4 text-left active:bg-brand-soft"><span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-white' : 'border-line')}>{on && <CheckCircle2 className="h-4 w-4" />}</span><span className="flex-1 font-mono text-[14px] text-ink">{b.code}</span><span className="tnum text-[13px] text-muted">{f.kg(b.weightKg)}</span></button></li>;
+                    return <li key={b.id}><button type="button" role="checkbox" aria-checked={on} onClick={() => setPicked(on ? picked.filter((c) => c !== b.code) : [...picked, b.code])} className="flex min-h-[52px] w-full items-center gap-3 px-4 text-left active:bg-brand-soft"><span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-on-brand' : 'border-line')}>{on && <CheckCircle2 className="h-4 w-4" />}</span><span className="flex-1 font-mono text-[14px] text-ink">{b.code}</span><span className="tnum text-[13px] text-muted">{f.kg(b.weightKg)}</span></button></li>;
                   })}
                 </MList>
               </div>

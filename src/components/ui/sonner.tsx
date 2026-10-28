@@ -9,7 +9,7 @@ export function Toaster({ theme, position = 'bottom-right' }: { theme: 'light' |
         classNames: {
           toast: 'rounded-card border border-line bg-surface text-ink shadow-soft font-sans',
           description: 'text-muted',
-          actionButton: 'bg-brand text-white',
+          actionButton: 'bg-brand text-on-brand',
         },
       }}
     />

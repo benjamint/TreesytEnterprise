@@ -15,6 +15,7 @@ export default {
       },
       colors: {
         brand: { DEFAULT: token('brand'), hover: token('brand-hover'), soft: token('brand-soft') },
+        'on-brand': token('on-brand'),
         lime: token('lime'),
         'badge-dark': token('badge-dark'),
         ink: token('ink'),
@@ -36,7 +37,7 @@ export default {
         border: token('line'),
         input: token('line'),
         ring: token('brand'),
-        primary: { DEFAULT: token('brand'), foreground: '#FFFFFF' },
+        primary: { DEFAULT: token('brand'), foreground: token('on-brand') },
       },
       fontFamily: {
         sans: ['"Inter Variable"', 'Inter', 'system-ui', 'sans-serif'],

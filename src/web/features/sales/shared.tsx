@@ -44,7 +44,7 @@ export function ShipmentSteps({ dispatch: d }: { dispatch: DispatchOrder }) {
         const when = [...d.tracking].reverse().find((x) => x.status === s)?.at;
         return (
           <li key={s} className="flex flex-col items-center text-center">
-            <span className={cn('flex h-8 w-8 items-center justify-center rounded-full border-2 text-[12px] font-semibold', done ? 'border-brand bg-brand text-white' : 'border-line text-muted', reached === i && 'ring-4 ring-brand-soft')}>{done ? <Check className="h-4 w-4" /> : i + 1}</span>
+            <span className={cn('flex h-8 w-8 items-center justify-center rounded-full border-2 text-[12px] font-semibold', done ? 'border-brand bg-brand text-on-brand' : 'border-line text-muted', reached === i && 'ring-4 ring-brand-soft')}>{done ? <Check className="h-4 w-4" /> : i + 1}</span>
             <span className={cn('mt-1.5 text-[12px] font-medium', done ? 'text-ink' : 'text-muted')}>{t(`status.${s}`)}</span>
             <span className="text-[11px] text-muted">{when ? f.date(when) : ''}</span>
           </li>

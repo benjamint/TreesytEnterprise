@@ -38,7 +38,7 @@ export function SeedlingsPage() {
       <PageHeader eyebrow={t('nav.section.trees')} title={t('nav.seedlings')} description={t('pages.seedlings')}
         primary={<PermissionGate permission="seedlings.create"><Button onClick={() => setReceiving(true)}><PackagePlus /> {t('land.receiveLot')}</Button></PermissionGate>} />
       <div className="mb-5 flex gap-1 overflow-x-auto border-b border-line" role="tablist">
-        {TABS.map((k) => <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn('-mb-px whitespace-nowrap border-b-2 px-3 py-2.5 text-[14px] font-medium', tab === k ? 'border-brand text-brand' : 'border-transparent text-muted hover:text-ink')}>{t(`land.sTab.${k}`)}{k === 'transfers' && incoming.length > 0 && <span className="ml-1.5 rounded-full bg-danger px-1.5 text-[11px] text-white">{incoming.length}</span>}</button>)}
+        {TABS.map((k) => <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn('-mb-px whitespace-nowrap border-b-2 px-3 py-2.5 text-[14px] font-medium', tab === k ? 'border-brand text-brand' : 'border-transparent text-muted hover:text-ink')}>{t(`land.sTab.${k}`)}{k === 'transfers' && incoming.length > 0 && <span className="ml-1.5 rounded-full bg-danger px-1.5 text-[11px] text-white dark:text-canvas">{incoming.length}</span>}</button>)}
       </div>
       {tab === 'stock' && <StockTab />}
       {tab === 'sourcing' && <SourcingTab />}

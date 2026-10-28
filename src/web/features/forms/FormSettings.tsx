@@ -99,7 +99,7 @@ export function FormSettings({ form }: { form: FormRecord }) {
         <ol className="flex flex-wrap items-center gap-2">
           {STEPS.map((s, i) => (
             <li key={s} className="flex items-center gap-2">
-              <span className={cn('flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium', form.status === s ? 'border-brand bg-brand text-white' : STEPS.indexOf(form.status) > i ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line text-muted')}>
+              <span className={cn('flex items-center gap-1.5 rounded-full border px-3 py-1 text-[13px] font-medium', form.status === s ? 'border-brand bg-brand text-on-brand' : STEPS.indexOf(form.status) > i ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line text-muted')}>
                 {STEPS.indexOf(form.status) > i && <CheckCircle2 className="h-3.5 w-3.5" />}{t(`forms.status.${s}`)}
               </span>
               {i < STEPS.length - 1 && <span className="text-line">{'→'}</span>}

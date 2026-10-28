@@ -40,9 +40,9 @@ export function FilterBar({ search, onSearch, placeholder, filters = [], views =
       {views.length > 0 && (
         <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('table.views')}>
           {views.map((v) => (
-            <button key={v.key} type="button" role="tab" aria-selected={v.active} onClick={v.onSelect} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors', v.active ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-body hover:border-brand/40')}>
+            <button key={v.key} type="button" role="tab" aria-selected={v.active} onClick={v.onSelect} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors', v.active ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/40')}>
               {v.label}
-              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-white/80' : 'text-muted')}>{v.count}</span>}
+              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-on-brand/80' : 'text-muted')}>{v.count}</span>}
             </button>
           ))}
         </div>

@@ -217,7 +217,7 @@ export function RecordPurchaseScreen() {
                   {active.map((x) => (
                     <li key={x.id}>
                       <button type="button" onClick={() => setRequestId(x.id)} className={cn('flex min-h-[60px] w-full items-center gap-3 px-4 py-3 text-left', x.id === requestId && 'bg-brand-soft')}>
-                        <span className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2', x.id === requestId ? 'border-brand bg-brand text-white' : 'border-line')}>{x.id === requestId && <Check className="h-3 w-3" />}</span>
+                        <span className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2', x.id === requestId ? 'border-brand bg-brand text-on-brand' : 'border-line')}>{x.id === requestId && <Check className="h-3 w-3" />}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block font-mono text-[14px] text-ink">{x.number}</span>
                           <span className="block text-[13px] text-muted">{t(`buy.sourcingName.${x.sourcingModel}`)} · {f.money(x.unitPrice)}{'/kg · '}{f.kg(x.volume)}</span>

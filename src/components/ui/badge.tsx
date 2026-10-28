@@ -9,7 +9,7 @@ export const badgeVariants = cva('inline-flex h-6 items-center gap-1 rounded-ful
       brand: 'bg-brand-soft text-brand',
       info: 'bg-info/10 text-info',
       success: 'bg-success/10 text-success',
-      paid: 'bg-success text-white',
+      paid: 'bg-success text-white dark:text-canvas',
       done: 'bg-ink/90 text-surface dark:bg-success/30 dark:text-ink',
       teal: 'bg-teal/10 text-teal',
       warning: 'bg-warning/10 text-warning',

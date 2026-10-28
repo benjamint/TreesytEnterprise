@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 
 /** Helpful empty state with a small spot illustration (PRD 6.0). */
-export function EmptyState({ title, body, action }: { title: ReactNode; body?: ReactNode; action?: ReactNode }) {
+export function EmptyState({ title, body, action, bare }: { title: ReactNode; body?: ReactNode; action?: ReactNode; bare?: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-card border border-dashed border-line bg-surface px-6 py-14 text-center">
+    <div className={bare ? 'flex flex-col items-center justify-center px-6 py-12 text-center' : 'flex flex-col items-center justify-center rounded-card border border-dashed border-line bg-surface px-6 py-14 text-center'}>
       <svg width="96" height="72" viewBox="0 0 96 72" aria-hidden="true" className="mb-5">
         <ellipse cx="48" cy="62" rx="40" ry="8" fill="rgb(var(--brand-soft))" />
         <path d="M30 60c0-14 6-24 18-30 12 6 18 16 18 30" fill="rgb(var(--brand) / 0.18)" />

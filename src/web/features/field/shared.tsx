@@ -49,7 +49,7 @@ export function AgentName({ id, plain }: { id?: string; plain?: boolean }) {
       <span className={plain ? '' : 'font-medium text-ink'}>{lk.agentName(id)}</span>
       {blocks?.flagged && (
         <Tip label={t('field.flagTip', { severity: t(`rep.severity.${blocks.worst ?? 'LOW'}`) })}>
-          <span className={blocks.worst === 'CRITICAL' || blocks.worst === 'HIGH' ? 'text-danger' : 'text-warning'} aria-label={t('field.flagged')}><AlertTriangle className="h-3.5 w-3.5" /></span>
+          <span role="img" className={blocks.worst === 'CRITICAL' || blocks.worst === 'HIGH' ? 'text-danger' : 'text-warning'} aria-label={t('field.flagged')}><AlertTriangle className="h-3.5 w-3.5" /></span>
         </Tip>
       )}
     </span>
@@ -83,7 +83,7 @@ export function WeekPicker({ value, onChange }: { value: string; onChange: (v: s
 
 /** Percent cell coloured on a single-hue scale (with the number, never colour alone). */
 export function PctCell({ pct, children }: { pct: number; children?: React.ReactNode }) {
-  const step = pct >= 100 ? 'bg-brand text-white' : pct >= 70 ? 'bg-brand/60 text-white' : pct >= 40 ? 'bg-brand/30 text-ink' : pct > 0 ? 'bg-brand/10 text-ink' : 'bg-canvas text-muted';
+  const step = pct >= 100 ? 'bg-brand text-on-brand' : pct >= 70 ? 'bg-brand/60 text-white' : pct >= 40 ? 'bg-brand/30 text-ink' : pct > 0 ? 'bg-brand/10 text-ink' : 'bg-canvas text-muted';
   return <span className={`inline-flex min-w-[64px] flex-col items-center rounded-[6px] px-2 py-1 text-[12px] tnum ${step}`}>{children}<span className="font-semibold">{`${pct}%`}</span></span>;
 }
 

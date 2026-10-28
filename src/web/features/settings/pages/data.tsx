@@ -73,7 +73,7 @@ export function IntegrationsPage() {
       >
         <EditTable head={[t('set.int.keyName'), t('set.int.key'), t('set.int.scopes'), t('set.int.created'), t('set.int.lastUsed'), '']}>
           {int.apiKeys.map((k) => (
-            <tr key={k.id} className={cn(k.revokedAt && 'opacity-60')}>
+            <tr key={k.id} className={cn(k.revokedAt && 'bg-canvas/70 [&_td]:text-muted')}>
               <td className="font-medium text-ink"><span className="flex items-center gap-2"><KeyRound className="h-4 w-4 text-muted" /> {k.name}</span></td>
               <td className="font-mono text-[13px]">{k.prefix}••••{k.last4}</td>
               <td><div className="flex flex-wrap gap-1">{k.scopes.map((s) => <Badge key={s} tone="neutral" className="font-mono">{s}</Badge>)}</div></td>
@@ -291,7 +291,7 @@ export function PrivacyPage() {
             const outgoing = g.fromOrgId === orgId;
             const other = outgoing ? g.toOrgId : g.fromOrgId;
             return (
-              <tr key={g.id} className={cn(g.status === 'REVOKED' && 'opacity-60')}>
+              <tr key={g.id} className={cn(g.status === 'REVOKED' && 'bg-canvas/70 [&_td]:text-muted')}>
                 <td className="w-32"><Badge tone={outgoing ? 'brand' : 'info'}>{t(outgoing ? 'set.privacy.outgoing' : 'set.privacy.incoming')}</Badge></td>
                 <td className="font-medium text-ink"><span className="flex items-center gap-2"><Flag code={flagOf(other)} /> {orgName(other)}</span></td>
                 <td><div className="flex flex-wrap gap-1">{g.scopes.map((s) => <Badge key={s} tone="neutral">{t(`set.privacy.scope.${s}`)}</Badge>)}{g.communityIds?.length ? <Badge tone="info">{t('share.communitiesCount', { count: g.communityIds.length })}</Badge> : null}</div></td>

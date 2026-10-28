@@ -265,7 +265,7 @@ function WidgetCard({ placement, editing, onResize, onRemove }: { placement: Wid
         {editing && sizes.length > 1 && (
           <div className="flex rounded-chip border border-line p-0.5" role="radiogroup" aria-label={t('dashboard.size')}>
             {sizes.map((s) => (
-              <button key={s} type="button" role="radio" aria-checked={placement.size === s} onClick={() => onResize(s)} className={cn('rounded-[6px] px-2 py-0.5 text-[12px] font-medium', placement.size === s ? 'bg-brand text-white' : 'text-muted hover:text-ink')}>
+              <button key={s} type="button" role="radio" aria-checked={placement.size === s} onClick={() => onResize(s)} className={cn('rounded-[6px] px-2 py-0.5 text-[12px] font-medium', placement.size === s ? 'bg-brand text-on-brand' : 'text-muted hover:text-ink')}>
                 {t(`dashboard.sizeName.${s}`)}
               </button>
             ))}

@@ -75,7 +75,7 @@ export function UsersPage() {
           const inv = pendingInvite(u.email);
           const self = u.id === userId;
           return (
-            <tr key={m.id} className={cn(status === 'DEACTIVATED' && 'opacity-60')}>
+            <tr key={m.id} className={cn(status === 'DEACTIVATED' && 'bg-canvas/70 [&_td]:text-muted')}>
               <td className="min-w-64">
                 <div className="flex items-center gap-3">
                   <Avatar name={u.name} color={u.avatarColor} size={32} />

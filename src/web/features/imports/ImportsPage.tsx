@@ -200,7 +200,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
     <div className="space-y-5">
       <ol className="flex flex-wrap gap-2" aria-label={t('imp.steps')}>
         {STEPS.map((s, i) => (
-          <li key={s} className={cn('flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium', i === stepIndex ? 'border-brand bg-brand text-white' : i < stepIndex ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line bg-surface text-muted')} aria-current={i === stepIndex ? 'step' : undefined}>
+          <li key={s} className={cn('flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium', i === stepIndex ? 'border-brand bg-brand text-on-brand' : i < stepIndex ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line bg-surface text-muted')} aria-current={i === stepIndex ? 'step' : undefined}>
             <span className="tnum">{i + 1}</span>{t(`imp.step.${s}`)}
           </li>
         ))}

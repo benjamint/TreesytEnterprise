@@ -5,6 +5,7 @@ import {
 import { useLocation } from 'react-router-dom';
 import { AlertTriangle, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Columns3, Download, RotateCw, SearchX, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from './EmptyState';
 import { useDemoStore } from '@/stores/demoStore';
 import { useListUiStore } from '@/stores/listUiStore';
 import { Button } from '@/components/ui/button';
@@ -172,7 +173,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
                   const sorted = h.column.getIsSorted();
                   return (
                     <th key={h.id} scope="col" className={cn('h-11 whitespace-nowrap border-b border-line px-4 text-left align-middle', h.column.id === '_select' && 'w-10 pr-0')}>
-                      {h.isPlaceholder ? null : h.column.id === '_select' ? (
+                      {h.isPlaceholder ? null : h.column.id === '_select' || (typeof h.column.columnDef.header === 'string' && !h.column.columnDef.header) || !h.column.getCanSort() ? (
                         flexRender(h.column.columnDef.header, h.getContext())
                       ) : (
                         <button type="button" onClick={h.column.getToggleSortingHandler()} className="eyebrow inline-flex items-center gap-1 hover:text-ink" disabled={!h.column.getCanSort()}>
@@ -229,7 +230,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
           <div><p className="font-medium text-ink">{t('table.noMatch')}</p><p className="text-[14px] text-muted">{t('table.noMatchHint')}</p></div>
           {clearFilters && <Button variant="secondary" size="sm" onClick={clearFilters}><X /> {t('table.clearFilters')}</Button>}
         </div>
-      ) : <div className="px-6 py-12 text-center text-[14px] text-muted">{empty ?? t('table.empty')}</div>)}
+      ) : typeof empty === 'object' && empty ? empty : <EmptyState bare title={empty ?? t('table.empty')} />)}
       {phase === 'ready' && data.length > 0 && (
         <ul className="divide-y divide-line md:hidden" aria-label={t('table.cards')}>
           {table.getRowModel().rows.map((row) => {

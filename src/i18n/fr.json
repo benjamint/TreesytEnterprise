@@ -5199,7 +5199,9 @@
       "repayments_one": "{{count}} remboursement",
       "repayments_other": "{{count}} remboursements",
       "balance": "Solde aujourd’hui",
-      "ledgerLater": "Le grand livre complet s’ouvre depuis Recouvrement (phase 11)."
+      "ledgerLater": "Le grand livre complet s’ouvre depuis Recouvrement (phase 11).",
+      "emptyTitle": "Aucun {{farmers}} pour l’instant",
+      "emptyHint": "Enregistrez des {{farmers}} ici ou sur le téléphone, ou importez un tableur existant."
     },
     "group": {
       "new": "Nouveau groupement",
@@ -5316,7 +5318,15 @@
     "typeHint": {
       "farmers": "Profils avec identité, communauté et réponses au formulaire.",
       "communities": "Noms, localités, contacts et réponses de profil.",
-      "locations": "Votre arborescence, une colonne par niveau."
+      "locations": "Votre arborescence, une colonne par niveau.",
+      "groups": "Nom, communauté, type, coordonnées de paiement",
+      "members": "Nom du groupement, ID producteur et rôle",
+      "leaders": "Communauté, nom, fonction et téléphone",
+      "recoveries": "Remboursements passés : ID producteur, date, montant",
+      "warehouseLoads": "Stock d’ouverture : magasin, code du sac, produit, kg",
+      "priceLists": "Produit, zone, qualité, prix et date de début",
+      "users": "Nom, e-mail et rôle : chacun reçoit une invitation",
+      "agents": "Nom, téléphone, type d’agent et secteur : chacun reçoit une invitation par SMS"
     },
     "laterPhase": "Arrive avec son module.",
     "chooseType": "Que voulez-vous importer ?",
@@ -6214,7 +6224,8 @@
       "IN_TRANSIT": "En transit",
       "OUT_OF_STOCK": "Sorti du stock",
       "REPLACED": "Remplacé",
-      "WITH_AGENT": "Chez l’agent"
+      "WITH_AGENT": "Chez l’agent",
+      "MISSING": "Manquant"
     },
     "noBags": "Aucun sac.",
     "none": "Aucune",

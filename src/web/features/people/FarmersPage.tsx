@@ -7,6 +7,7 @@ import type { Farmer, LoanAccount } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { PermissionGate } from '@/components/shared/Gates';
 import { Avatar } from '@/components/shared/Avatar';
@@ -195,7 +196,10 @@ export function FarmersPage() {
               { header: t('people.phone'), value: (r) => r.phone }, { header: terms.agent, value: (r) => r.agent }, { header: t('col.score'), value: (r) => r.score },
               { header: t('people.farmer.consent'), value: (r) => (r.identity.consent ? 1 : 0) }, { header: t('people.quality'), value: (r) => r.qualityStatus },
             ] }}
-            empty={t('people.noMatch')}
+            empty={rows.length ? t('people.noMatch') : (
+              <EmptyState bare title={t('people.farmer.emptyTitle', { farmers: terms.farmers.toLocaleLowerCase() })} body={t('people.farmer.emptyHint', { farmers: terms.farmers.toLocaleLowerCase() })}
+                action={<div className="flex flex-wrap justify-center gap-2"><PermissionGate permission="farmers.create"><Button onClick={() => setForm({})}><Plus /> {t('people.farmer.new', { farmer: terms.farmer.toLocaleLowerCase() })}</Button></PermissionGate><PermissionGate permission="imports.view"><Button variant="secondary" onClick={() => navigate('/app/imports?type=farmers')}><Upload /> {t('nav.imports')}</Button></PermissionGate></div>} />
+            )}
           />
         </TabsContent>
         <TabsContent value="dashboard"><FarmerDashboard rows={rows} /></TabsContent>
@@ -323,7 +327,7 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
                 {consent ? (
                   <div className="space-y-2 text-[13px] text-body">
                     <div>{t(`people.farmer.consentType.${consent.type}`)} · {f.dateTime(consent.capturedAt)}</div>
-                    {consent.type === 'AUDIO' && <div className="flex items-center gap-3 rounded-full bg-canvas px-4 py-2"><button type="button" onClick={() => toast(t('people.farmer.audioDemo'))} className="h-7 w-7 rounded-full bg-brand text-white" aria-label={t('people.farmer.play')}>{'▶'}</button><div className="h-1 flex-1 rounded-full bg-line"><div className="h-1 w-1/3 rounded-full bg-brand" /></div><span className="tnum text-muted">{'0:14'}</span></div>}
+                    {consent.type === 'AUDIO' && <div className="flex items-center gap-3 rounded-full bg-canvas px-4 py-2"><button type="button" onClick={() => toast(t('people.farmer.audioDemo'))} className="h-7 w-7 rounded-full bg-brand text-on-brand" aria-label={t('people.farmer.play')}>{'▶'}</button><div className="h-1 flex-1 rounded-full bg-line"><div className="h-1 w-1/3 rounded-full bg-brand" /></div><span className="tnum text-muted">{'0:14'}</span></div>}
                     {consent.type === 'SIGNATURE' && <svg viewBox="0 0 200 50" className="h-14 w-48 rounded-ctl border border-line bg-surface" aria-label={t('people.farmer.signature')}><path d="M10 35 C 30 5, 45 45, 60 25 S 90 10, 105 30 S 140 40, 150 20 S 180 30, 190 25" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink" /></svg>}
                   </div>
                 ) : (

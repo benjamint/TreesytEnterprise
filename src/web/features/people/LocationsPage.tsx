@@ -125,7 +125,7 @@ export function LocationsExplorerPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
             <Input compact value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('people.loc.search')} aria-label={t('people.loc.search')} className="pl-9" />
           </div>
-          <ul className="max-h-[calc(100vh-300px)] min-h-[300px] overflow-y-auto scrollbar-thin" role="tree">{tree.map((n) => renderNode(n, 0))}</ul>
+          <ul className="max-h-[calc(100vh-300px)] min-h-[300px] overflow-y-auto scrollbar-thin">{tree.map((n) => renderNode(n, 0))}</ul>
         </div>
         <div className="rounded-card border border-line bg-surface p-6 shadow-soft">
           {node && counts ? (

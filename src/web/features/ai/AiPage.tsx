@@ -132,7 +132,7 @@ export function AiPage() {
             {active?.messages.map((m, i) =>
               m.role === 'user' ? (
                 <div key={m.id} className="flex justify-end">
-                  <p className="max-w-[80%] rounded-2xl rounded-br-sm bg-brand px-4 py-2.5 text-[15px] text-white">{m.text}</p>
+                  <p className="max-w-[80%] rounded-2xl rounded-br-sm bg-brand px-4 py-2.5 text-[15px] text-on-brand">{m.text}</p>
                 </div>
               ) : (
                 <div key={m.id}>{m.answer && <AnswerCard answer={m.answer} question={active.messages[i - 1]?.text ?? ''} />}</div>

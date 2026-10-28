@@ -81,7 +81,7 @@ export function NurseriesPage() {
       <div className="mb-5 grid gap-5 lg:grid-cols-2">
         <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
           <div className="mb-3 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('land.germinationTrend')}</h3>
-            <div className="flex gap-1" role="group" aria-label={t('land.period')}>{(['day', 'month', 'year'] as const).map((p) => <button key={p} type="button" aria-pressed={period === p} onClick={() => setPeriod(p)} className={cn('rounded-chip px-2.5 py-1 text-[12px] font-medium', period === p ? 'bg-brand text-white' : 'text-muted hover:bg-canvas')}>{t(`land.periodName.${p}`)}</button>)}</div>
+            <div className="flex gap-1" role="group" aria-label={t('land.period')}>{(['day', 'month', 'year'] as const).map((p) => <button key={p} type="button" aria-pressed={period === p} onClick={() => setPeriod(p)} className={cn('rounded-chip px-2.5 py-1 text-[12px] font-medium', period === p ? 'bg-brand text-on-brand' : 'text-muted hover:bg-canvas')}>{t(`land.periodName.${p}`)}</button>)}</div>
           </div>
           {history.length ? <Lines data={history} series={[{ key: 'germinated', label: t('land.germinated'), index: 0 }, { key: 'alive', label: t('land.alive'), index: 2 }]} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noRounds')}</TabEmpty>}
         </section>

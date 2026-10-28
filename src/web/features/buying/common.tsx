@@ -83,7 +83,7 @@ export function ApprovalTimeline({ record, def }: { record: WorkflowRecord; def:
           return (
             <li key={s.id} className="relative flex gap-3 pb-5 last:pb-0">
               {i < steps.length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-2rem)] w-px bg-line" aria-hidden="true" />}
-              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border', state === 'done' && 'border-success bg-success text-white', state === 'rejected' && 'border-danger bg-danger text-white', state === 'held' && 'border-warning text-warning', state === 'current' && 'border-brand bg-brand-soft text-brand', state === 'upcoming' && 'border-line text-muted')}>
+              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border', state === 'done' && 'border-success bg-success text-white dark:text-canvas', state === 'rejected' && 'border-danger bg-danger text-white dark:text-canvas', state === 'held' && 'border-warning text-warning', state === 'current' && 'border-brand bg-brand-soft text-brand', state === 'upcoming' && 'border-line text-muted')}>
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1 pt-1">
@@ -167,7 +167,7 @@ export function EvidenceIcons({ evidence }: { evidence: Purchase['evidence'] }) 
     <span className="inline-flex gap-1">
       {items.map(({ k, on, I }) => (
         <Tip key={k} label={`${t(`buy.evidence.${k}`)} · ${on ? t('common.yes') : t('common.no')}`}>
-          <span className={cn('flex h-6 w-6 items-center justify-center rounded-full', on ? 'bg-brand-soft text-brand' : 'bg-canvas text-muted/50')} aria-label={`${t(`buy.evidence.${k}`)}: ${on ? t('common.yes') : t('common.no')}`}>
+          <span role="img" className={cn('flex h-6 w-6 items-center justify-center rounded-full', on ? 'bg-brand-soft text-brand' : 'bg-canvas text-muted/50')} aria-label={`${t(`buy.evidence.${k}`)}: ${on ? t('common.yes') : t('common.no')}`}>
             <I className="h-3.5 w-3.5" />
           </span>
         </Tip>

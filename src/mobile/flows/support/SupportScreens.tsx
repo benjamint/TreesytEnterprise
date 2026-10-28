@@ -165,7 +165,7 @@ export function NewSupportScreen() {
                   return (
                     <li key={id}>
                       <button type="button" role="checkbox" aria-checked={on} onClick={() => setPicked(on ? chosen.filter((x) => x !== id) : [...chosen, id])} className="flex min-h-[56px] w-full items-center gap-3 px-4 text-left active:bg-brand-soft">
-                        <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-white' : 'border-line')}>{on && <Check className="h-4 w-4" />}</span>
+                        <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-on-brand' : 'border-line')}>{on && <Check className="h-4 w-4" />}</span>
                         <span className="flex-1 font-medium text-ink">{sl.farmerName(id)}</span>
                       </button>
                     </li>

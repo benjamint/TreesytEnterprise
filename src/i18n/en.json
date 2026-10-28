@@ -5199,7 +5199,9 @@
       "repayments_one": "{{count}} repayment",
       "repayments_other": "{{count}} repayments",
       "balance": "Balance today",
-      "ledgerLater": "The full ledger opens from Recovery (phase 11)."
+      "ledgerLater": "The full ledger opens from Recovery (phase 11).",
+      "emptyTitle": "No {{farmers}} yet",
+      "emptyHint": "Register {{farmers}} here or on the phone, or import a spreadsheet you already have."
     },
     "group": {
       "new": "New group",
@@ -5316,7 +5318,15 @@
     "typeHint": {
       "farmers": "Profiles with identity, community and form answers.",
       "communities": "Names, locations, contacts and profile answers.",
-      "locations": "Your location tree, one column per level."
+      "locations": "Your location tree, one column per level.",
+      "groups": "Name, community, type, payment details",
+      "members": "Group name, farmer ID and role",
+      "leaders": "Community, name, role and phone",
+      "recoveries": "Past repayments: farmer ID, date, amount",
+      "warehouseLoads": "Opening stock: warehouse, bag code, commodity, kg",
+      "priceLists": "Commodity, zone, grade, price and start date",
+      "users": "Name, email and role: each gets an invitation",
+      "agents": "Name, phone, agent type and area: each gets an SMS invite"
     },
     "laterPhase": "Arrives with its module.",
     "chooseType": "What are you importing?",
@@ -6214,7 +6224,8 @@
       "IN_TRANSIT": "In transit",
       "OUT_OF_STOCK": "Out of stock",
       "REPLACED": "Replaced",
-      "WITH_AGENT": "With agent"
+      "WITH_AGENT": "With agent",
+      "MISSING": "Missing"
     },
     "noBags": "No bags.",
     "none": "None",

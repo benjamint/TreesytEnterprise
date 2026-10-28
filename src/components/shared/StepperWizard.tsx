@@ -31,7 +31,7 @@ export function StepperHeader({ steps, current, onStep, compact }: { steps: stri
               aria-current={active ? 'step' : undefined}
               className={cn('flex w-full items-center gap-3 rounded-ctl px-3 py-2.5 text-left text-[14px] transition-colors', active ? 'bg-brand-soft font-semibold text-brand' : done ? 'text-ink hover:bg-canvas' : 'text-muted')}
             >
-              <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[12px] font-semibold', active ? 'border-brand bg-brand text-white' : done ? 'border-brand bg-surface text-brand' : 'border-line bg-surface text-muted')}>
+              <span className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[12px] font-semibold', active ? 'border-brand bg-brand text-on-brand' : done ? 'border-brand bg-surface text-brand' : 'border-line bg-surface text-muted')}>
                 {done ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : i + 1}
               </span>
               {s}

@@ -1,3 +1,4 @@
+import { activateOnSignIn } from '@/services/teamService';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner';
@@ -72,6 +73,7 @@ export function MobileSignIn() {
     if (!user) return;
     useMobileSessionStore.getState().setPin(pin);
     useMobileSessionStore.getState().signIn(user.id, orgId, user.language);
+    activateOnSignIn(user.id, orgId);
     toast.success(t('mobile.signedInToast', { name: user.name }));
   };
 

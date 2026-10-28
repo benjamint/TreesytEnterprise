@@ -23,13 +23,15 @@ import { useActor, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/
 
 /** The farmers this agent can see: those in the agent's communities. */
 export function useMyFarmers() {
-  const { agent } = useMobileAgent();
+  const { agent, type } = useMobileAgent();
   const farmers = useOrgRows(useFarmerStore((s) => s.farmers));
   const communities = useOrgRows(useCommunityStore((s) => s.communities));
   return useMemo(() => {
+    // Visibility per agent type (Settings → Field team): OWN = farmers they registered, AREAS = their communities, ALL = everyone.
+    const visibility = type?.visibility ?? 'AREAS';
     const mine = new Set(communities.filter((c) => agent && c.agentIds.includes(agent.id)).map((c) => c.id));
-    return farmers.filter((f) => mine.has(f.communityId) || f.agentId === agent?.id).sort((a, b) => a.firstName.localeCompare(b.firstName));
-  }, [farmers, communities, agent]);
+    return farmers.filter((f) => visibility === 'ALL' || f.agentId === agent?.id || (visibility === 'AREAS' && mine.has(f.communityId))).sort((a, b) => a.firstName.localeCompare(b.firstName));
+  }, [farmers, communities, agent, type]);
 }
 
 /** M4 Farmer list (visibility rules) with search. */

@@ -491,8 +491,10 @@ export function retirementSummary(r: Retirement) {
   const approved = Math.min(r.gross.amountMinor, byCat.reduce((s, x) => s + x.approved, 0));
   const unused = r.unused?.amountMinor ?? 0;
   const refunded = r.refunds.reduce((s, x) => s + x.amountMinor, 0);
-  const unaccounted = Math.max(0, r.gross.amountMinor - approved - unused);
-  return { byCat, approved, unused, refunded, unaccounted, live };
+  // Receipts still under review are neither approved nor missing.
+  const pending = live.filter((x) => x.status === 'PENDING').reduce((s, x) => s + x.amountMinor, 0);
+  const unaccounted = Math.max(0, r.gross.amountMinor - approved - pending - unused);
+  return { byCat, approved, pending, unused, refunded, unaccounted, live };
 }
 
 export interface ReceiptInput { categoryId: string; amountMinor: number; date: string; file: string; replaces?: string }

@@ -9,8 +9,9 @@ import type { AppNotification } from '@/types';
 
 export function useNotificationText() {
   const { t } = useT();
+  const f = useFormat();
   return (n: AppNotification) => {
-    const params: Record<string, unknown> = { ...n.params };
+    const params: Record<string, unknown> = Object.fromEntries(Object.entries(n.params).map(([k, v]) => [k, v && typeof v === 'object' && 'amountMinor' in v ? f.money(v as never) : v]));
     if (typeof params.docType === 'string') params.docType = t(`docType.${params.docType}`);
     return t(`notification.${n.key}`, params);
   };

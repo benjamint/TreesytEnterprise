@@ -82,33 +82,34 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Field agents (Scope 3)
 
-- [~] Agent types — CEO / Conservation / Warehouse (Vitara), Délégué / Magasinier (Kakao Ivoire) [16]
-- [~] Agent record — 24 Vitara agents, 12 Kakao Ivoire agents, preview table [16]
-- [~] Managers / reporting lines — supervisors seeded as managers [16]
-- [ ] Visibility rules [16]
-- [ ] Multi-company agents [16]
-- [ ] Agent reports + resolutions + consequences [16]
-- [ ] GPS activity + geofences [16]
-- [ ] Activity catalogue [16]
-- [ ] Weekly plans create / publish / amend [16]
-- [ ] Budget requests [16]
-- [ ] Manager review [16]
-- [ ] Finance review [16]
-- [ ] Wallet edit [16]
-- [ ] Payout net of carry-forward [16]
-- [ ] Absorb with carry-forward [16]
-- [ ] Weekly airtime / allowances [16]
-- [ ] Retirements + receipts [16]
-- [ ] Unused funds + refunds [16]
-- [ ] Under-spend carry-forward [16]
-- [ ] Performance penalty [16]
-- [~] Achievement measurement — metric engine scaffolded [16]
-- [ ] Monthly maintenance allowance [16]
-- [~] Agent scores — scoring engine scaffolded [16]
-- [ ] Manager scores [16]
-- [ ] Commission periods [16]
-- [~] Commission lines + rates + eligibility — rate-card engine scaffolded [16]
-- [~] Two-level approval — workflow engine supports separate permissions and separation of duties (tested) [16]
+- [x] Agent types — CEO / Conservation / Warehouse (Vitara), Délégué / Magasinier (Kakao Ivoire); Settings → Field team: name per language, code, visibility, required fields, budget eligibility, mobile tiles
+- [x] Agent record — `/app/agents`: photo, name, type, phone, areas, managers, warehouse, wallet (network, number, verified name), cash held, week target %, score, flags, last sync, app version, status; column picker, CSV export; invite by SMS (country-checked phone, required fields per type) → Invited until the first phone sign-in; detail tabs Overview (KPIs, activity map), Areas & manager, Wallet (edit with name lookup, change log), Purchases & requests, Cash position, Plans & budgets, Scores, Commissions, Reports, Devices, GPS activity, Activity; "Open mobile app as this agent"
+- [x] Managers / reporting lines — `/app/agents/reporting-lines`: company → supervisors → agents; drag (or Move…) to reassign, gated by `agents.reassign`
+- [x] Visibility rules — per agent type (own records / their areas / everyone) applied to the phone's farmer and community lists
+- [ ] Multi-company agents [17]
+- [x] Agent reports + resolutions + consequences — `/app/agent-reports`: category (severity, consequence), reason, files, assignee, due date, Open → In progress → Resolved with comment and files; the agent answers on the phone; consequences enforced: flag chip on records, payouts blocked (budget, allowance and commission Pay skip or disable with the reason), new budgets blocked, extra approval step on budgets
+- [x] GPS activity + geofences — `/app/field-activity`: purchases, profiling, support fulfilment, surveys, tree monitoring, mapping, workshops on one map with agent / type / date filters; day playback with timeline; radius geofence per community (default from settings); out-of-area flags and a report by agent
+- [x] Activity catalogue — Vitara's 25 activities (18 measured from records, 7 entered by the supervisor), each with a metric definition (source, aggregate, filter, planned communities or anywhere); editable in Settings → Field team
+- [x] Weekly plans create / publish / amend — week (current or N ahead), days within min / max, activities with targets for all or per agent, assignees by team / agent type / named agents; publish (push, phone, weekly airtime allowance); amend after publishing as a new version with reason; detail with per-agent progress grid and planned communities map; close
+- [x] Budget requests — `/app/budgets` list or board: WAB number, trips, categories, total, manager and finance decisions, deductions, net; phone M11: trips with date, community, activity target slices, costs with daily and weekly limits shown live; blocked when last retirement is open or a report blocks budgets
+- [x] Manager review — workflow step `budgets.approveManager`; an extra operations step when an open report requires it
+- [x] Finance review — workflow step `budgets.approveFinance` with amount override and reason
+- [x] Wallet edit — agent detail, permission `agents.editWallet`, name lookup, change log
+- [x] Payout net of carry-forward — outstanding carry-forwards deducted oldest first; deduction preview; pay by mobile money (payments engine); retirement opens on payment
+- [x] Absorb with carry-forward — when deductions cover the budget, nothing is sent and the retirement still opens
+- [x] Weekly airtime / allowances — publishing a plan creates the weekly airtime run for its agents
+- [x] Retirements + receipts — `/app/retirements`: receipts per category with possible-duplicate warning, approve / reject each with a reason in one batch; the agent resubmits rejected ones from the phone; categories without receipts are accounted from the budget
+- [x] Unused funds + refunds — agent declares unused amount with a company reason; finance confirms one or more refunds with proof → Retired
+- [x] Under-spend carry-forward — unaccounted money at the end of a retirement becomes a carry-forward deducted from the next budget
+- [x] Performance penalty — run on demand or by the scheduled job: preview each agent's achievement and band, post once per week as penalty carry-forwards; waive / appeal requested by one person and approved by another
+- [x] Achievement measurement — `/app/achievements`: week selector, agents × activities from the metric definitions (planned communities attribution explained), drill into the records counted, manual entry for supervisor-entered activities, "Recompute week" (also a scheduled job) updates each agent's week target %
+- [x] Monthly maintenance allowance — `/app/allowances`: run for a month with an eligibility preview (threshold, tiers by achievement), approval by another user, bulk pay with MMA reference, Eligible → Pending → Paid / Failed, frozen once paid
+- [x] Agent scores — `/app/scores`: score card per agent type (Vitara Conservation and CEO templates, weights total 100), year selector, leaderboard, breakdown with targets and points, trend by month, "Recalculate now" (and scheduled job)
+- [x] Manager scores — average of each supervisor's agents
+- [x] Commission periods — `/app/compensation`: from / to, approval window (enforced), In review → Confirmed → Paid; lines generated from rate cards with progress; payroll CSV export
+- [x] Commission lines + rates + eligibility — items per rate card (achieved, counted, rate, amount) with notes such as "Workshop WS-… excluded: 12 attendees, min 15"; rate cards editable in Settings → Field team
+- [x] Two-level approval — first approval `compensation.approveFirst`, second `compensation.approveSecond`, two different people, not on one's own line; reject / hold with reason; bulk pay skips agents whose report blocks payouts
+- [x] Agent self-service (M12) — phone: cash position with carry-forwards, commissions with item lines and notes, score breakdown, reports with answers, notifications inbox
 - [ ] Devices per user [17]
 
 ## Buying (Scope 4)

@@ -55,6 +55,7 @@ import { WarehouseExpensesPage } from '@/web/features/inventory/WarehouseExpense
 import { DispatchPage } from '@/web/features/sales/DispatchPage';
 import { NurseriesPage } from '@/web/features/land/NurseriesPage';
 import { WorkshopSessionScreen, WorkshopsHomeScreen } from '@/mobile/flows/workshops/WorkshopScreens';
+import { BudgetNewScreen, BudgetStatusScreen, MyCashScreen, MyCommissionsScreen, MyNotificationsScreen, MyReportsScreen, MyScoreScreen, PlanScreen, RetirementScreen } from '@/mobile/flows/field/FieldScreens';
 import { AllocateScreen, NurseryNewScreen, NurseryRoundScreen, NurseryScreen, TreeVisitScreen, TreeVisitsScreen, TreesHomeScreen } from '@/mobile/flows/land/TreeScreens';
 import { MapPlotScreen, PlotMonitorScreen, PlotsHomeScreen } from '@/mobile/flows/land/PlotScreens';
 import { SeedlingsPage } from '@/web/features/land/SeedlingsPage';
@@ -271,6 +272,15 @@ export const router = createBrowserRouter([
       { path: 'plots/:id/monitor', element: <PlotMonitorScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
+      { path: 'plan', element: <PlanScreen /> },
+      { path: 'budget/new', element: <BudgetNewScreen /> },
+      { path: 'budget/:id', element: <BudgetStatusScreen /> },
+      { path: 'retirement/:id', element: <RetirementScreen /> },
+      { path: 'me/cash', element: <MyCashScreen /> },
+      { path: 'me/commissions', element: <MyCommissionsScreen /> },
+      { path: 'me/score', element: <MyScoreScreen /> },
+      { path: 'me/reports', element: <MyReportsScreen /> },
+      { path: 'me/notifications', element: <MyNotificationsScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },
       { path: '*', element: <Navigate to="/m" replace /> },
     ],

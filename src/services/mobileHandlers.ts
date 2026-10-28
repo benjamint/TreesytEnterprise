@@ -11,6 +11,8 @@ import { registerFarmer, type FarmerCore } from './farmerService';
 import { fillSchema, getLiveForm, submitResponse } from './formService';
 import { registerSyncHandler } from './mobileSync';
 import { finishWorkshop, type SessionInput } from './trainingService';
+import { createBudget, submitRetirement, type BudgetInput, type ReceiptInput } from './fieldService';
+import { respondToReport } from './teamService';
 import {
   assignToFarmer, createNursery, recordPlotVisit, recordRound, recordTreeVisit, savePlot,
   type FarmerAllocationInput, type NurseryInput, type PlotInput, type VisitInput,
@@ -142,3 +144,10 @@ registerSyncHandler('workshop', {
     return finishWorkshop({ ...p, feedbackResponseIds: ids, actorId: i.userId, device: 'mobile' });
   },
 });
+
+// ---- M11–M12 field team: budget requests, retirements, answers to reports.
+registerSyncHandler('budget', { apply: (i) => createBudget({ ...(i.payload as Omit<BudgetInput, 'actorId'>), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('retirement', {
+  apply: (i) => { const p = i.payload as { retirementId: string; receipts: ReceiptInput[]; unused?: { amountMinor: number; reason: string } }; submitRetirement(p.retirementId, p.receipts, p.unused, i.userId, 'mobile'); },
+});
+registerSyncHandler('reportResponse', { apply: (i) => { const p = i.payload as { reportId: string; text: string }; respondToReport(p.reportId, p.text, i.userId, 'mobile'); } });

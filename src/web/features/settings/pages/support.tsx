@@ -305,31 +305,34 @@ export function FieldTeamPage() {
       </Section>
 
       <Section title={t('set.field.allowances')}>
-        <EditTable head={[t('set.field.allowance'), t('set.field.amount'), t('set.field.frequency'), '']}>
+        <EditTable head={[t('set.field.allowance'), t('set.field.amount'), t('set.field.frequency'), t('set.field.threshold'), t('set.field.needsApproval'), '']}>
           {ft.allowanceTypes.map((a) => (
             <tr key={a.id}>
               <td><TextInput value={a.name} onChange={(name) => listEdit('allowanceTypes', a.id, { name })} aria-label={t('set.field.allowance')} /></td>
               <td className="w-44"><MoneyInput minor={a.amountMinor} currency={org.currency} onChange={(amountMinor) => listEdit('allowanceTypes', a.id, { amountMinor })} aria-label={t('set.field.amount')} /></td>
               <td className="w-40"><Select value={a.frequency} onChange={(frequency) => listEdit('allowanceTypes', a.id, { frequency })} options={(['WEEKLY', 'MONTHLY'] as const).map((x) => ({ value: x, label: t(`set.freq.${x}`) }))} aria-label={t('set.field.frequency')} /></td>
+              <td className="w-32"><NumberInput value={a.thresholdPct} min={0} max={100} suffix="%" onChange={(thresholdPct) => listEdit('allowanceTypes', a.id, { thresholdPct })} aria-label={t('set.field.threshold')} /></td>
+              <td className="w-24"><Switch checked={a.approval} onCheckedChange={(approval) => listEdit('allowanceTypes', a.id, { approval })} aria-label={t('set.field.needsApproval')} /></td>
               <td className="w-12"><RowDelete label={t('set.remove')} onClick={() => listRemove('allowanceTypes', a.id)} /></td>
             </tr>
           ))}
         </EditTable>
-        <div className="mt-3"><AddRow onClick={() => setFt({ allowanceTypes: [...ft.allowanceTypes, { id: uid('al'), name: '', amountMinor: 0, frequency: 'MONTHLY' }] })}>{t('set.field.addAllowance')}</AddRow></div>
+        <div className="mt-3"><AddRow onClick={() => setFt({ allowanceTypes: [...ft.allowanceTypes, { id: uid('al'), name: '', amountMinor: 0, frequency: 'MONTHLY', thresholdPct: 0, approval: true }] })}>{t('set.field.addAllowance')}</AddRow></div>
         <Mini label={t('set.field.unused')} className="mt-5"><ChipsInput label={t('set.field.unused')} values={ft.unusedReasons} onChange={(unusedReasons) => setFt({ unusedReasons })} /></Mini>
       </Section>
 
       <Section title={t('set.field.issues')} description={t('set.field.issuesHint')}>
-        <EditTable head={[t('set.field.issue'), t('set.field.consequence'), '']}>
+        <EditTable head={[t('set.field.issue'), t('set.field.severity'), t('set.field.consequence'), '']}>
           {ft.issueCategories.map((c) => (
             <tr key={c.id}>
               <td><TextInput value={c.name} onChange={(name) => listEdit('issueCategories', c.id, { name })} aria-label={t('set.field.issue')} /></td>
-              <td className="w-48"><Select value={c.consequence} onChange={(consequence) => listEdit('issueCategories', c.id, { consequence })} options={(['NOTE', 'WARNING', 'PENALTY', 'SUSPENSION'] as const).map((x) => ({ value: x, label: t(`set.field.consequenceName.${x}`) }))} aria-label={t('set.field.consequence')} /></td>
+              <td className="w-40"><Select value={c.severity} onChange={(severity) => listEdit('issueCategories', c.id, { severity })} options={(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const).map((x) => ({ value: x, label: t(`rep.severity.${x}`) }))} aria-label={t('set.field.severity')} /></td>
+              <td className="w-56"><Select value={c.consequence} onChange={(consequence) => listEdit('issueCategories', c.id, { consequence })} options={(['FLAG', 'BLOCK_PAYOUTS', 'BLOCK_BUDGETS', 'EXTRA_APPROVAL'] as const).map((x) => ({ value: x, label: t(`set.field.consequenceName.${x}`) }))} aria-label={t('set.field.consequence')} /></td>
               <td className="w-12"><RowDelete label={t('set.remove')} onClick={() => listRemove('issueCategories', c.id)} /></td>
             </tr>
           ))}
         </EditTable>
-        <div className="mt-3"><AddRow onClick={() => setFt({ issueCategories: [...ft.issueCategories, { id: uid('ic'), name: '', consequence: 'WARNING' }] })}>{t('set.field.addIssue')}</AddRow></div>
+        <div className="mt-3"><AddRow onClick={() => setFt({ issueCategories: [...ft.issueCategories, { id: uid('ic'), name: '', severity: 'MEDIUM', consequence: 'FLAG' }] })}>{t('set.field.addIssue')}</AddRow></div>
       </Section>
     </SettingsFrame>
   );

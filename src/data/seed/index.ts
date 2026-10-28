@@ -1,4 +1,5 @@
 import type {
+  WeeklyPlan, BudgetRequest, Retirement, CarryForward, PenaltyRun, AllowanceRun, CommissionPeriod, AgentReport,
   AgentRepayment, Client, DispatchOrder, InsightRequest, Plot, SalesContract, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
   FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, TrainingTopic, Workshop, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
@@ -23,10 +24,12 @@ import { seedInventory } from './inventory';
 import { seedSales } from './sales';
 import { seedLand } from './land';
 import { seedTraining } from './training';
+import { seedFieldTeam } from './fieldTeam';
+import { VITARA_SUPERVISORS } from './vitara';
 import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 18;
+export const SEED_VERSION = 19;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -92,6 +95,14 @@ export interface SeedData {
   carbonProjects: CarbonProject[];
   trainingTopics: TrainingTopic[];
   workshops: Workshop[];
+  weeklyPlans: WeeklyPlan[];
+  budgets: BudgetRequest[];
+  retirements: Retirement[];
+  carryForwards: CarryForward[];
+  penaltyRuns: PenaltyRun[];
+  allowanceRuns: AllowanceRun[];
+  commissionPeriods: CommissionPeriod[];
+  agentReports: AgentReport[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -405,6 +416,35 @@ export function buildSeed(now = new Date()): SeedData {
   vit.activity.push(...trn[0]!.activity);
   ki.activity.push(...trn[1]!.activity);
   const trainingData = { trainingTopics: trn.flatMap((x) => x.topics), workshops: trn.flatMap((x) => x.workshops) };
+
+  // ---- Phase 16: field team (PRD J, Journeys 7–8) ----
+  const fld = [
+    seedFieldTeam(vit, settings[ORG.vitara]!, {
+      orgId: ORG.vitara, seed: 1616, today: clock.today, lang: 'en', currency: 'GHS', supervisors: VITARA_SUPERVISORS, journeySupervisor: 'u_fuseini', journeyUserId: 'u_yaw',
+      financeUserId: 'u_efua', opsUserId: 'u_kwame', weeks: 6, activityIds: ['act_profile', 'act_shea', 'act_group', 'act_survey', 'act_workshop', 'act_treemon', 'act_seedlings', 'act_meeting'],
+      reports: [
+        { index: 2, categoryId: 'ic_price', reason: 'Two farmers in Daffiama were paid below the list price on market day.', status: 'OPEN' },
+        { index: 5, categoryId: 'ic_cash', reason: 'Cash advance from last month still not reconciled.', status: 'IN_PROGRESS' },
+        { index: 8, categoryId: 'ic_absent', reason: 'Not seen in the planned community on Tuesday.', status: 'RESOLVED' },
+        { index: 11, categoryId: 'ic_late', reason: 'Phone not synced for six days.', status: 'OPEN' },
+        { index: 14, categoryId: 'ic_receipt', reason: 'Fuel receipt dated after the trip.', status: 'RESOLVED' },
+      ],
+    }),
+    seedFieldTeam(ki, settings[ORG.kakao]!, {
+      orgId: ORG.kakao, seed: 2727, today: clock.today, lang: 'fr', currency: 'XOF', supervisors: ['u_koffi', 'u_lassina'], journeySupervisor: '', financeUserId: 'u_jeanmarc', opsUserId: 'u_serge',
+      weeks: 4, activityIds: ['act_cocoa', 'act_profile', 'act_farmland', 'act_buyers', 'act_meeting'],
+      reports: [
+        { index: 1, categoryId: 'ic_absent', reason: 'Absent du village de Gagnoa prévu jeudi.', status: 'OPEN' },
+        { index: 3, categoryId: 'ic_late', reason: 'Téléphone non synchronisé depuis une semaine.', status: 'RESOLVED' },
+      ],
+    }),
+  ];
+  vit.activity.push(...fld[0]!.activity);
+  ki.activity.push(...fld[1]!.activity);
+  const fieldData = {
+    weeklyPlans: fld.flatMap((x) => x.plans), budgets: fld.flatMap((x) => x.budgets), retirements: fld.flatMap((x) => x.retirements), carryForwards: fld.flatMap((x) => x.carryForwards),
+    penaltyRuns: fld.flatMap((x) => x.penaltyRuns), allowanceRuns: fld.flatMap((x) => x.allowanceRuns), commissionPeriods: fld.flatMap((x) => x.commissions), agentReports: fld.flatMap((x) => x.reports),
+  };
   const landData = {
     plots: lnd.flatMap((x) => x.plots), nurseries: lnd.flatMap((x) => x.nurseries), seedlingLots: lnd.flatMap((x) => x.lots), seedlingAllocations: lnd.flatMap((x) => x.allocations),
     trees: lnd.flatMap((x) => x.trees), lossZones: lnd.flatMap((x) => x.lossZones), eudrLots: lnd.flatMap((x) => x.eudrLots), statements: lnd.flatMap((x) => x.statements), carbonProjects: lnd.flatMap((x) => x.projects),
@@ -420,7 +460,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData, ...fieldData,
   };
 }
 

@@ -2,6 +2,9 @@ import type { Lang, Money, WorkflowStep } from './core';
 import type { QualityRule } from '@/engines/rules';
 import type { NotificationRule } from '@/engines/notify';
 import type { MessageTemplate } from '@/engines/templates';
+import type { ScoreModel } from '@/engines/scoring';
+import type { RateCard } from '@/engines/rates';
+import type { FieldActivity } from './fieldTeam';
 
 export type ModuleKey =
   | 'dashboard' | 'ai' | 'farmers' | 'dataQuality' | 'imports' | 'buying' | 'aggregators' | 'payments'
@@ -315,16 +318,44 @@ export interface SupportSettings {
   feedback?: { experience: string[]; lendAgain: boolean };
 }
 
+export type IssueSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+/** What an open report does to the agent (PRD J10), enforced across screens. */
+export type IssueConsequence = 'FLAG' | 'BLOCK_PAYOUTS' | 'BLOCK_BUDGETS' | 'EXTRA_APPROVAL';
+
+export interface AllowanceType {
+  id: string;
+  name: string;
+  amountMinor: number;
+  frequency: 'WEEKLY' | 'MONTHLY';
+  /** Minimum achievement (percent of plan) to qualify. */
+  thresholdPct: number;
+  /** Optional amounts by achievement; the highest band reached applies. */
+  tiers?: { fromPct: number; amountMinor: number }[];
+  approval: boolean;
+}
+
 export interface FieldTeamSettings {
   plan: { minDays: number; maxDays: number; planAheadWeeks: number };
   reportingLevels: number;
   costCategories: { id: string; name: string; maxPerDayMinor: number; maxPerWeekMinor: number; receiptRequired: boolean }[];
-  /** Achievement bands (percent of plan) and the penalty applied to next week's budget. */
+  /** Achievement bands (percent of plan) and the penalty, as a percent of the week's budget, carried to next week. */
   penaltyBands: { id: string; fromPct: number; toPct: number; penaltyPct: number }[];
   carryForward: boolean;
-  allowanceTypes: { id: string; name: string; amountMinor: number; frequency: 'WEEKLY' | 'MONTHLY' }[];
+  /** A new budget is blocked while the previous week's retirement is open. */
+  retirementBlocksBudget: boolean;
+  allowanceTypes: AllowanceType[];
   unusedReasons: string[];
-  issueCategories: { id: string; name: string; consequence: 'NOTE' | 'WARNING' | 'PENALTY' | 'SUSPENSION' }[];
+  issueCategories: { id: string; name: string; severity: IssueSeverity; consequence: IssueConsequence }[];
+  /** Activity catalogue used by weekly plans, achievements, scores and commissions. */
+  activities: FieldActivity[];
+  /** Commission rates per agent type (PRD 8.7, J9). */
+  rateCards: RateCard[];
+  /** Agent score card per agent type (PRD J8). */
+  scoreModels: ScoreModel[];
+  /** Manager score = weighted average of their agents' scores; weight by number of agents or equal. */
+  managerScore: 'EQUAL' | 'BY_AGENTS';
+  /** Default geofence radius around a community (km), when it has no polygon. */
+  geofenceKm: number;
 }
 
 /** Settings → Forms: which form is the profile form for each kind of record. */

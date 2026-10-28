@@ -1,3 +1,4 @@
+import { kakaoFieldTeam, vitaraFieldTeam } from './fieldTeamSettings';
 import type { Commodity, Lang, OrgSettings } from '@/types';
 import { formBindingsFor } from '@/data/forms/library';
 import type { NotificationRule } from '@/engines/notify';
@@ -144,33 +145,7 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       recoveryWindowDays: 180, repaymentModes: ['CASH', 'PRODUCE', 'MIXED'], blockOnDebt: true, minGroupScore: 60, linkPurchaseRequest: true,
       feedback: { experience: ['Excellent', 'Very good', 'Good', 'Bad', 'Very bad'], lendAgain: true },
     },
-    fieldTeam: {
-      plan: { minDays: 3, maxDays: 6, planAheadWeeks: 2 },
-      reportingLevels: 3,
-      costCategories: [
-        { id: 'cc_fuel', name: 'Fuel', maxPerDayMinor: m(80), maxPerWeekMinor: m(400), receiptRequired: true },
-        { id: 'cc_airtime', name: 'Airtime & data', maxPerDayMinor: m(10), maxPerWeekMinor: m(50), receiptRequired: false },
-        { id: 'cc_perdiem', name: 'Per diem', maxPerDayMinor: m(60), maxPerWeekMinor: m(300), receiptRequired: false },
-        { id: 'cc_lodging', name: 'Lodging', maxPerDayMinor: m(150), maxPerWeekMinor: m(450), receiptRequired: true },
-      ],
-      penaltyBands: [
-        { id: 'pb_1', fromPct: 0, toPct: 50, penaltyPct: 20 },
-        { id: 'pb_2', fromPct: 50, toPct: 80, penaltyPct: 10 },
-        { id: 'pb_3', fromPct: 80, toPct: 100, penaltyPct: 0 },
-      ],
-      carryForward: true,
-      allowanceTypes: [
-        { id: 'al_maint', name: 'Motorbike maintenance', amountMinor: m(250), frequency: 'MONTHLY' },
-        { id: 'al_airtime', name: 'Weekly airtime', amountMinor: m(20), frequency: 'WEEKLY' },
-      ],
-      unusedReasons: ['Community visit cancelled', 'Rain', 'Shared transport', 'Market closed'],
-      issueCategories: [
-        { id: 'ic_absent', name: 'Absent from planned community', consequence: 'WARNING' },
-        { id: 'ic_receipt', name: 'Missing or false receipt', consequence: 'PENALTY' },
-        { id: 'ic_price', name: 'Paid farmers below list price', consequence: 'SUSPENSION' },
-        { id: 'ic_late', name: 'Late sync', consequence: 'NOTE' },
-      ],
-    },
+    fieldTeam: vitaraFieldTeam(m),
     qualityRules: rules(),
     formBindings: formBindingsFor(orgId),
     biometrics: { thumbprint: true, consentType: 'AUDIO', consentText: consent, nfcCards: true, cardKeyRotatedAt: '2026-06-01T09:00:00.000Z' },
@@ -316,15 +291,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
       abilityToPay: ['Fèves à la récolte', 'Espèces'], recoveryWindowDays: 120, repaymentModes: ['PRODUCE', 'MIXED'], minGroupScore: 50, linkPurchaseRequest: true,
       feedback: { experience: ['Excellente', 'Très bonne', 'Bonne', 'Mauvaise', 'Très mauvaise'], lendAgain: true },
     },
-    fieldTeam: {
-      ...base.fieldTeam,
-      costCategories: [
-        { id: 'cc_fuel', name: 'Carburant', maxPerDayMinor: m(10_000), maxPerWeekMinor: m(50_000), receiptRequired: true },
-        { id: 'cc_airtime', name: 'Crédit téléphone', maxPerDayMinor: m(1_000), maxPerWeekMinor: m(5_000), receiptRequired: false },
-      ],
-      allowanceTypes: [],
-      carryForward: false,
-    },
+    fieldTeam: kakaoFieldTeam(m),
     biometrics: { ...base.biometrics, thumbprint: false, consentType: 'SIGNATURE' },
     messaging: { sms: [{ country: 'CI', provider: 'Orange SMS API', senderId: 'KAKAOIV', enabled: true }], otpExpiryMinutes: 5, emailDomain: 'kakao-ivoire.example', emailSender: 'ne-pas-repondre@kakao-ivoire.example', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'SAGE' },
@@ -345,6 +312,7 @@ export function genericExtras(orgId: string, commodities: Commodity[], currency:
     support: { ...base.support, types: base.support.types.slice(0, 1).map((s) => ({ ...s, subTypes: [] })) },
     messaging: { sms: [], otpExpiryMinutes: 10, emailDomain: '', emailSender: '', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'NONE' },
+    fieldTeam: { ...base.fieldTeam, rateCards: [], scoreModels: [] },
     land: { ...base.land, species: base.land.species.slice(0, 2), nurseryRounds: base.land.nurseryRounds.slice(0, 2), eudr: { ...base.land.eudr, operator: { name: '', eori: '', address: '' } } },
   };
 }

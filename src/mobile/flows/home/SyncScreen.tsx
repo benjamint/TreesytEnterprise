@@ -13,10 +13,14 @@ import { useFarmerStore } from '@/stores/farmerStore';
 import { useFormat, useT } from '@/stores/hooks';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useOutboxStore, type OutboxItem } from '@/stores/outboxStore';
+import { useSystemStore } from '@/stores/systemStore';
+import { demoDeviceId, installUpdate, syncBlock } from '@/services/systemService';
 
 /** M2 Sync: outbox by type, Sync now with per-item results, conflicts (Keep mine / Keep server), offline toggle. */
 export function SyncScreen() {
-  const { online, setOnline, lastSyncAt, userId } = useMobileSessionStore();
+  const { online, setOnline, lastSyncAt, userId, orgId } = useMobileSessionStore();
+  useSystemStore((s) => s.devices.find((d) => d.id === demoDeviceId(userId ?? '')));
+  const blocked = userId && orgId ? syncBlock(userId, orgId) : undefined;
   const allItems = useOutboxStore((s) => s.items);
   const items = useMemo(() => allItems.filter((i) => i.userId === userId), [allItems, userId]);
   const [syncing, setSyncing] = useState(false);
@@ -35,7 +39,14 @@ export function SyncScreen() {
     if (!userId) return;
     setSyncing(true);
     setResults([]);
-    const out = await syncOutbox(userId, (r) => setResults((rs) => [...rs, r]));
+    let out: SyncResult[];
+    try {
+      out = await syncOutbox(userId, (r) => setResults((rs) => [...rs, r]));
+    } catch (e) {
+      setSyncing(false);
+      toast.error(t(`mobile.sync.blocked.${(e as Error).message}`, { defaultValue: (e as Error).message }));
+      return;
+    }
     setSyncing(false);
     const ok = out.filter((r) => r.outcome === 'synced').length;
     if (out.some((r) => r.outcome !== 'synced')) toast.warning(t('mobile.sync.partial', { ok, total: out.length }));
@@ -58,6 +69,15 @@ export function SyncScreen() {
         {byType.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {byType.map(([type, n]) => <Badge key={type} tone="neutral">{`${t(`mobile.sync.type.${type}`)} · ${n}`}</Badge>)}
+          </div>
+        )}
+
+        {blocked && (
+          <div className="rounded-card border border-danger/40 bg-danger/5 p-4" role="alert">
+            <div className="flex items-start gap-2"><XCircle className="mt-0.5 h-4 w-4 shrink-0 text-danger" /><div className="flex-1"><div className="font-semibold text-ink">{t(`mobile.sync.blocked.${blocked}`)}</div><p className="text-[14px] text-body">{t(`mobile.sync.blockedHint.${blocked}`)}</p></div></div>
+            <Button className="mt-3 w-full" onClick={() => { if (blocked === 'updateRequired') { installUpdate(demoDeviceId(userId!)); toast.success(t('mobile.sync.updated')); } else useMobileSessionStore.getState().signOut(); }}>
+              {t(blocked === 'updateRequired' ? 'mobile.sync.installUpdate' : 'mobile.sync.signInAgain')}
+            </Button>
           </div>
         )}
 

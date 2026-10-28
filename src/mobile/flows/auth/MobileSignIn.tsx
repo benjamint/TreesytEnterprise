@@ -1,3 +1,4 @@
+import { registerDemoDevice } from '@/services/systemService';
 import { activateOnSignIn } from '@/services/teamService';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Check } from 'lucide-react';
@@ -72,6 +73,7 @@ export function MobileSignIn() {
   const finish = () => {
     if (!user) return;
     useMobileSessionStore.getState().setPin(pin);
+    registerDemoDevice(user.id, orgId);
     useMobileSessionStore.getState().signIn(user.id, orgId, user.language);
     activateOnSignIn(user.id, orgId);
     toast.success(t('mobile.signedInToast', { name: user.name }));

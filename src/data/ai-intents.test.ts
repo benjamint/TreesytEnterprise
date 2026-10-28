@@ -74,7 +74,9 @@ describe('AI intents (PRD B2)', () => {
   it('never answers with another company’s records', () => {
     const vit = ctxFor(ORG.vitara, 'u_ama');
     const ki = ctxFor(ORG.kakao, 'u_aicha', 'fr');
-    const vitNames = new Set([...vit.communities.map((c) => c.name), ...vit.agents.map((a) => vit.userName(a.userId))]);
+    // People who work for both companies (a multi-company agent) legitimately appear in both.
+    const both = new Set(ki.agents.map((a) => a.userId));
+    const vitNames = new Set([...vit.communities.map((c) => c.name), ...vit.agents.filter((a) => !both.has(a.userId)).map((a) => vit.userName(a.userId))]);
     for (const intent of AI_INTENTS) {
       const res = intent.run(ki);
       for (const row of res.table?.rows ?? []) for (const v of Object.values(row)) if (typeof v === 'string' && v.length > 3) expect(vitNames.has(v)).toBe(false);

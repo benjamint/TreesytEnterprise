@@ -18,6 +18,7 @@ import { useDemoStore } from '@/stores/demoStore';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useActor, useFormat, useRoleName, useT } from '@/stores/hooks';
 import { cn } from '@/lib/utils';
+import { registerDemoDevice } from '@/services/systemService';
 
 /**
  * Everything that exists only to drive the prototype lives here, behind one icon: demo codes and
@@ -61,6 +62,7 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
     toast.success(t('shell.switchedPersona', { name: u?.name ?? '' }));
     if (placement === 'mobile') {
       const m = memberships.find((x) => x.userId === userId)!;
+      registerDemoDevice(userId, m.orgId);
       useMobileSessionStore.getState().signIn(userId, m.orgId, u!.language);
       navigate('/m');
       return;

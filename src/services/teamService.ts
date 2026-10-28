@@ -495,16 +495,39 @@ export function saveGeofence(orgId: string, communityId: string, fence: { kind: 
 
 // ---------------------------------------------------------------- Scheduled jobs (K6)
 
-const ORGS = () => Object.keys(useSettingsStore.getState().settings);
-registerJob('achievements', async () => {
-  for (const orgId of ORGS()) for (const p of F().plans.filter((x) => x.orgId === orgId && x.status === 'PUBLISHED')) recomputeWeek(p.id, 'system');
+const ORGS = (orgId?: string) => (orgId ? [orgId] : Object.keys(useSettingsStore.getState().settings));
+registerJob('achievements', async ({ orgId }) => {
+  const plans = F().plans.filter((x) => ORGS(orgId).includes(x.orgId) && x.status === 'PUBLISHED');
+  for (const p of plans) recomputeWeek(p.id, 'system');
+  return [`plans: ${plans.length}`];
 });
-registerJob('penalties', async () => {
-  for (const orgId of ORGS()) {
+registerJob('penalties', async ({ orgId }) => {
+  const out: string[] = [];
+  for (const o of ORGS(orgId)) {
     const last = mondayOf(new Date(Date.now() - 7 * 86_400_000));
-    if (F().plans.some((p) => p.orgId === orgId && p.weekStart === last && p.status !== 'DRAFT') && !F().penaltyRuns.some((r) => r.orgId === orgId && r.weekStart === last) && previewPenalties(orgId, last).length) postPenalties(orgId, last, 'system');
+    if (F().plans.some((p) => p.orgId === o && p.weekStart === last && p.status !== 'DRAFT') && !F().penaltyRuns.some((r) => r.orgId === o && r.weekStart === last) && previewPenalties(o, last).length) {
+      const run = postPenalties(o, last, 'system');
+      out.push(`week ${last}: ${run.lines.filter((l) => l.amountMinor > 0).length} penalties`);
+    } else out.push(`week ${last}: nothing to post`);
   }
+  return out;
 });
-registerJob('scores', async () => { for (const orgId of ORGS()) if (settingsOf(orgId).fieldTeam.scoreModels.length) recalculateScores(orgId, 'system'); });
+registerJob('scores', async ({ orgId }) => {
+  const out: string[] = [];
+  for (const o of ORGS(orgId)) if (settingsOf(o).fieldTeam.scoreModels.length) out.push(`agents scored: ${recalculateScores(o, 'system').size}`);
+  return out;
+});
+registerJob('allowances', async ({ orgId }) => {
+  const out: string[] = [];
+  const d = new Date();
+  const from = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() - 1, 1)).toISOString().slice(0, 10);
+  const to = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 0)).toISOString().slice(0, 10);
+  for (const o of ORGS(orgId)) for (const t of settingsOf(o).fieldTeam.allowanceTypes.filter((x) => x.frequency === 'MONTHLY')) {
+    if (F().allowanceRuns.some((r) => r.orgId === o && r.typeId === t.id && r.period.from === from)) { out.push(`${t.name}: already run for ${from}`); continue; }
+    const run = createAllowanceRun(o, t.id, from, to, 'system');
+    out.push(`${t.name}: ${run.lines.length} lines for ${from} – ${to}`);
+  }
+  return out;
+});
 
 export { weekEnd };

@@ -4,7 +4,7 @@ import type {
   FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, TrainingTopic, Workshop, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
-  AuditEntry, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
+  AuditEntry, Device, JobRun, KbArticle, SavedReport, SyncLog, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
   Purchase, PurchaseRequest, Role, Supplier, User, Wallet, Warehouse, WorkflowDefinition,
 } from '@/types';
 import { canAct, type WorkflowRecord, type WorkflowUser } from '@/engines/workflow';
@@ -26,10 +26,11 @@ import { seedLand } from './land';
 import { seedTraining } from './training';
 import { seedFieldTeam } from './fieldTeam';
 import { VITARA_SUPERVISORS } from './vitara';
+import { seedSystem } from './system';
 import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 20;
+export const SEED_VERSION = 21;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -114,6 +115,11 @@ export interface SeedData {
   optionLists: OptionList[];
   responses: SurveyResponse[];
   savings: SavingsEntry[];
+  syncLogs: SyncLog[];
+  devices: Device[];
+  savedReports: SavedReport[];
+  jobRuns: JobRun[];
+  articles: KbArticle[];
 }
 
 function phoneMaker(rng: Rng, dial: string, prefixes: string[], keepZero = false) {
@@ -450,17 +456,30 @@ export function buildSeed(now = new Date()): SeedData {
     trees: lnd.flatMap((x) => x.trees), lossZones: lnd.flatMap((x) => x.lossZones), eudrLots: lnd.flatMap((x) => x.eudrLots), statements: lnd.flatMap((x) => x.statements), carbonProjects: lnd.flatMap((x) => x.projects),
   };
 
+  // ---- Phase 17: a multi-company agent — a Vitara CEO agent who also buys cocoa for Kakao Ivoire ----
+  const multi = vit.agents.find((a) => a.userId === 'u_vit_ag4')!;
+  const kiTemplate = ki.agents.find((a) => a.agentTypeId === 'at_del' && a.status === 'ACTIVE')!;
+  const kiMulti: Agent = {
+    ...kiTemplate, id: 'ki_ag_multi', userId: multi.userId, managerIds: ['u_koffi'], wallet: { providerId: 'orange_ci', number: '+2250707445566', verifiedName: users.find((u) => u.id === multi.userId)!.name.toUpperCase() },
+    weekTargetPct: 0, score: 0, flags: [], appVersion: multi.appVersion, lastSyncAt: multi.lastSyncAt,
+  };
+  ki.agents.push(kiMulti);
+  for (const c of ki.communities.filter((x) => x.agentIds.includes(kiTemplate.id)).slice(0, 2)) c.agentIds = [...c.agentIds, kiMulti.id];
+  memberships.push({ id: `mem_${multi.userId}_org_kakao`, userId: multi.userId, orgId: ORG.kakao, roleIds: [roleId(ORG.kakao, 'fieldAgent')], status: 'ACTIVE', title: settings[ORG.kakao]!.agentTypes.find((t) => t.id === 'at_del')?.name.fr });
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
+  const sys = seedSystem({ clock, users, memberships, roles, agents: cat('agents'), settings, farmers: cat('farmers'), purchases: cat('purchases'), payments: cat('payments') });
   return {
     orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: grants(clock), users, memberships, roles, settings,
-    invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: auditSeed(clock),
+    invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: [...sys.audit, ...auditSeed(clock)].sort((a, b) => b.at.localeCompare(a.at)),
     questionTypes: Object.fromEntries(QUESTION_TYPES.map((q) => [q, true])),
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData, ...fieldData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: sys.outbox, ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData, ...fieldData,
+    syncLogs: sys.syncLogs, devices: sys.devices, savedReports: sys.savedReports, jobRuns: sys.jobRuns, articles: sys.articles,
   };
 }
 

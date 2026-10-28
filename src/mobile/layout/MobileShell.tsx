@@ -13,6 +13,8 @@ import { MobileSignIn, PinLock } from '@/mobile/flows/auth/MobileSignIn';
 import '@/services/mobileHandlers';
 import { DemoDock } from '@/components/shared/DemoDock';
 import { CollectionPrompt } from '@/mobile/flows/money/CollectionPrompt';
+import { useSystemStore } from '@/stores/systemStore';
+import { demoDeviceId, registerDemoDevice } from '@/services/systemService';
 
 /**
  * Mobile app shell (PRD 4.1–4.2): centred 390×844 viewport with a subtle device frame on desktop,
@@ -35,6 +37,7 @@ export function MobileShell() {
     const u = users.find((x) => x.id === user);
     const member = memberships.some((m) => m.userId === user && m.orgId === org);
     if (u && member) {
+      registerDemoDevice(user, org);
       session.signIn(user, org, u.language);
       toast.success(i18n.t('mobile.signedInToast', { name: u.name, lng: u.language }));
     } else toast.error(i18n.t('mobile.notMember'));
@@ -43,6 +46,17 @@ export function MobileShell() {
     navigate(go?.startsWith('/m/') ? go : flow && (MOBILE_FLOWS as readonly string[]).includes(flow) ? `/m/flow/${flow}` : '/m', { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
+
+  // This window is the agent's phone: the office can sign it out (PRD K3).
+  const deviceStatus = useSystemStore((s) => s.devices.find((d) => d.id === demoDeviceId(session.userId ?? ''))?.status);
+  useEffect(() => {
+    if (!session.userId || !session.orgId) return;
+    if (deviceStatus === 'SIGNED_OUT') {
+      session.signOut();
+      toast.warning(i18n.t('mobile.deviceSignedOut'));
+    } else if (!deviceStatus) registerDemoDevice(session.userId, session.orgId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.userId, session.orgId, deviceStatus]);
 
   const actor = useMemo(
     () => (session.userId && session.orgId ? { userId: session.userId, orgId: session.orgId, lang: session.language } : null),

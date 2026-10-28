@@ -19,6 +19,7 @@ import { UsersPage } from './pages/UsersPage';
 import { MobilePage, SecurityPage } from './pages/access';
 import { IntegrationsPage, PrivacyPage } from './pages/data';
 import { SalesRulesPage } from './pages/sales';
+import { TreesLandPage } from './pages/land';
 
 const PAGES: Record<SettingsPage, ComponentType> = {
   profile: ProfilePage,
@@ -33,6 +34,7 @@ const PAGES: Record<SettingsPage, ComponentType> = {
   supportLoans: SupportLoansPage,
   inventoryRules: InventoryRulesPage,
   salesRules: SalesRulesPage,
+  treesLand: TreesLandPage,
   fieldTeam: FieldTeamPage,
   approvals: ApprovalsPage,
   numbering: NumberingPage,

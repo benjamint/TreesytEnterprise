@@ -53,6 +53,14 @@ import { OutboundPage } from '@/web/features/inventory/OutboundPage';
 import { StockCountsPage } from '@/web/features/inventory/StockCountsPage';
 import { WarehouseExpensesPage } from '@/web/features/inventory/WarehouseExpensesPage';
 import { DispatchPage } from '@/web/features/sales/DispatchPage';
+import { NurseriesPage } from '@/web/features/land/NurseriesPage';
+import { AllocateScreen, NurseryNewScreen, NurseryRoundScreen, NurseryScreen, TreeVisitScreen, TreeVisitsScreen, TreesHomeScreen } from '@/mobile/flows/land/TreeScreens';
+import { MapPlotScreen, PlotMonitorScreen, PlotsHomeScreen } from '@/mobile/flows/land/PlotScreens';
+import { SeedlingsPage } from '@/web/features/land/SeedlingsPage';
+import { TreesPage } from '@/web/features/land/TreesPage';
+import { PlotsPage } from '@/web/features/land/PlotsPage';
+import { EudrPage } from '@/web/features/land/EudrPage';
+import { CarbonPage } from '@/web/features/land/CarbonPage';
 import { SalesContractsPage } from '@/web/features/sales/SalesContractsPage';
 import { TraceboardPage } from '@/web/features/sales/TraceboardPage';
 import { LandingPage } from '@/public/LandingPage';
@@ -75,7 +83,7 @@ import { AgentRepayScreen, CountScreen, OutboundScreen, ReceiveScreen, ResolveSc
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -142,6 +150,12 @@ export const router = createBrowserRouter([
       { path: 'dispatch', element: <RouteGuard routeKey="dispatch"><DispatchPage /></RouteGuard> },
       { path: 'sales-contracts', element: <RouteGuard routeKey="salesContracts"><SalesContractsPage /></RouteGuard> },
       { path: 'traceboard', element: <RouteGuard routeKey="traceboard"><TraceboardPage /></RouteGuard> },
+      { path: 'nurseries', element: <RouteGuard routeKey="nurseries"><NurseriesPage /></RouteGuard> },
+      { path: 'seedlings', element: <RouteGuard routeKey="seedlings"><SeedlingsPage /></RouteGuard> },
+      { path: 'trees', element: <RouteGuard routeKey="trees"><TreesPage /></RouteGuard> },
+      { path: 'plots', element: <RouteGuard routeKey="plots"><PlotsPage /></RouteGuard> },
+      { path: 'eudr', element: <RouteGuard routeKey="eudr"><EudrPage /></RouteGuard> },
+      { path: 'carbon', element: <RouteGuard routeKey="carbon"><CarbonPage /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },
       { path: 'payments', element: <RouteGuard routeKey="payments"><PaymentsPage /></RouteGuard> },
       { path: 'payments/wallets', element: <RouteGuard routeKey="wallets"><WalletsPage /></RouteGuard> },
@@ -214,6 +228,16 @@ export const router = createBrowserRouter([
       { path: 'warehouse/expenses', element: <WarehouseExpensesScreen /> },
       { path: 'warehouse/resolve/:id', element: <ResolveScreen /> },
       { path: 'warehouse/repay/:id', element: <AgentRepayScreen /> },
+      { path: 'trees', element: <TreesHomeScreen /> },
+      { path: 'trees/nursery/new', element: <NurseryNewScreen /> },
+      { path: 'trees/nursery/:id', element: <NurseryScreen /> },
+      { path: 'trees/nursery/:id/round/:roundId', element: <NurseryRoundScreen /> },
+      { path: 'trees/allocate', element: <AllocateScreen /> },
+      { path: 'trees/visits', element: <TreeVisitsScreen /> },
+      { path: 'trees/visit/:id', element: <TreeVisitScreen /> },
+      { path: 'plots', element: <PlotsHomeScreen /> },
+      { path: 'plots/new', element: <MapPlotScreen /> },
+      { path: 'plots/:id/monitor', element: <PlotMonitorScreen /> },
       { path: 'sync', element: <SyncScreen /> },
       { path: 'me', element: <MeScreen /> },
       { path: 'flow/:flowId', element: <FlowPlaceholder /> },

@@ -10,6 +10,11 @@ import { confirmFundsReceived, createPre, createRequest, recordPurchases, signRe
 import { registerFarmer, type FarmerCore } from './farmerService';
 import { fillSchema, getLiveForm, submitResponse } from './formService';
 import { registerSyncHandler } from './mobileSync';
+import {
+  assignToFarmer, createNursery, recordPlotVisit, recordRound, recordTreeVisit, savePlot,
+  type FarmerAllocationInput, type NurseryInput, type PlotInput, type VisitInput,
+} from './landService';
+import type { NurseryRoundValues } from '@/types';
 import { saveCommunity, saveFarmerEdit, saveGroup, saveIdentity, type CommunityPayload, type FarmerEditPayload, type GroupPayload } from './profileService';
 import { applyFix } from './qualityService';
 import type { FarmerIdentity } from '@/types';
@@ -111,3 +116,11 @@ registerSyncHandler('topUp', { apply: (i) => { const p = i.payload as { inboundI
 registerSyncHandler('agentRepayment', {
   apply: (i) => { const p = i.payload as { inboundId: string; amountMinor: number; method: 'MOMO' | 'CASH' | 'BANK'; reference?: string; proof?: string }; return submitAgentRepayment(p.inboundId, p, i.userId, 'mobile'); },
 });
+
+// ---- M9 trees and land
+registerSyncHandler('nursery', { apply: (i) => createNursery({ ...(i.payload as NurseryInput), device: 'mobile' }) });
+registerSyncHandler('nurseryRound', { apply: (i) => { const p = i.payload as { nurseryId: string; roundId: string; values: NurseryRoundValues[]; photos: string[] }; return recordRound(p.nurseryId, p.roundId, p.values, { photos: p.photos, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('seedlingAllocation', { apply: (i) => assignToFarmer({ ...(i.payload as FarmerAllocationInput), device: 'mobile' }) });
+registerSyncHandler('treeVisit', { apply: (i) => { const p = i.payload as { treeId: string } & VisitInput; return recordTreeVisit(p.treeId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('plot', { apply: (i) => savePlot({ ...(i.payload as PlotInput), device: 'mobile' }) });
+registerSyncHandler('plotVisit', { apply: (i) => { const p = i.payload as { plotId: string; answers: Record<string, boolean | string>; photos: string[] }; return recordPlotVisit(p.plotId, { ...p, actorId: i.userId, device: 'mobile' }); } });

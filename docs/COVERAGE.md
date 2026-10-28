@@ -5,9 +5,9 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 13._
+_Last updated: Phase 14._
 
-Every Settings page (28, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
+Every Settings page (29, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
 Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", "next payout fails", reset demo data, page notes and page actions such as the agent's phone steps for Journey 2) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
@@ -235,34 +235,34 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Order detail + document download log — buyer order drawer with order and sale number, kg and t, driver, truck, timeline, trace to source (communities sized by kg, plot polygons by EUDR status), impact, documents; every download is logged with the person and company
 - [x] Insights request — buyer asks a supplier (optionally about one order); supplier answers from the Traceboard inbox; both are notified
 - [x] Shipment notifications — In transit, Delivered (action required), Verified to the buyer's Traceboard users and the supplier's sales team, with supplier branding in the text
-- [ ] Carbon projects [14]
+- [x] Carbon projects — inside the company (no new company or admin; permission checked): standard, start, baseline, species targets, communities and plots, monitoring plan, partner; trees assigned, survival, CO₂ estimate with editable factor per species, printable report
 
 ## Trees and land (Scope 8)
 
-- [ ] Nursery registration [14]
-- [ ] Representative [14]
-- [ ] Images / agreement [14]
-- [ ] Nursery monitoring rounds [14]
-- [ ] Nursery dashboard [14]
-- [ ] Nursery list / detail / map / batch history [14]
-- [~] Batch numbering — `NB-{yy}-{seq:3}` pattern [14]
-- [ ] Seedling sourcing [14]
-- [ ] Seedling stock [14]
-- [ ] Assignment to agent / company [14]
-- [ ] Nursery → farmer assignment [14]
-- [ ] Seedling allocation [14]
-- [ ] Tree monitoring [14]
-- [ ] Tree list / detail / export [14]
-- [ ] Tree maps [14]
-- [ ] Tree dashboard [14]
-- [ ] Tree / community / farmer tree scoring [14]
-- [ ] Health score [14]
+- [x] Nursery registration — web and phone (M9): name, community, agent, GPS, fenced, water source, material, batches, photos; code `NUR-{seq:3}`
+- [x] Representative — name, gender, phone
+- [x] Images / agreement — profiling, primary and secondary monitoring images; establishment agreement upload
+- [x] Nursery monitoring rounds — company plan (Vitara: Primary at 21 days, Secondary 1–3) with due dates and overdue chips; per-batch figures on web or phone
+- [x] Nursery dashboard — nurseries, germination %, survival %, seedlings alive, by species, chart by day / month / year
+- [x] Nursery list / detail / map / batch history — list or map, filters; drawer with profile, batches, rounds, images, agreement, activity; germination and survival per batch over rounds
+- [x] Batch numbering — `NB-{yy}-{seq:3}`
+- [x] Seedling sourcing — from a nursery batch or an outside supplier, quantity, date, cost; codes generated with the species prefix in the background (progress bar)
+- [x] Seedling stock — by species: sourced, in nursery, with agents, with farmers, planted, alive, unassigned
+- [x] Assignment to agent / company — from a lot to an agent, or to another company with consent (accept / decline)
+- [x] Nursery → farmer assignment — straight from a batch (web and phone), codes issued, batch disbursed count updated
+- [x] Seedling allocation — phone: farmer → species → scan or type codes (count must match, only codes the agent holds), max per farmer; each code becomes a tree; allocations list with a timeline per agent
+- [x] Tree monitoring — due list by round, scan the tag, the company's species form on the phone (alive / dead with cause, height, health, pests, photo, GPS) or not found
+- [x] Tree list / detail / export — code, species, farmer, community, plot, planted, last visit, round, state, height, health, issues, agent; visit history; export limited to the company's date range
+- [x] Tree maps — clustered pins coloured by state, plot outlines, filter by species and round
+- [x] Tree dashboard — disbursed, planted, farmers with trees, alive %, average height, survival by planting month, species and round, causes of death
+- [~] Tree / community / farmer tree scoring — tree health and survival are recorded; feeding them into farmer and community scores comes with the scoring screens [16]
+- [x] Health score — from the species form's rating less issues found, 0–100
 - [ ] Conservation KPIs / rates [16]
-- [ ] Field mapping [14]
-- [ ] Plot list / detail / images / agreement [14]
-- [ ] Mapping dashboard [14]
-- [ ] Plot monitoring [14]
-- [ ] EUDR validation / area / deforestation check / DDS export [14]
+- [x] Field mapping — phone: walk the boundary (points appear with live area and accuracy) or tap points; web: draw, drop a point, or import GeoJSON / KML; edit vertices
+- [x] Plot list / detail / images / agreement — plot ID, type, farmer, community, area vs declared, geometry, precision, EUDR status, trees (linked or density estimate), agreement, last monitoring; drawer with map, validation, purchases and lots, monitoring, files, activity
+- [x] Mapping dashboard — plots by type, total and average area, % with a polygon, trees per plot, by agent
+- [x] Plot monitoring — company questionnaire by land type (Vitara template: chemicals, tree cutting, farming activities, livestock, fencing, bushfires, fire protection), due list on the phone
+- [x] EUDR validation / area / deforestation check / DDS export — closed ring, no self-intersection, ≥ 6 decimals, polygon over 4 ha, overlaps; area from the geometry; check against the bundled forest-loss layer (cut-off 31 Dec 2020) with Clear / Risk / Not checked on the map; compliance overview; lots from dispatches; statement with GeoJSON, summary PDF and simulated EU TRACES submission (blocked while plots are at risk or unchecked)
 
 ## Forms and training (Scope 9)
 

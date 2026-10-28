@@ -3,7 +3,7 @@ import type {
   SeedlingAllocation, SeedlingLot, Tree, TreeState, TreeVisit,
 } from '@/types';
 import { nextNumber } from '@/engines/numbering';
-import { centroid, decimalsOf, gpsReading, overlapShare, polygonAreaHa, validateGeometry, type LatLng } from '@/engines/geo';
+import { NEW_FARM_OFFSET, centroid, decimalsOf, gpsReading, overlapShare, polygonAreaHa, validateGeometry, type LatLng } from '@/engines/geo';
 import type { OpsResult } from './operations';
 import { Rng } from './rng';
 
@@ -38,8 +38,7 @@ interface Opts {
 }
 
 const DAY = 86_400_000;
-/** Where a farmer's new farm lies from the village centre (the phone walk starts here; see M9). */
-export const NEW_FARM_OFFSET: LatLng = [0.0062, 0.0048];
+export { NEW_FARM_OFFSET };
 
 export function seedLand(ops: OpsResult, settings: OrgSettings, plots: Plot[], o: Opts): LandSeed {
   const rng = new Rng(o.seed);
@@ -79,8 +78,10 @@ export function seedLand(ops: OpsResult, settings: OrgSettings, plots: Plot[], o
   }
   if (o.mapperUserId) {
     const mapper = ops.agents.find((a) => a.userId === o.mapperUserId)!;
-    const home = communitiesOf(mapper.id, 0)[0]!;
-    out.lossZones.push(zone(home.name, home.gps.lat + NEW_FARM_OFFSET[0], home.gps.lng + NEW_FARM_OFFSET[1], 0.0024, 0.003, 2022));
+    // Beside each of the mapper's villages, so a newly walked farm there shows up as cleared after the cut-off.
+    for (const home of communities.filter((c) => c.agentIds.includes(mapper.id))) {
+      out.lossZones.push(zone(home.name, home.gps.lat + NEW_FARM_OFFSET[0], home.gps.lng + NEW_FARM_OFFSET[1], 0.0024, 0.003, 2022));
+    }
   }
 
   // ---------- Plots: code, type, declared area, validation, deforestation check, monitoring ----------

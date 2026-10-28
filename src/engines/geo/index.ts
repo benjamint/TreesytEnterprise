@@ -129,3 +129,10 @@ export function gpsReading(p: LatLng): LatLng {
   const fix = (v: number) => { let x = Number(v.toFixed(7)); while (decimalsOf(x) < 7) x = Number((x + 1e-7).toFixed(7)); return x; };
   return [fix(p[0]), fix(p[1])];
 }
+
+/**
+ * Where a farmer's new farm lies from the village centre in the demo: the phone's simulated walk
+ * starts here (M9 "Map a plot"), and the seeded forest-loss layer has an area just there for the
+ * EUDR journey.
+ */
+export const NEW_FARM_OFFSET: LatLng = [0.0062, 0.0048];

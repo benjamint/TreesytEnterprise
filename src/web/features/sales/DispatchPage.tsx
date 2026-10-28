@@ -28,6 +28,7 @@ import { useActor, useCurrentOrg, useFormat, useOrgRows, useOrgSettings, useT } 
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
 import { ApprovalTimeline, WorkflowButtons, mono, useWorkflowDef } from '@/web/features/buying/common';
 import { useInventory } from '@/web/features/inventory/shared';
+import { FilePick } from '@/components/shared/FilePick';
 import { ImpactTiles, ShipmentSteps, TraceMap, useKgT, useSalesLookups } from './shared';
 
 type View = 'all' | 'approval' | 'ready' | 'moving' | 'toVerify' | 'verified' | 'rejected';
@@ -234,22 +235,6 @@ export function DocumentsTab({ dispatch: d, onAdd, readOnly }: { dispatch: Dispa
         ) : <p className="text-[13px] text-muted">{t('sales.noDownloads')}</p>}
       </div>
     </div>
-  );
-}
-
-function FilePick({ label, value, onChange, sample }: { label: string; value?: string; onChange: (v?: string) => void; sample: string }) {
-  const { t } = useT();
-  return (
-    <Field label={label}>
-      <div className="flex flex-wrap items-center gap-2 rounded-ctl border border-dashed border-line p-2.5">
-        <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-ctl bg-surface px-3 text-[13px] font-medium text-ink ring-1 ring-line hover:bg-canvas">
-          {t('sales.chooseFile')}
-          <input type="file" className="sr-only" aria-label={label} onChange={(e) => { onChange(e.target.files?.[0]?.name); e.target.value = ''; }} />
-        </label>
-        <Button type="button" variant="ghost" size="sm" onClick={() => onChange(sample)}>{t('sales.useSample')}</Button>
-        <span className={cn('text-[13px]', value ? 'text-ink' : 'text-muted')}>{value ?? t('sales.noFile')}</span>
-      </div>
-    </Field>
   );
 }
 

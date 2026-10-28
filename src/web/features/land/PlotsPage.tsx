@@ -171,9 +171,9 @@ function PlotDrawer({ plot: p, onClose }: { plot: Plot; onClose: () => void }) {
       <DetailDrawer open onClose={onClose} title={p.code ?? p.id} subtitle={`${ll.plotTypeName(p.typeId)} · ${ll.farmerName(p.farmerId)} · ${lk.community(p.communityId)}`}
         badges={<><CheckBadge result={p.check?.result} />{p.validation && !p.validation.ok && <Badge tone="warningOutline">{t('land.needsFix')}</Badge>}{p.agreement && <Badge tone="success">{t('land.agreementSigned')}</Badge>}</>}
         actions={<>
-          {!editing && p.polygon.length >= 3 && <PermissionGate permission="plots.update"><Button size="sm" variant="secondary" onClick={() => setEditing(p.polygon)}><Pencil /> {t('land.editVertices')}</Button></PermissionGate>}
+          {!editing && p.polygon.length >= 3 && <PermissionGate permission="plots.edit"><Button size="sm" variant="secondary" onClick={() => setEditing(p.polygon)}><Pencil /> {t('land.editVertices')}</Button></PermissionGate>}
           {editing && <><Button size="sm" onClick={() => { updatePlotGeometry(p.id, editing, userId ?? 'system'); setEditing(null); toast.success(t('land.toast.geometry', { code: p.code })); }}><Save /> {t('common.save')}</Button><Button size="sm" variant="secondary" onClick={() => setEditing(null)}><Undo2 /> {t('common.cancel')}</Button></>}
-          <PermissionGate permission="plots.update"><Button size="sm" variant="secondary" onClick={() => setVisit(true)}><ClipboardCheck /> {t('land.recordMonitoring')}</Button></PermissionGate>
+          <PermissionGate permission="plots.edit"><Button size="sm" variant="secondary" onClick={() => setVisit(true)}><ClipboardCheck /> {t('land.recordMonitoring')}</Button></PermissionGate>
         </>}
         tabs={[
           {
@@ -217,7 +217,7 @@ function PlotDrawer({ plot: p, onClose }: { plot: Plot; onClose: () => void }) {
             key: 'files', label: t('land.tab.files'), count: (p.images?.length ?? 0) + (p.agreement ? 1 : 0), content: (
               <div className="space-y-4">
                 {p.agreement ? <Facts items={[[t('land.agreementFile'), p.agreement.name], [t('land.uploaded'), f.dateTime(p.agreement.at)]]} /> : (
-                  <div className="space-y-2"><FilePick label={t('land.agreementFile')} value={agreement} onChange={setAgreement} sample="plot-agreement.jpg" /><PermissionGate permission="plots.update"><Button size="sm" disabled={!agreement} onClick={() => { setPlotAgreement(p.id, agreement!, userId ?? 'system'); toast.success(t('land.toast.agreement')); }}>{t('common.save')}</Button></PermissionGate></div>
+                  <div className="space-y-2"><FilePick label={t('land.agreementFile')} value={agreement} onChange={setAgreement} sample="plot-agreement.jpg" /><PermissionGate permission="plots.edit"><Button size="sm" disabled={!agreement} onClick={() => { setPlotAgreement(p.id, agreement!, userId ?? 'system'); toast.success(t('land.toast.agreement')); }}>{t('common.save')}</Button></PermissionGate></div>
                 )}
                 <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">{(p.images ?? []).map((img) => <li key={img.id} className="rounded-ctl border border-line p-2"><div className="flex h-20 items-center justify-center rounded-[6px] bg-canvas text-[12px] text-muted">{img.name}</div><div className="mt-1 text-[11px] text-muted">{f.date(img.at)}</div></li>)}</ul>
               </div>

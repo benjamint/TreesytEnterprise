@@ -1,6 +1,6 @@
 import type {
   AgentRepayment, Client, DispatchOrder, InsightRequest, Plot, SalesContract, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
-  FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
+  FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, TrainingTopic, Workshop, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
   AuditEntry, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
@@ -22,9 +22,11 @@ import { seedSupport, type SupportSeed } from './support';
 import { seedInventory } from './inventory';
 import { seedSales } from './sales';
 import { seedLand } from './land';
+import { seedTraining } from './training';
+import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 16;
+export const SEED_VERSION = 18;
 export const SEED = 20261018;
 
 export interface SeedData {
@@ -88,6 +90,8 @@ export interface SeedData {
   eudrLots: EudrLot[];
   statements: DueDiligenceStatement[];
   carbonProjects: CarbonProject[];
+  trainingTopics: TrainingTopic[];
+  workshops: Workshop[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -360,6 +364,47 @@ export function buildSeed(now = new Date()): SeedData {
   ];
   vit.activity.push(...lnd[0]!.activity);
   ki.activity.push(...lnd[1]!.activity);
+
+  // ---- Phase 15: training catalogue and workshops (PRD G3, M10) ----
+  const trn = [
+    seedTraining(vit, settings[ORG.vitara]!, {
+      orgId: ORG.vitara, seed: 1515, today: clock.today, lang: 'en', officeUserId: 'u_salamatu', agentTypeIds: ['at_ceo', 'at_cons'], journeyUserId: 'u_yaw',
+      held: 15, archived: 2, cancelled: 1, planned: 2, feedbackFormId: formId(ORG.vitara, 'workshop'), responses: extra.responses,
+      topics: [
+        ['Shea parkland management', 'Gestion des parcs à karité', 'CONSERVATION', 120, 'FARMERS', ['Parkland poster']],
+        ['Good collection and drying of shea nuts', 'Bonne collecte et séchage des noix de karité', 'QUALITY', 90, 'FARMERS', ['Drying mat demo']],
+        ['Bushfire prevention and control', 'Prévention et lutte contre les feux de brousse', 'CONSERVATION', 90, 'FARMERS', ['Fire-belt guide']],
+        ['Seedling care and transplanting', 'Soins et repiquage des plants', 'AGRONOMY', 120],
+        ['Grafting shea trees', 'Greffage du karité', 'AGRONOMY', 180, 'FARMERS', ['Grafting knives', 'Budding tape']],
+        ['Safe storage and moisture control', 'Stockage et contrôle de l’humidité', 'QUALITY', 60, 'FARMERS', ['Moisture meter']],
+        ['Safe use of farm chemicals', 'Utilisation sûre des produits chimiques', 'SAFETY', 90, 'FARMERS', ['PPE kit']],
+        ['VSLA savings and loans', 'Épargne et crédit en AVEC', 'FINANCE', 120, 'GROUPS', ['VSLA box', 'Passbooks']],
+        ['Farm record keeping', 'Tenue des registres de l’exploitation', 'FINANCE', 60, 'FARMERS', ['Record book']],
+        ['Household budgeting for women’s groups', 'Budget du ménage pour les groupements de femmes', 'FINANCE', 90, 'GROUPS'],
+        ['Child protection on the farm', 'Protection de l’enfant à la ferme', 'SOCIAL', 60],
+        ['First aid in the field', 'Premiers secours au champ', 'SAFETY', 60, 'STAFF', ['First aid kit']],
+        ['Composting and soil fertility', 'Compostage et fertilité des sols', 'AGRONOMY', 90],
+        ['Beekeeping for extra income', 'Apiculture pour un revenu en plus', 'AGRONOMY', 120, 'FARMERS', ['Hive model']],
+      ],
+    }),
+    seedTraining(ki, settings[ORG.kakao]!, {
+      orgId: ORG.kakao, seed: 2626, today: clock.today, lang: 'fr', officeUserId: 'u_aicha', agentTypeIds: ['at_del'],
+      held: 5, archived: 1, cancelled: 1, planned: 1, feedbackFormId: formId(ORG.kakao, 'workshop'), responses: extra.responses,
+      topics: [
+        ['Pruning cocoa trees', 'Taille du cacaoyer', 'AGRONOMY', 120, 'FARMERS', ['Scie d’élagage']],
+        ['Swollen shoot: spot and report', 'Swollen shoot : repérer et signaler', 'AGRONOMY', 90],
+        ['Fermentation and drying', 'Fermentation et séchage', 'QUALITY', 90],
+        ['Shade trees and agroforestry', 'Arbres d’ombrage et agroforesterie', 'CONSERVATION', 120],
+        ['EUDR traceability and mapping', 'Traçabilité RDUE et cartographie', 'QUALITY', 60],
+        ['Pesticide safety', 'Sécurité des pesticides', 'SAFETY', 90, 'FARMERS', ['Kit EPI']],
+        ['Child labour awareness', 'Sensibilisation au travail des enfants', 'SOCIAL', 60],
+        ['Cooperative financial management', 'Gestion financière de la coopérative', 'FINANCE', 120, 'STAFF'],
+      ],
+    }),
+  ];
+  vit.activity.push(...trn[0]!.activity);
+  ki.activity.push(...trn[1]!.activity);
+  const trainingData = { trainingTopics: trn.flatMap((x) => x.topics), workshops: trn.flatMap((x) => x.workshops) };
   const landData = {
     plots: lnd.flatMap((x) => x.plots), nurseries: lnd.flatMap((x) => x.nurseries), seedlingLots: lnd.flatMap((x) => x.lots), seedlingAllocations: lnd.flatMap((x) => x.allocations),
     trees: lnd.flatMap((x) => x.trees), lossZones: lnd.flatMap((x) => x.lossZones), eudrLots: lnd.flatMap((x) => x.eudrLots), statements: lnd.flatMap((x) => x.statements), carbonProjects: lnd.flatMap((x) => x.projects),
@@ -375,7 +420,7 @@ export function buildSeed(now = new Date()): SeedData {
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData,
   };
 }
 

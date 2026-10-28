@@ -89,7 +89,7 @@ function ProjectDrawer({ project: p, onClose }: { project: CarbonProject; onClos
     <>
       <DetailDrawer open onClose={onClose} title={p.name} subtitle={`${p.number} · ${t(`land.standard.${p.standard}`)} · ${t('land.since', { date: f.date(p.startDate) })}`}
         badges={<Badge tone="teal">{t(`land.projectStatus.${p.status}`)}</Badge>}
-        actions={<><PermissionGate permission="carbon.update"><Button size="sm" onClick={() => setAssign(true)}><Trees /> {t('land.assignTrees')}</Button></PermissionGate><Button size="sm" variant="secondary" onClick={report}><Printer /> {t('land.report')}</Button></>}
+        actions={<><PermissionGate permission="carbon.edit"><Button size="sm" onClick={() => setAssign(true)}><Trees /> {t('land.assignTrees')}</Button></PermissionGate><Button size="sm" variant="secondary" onClick={report}><Printer /> {t('land.report')}</Button></>}
         tabs={[
           {
             key: 'overview', label: t('land.tab.overview'), content: (
@@ -113,7 +113,7 @@ function ProjectDrawer({ project: p, onClose }: { project: CarbonProject; onClos
                     <tbody>{s.bySpecies.map((x) => (
                       <tr key={x.speciesId} className="border-b border-line last:border-0">
                         <td className="px-3 py-2 text-ink">{ll.speciesName(x.speciesId)}</td><td className="tnum px-3 py-2 text-right">{f.number(x.target)}</td><td className="tnum px-3 py-2 text-right">{f.number(x.assigned)}</td><td className="tnum px-3 py-2 text-right">{f.number(x.alive)}</td>
-                        <td className="px-3 py-2 text-right"><PermissionGate permission="carbon.update"><Input type="number" className="ml-auto h-9 w-24 text-right" value={p.co2Factors[x.speciesId] ?? 0} onChange={(e) => setCo2Factor(p.id, x.speciesId, Number(e.target.value) || 0)} aria-label={t('land.co2FactorFor', { species: ll.speciesName(x.speciesId) })} /></PermissionGate></td>
+                        <td className="px-3 py-2 text-right"><PermissionGate permission="carbon.edit"><Input type="number" className="ml-auto h-9 w-24 text-right" value={p.co2Factors[x.speciesId] ?? 0} onChange={(e) => setCo2Factor(p.id, x.speciesId, Number(e.target.value) || 0)} aria-label={t('land.co2FactorFor', { species: ll.speciesName(x.speciesId) })} /></PermissionGate></td>
                       </tr>
                     ))}</tbody>
                   </table>

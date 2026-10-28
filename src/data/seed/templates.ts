@@ -197,6 +197,7 @@ export const VITARA_NUMBERING: NumberingPattern[] = [
   { docType: 'eudrLot', prefix: 'LOT', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
   { docType: 'dds', prefix: 'DDS', pattern: '{prefix}-{yyyy}-{seq:4}', scope: 'year' },
   { docType: 'carbonProject', prefix: 'CP', pattern: '{prefix}-{seq:3}', scope: 'company' },
+  { docType: 'workshop', prefix: 'WS', pattern: '{prefix}-{yymm}-{seq:3}', scope: 'month' },
   { docType: 'farmerId', prefix: '', pattern: '{community}-{initials}-{seq}', scope: 'community' },
   { docType: 'communityCode', prefix: '', pattern: '{region}-{seq:3}', scope: 'company' },
   { docType: 'surveyResponse', prefix: 'SR', pattern: '{prefix}-{yymm}-{seq:5}', scope: 'month' },

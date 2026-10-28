@@ -270,6 +270,21 @@ export interface LandSettings {
   exportMaxDays: number;
 }
 
+/** Workshops and training (PRD G3): edit rules and who counts as an attendee. */
+export interface TrainingRules {
+  /** Planned workshops can always change; held ones only within this many days (0 = never). */
+  editHeldDays: number;
+  /** Only planned workshops can be deleted; held ones are archived with remarks. */
+  deletePlannedOnly: boolean;
+  /** Only farmers of the workshop's community (and group, when set) can be marked present. */
+  membersOnly: boolean;
+  allowGuests: boolean;
+  /** Attendance counted for commission (J9) only within these bounds. */
+  minForCommission: number;
+  maxForCommission: number;
+  ratingRequired: boolean;
+}
+
 export interface SupportType {
   id: string;
   name: Partial<Record<Lang, string>>;
@@ -419,6 +434,7 @@ export interface OrgSettings {
   inventoryRules: InventoryRules;
   sales: SalesSettings;
   land: LandSettings;
+  training: TrainingRules;
   support: SupportSettings;
   fieldTeam: FieldTeamSettings;
   qualityRules: QualityRule[];

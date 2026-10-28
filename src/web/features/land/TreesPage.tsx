@@ -194,7 +194,7 @@ function TreeDrawer({ tree: x, onClose }: { tree: Tree; onClose: () => void }) {
     <>
       <DetailDrawer open onClose={onClose} title={x.code} subtitle={`${ll.speciesName(x.speciesId)} · ${ll.farmerName(x.farmerId)} · ${lk.community(x.communityId)}`}
         badges={<><StateBadge state={x.state} />{due != null && <Badge tone="warning">{t('land.dueRound', { n: due })}</Badge>}</>}
-        actions={x.state === 'ALIVE' ? <PermissionGate permission="trees.update"><Button size="sm" onClick={() => setVisit(true)}><ClipboardCheck /> {t('land.recordVisit')}</Button></PermissionGate> : undefined}
+        actions={x.state === 'ALIVE' ? <PermissionGate permission="trees.edit"><Button size="sm" onClick={() => setVisit(true)}><ClipboardCheck /> {t('land.recordVisit')}</Button></PermissionGate> : undefined}
         tabs={[
           {
             key: 'overview', label: t('land.tab.overview'), content: (

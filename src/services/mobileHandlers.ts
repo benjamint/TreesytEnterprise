@@ -10,6 +10,7 @@ import { confirmFundsReceived, createPre, createRequest, recordPurchases, signRe
 import { registerFarmer, type FarmerCore } from './farmerService';
 import { fillSchema, getLiveForm, submitResponse } from './formService';
 import { registerSyncHandler } from './mobileSync';
+import { finishWorkshop, type SessionInput } from './trainingService';
 import {
   assignToFarmer, createNursery, recordPlotVisit, recordRound, recordTreeVisit, savePlot,
   type FarmerAllocationInput, type NurseryInput, type PlotInput, type VisitInput,
@@ -124,3 +125,20 @@ registerSyncHandler('seedlingAllocation', { apply: (i) => assignToFarmer({ ...(i
 registerSyncHandler('treeVisit', { apply: (i) => { const p = i.payload as { treeId: string } & VisitInput; return recordTreeVisit(p.treeId, { ...p, actorId: i.userId, device: 'mobile' }); } });
 registerSyncHandler('plot', { apply: (i) => savePlot({ ...(i.payload as PlotInput), device: 'mobile' }) });
 registerSyncHandler('plotVisit', { apply: (i) => { const p = i.payload as { plotId: string; answers: Record<string, boolean | string>; photos: string[] }; return recordPlotVisit(p.plotId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+
+// ---- M10 workshops: the whole session (attendance, photos, feedback forms) arrives in one item.
+export interface WorkshopSessionPayload extends Omit<SessionInput, 'actorId' | 'device' | 'feedbackResponseIds'> {
+  feedback: { formId: string; answers: Record<string, unknown>; subject?: SurveyResponse['subject'] }[];
+  agentId?: string;
+}
+registerSyncHandler('workshop', {
+  apply: (i) => {
+    const p = i.payload as WorkshopSessionPayload;
+    const ids = p.feedback.map((fb) => {
+      const form = useFormStore.getState().forms.find((f) => f.id === fb.formId);
+      if (!form) throw new Error('Form no longer exists');
+      return submitResponse({ form, schema: fillSchema(form, useFormStore.getState().optionLists), answers: fb.answers, userId: i.userId, agentId: p.agentId, subject: fb.subject, gps: p.gps ? { ...p.gps, accuracy: p.gps.accuracy ?? 0 } : undefined, device: 'mobile' }).id;
+    });
+    return finishWorkshop({ ...p, feedbackResponseIds: ids, actorId: i.userId, device: 'mobile' });
+  },
+});

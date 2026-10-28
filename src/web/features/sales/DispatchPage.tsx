@@ -217,7 +217,7 @@ export function DocumentsTab({ dispatch: d, onAdd, readOnly }: { dispatch: Dispa
   const download = (docId: string, name: string) => { logDownload(d.id, docId, userId ?? 'system', orgId); toast.success(t('sales.toast.downloaded', { name })); };
   return (
     <div className="space-y-5">
-      {!readOnly && onAdd && <PermissionGate permission="dispatch.update"><Button size="sm" variant="secondary" onClick={onAdd}><FileUp /> {t('sales.addDocument')}</Button></PermissionGate>}
+      {!readOnly && onAdd && <PermissionGate permission="dispatch.edit"><Button size="sm" variant="secondary" onClick={onAdd}><FileUp /> {t('sales.addDocument')}</Button></PermissionGate>}
       {d.documents.length ? (
         <ul className="divide-y divide-line rounded-ctl border border-line">{d.documents.map((doc) => (
           <li key={doc.id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-[14px]">

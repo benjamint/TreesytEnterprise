@@ -75,7 +75,7 @@ export const APP_ROUTES: AppRoute[] = [
   r('carbon', '/app/carbon', CloudSun, 'carbon.view', 14, 'carbon', 'trees', { configurable: ['treesLand'] }),
 
   r('forms', '/app/forms', FileText, 'forms.view', 6, 'forms', 'forms', { configurable: ['forms'] }),
-  r('workshops', '/app/workshops', GraduationCap, 'workshops.view', 15, 'workshops', 'forms'),
+  r('workshops', '/app/workshops', GraduationCap, 'workshops.view', 15, 'workshops', 'forms', { configurable: ['training', 'forms', 'numbering'] }),
 
   r('agents', '/app/agents', UserCog, 'agents.view', 16, 'fieldTeam', 'fieldTeam', { configurable: ['fieldTeam', 'terminology'] }),
   r('weeklyPlans', '/app/weekly-plans', CalendarRange, 'weeklyPlans.view', 16, 'fieldTeam', 'fieldTeam', { configurable: ['fieldTeam'] }),
@@ -105,7 +105,7 @@ export const APP_ROUTES: AppRoute[] = [
   r('priceBoard', '/app/price-board', LineChart, 'priceBoard.view', 7, 'buying', undefined, { configurable: ['priceLists'] }),
   r('allocations', '/app/support/allocations', Archive, 'support.view', 11, 'support'),
   r('optionLists', '/app/forms/option-lists', ListTree, 'forms.view', 6, 'forms'),
-  r('trainingCatalogue', '/app/workshops/catalogue', Award, 'workshops.view', 15, 'workshops'),
+  r('trainingCatalogue', '/app/workshops/catalogue', Award, 'workshops.view', 15, 'workshops', undefined, { configurable: ['training'] }),
   r('reportingLines', '/app/agents/reporting-lines', Network, 'agents.view', 16, 'fieldTeam'),
   r('achievements', '/app/achievements', Trophy, 'weeklyPlans.view', 16, 'fieldTeam'),
   r('helpMobile', '/app/help/mobile', Smartphone, 'dashboard.view', 1),
@@ -124,14 +124,14 @@ export function routeByKey(key: string): AppRoute {
 /** Company settings pages (PRD A4). */
 export const SETTINGS_PAGES = [
   'profile', 'branding', 'modules', 'locations', 'commodities', 'units', 'priceLists', 'approvals', 'numbering', 'payments',
-  'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
+  'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'training', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
   'terminology', 'notifications', 'smsEmail', 'integrations', 'security', 'privacy', 'mobile',
 ] as const;
 export type SettingsPage = (typeof SETTINGS_PAGES)[number];
 
 export const SETTINGS_GROUPS: { key: string; pages: SettingsPage[] }[] = [
   { key: 'company', pages: ['profile', 'branding', 'modules', 'terminology'] },
-  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'fieldTeam'] },
+  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'training', 'fieldTeam'] },
   { key: 'workflows', pages: ['approvals', 'numbering', 'farmerId', 'forms', 'dataQuality', 'notifications'] },
   { key: 'money', pages: ['payments', 'smsEmail'] },
   { key: 'access', pages: ['roles', 'users', 'security', 'biometrics', 'mobile'] },

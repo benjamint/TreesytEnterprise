@@ -60,7 +60,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Documents — type from the company list, upload with image / PDF preview, uploaded by / when
 - [x] Groups in community sync (upsert) — groups added during mobile community profiling, and mobile group saves, upsert by name within the community; meeting / contribution records send the group score for review
 - [x] Community list / detail / map / dashboard / edit — filters + saved views, column picker, CSV export, drawer (overview map, profile, leaders, documents, farmers, groups, purchases, activity), `/app/communities/map` with score-coloured pins, dashboard (profiled, average farmers, bought from, top 3s, over time)
-- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); workshops / trees count as zero until phases 14–15
+- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); training counts workshops held in the community this year (target 4), trees count planted, alive and average health from the tree register
 - [x] Farmer profile (all fields) — Vitara v3 farmer form (incl. spouse show-if, children repeat group, ID type / number); edit creates a new version with a change history
 - [x] Farmer ID pattern — `{community}-{initials}-{seq}` / `KI-{region}-{seq:5}` on registration; "Import existing IDs" keeps a supplied ID
 - [x] Thumbprints — left / right status on the Identity tab; captured on the phone during registration (simulated reader) with photo, ID card, consent (audio / signature / tick with read-aloud) and NFC card
@@ -278,14 +278,14 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Summary — totals, average completion, approval rate, agents
 - [x] Export — Excel with chosen columns; sensitive answers masked without `farmers.viewSensitive`
 - [x] Subject binding — profile forms drive web and mobile registration, farmer list column options and report fields (Journey 9); Settings → Forms picks the form for each record type
-- [ ] Training catalogue / topics [15]
-- [ ] Workshop planning [15]
-- [ ] Status [15]
-- [ ] Edit / archive / delete rules [15]
-- [ ] Export [15]
-- [ ] Dashboard [15]
-- [ ] Attendance + ratings + comments [15]
-- [ ] Images [15]
+- [x] Training catalogue / topics — `/app/workshops/catalogue`: name per language, category, duration, materials, linked quiz form, audience, active; Vitara 14 topics, Kakao Ivoire 8; starter topics by sector (shea, cocoa, coffee, cashew, grains) skip ones already there
+- [x] Workshop planning — bulk plan sheet: one location, then rows of topic, facilitator, community, group (optional), expected attendees, date; each row gets a `WS-{yymm}-{seq:3}` number
+- [x] Status — Planned / Held / Cancelled / Archived; list with saved views, facilitator and community filters; month calendar; overdue badge when a planned date has passed
+- [x] Edit / archive / delete rules — Settings → Workshops and training: held workshops editable for N days (Vitara 3; afterwards only archive with remarks), delete planned only, cancel with reason; held ones edit the location only
+- [x] Export — CSV of the filtered list (number, title, date, location, community, group, facilitator, expected, actual, status, photos, rating) and of the catalogue
+- [x] Dashboard — created, held, upcoming, cancelled, unique farmers trained, attendances; attendance by topic and by facilitator, held per month, average rating by facilitator
+- [x] Attendance + ratings + comments — phone M10 (`/m/workshops`): today's and upcoming → start with GPS → attendance by NFC tap, card scan, thumbprint (simulated readers) or search, plus named guests → 1–5 rating and comment per farmer → photos → finish (commission check against min / max) → feedback forms (workshop feedback binding) → send, offline through the outbox; eligibility rules (community or group members only, guests, rating required) enforced on the phone and again on sync; web detail lists attendees with method, rating, comment, time, feedback results per question, "counts for commission" badge (J9 bounds); farmer Trainings tab and community Workshops tab
+- [x] Images — photos taken at the end of the session, shown on the workshop's Photos tab with who and when
 
 ## Platform services (Scope 10)
 

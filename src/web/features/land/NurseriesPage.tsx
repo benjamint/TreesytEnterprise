@@ -126,8 +126,8 @@ function NurseryDrawer({ nursery: n, onClose }: { nursery: Nursery; onClose: () 
       <DetailDrawer open onClose={onClose} title={n.name} subtitle={`${n.code} · ${lk.community(n.communityId)} · ${lk.agent(n.agentId)}`}
         badges={<>{due.length > 0 && <Badge tone="danger">{t('land.roundOverdue', { round: roundLabel(due[0]!, t) })}</Badge>}{n.agreement ? <Badge tone="success">{t('land.agreementSigned')}</Badge> : <Badge tone="warning">{t('land.noAgreement')}</Badge>}</>}
         actions={<>
-          {nextRound(n) && <PermissionGate permission="nurseries.update"><Button size="sm" onClick={() => setRound(nextRound(n)!)}><ClipboardCheck /> {t('land.recordRound', { round: roundLabel(nextRound(n)!, t) })}</Button></PermissionGate>}
-          <PermissionGate permission="nurseries.update"><Button size="sm" variant="secondary" onClick={() => setBatchOpen(true)}><Plus /> {t('land.addBatch')}</Button></PermissionGate>
+          {nextRound(n) && <PermissionGate permission="nurseries.edit"><Button size="sm" onClick={() => setRound(nextRound(n)!)}><ClipboardCheck /> {t('land.recordRound', { round: roundLabel(nextRound(n)!, t) })}</Button></PermissionGate>}
+          <PermissionGate permission="nurseries.edit"><Button size="sm" variant="secondary" onClick={() => setBatchOpen(true)}><Plus /> {t('land.addBatch')}</Button></PermissionGate>
         </>}
         tabs={[
           {
@@ -189,7 +189,7 @@ function NurseryDrawer({ nursery: n, onClose }: { nursery: Nursery; onClose: () 
               <div className="space-y-3">
                 <p className="text-[14px] text-muted">{t('land.agreementHint')}</p>
                 <FilePick label={t('land.agreementFile')} value={agreement} onChange={setAgreement} sample="nursery-agreement.pdf" />
-                <PermissionGate permission="nurseries.update"><Button size="sm" disabled={!agreement} onClick={() => { setNurseryAgreement(n.id, agreement!, userId ?? 'system'); toast.success(t('land.toast.agreement')); }}>{t('common.save')}</Button></PermissionGate>
+                <PermissionGate permission="nurseries.edit"><Button size="sm" disabled={!agreement} onClick={() => { setNurseryAgreement(n.id, agreement!, userId ?? 'system'); toast.success(t('land.toast.agreement')); }}>{t('common.save')}</Button></PermissionGate>
               </div>
             ),
           },

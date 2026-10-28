@@ -52,8 +52,16 @@ export function ActivityFeed({ entity, entityId }: { entity: string; entityId: s
   const { t } = useT();
   const f = useFormat();
   const rows = useMemo(() => all.filter((e) => e.entity === entity && e.entityId === entityId).sort((a, b) => b.at.localeCompare(a.at)), [all, entity, entityId]);
-  // Money params are stored as { amountMinor, currency } and shown in the company's format.
-  const params = (p: Record<string, unknown>) => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, v && typeof v === 'object' && 'amountMinor' in v ? f.money(v as Money) : k === 'method' && typeof v === 'string' ? t(`activity.method.${v}`, { defaultValue: v }) : v]));
+  const lang = useLang();
+  // Money params are stored as { amountMinor, currency }, names per language as { en, fr }, dates as
+  // YYYY-MM-DD; each is shown in the viewer's language and the company's format.
+  const one = (k: string, v: unknown) => {
+    if (v && typeof v === 'object' && 'amountMinor' in v) return f.money(v as Money);
+    if (v && typeof v === 'object' && ('en' in v || 'fr' in v)) { const n = v as Partial<Record<string, string>>; return n[lang] ?? n.en ?? n.fr; }
+    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) return f.date(v);
+    return k === 'method' && typeof v === 'string' ? t(`activity.method.${v}`, { defaultValue: v }) : v;
+  };
+  const params = (p: Record<string, unknown>) => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, one(k, v)]));
   if (!rows.length) return <TabEmpty>{t('people.noActivity')}</TabEmpty>;
   return (
     <ol className="relative space-y-4 border-l border-line pl-5">

@@ -26,3 +26,4 @@ export * from './formStore';
 export * from './hooks';
 export * from './salesStore';
 export * from './landStore';
+export * from './trainingStore';

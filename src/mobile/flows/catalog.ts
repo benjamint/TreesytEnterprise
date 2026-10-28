@@ -15,7 +15,7 @@ export const TILES: { key: string; icon: LucideIcon; flow: MobileFlow; module: M
   { key: 'trees', icon: Trees, flow: 'M9', module: 'trees', path: '/m/trees' },
   { key: 'plots', icon: Map, flow: 'M9', module: 'plots', path: '/m/plots' },
   { key: 'surveys', icon: ClipboardCheck, flow: 'M10', module: 'forms', path: '/m/surveys' },
-  { key: 'workshops', icon: GraduationCap, flow: 'M10', module: 'workshops' },
+  { key: 'workshops', icon: GraduationCap, flow: 'M10', module: 'workshops', path: '/m/workshops' },
   { key: 'budget', icon: PiggyBank, flow: 'M11', module: 'weeklyBudgets' },
 ];
 

@@ -11,6 +11,8 @@ import { agentCashHeld } from '@/stores/selectors';
 import { useMobileAgent } from '@/mobile/layout/useMobileContext';
 import { SyncBar, OfflineBanner } from '@/mobile/layout/SyncBar';
 import { useWarehouseStore } from '@/stores/warehouseStore';
+import { useTrainingStore } from '@/stores/trainingStore';
+import { useOutboxStore } from '@/stores/outboxStore';
 import { useInventory } from '@/web/features/inventory/shared';
 import { useMyWarehouse } from '@/mobile/flows/warehouse/WarehouseScreens';
 
@@ -42,7 +44,12 @@ export function HomeScreen() {
   const repayments = useOrgRows(useWarehouseStore((s) => s.agentRepayments));
   const owed = useMemo(() => (agent ? inbounds.filter((x) => x.agentId === agent.id && x.source.kind === 'PRE' && ['DISCREPANCY', 'NEEDS_RESOLUTION'].includes(x.status) && !repayments.some((r) => r.inboundId === x.id && r.status === 'SUBMITTED')) : []), [agent, inbounds, repayments]);
   const officer = agent && (agent.agentTypeId === 'at_wh' || agent.agentTypeId === 'at_mag');
-  const allAlerts = [...owed.map((x) => ({ id: x.id, to: `/m/warehouse/repay/${x.id}`, text: t('mobile.m8.owedAlert', { number: x.number }) })), ...alerts];
+  // Workshops the agent facilitates today (PRD M2 alerts), unless already recorded on this phone.
+  const workshops = useOrgRows(useTrainingStore((s) => s.workshops));
+  const outbox = useOutboxStore((s) => s.items);
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const wsToday = agent ? workshops.filter((w) => w.agentId === agent.id && w.status === 'PLANNED' && w.date === todayIso && !outbox.some((i) => i.type === 'workshop' && (i.payload as { workshopId: string }).workshopId === w.id)) : [];
+  const allAlerts = [...wsToday.map((w) => ({ id: w.id, to: `/m/workshops/${w.id}`, text: t('mobile.m10.todayAlert', { title: w.title, location: w.location }) })), ...owed.map((x) => ({ id: x.id, to: `/m/warehouse/repay/${x.id}`, text: t('mobile.m8.owedAlert', { number: x.number }) })), ...alerts];
   if (!user) return null;
 
   return (

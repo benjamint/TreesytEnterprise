@@ -117,10 +117,10 @@ function ContractDrawer({ contract: c, onClose, onEdit }: { contract: SalesContr
       <DetailDrawer open onClose={onClose} title={c.number} subtitle={`${sl.clientName(c.clientId)} · ${lk.commodity(c.commodityId)} · ${f.number(c.quantity)} ${c.unitId}`}
         badges={<><StatusBadge status={c.status} />{overdue.size > 0 && c.status !== 'CANCELLED' && <StatusBadge status="OVERDUE" />}</>}
         actions={<>
-          {c.status === 'DRAFT' && <PermissionGate permission="salesContracts.update"><Button size="sm" variant="secondary" onClick={onEdit}><Pencil /> {t('common.edit')}</Button></PermissionGate>}
+          {c.status === 'DRAFT' && <PermissionGate permission="salesContracts.edit"><Button size="sm" variant="secondary" onClick={onEdit}><Pencil /> {t('common.edit')}</Button></PermissionGate>}
           {c.status === 'DRAFT' && <PermissionGate permission="salesContracts.approve"><Button size="sm" onClick={() => setDialog('agree')}><CheckCircle2 /> {t('sales.markAgreed')}</Button></PermissionGate>}
           <Button size="sm" variant="secondary" onClick={() => print(c)}><Printer /> {t('sales.print')}</Button>
-          {!['FULFILLED', 'CANCELLED'].includes(c.status) && <PermissionGate permission="salesContracts.update"><Button size="sm" variant="dangerOutline" onClick={() => setDialog('cancel')}><Ban /> {t('sales.cancelContract')}</Button></PermissionGate>}
+          {!['FULFILLED', 'CANCELLED'].includes(c.status) && <PermissionGate permission="salesContracts.edit"><Button size="sm" variant="dangerOutline" onClick={() => setDialog('cancel')}><Ban /> {t('sales.cancelContract')}</Button></PermissionGate>}
         </>}
         tabs={[
           {

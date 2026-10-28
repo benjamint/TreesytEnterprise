@@ -27,6 +27,11 @@ import { useActivityStore } from '@/stores/activityStore';
 import { useBuyingStore } from '@/stores/buyingStore';
 import { useFarmerStore } from '@/stores/farmerStore';
 import { useGroupStore } from '@/stores/groupStore';
+import { useLandStore } from '@/stores/landStore';
+import { useTrainingStore } from '@/stores/trainingStore';
+import { farmerTrainings } from '@/services/trainingService';
+import { TreeList } from '@/web/features/land/shared';
+import { WorkshopList } from '@/web/features/training/WorkshopsPage';
 import { useLoanStore } from '@/stores/loanStore';
 import { usePaymentStore } from '@/stores/paymentStore';
 import { useQualityStore } from '@/stores/qualityStore';
@@ -213,6 +218,8 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
   const issues = useOrgRows(useQualityStore((s) => s.issues));
   const activity = useActivityStore((s) => s.activity);
   const form = useLiveForm('farmerProfile');
+  const workshops = useOrgRows(useTrainingStore((s) => s.workshops));
+  const trees = useOrgRows(useLandStore((s) => s.trees));
   const mine = useMemo(() => {
     const ps = purchases.filter((p) => p.farmerId === row.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     const ids = new Set(ps.map((p) => p.id));
@@ -223,8 +230,10 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
       memberships: memberships.filter((m) => m.farmerId === row.id),
       issues: issues.filter((i) => i.entity === 'farmer' && i.recordId === row.id && (i.status === 'OPEN' || i.status === 'ASSIGNED')),
       versions: activity.filter((e) => e.entity === 'farmer' && e.entityId === row.id && (e.key === 'farmer.updated' || e.key === 'farmer.registered')).sort((a, b) => b.at.localeCompare(a.at)),
+      trainings: farmerTrainings(row.id, workshops),
+      trees: trees.filter((x) => x.farmerId === row.id),
     };
-  }, [purchases, payments, loans, memberships, issues, activity, row.id]);
+  }, [purchases, payments, loans, memberships, issues, activity, workshops, trees, row.id]);
   const breakdown = useMemo(() => farmerScore(row, { purchases, memberships, loans }), [row, purchases, memberships, loans]);
   const rules = settings.qualityRules;
   const update = (patch: Partial<Farmer>, key: string, params: Record<string, unknown> = {}) => {
@@ -375,8 +384,8 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
             </ul>
           ) : <TabEmpty>{t('people.none')}</TabEmpty>,
         },
-        { key: 'trees', label: t('people.tab.trees'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
-        { key: 'trainings', label: t('people.tab.trainings'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
+        { key: 'trees', label: t('people.tab.trees'), count: mine.trees.length, content: mine.trees.length ? <TreeList trees={mine.trees} /> : <TabEmpty>{t('land.noTreesHere')}</TabEmpty> },
+        { key: 'trainings', label: t('people.tab.trainings'), count: mine.trainings.length, content: mine.trainings.length ? <WorkshopList workshops={mine.trainings} farmerId={row.id} /> : <TabEmpty>{t('ws.noTrainings')}</TabEmpty> },
         { key: 'surveys', label: t('people.tab.surveys'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
         {
           key: 'groups', label: terms.farmerGroups, count: mine.memberships.filter((m) => !m.leftAt).length, content: mine.memberships.length ? (

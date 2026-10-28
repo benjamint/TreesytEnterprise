@@ -9,7 +9,7 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
       '*.view', '*.export', '!platform.*', '!settings.*', 'dashboard.customise', 'purchaseRequests.approveManagement',
       'purchaseRequests.create', 'purchaseRequests.edit', 'expenses.approveLevel3', 'aggregators.approve',
       'aggregators.create', 'aggregators.edit', 'support.approve', 'support.create', 'support.edit', 'recovery.reviewManager', 'recovery.recordRepayment', 'providers.create', 'providers.edit', 'weeklyPlans.*', 'agents.edit',
-      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score', 'groups.reviewScore', 'dispatch.approve',
+      'agents.reassign', 'budgets.approveManager', 'agentReports.*', 'compensation.approveFirst', 'communities.score', 'groups.reviewScore', 'dispatch.approve', 'workshops.*',
     ],
   },
   financeOfficer: {
@@ -44,12 +44,12 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
   meOfficer: {
     permissions: [
       'dashboard.view', 'ai.view', 'forms.*', 'dataQuality.*', 'imports.*', 'reports.*', 'communities.view', 'farmers.view',
-      'farmers.edit', 'groups.view', 'locations.view', 'workshops.view', 'notifications.view', 'sync.view',
+      'farmers.edit', 'groups.view', 'locations.view', 'workshops.*', 'notifications.view', 'sync.view',
     ],
   },
   sustainabilityOfficer: {
     permissions: [
-      'dashboard.view', 'ai.view', 'nurseries.*', 'seedlings.*', 'trees.*', 'plots.*', 'eudr.*', 'carbon.*',
+      'dashboard.view', 'ai.view', 'nurseries.*', 'seedlings.*', 'trees.*', 'plots.*', 'eudr.*', 'carbon.*', 'workshops.*',
       'communities.view', 'farmers.view', 'reports.view', 'notifications.view',
     ],
   },
@@ -57,12 +57,12 @@ export const ROLE_TEMPLATES: Record<RoleTemplate, { permissions: string[]; mobil
     permissions: [
       'dashboard.view', 'ai.view', 'agents.view', 'weeklyPlans.*', 'budgets.view', 'budgets.approveManager', 'retirements.view',
       'scores.view', 'agentReports.view', 'agentReports.create', 'fieldActivity.view', 'communities.view', 'farmers.view',
-      'groups.view', 'purchaseRequests.view', 'purchases.view', 'notifications.view', 'mobile.use',
+      'groups.view', 'purchaseRequests.view', 'purchases.view', 'workshops.view', 'workshops.create', 'notifications.view', 'mobile.use',
     ],
   },
   fieldAgent: {
     mobile: true,
-    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.view', 'support.create', 'support.fulfil', 'recovery.view', 'recovery.create', 'recovery.recordRepayment', 'nurseries.view', 'nurseries.create', 'nurseries.update', 'seedlings.view', 'seedlings.assign', 'trees.view', 'trees.create', 'trees.update', 'plots.view', 'plots.create', 'plots.update', 'notifications.view'],
+    permissions: ['mobile.*', '!mobile.warehouse', 'communities.view', 'communities.create', 'farmers.view', 'farmers.create', 'groups.view', 'groups.create', 'purchaseRequests.create', 'purchases.create', 'expenses.create', 'support.view', 'support.create', 'support.fulfil', 'recovery.view', 'recovery.create', 'recovery.recordRepayment', 'nurseries.view', 'nurseries.create', 'nurseries.edit', 'seedlings.view', 'seedlings.assign', 'trees.view', 'trees.create', 'trees.edit', 'plots.view', 'plots.create', 'plots.edit', 'workshops.view', 'workshops.edit', 'notifications.view'],
   },
   warehouseOfficer: {
     mobile: true,

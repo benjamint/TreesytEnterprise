@@ -270,7 +270,7 @@ function ResponseDrawer({ form, r, lists, onClose }: { form: FormRecord; r: Surv
 
 const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m]! : (s[m - 1]! + s[m]!) / 2; };
 
-function QuestionSummary({ q, values, total }: { q: Question; values: unknown[]; total: number }) {
+export function QuestionSummary({ q, values, total }: { q: Question; values: unknown[]; total: number }) {
   const { t } = useT();
   const f = useFormat();
   const lang = useLang();

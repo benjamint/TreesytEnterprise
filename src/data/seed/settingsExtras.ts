@@ -11,7 +11,7 @@ import { toMinor } from '@/engines/money';
  */
 export type ExtraSettings = Pick<
   OrgSettings,
-  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'land' | 'support' | 'fieldTeam' | 'qualityRules'
+  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'land' | 'training' | 'support' | 'fieldTeam' | 'qualityRules'
   | 'formBindings' | 'biometrics' | 'notificationRules' | 'templates' | 'messaging' | 'integrations' | 'privacy'
 >;
 
@@ -216,6 +216,7 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       overdueAlertDays: 14,
     },
     land: vitaraLand(),
+    training: { editHeldDays: 3, deletePlannedOnly: true, membersOnly: true, allowGuests: true, minForCommission: 15, maxForCommission: 60, ratingRequired: true },
   };
 }
 
@@ -330,6 +331,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     privacy: { retentionDays: { syncLogs: 60, payloads: 14, audio: 180, photos: 365, activity: 1825 } },
     sales: { ...base.sales, templates: base.sales.templates.map((x) => ({ ...x, deliveryPoint: 'Port de San-Pédro', clauses: 'Le vendeur livre la marchandise au point de livraison pendant la période d’expédition. Les poids sont ceux du pont-bascule de l’acheteur.' })), impactKpis: ['womenShare', 'childrenPerFarmer', 'plotsMapped', 'eudr'], certifications: ['Rainforest Alliance', 'Fairtrade'] },
     land: kakaoLand(),
+    training: { editHeldDays: 0, deletePlannedOnly: true, membersOnly: false, allowGuests: true, minForCommission: 10, maxForCommission: 80, ratingRequired: false },
   };
 }
 

@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { CircleMarker, MapContainer, Marker, Polygon, TileLayer, Tooltip as LTooltip, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, CheckCircle2, CircleDashed } from 'lucide-react';
-import type { DeforestationResult, Plot, PlotValidation, TreeState } from '@/types';
+import type { DeforestationResult, Plot, PlotValidation, Tree, TreeState } from '@/types';
 import { Legend } from '@/components/charts/charts';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -166,4 +166,33 @@ export function usePageTab<T extends string>(tabs: readonly T[], fallback: T) {
   useEffect(() => { if (valid(fromUrl)) setState(fromUrl); }, [fromUrl]); // eslint-disable-line react-hooks/exhaustive-deps
   const setTab = (k: T) => { setState(k); setParams((p) => { const n = new URLSearchParams(p); n.set('tab', k); n.delete('open'); return n; }, { replace: true }); };
   return [tab, setTab] as const;
+}
+
+/** A farmer's or community's trees, for profile tabs; each row opens the tree register. */
+export function TreeList({ trees, showFarmer }: { trees: Tree[]; showFarmer?: boolean }) {
+  const { t } = useT();
+  const f = useFormat();
+  const ll = useLandLookups();
+  const alive = trees.filter((x) => x.state === 'ALIVE').length;
+  const bySpecies = new Map<string, number>();
+  for (const x of trees) bySpecies.set(x.speciesId, (bySpecies.get(x.speciesId) ?? 0) + 1);
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-2">
+        {([[t('land.planted'), trees.length], [t('land.alive'), alive], [t('land.survivalPct'), trees.length ? Math.round((alive / trees.length) * 100) : 0]] as [string, number][]).map(([k, v], i) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{f.number(v)}{i === 2 ? '%' : ''}</div></div>)}
+      </div>
+      <p className="text-[13px] text-muted">{[...bySpecies].map(([id, n]) => `${ll.speciesName(id)} ${f.number(n)}`).join(' · ')}</p>
+      <ul className="divide-y divide-line rounded-ctl border border-line text-[13px]">
+        {trees.slice(0, 25).map((x) => (
+          <li key={x.id}><Link to={`/app/trees?open=${x.id}`} className="flex items-center gap-3 px-3 py-2 hover:bg-canvas">
+            <span className="font-mono text-muted">{x.code}</span>
+            <span className="flex-1 text-ink">{ll.speciesName(x.speciesId)}{showFarmer && <span className="text-muted">{` · ${ll.farmerName(x.farmerId)}`}</span>}</span>
+            <span className="text-muted">{f.date(x.plantedAt)}</span>
+            <Badge tone={x.state === 'ALIVE' ? 'success' : x.state === 'DEAD' ? 'danger' : 'warning'}>{t(`land.state.${x.state}`)}</Badge>
+          </Link></li>
+        ))}
+      </ul>
+      {trees.length > 25 && <Link to="/app/trees" className="text-[13px] font-medium text-brand hover:underline">{t('land.seeAllTrees', { count: trees.length })}</Link>}
+    </div>
+  );
 }

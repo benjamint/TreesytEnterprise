@@ -10,6 +10,7 @@ import { TILES } from '@/mobile/flows/catalog';
 import { uid } from '@/lib/utils';
 import { useCurrentOrg, useFormat, useT } from '@/stores/hooks';
 import { bind, useSettingsDraft } from '../draft';
+import { FieldTeamExtras, scoreErrors } from './fieldTeamExtras';
 import {
   AddRow, ChipsInput, EditTable, Grid, LangInputs, Mini, MoneyInput, NumberInput, RowDelete, Rows, Section, Segmented, Select, SettingsFrame, SwitchRow, TextInput,
 } from '../kit';
@@ -221,6 +222,7 @@ export function FieldTeamPage() {
   if (ft.plan.minDays > ft.plan.maxDays) errors.push(t('set.field.errDays'));
   const bands = [...ft.penaltyBands].sort((a, b) => a.fromPct - b.fromPct);
   if (bands.some((b, i) => b.fromPct >= b.toPct || (i > 0 && b.fromPct < bands[i - 1]!.toPct))) errors.push(t('set.field.errBands'));
+  for (const id of scoreErrors(ft)) errors.push(t('set.field.errWeights', { type: agentTypes.find((a) => a.id === id)?.name[org.language] ?? id }));
 
   return (
     <SettingsFrame page="fieldTeam" {...bind(d)} errors={errors}>
@@ -285,6 +287,8 @@ export function FieldTeamPage() {
         </EditTable>
         <div className="mt-3"><AddRow onClick={() => setFt({ costCategories: [...ft.costCategories, { id: uid('cc'), name: '', maxPerDayMinor: 0, maxPerWeekMinor: 0, receiptRequired: true }] })}>{t('set.field.addCategory')}</AddRow></div>
       </Section>
+
+      <FieldTeamExtras ft={ft} setFt={setFt} agentTypes={agentTypes} />
 
       <Section title={t('set.field.penalties')} description={t('set.field.penaltiesHint')}>
         <Rows>

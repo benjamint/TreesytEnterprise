@@ -62,6 +62,18 @@ import { TreesPage } from '@/web/features/land/TreesPage';
 import { PlotsPage } from '@/web/features/land/PlotsPage';
 import { EudrPage } from '@/web/features/land/EudrPage';
 import { CarbonPage } from '@/web/features/land/CarbonPage';
+import { AgentsPage } from '@/web/features/field/AgentsPage';
+import { ReportingLinesPage } from '@/web/features/field/ReportingLinesPage';
+import { FieldActivityPage } from '@/web/features/field/FieldActivityPage';
+import { PlansPage as WeeklyPlansPage } from '@/web/features/field/PlansPage';
+import { BudgetsPage } from '@/web/features/field/BudgetsPage';
+import { RetirementsPage } from '@/web/features/field/RetirementsPage';
+import { CarryForwardsPage } from '@/web/features/field/CarryForwardsPage';
+import { AchievementsPage } from '@/web/features/field/AchievementsPage';
+import { AllowancesPage } from '@/web/features/field/AllowancesPage';
+import { ScoresPage } from '@/web/features/field/ScoresPage';
+import { CompensationPage } from '@/web/features/field/CompensationPage';
+import { AgentReportsPage } from '@/web/features/field/AgentReportsPage';
 import { WorkshopsPage } from '@/web/features/training/WorkshopsPage';
 import { TrainingCataloguePage } from '@/web/features/training/CataloguePage';
 import { SalesContractsPage } from '@/web/features/sales/SalesContractsPage';
@@ -86,7 +98,7 @@ import { AgentRepayScreen, CountScreen, OutboundScreen, ReceiveScreen, ResolveSc
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue', 'agents', 'weeklyPlans', 'budgets', 'retirements', 'carryForwards', 'allowances', 'scores', 'compensation', 'agentReports', 'fieldActivity', 'reportingLines', 'achievements']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -159,6 +171,18 @@ export const router = createBrowserRouter([
       { path: 'plots', element: <RouteGuard routeKey="plots"><PlotsPage /></RouteGuard> },
       { path: 'eudr', element: <RouteGuard routeKey="eudr"><EudrPage /></RouteGuard> },
       { path: 'carbon', element: <RouteGuard routeKey="carbon"><CarbonPage /></RouteGuard> },
+      { path: 'agents', element: <RouteGuard routeKey="agents"><AgentsPage /></RouteGuard> },
+      { path: 'agents/reporting-lines', element: <RouteGuard routeKey="reportingLines"><ReportingLinesPage /></RouteGuard> },
+      { path: 'field-activity', element: <RouteGuard routeKey="fieldActivity"><FieldActivityPage /></RouteGuard> },
+      { path: 'weekly-plans', element: <RouteGuard routeKey="weeklyPlans"><WeeklyPlansPage /></RouteGuard> },
+      { path: 'budgets', element: <RouteGuard routeKey="budgets"><BudgetsPage /></RouteGuard> },
+      { path: 'retirements', element: <RouteGuard routeKey="retirements"><RetirementsPage /></RouteGuard> },
+      { path: 'carry-forwards', element: <RouteGuard routeKey="carryForwards"><CarryForwardsPage /></RouteGuard> },
+      { path: 'achievements', element: <RouteGuard routeKey="achievements"><AchievementsPage /></RouteGuard> },
+      { path: 'allowances', element: <RouteGuard routeKey="allowances"><AllowancesPage /></RouteGuard> },
+      { path: 'scores', element: <RouteGuard routeKey="scores"><ScoresPage /></RouteGuard> },
+      { path: 'compensation', element: <RouteGuard routeKey="compensation"><CompensationPage /></RouteGuard> },
+      { path: 'agent-reports', element: <RouteGuard routeKey="agentReports"><AgentReportsPage /></RouteGuard> },
       { path: 'workshops', element: <RouteGuard routeKey="workshops"><WorkshopsPage /></RouteGuard> },
       { path: 'workshops/catalogue', element: <RouteGuard routeKey="trainingCatalogue"><TrainingCataloguePage /></RouteGuard> },
       { path: 'reconciliation', element: <RouteGuard routeKey="reconciliation"><ReconciliationPage /></RouteGuard> },

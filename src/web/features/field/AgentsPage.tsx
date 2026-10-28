@@ -29,13 +29,18 @@ import { useBuyingStore } from '@/stores/buyingStore';
 import { useFieldStore } from '@/stores/fieldStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useActivityStore } from '@/stores/activityStore';
-import { useActor, useCan, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
+import { useActor, useCan, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ActivityFeed, useLookups } from '@/web/features/people/shared';
 import { LandMap } from '@/web/features/land/shared';
 import { useWarehouseStore } from '@/stores/warehouseStore';
 import { KIND_COLOR } from './FieldActivityPage';
 import { AgentName, FieldStatus, PctCell, selectCls, useFieldLookups } from './shared';
 import { NewReportDialog } from './AgentReportsPage';
+import { useSystemStore } from '@/stores/systemStore';
+import { usePlatformStore } from '@/stores/platformStore';
+import { belowMinimum } from '@/services/systemService';
+import { DeviceActions } from '@/web/features/system/SyncPage';
+import { SysStatus } from '@/web/features/system/shared';
 
 /** Agents (PRD J1): list with cash, target, score and flags; invite by SMS; detail with areas, wallet, cash, plans, scores, commissions, reports, devices, GPS. */
 export function AgentsPage() {
@@ -110,7 +115,6 @@ function AgentDrawer({ a, onClose }: { a: Agent; onClose: () => void }) {
   const lk = useLookups();
   const fl = useFieldLookups();
   const can = useCan();
-  const lang = useLang();
   const { orgId, userId } = useActor();
   const settings = useOrgSettings();
   const nodes = useOrgRows(useLocationStore((s) => s.nodes));
@@ -131,10 +135,13 @@ function AgentDrawer({ a, onClose }: { a: Agent; onClose: () => void }) {
   const [reporting, setReporting] = useState(false);
   const model = modelFor(orgId, a.agentTypeId);
   const thisWeek = mondayOf(new Date());
+  const devices = useSystemStore((s) => s.devices).filter((d) => d.userId === a.userId && d.orgId === orgId).sort((x, y) => (x.status === y.status ? y.lastSeenAt.localeCompare(x.lastSeenAt) : x.status === 'ACTIVE' ? -1 : 1));
+  const orgs = usePlatformStore((s) => s.orgs);
+  const otherCompanies = useAgentStore((s) => s.agents).filter((x) => x.userId === a.userId && x.orgId !== orgId).map((x) => orgs.find((o) => o.id === x.orgId)?.name).filter(Boolean);
   return (
     <>
       <DetailDrawer open onClose={onClose} title={fl.agentName(a.id)} subtitle={`${fl.agentType(a.agentTypeId)} · ${formatPhone(user?.phone ?? '')}`}
-        badges={<><FieldStatus status={a.status} />{agentBlocks(orgId, a.id).flagged && <Badge tone="danger"><Flag className="h-3 w-3" /> {t('field.openReports')}</Badge>}</>}
+        badges={<><FieldStatus status={a.status} />{agentBlocks(orgId, a.id).flagged && <Badge tone="danger"><Flag className="h-3 w-3" /> {t('field.openReports')}</Badge>}{otherCompanies.length > 0 && <Badge tone="info">{t('field.alsoWorksFor', { companies: otherCompanies.join(', ') })}</Badge>}</>}
         actions={<>
           <Button size="sm" variant="secondary" onClick={() => openMobileWindow(orgId, a.userId)}><Smartphone /> {t('shell.openMobileAs', { name: user?.name ?? '' })}</Button>
           <PermissionGate permission="agentReports.create"><Button size="sm" variant="secondary" onClick={() => setReporting(true)}><Flag /> {t('rep.reportAgent')}</Button></PermissionGate>
@@ -211,8 +218,17 @@ function AgentDrawer({ a, onClose }: { a: Agent; onClose: () => void }) {
             ) : <TabEmpty>{t('field.noReports')}</TabEmpty>,
           },
           {
-            key: 'devices', label: t('field.tab.devices'), content: a.appVersion ? (
-              <Facts items={[[t('field.device'), `${['Tecno Spark 10', 'Samsung Galaxy A14', 'Infinix Hot 30', 'itel A70'][a.id.length % 4]} · Android 13`], [t('field.appVersion'), a.appVersion], [t('field.lastSync'), f.dateTime(a.lastSyncAt)], [t('field.language'), lang.toUpperCase()]]} />
+            key: 'devices', label: t('field.tab.devices'), count: devices.length, content: devices.length ? (
+              <ul className="space-y-3">
+                {devices.map((d) => (
+                  <li key={d.id} className="rounded-ctl border border-line p-3">
+                    <div className="mb-2 flex flex-wrap items-center gap-2"><Smartphone className="h-4 w-4 text-muted" aria-hidden="true" /><span className="font-medium text-ink">{d.model}</span><SysStatus status={d.status} />{d.status === 'ACTIVE' && belowMinimum(orgId, d.appVersion) && <Badge tone="warning">{t('sync.belowMin')}</Badge>}{d.updateRequired && <Badge tone="danger">{t('sync.updateRequired')}</Badge>}</div>
+                    <Facts items={[[t('sync.col.os'), `${d.os === 'IOS' ? 'iOS' : 'Android'} ${d.osVersion}`], [t('field.appVersion'), d.appVersion], [t('sync.col.push'), t(`sync.push.${d.push}`)], [t('sync.col.lastSeen'), f.dateTime(d.lastSeenAt)]]} />
+                    <div className="mt-3"><DeviceActions d={d} /></div>
+                  </li>
+                ))}
+                <li><Link to="/app/sync?view=devices" className="text-[13px] font-medium text-brand hover:underline">{t('field.allDevices')}</Link></li>
+              </ul>
             ) : <TabEmpty>{t('field.noDevice')}</TabEmpty>,
           },
           {

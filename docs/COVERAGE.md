@@ -46,7 +46,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Languages + terminology — EN/FR via i18next; company terms (`{{term.agent}}` → "Délégué")
 - [x] Currency formatting — `formatMoney()` with minor-unit table (GHS 2, XOF 0, …)
 - [x] Countries catalogue — Platform → Global catalogues: countries, currencies, commodities, question types on/off, permission catalogue, providers per country
-- [ ] API versions / docs page [17]
+- [x] API versions / docs page — `/app/help/api` (linked from Settings → Integrations): v1 / v2 (beta) switch, endpoints grouped by area with method, path, scope, parameters, request body, curl example with the company's key prefix and sample JSON; webhook events with sample payloads
 - [x] Removed unauthenticated debug routes — no backend; nothing to expose
 - [x] NFC keys server-held — Settings → Biometrics & consent shows server-held card keys and rotation
 
@@ -86,7 +86,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Agent record — `/app/agents`: photo, name, type, phone, areas, managers, warehouse, wallet (network, number, verified name), cash held, week target %, score, flags, last sync, app version, status; column picker, CSV export; invite by SMS (country-checked phone, required fields per type) → Invited until the first phone sign-in; detail tabs Overview (KPIs, activity map), Areas & manager, Wallet (edit with name lookup, change log), Purchases & requests, Cash position, Plans & budgets, Scores, Commissions, Reports, Devices, GPS activity, Activity; "Open mobile app as this agent"
 - [x] Managers / reporting lines — `/app/agents/reporting-lines`: company → supervisors → agents; drag (or Move…) to reassign, gated by `agents.reassign`
 - [x] Visibility rules — per agent type (own records / their areas / everyone) applied to the phone's farmer and community lists
-- [ ] Multi-company agents [17]
+- [x] Multi-company agents — one person can be an agent in several companies (seeded: Wahab Kanton, Vitara CEO agent and Kakao Ivoire délégué); the phone asks which company after the code; agent detail shows "Also works for …"; reports and AI answers stay company-scoped
 - [x] Agent reports + resolutions + consequences — `/app/agent-reports`: category (severity, consequence), reason, files, assignee, due date, Open → In progress → Resolved with comment and files; the agent answers on the phone; consequences enforced: flag chip on records, payouts blocked (budget, allowance and commission Pay skip or disable with the reason), new budgets blocked, extra approval step on budgets
 - [x] GPS activity + geofences — `/app/field-activity`: purchases, profiling, support fulfilment, surveys, tree monitoring, mapping, workshops on one map with agent / type / date filters; day playback with timeline; radius geofence per community (default from settings); out-of-area flags and a report by agent
 - [x] Activity catalogue — Vitara's 25 activities (18 measured from records, 7 entered by the supervisor), each with a metric definition (source, aggregate, filter, planned communities or anywhere); editable in Settings → Field team
@@ -110,7 +110,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Commission lines + rates + eligibility — items per rate card (achieved, counted, rate, amount) with notes such as "Workshop WS-… excluded: 12 attendees, min 15"; rate cards editable in Settings → Field team
 - [x] Two-level approval — first approval `compensation.approveFirst`, second `compensation.approveSecond`, two different people, not on one's own line; reject / hold with reason; bulk pay skips agents whose report blocks payouts
 - [x] Agent self-service (M12) — phone: cash position with carry-forwards, commissions with item lines and notes, score breakdown, reports with answers, notifications inbox
-- [ ] Devices per user [17]
+- [x] Devices per user — agent detail Devices tab lists each phone (model, OS, app version, push token, last seen, status) with Sign out device / Require update; the demo phone window registers as a device at sign-in
 
 ## Buying (Scope 4)
 
@@ -291,21 +291,21 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 ## Platform services (Scope 10)
 
 - [x] Dashboards + caching — widget board: ask bar, setup checklist, KPI row, My approvals with inline Approve / Hold / Reject, purchases by week, volume by commodity, top communities, payouts by provider, recovery progress, stock by warehouse, field map, alerts, wallets, activity; customise (drag, resize, add from the library, remove), saved per person or as the company default, role-based default layouts; every widget gated by module and permission; module dashboards reuse the widget system in their phases
-- [ ] Exports / report builder [17]
-- [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
-- [ ] SMS [17]
-- [ ] Push [17]
-- [~] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS reminder switches per window (sending with notifications) [17]
+- [x] Exports / report builder — `/app/reports`: library of the 17 standard exports (read-only, copy to change); builder: entity → columns (incl. farmer profile form fields) → filters (is / contains / at least / at most / between) → group by (dates by month) and sum → table, bars, line or donut, live preview; save, share with roles, schedule daily / weekly email to roles (job "Report schedules"); export XLSX / CSV with headings in the viewer's language and money in company currency; PDF view (print-ready page); exports above 500 rows run as a background job with progress and a link that expires after 24 h; personal columns masked without `farmers.viewSensitive`; every export written to the audit log
+- [x] Email — every email (reset, invite, approvals, payment failures, scheduled reports) written to the outbox; `/app/notifications` → Outbox with branded email preview, status Sent / Delivered / Failed with reason, Send again
+- [x] SMS — payment and receipt SMS in the outbox with SMS-bubble preview, character / part count, failure reasons (number not reachable…)
+- [x] Push — push messages to agents in the outbox with lock-screen banner preview; failed when the device's push token expired
+- [~] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS reminder switches per window; reminders are not sent automatically by a job yet
 - [x] Offline sync protocol — every phone save goes through one queue: applied at once when online, kept in the outbox when offline; Sync screen with counts by type, data usage, per-item results, errors kept for retry, and conflicts (the office changed the record first) resolved with Keep office version / Send mine; stores sync across tabs
-- [ ] Sync logs (scoped, private, retention) [17]
-- [ ] Devices [17]
-- [~] Activity history (structured) — `{key, params}` events from every seeded approval, rendered via `t('activity.' + key)` [17]
-- [~] Audit log — Platform audit (company created, plan changed, suspended, invites, lockouts); company audit log [17]
-- [ ] Scheduled jobs [17]
-- [ ] Backups (platform) [17]
+- [x] Sync logs (scoped, private, retention) — `/app/sync`: every phone sync logged per type (44 sync types listed), with agent, device, app version, sent / created / updated / failed, Success / Partial / Failed, duration; detail with request / response JSON, personal fields masked unless `sync.viewPayloads` + `farmers.viewSensitive`, and what to tell the agent per error kind; live phone syncs log too; retention from Data & privacy with next purge date and "Run purge now"
+- [x] Devices — Devices tab: person, model, OS, app version (below-minimum badge), push token, last seen; Sign out device (the phone returns to sign-in) and Require update (the phone's next sync is refused until it updates); app-version chart and minimum version setting
+- [x] Activity history (structured) — `{key, params}` events rendered via `t('activity.' + key)` in the same feed on every record's Activity tab
+- [x] Audit log — `/app/audit`: immutable list (no edit or delete anywhere) of settings, people, money, device and export changes with actor, record, action in the viewer's language, before / after field diff, IP, device and GPS; filters by person, record, action, dates and text; XLSX / CSV export; Platform audit for the platform owner
+- [x] Scheduled jobs — `/app/jobs`: weekly achievements, performance penalties, monthly allowances, score recalculation, recovery interest accrual, data retention purge, dashboard cache refresh, report schedules, payment status polling; schedule and next run in the company time zone, last run, status, duration, Run now, run log
+- [x] Backups (platform) — backups job on the platform owner's Scheduled jobs page with a snapshot log (simulated)
 - [x] Error reporting — n/a in the prototype (noted)
 - [x] AI assistant — Ask your operations: dashboard bar with 4 suggestions and /app/ai with conversation history; 24 scripted EN/FR intents over company-scoped data (`src/data/ai-intents.ts`, tested for isolation); answer cards with sentence, chart, table, “Open in …” links, “Explain how this was calculated”, CSV export; module and permission checks; optional Claude fallback when `VITE_ANTHROPIC_API_KEY` is set
-- [ ] Knowledge base [17]
+- [x] Knowledge base — `/app/help`: searchable markdown articles, global and per company (Vitara and Kakao Ivoire have their own), topics, EN / FR with "not translated" badge; company admins write and edit their own; quick links to keyboard shortcuts, guided tours, mobile previews, API reference and Reset demo data; "What's configurable here" stays in the ? menu
 - [x] Book a demo — book-a-demo / contact form with country phone validation → confirmation → Platform → Leads
 
 ## Hard-coded values (Scope 11)

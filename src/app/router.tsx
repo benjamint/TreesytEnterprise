@@ -3,6 +3,13 @@ import { AppShell } from '@/web/layout/AppShell';
 import { DashboardPage } from '@/web/features/dashboard/DashboardPage';
 import { AiPage } from '@/web/features/ai/AiPage';
 import { MobilePreviewsPage } from '@/web/features/help/MobilePreviewsPage';
+import { ReportsPage } from '@/web/features/system/ReportsPage';
+import { NotificationsPage } from '@/web/features/system/NotificationsPage';
+import { SyncPage } from '@/web/features/system/SyncPage';
+import { AuditPage } from '@/web/features/system/AuditPage';
+import { JobsPage } from '@/web/features/system/JobsPage';
+import { HelpPage } from '@/web/features/system/HelpPage';
+import { ApiDocsPage } from '@/web/features/system/ApiDocsPage';
 import { SettingsLayout } from '@/web/features/settings/SettingsLayout';
 import { PlatformLayout } from '@/web/features/platform/PlatformLayout';
 import { CompaniesPage } from '@/web/features/platform/CompaniesPage';
@@ -99,7 +106,7 @@ import { AgentRepayScreen, CountScreen, OutboundScreen, ReceiveScreen, ResolveSc
 import { APP_ROUTES } from './routes';
 import { AppIndexRedirect, NotFound, RequireSession, RouteGuard } from './guards';
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue', 'agents', 'weeklyPlans', 'budgets', 'retirements', 'carryForwards', 'allowances', 'scores', 'compensation', 'agentReports', 'fieldActivity', 'reportingLines', 'achievements']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue', 'agents', 'weeklyPlans', 'budgets', 'retirements', 'carryForwards', 'allowances', 'scores', 'compensation', 'agentReports', 'fieldActivity', 'reportingLines', 'achievements', 'reports', 'notifications', 'sync', 'audit', 'jobs', 'help', 'apiDocs']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -130,6 +137,13 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <RouteGuard routeKey="dashboard"><DashboardPage /></RouteGuard> },
       { path: 'ai', element: <RouteGuard routeKey="ai"><AiPage /></RouteGuard> },
       { path: 'help/mobile', element: <MobilePreviewsPage /> },
+      { path: 'help', element: <RouteGuard routeKey="help"><HelpPage /></RouteGuard> },
+      { path: 'help/api', element: <RouteGuard routeKey="apiDocs"><ApiDocsPage /></RouteGuard> },
+      { path: 'reports', element: <RouteGuard routeKey="reports"><ReportsPage /></RouteGuard> },
+      { path: 'notifications', element: <RouteGuard routeKey="notifications"><NotificationsPage /></RouteGuard> },
+      { path: 'sync', element: <RouteGuard routeKey="sync"><SyncPage /></RouteGuard> },
+      { path: 'audit', element: <RouteGuard routeKey="audit"><AuditPage /></RouteGuard> },
+      { path: 'jobs', element: <RouteGuard routeKey="jobs"><JobsPage /></RouteGuard> },
       { path: 'settings', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'settings/:page', element: <RouteGuard routeKey="settings"><SettingsLayout /></RouteGuard> },
       { path: 'account', element: <AccountPage /> },

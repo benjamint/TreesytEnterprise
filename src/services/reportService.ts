@@ -298,6 +298,16 @@ export interface ExportInput { orgId: string; userId: string; reportId?: string;
 /** Above this many rows an export runs as a background job with a link that expires in 24 h. */
 export const LARGE_EXPORT_ROWS = 500;
 const files = new Map<string, ExportInput>();
+/** Export contents also go to sessionStorage so a finished link still works after a reload in the same tab. */
+const FILE_KEY = (id: string) => `treesyt-export:${id}`;
+function keepFile(id: string, x: ExportInput) {
+  files.set(id, x);
+  try { sessionStorage.setItem(FILE_KEY(id), JSON.stringify(x)); } catch { /* storage full or blocked: memory only */ }
+}
+function readFile(id: string): ExportInput | undefined {
+  if (files.has(id)) return files.get(id);
+  try { const v = sessionStorage.getItem(FILE_KEY(id)); return v ? (JSON.parse(v) as ExportInput) : undefined; } catch { return undefined; }
+}
 
 export function buildFile(x: Pick<ExportInput, 'format' | 'header' | 'rows' | 'name'>): Blob {
   if (x.format === 'CSV') {
@@ -325,7 +335,7 @@ export function startExport(x: ExportInput, onTick?: (j: ExportJob) => void): { 
   if (x.rows.length <= LARGE_EXPORT_ROWS) return { file: buildFile(x) };
   const at = new Date().toISOString();
   const job: ExportJob = { id: uid('exp'), orgId: x.orgId, userId: x.userId, reportId: x.reportId, name: x.name, format: x.format, rows: x.rows.length, progress: 0, status: 'RUNNING', createdAt: at };
-  files.set(job.id, x);
+  keepFile(job.id, x);
   useSystemStore.getState().saveExport(job);
   const steps = Math.min(8, Math.max(3, Math.ceil(x.rows.length / 400)));
   let i = 0;
@@ -353,7 +363,7 @@ export function exportFile(jobId: string, at = new Date()): Blob | 'expired' | '
     if (j.status !== 'EXPIRED') useSystemStore.getState().saveExport({ ...j, status: 'EXPIRED' });
     return 'expired';
   }
-  const x = files.get(jobId);
+  const x = readFile(jobId);
   return x ? buildFile(x) : 'missing';
 }
 

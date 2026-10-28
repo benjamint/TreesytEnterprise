@@ -108,3 +108,11 @@
 body:has([role='dialog'][data-state='open'].max-w-\[640px\]) .demo-dock-web {
   bottom: 96px;
 }
+
+/* Report "PDF view": print only the report page. */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: absolute; inset: 0; border: 0 !important; padding: 0 !important; }
+  .no-print { display: none !important; }
+}

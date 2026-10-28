@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Copy, Download, KeyRound, Plus, Send, Webhook as WebhookIcon } from 'lucide-react';
+import { Code2, Copy, Download, KeyRound, Plus, Send, Webhook as WebhookIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import type { DataSharingGrant, OrgSettings, RetentionKey, Webhook } from '@/types';
 import { Badge } from '@/components/ui/badge';
@@ -68,7 +69,7 @@ export function IntegrationsPage() {
       <Section
         title={t('set.int.keys')}
         description={t('set.int.keysHint')}
-        actions={lockTip(<Button variant="secondary" size="sm" disabled={busy} onClick={() => setNewKey(true)}><Plus /> {t('set.int.newKey')}</Button>)}
+        actions={<><Button variant="ghost" size="sm" asChild><Link to="/app/help/api"><Code2 /> {t('set.int.apiDocs')}</Link></Button>{lockTip(<Button variant="secondary" size="sm" disabled={busy} onClick={() => setNewKey(true)}><Plus /> {t('set.int.newKey')}</Button>)}</>}
       >
         <EditTable head={[t('set.int.keyName'), t('set.int.key'), t('set.int.scopes'), t('set.int.created'), t('set.int.lastUsed'), '']}>
           {int.apiKeys.map((k) => (

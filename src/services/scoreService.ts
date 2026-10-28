@@ -27,12 +27,14 @@ export function communityScore(c: Community, ctx: { purchases: Purchase[]; leade
   });
 }
 
-export function farmerScore(f: Farmer, ctx: { purchases: Purchase[]; memberships: GroupMembership[]; loans: LoanAccount[]; now?: Date }): ScoreBreakdown {
+export function farmerScore(f: Farmer, ctx: { purchases: Purchase[]; memberships: GroupMembership[]; loans: LoanAccount[]; trees?: Tree[]; now?: Date }): ScoreBreakdown {
   const now = ctx.now ?? new Date();
   const kg = ctx.purchases.filter((p) => p.farmerId === f.id && new Date(p.createdAt).getTime() >= yearStart(now)).reduce((s, p) => s + p.quantity, 0);
   const overdue = ctx.loans.some((l) => l.farmerId === f.id && l.status === 'ACTIVE' && new Date(l.window.end) < now);
   const id = f.identity;
+  const mine = (ctx.trees ?? []).filter((t) => t.farmerId === f.id);
   return computeScore(FARMER_MODEL, {
+    treeSurvival: mine.length ? (mine.filter((t) => t.state === 'ALIVE').length / mine.length) * 100 : 100,
     consent: id.consent ? 1 : 0,
     identity: (id.photo ? 1 : 0) + (id.idCard ? 1 : 0) + (id.thumbprints.left && id.thumbprints.right ? 1 : 0),
     purchasesKg: kg,

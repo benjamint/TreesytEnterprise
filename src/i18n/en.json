@@ -677,7 +677,8 @@
     "commissionPaid": "Commission {{number}} paid: {{amount}}",
     "reportFiled": "A report was filed about your work ({{number}})",
     "reportAssigned": "Report {{number}} assigned to you",
-    "reportResponse": "The agent answered report {{number}}"
+    "reportResponse": "The agent answered report {{number}}",
+    "transferOutOfBounds": "Transfer {{number}} lost {{pct}}% of its weight (limit {{bound}}%)"
   },
   "activity": {
     "workflow": {
@@ -719,7 +720,8 @@
       "membersAdded_other": "{{count}} members added",
       "paymentUpdated": "Payment details updated",
       "scored": "Score recalculated: {{score}}",
-      "reviewed": "Manual review completed — score {{score}} ({{note}})"
+      "reviewed": "Manual review completed — score {{score}} ({{note}})",
+      "imported": "Group {{name}} imported"
     },
     "location": {
       "created": "{{name}} added under {{path}}",
@@ -877,7 +879,8 @@
       "settled": "Loan settled",
       "cashConfirmed": "Cash receipt of {{amount}} confirmed by finance",
       "refunded": "Overpayment of {{amount}} refunded ({{method}})",
-      "migrated": "Migrated from the archive: {{type}}, {{amount}}"
+      "migrated": "Migrated from the archive: {{type}}, {{amount}}",
+      "repaymentImported": "Past repayment of {{amount}} on {{date}} imported"
     },
     "window": {
       "created": "Recovery window {{name}} created",
@@ -901,7 +904,8 @@
       "repaymentSubmitted": "Agent repayment of {{amount}} submitted ({{method}})",
       "repaymentApproved": "Finance approved the repayment of {{amount}}",
       "repaymentPartial": "Finance approved {{amount}}; {{balance}} still owed: {{reason}}",
-      "repaymentRejected": "Finance rejected the repayment: {{reason}}"
+      "repaymentRejected": "Finance rejected the repayment: {{reason}}",
+      "transferOutOfBounds": "Whole load {{pct}}% under the weight sent (limit {{bound}}%)"
     },
     "transfer": {
       "sent_one": "Transfer {{number}}: {{count}} bag ({{kg}} kg) sent to {{to}}",
@@ -2181,7 +2185,11 @@
     "noAccessTitle": "You can’t open this page",
     "moduleOffTitle": "This area is switched off",
     "crashed": "Something went wrong on this page.",
-    "reload": "Reload"
+    "reload": "Reload page",
+    "pageTitle": "Something went wrong on this page",
+    "pageHint": "Try again. If it keeps happening, reload the page: your data is safe in this browser.",
+    "offlineTitle": "This page couldn't load",
+    "offlineHint": "You may be offline. Reconnect and reload the page."
   },
   "carousel": {
     "payments": "Pay farmers in minutes, in any currency.",
@@ -2327,7 +2335,16 @@
       "officeEdit": "Office edits “{{label}}” on the web",
       "supportConfirm": "Agent confirms recipients for {{number}}",
       "supportFulfil": "Agent records fulfilment for {{number}}"
-    }
+    },
+    "listMode": "Screen states",
+    "listModeHint": "Show lists as normal, slow (skeletons first) or failing (error with Try again).",
+    "listModes": {
+      "normal": "Normal",
+      "slow": "Slow network",
+      "error": "Errors"
+    },
+    "autoTours": "Tours on first visit",
+    "autoToursHint": "Run each page's tour the first time you open it in this session."
   },
   "auth": {
     "home": "TreeSyt home",
@@ -4798,7 +4815,14 @@
     "previous": "Previous",
     "next": "Next",
     "views": "Saved views",
-    "clearFilters": "Clear filters"
+    "clearFilters": "Clear filters",
+    "loading": "Loading",
+    "errorTitle": "This list didn't load",
+    "errorHint": "Check your connection and try again. Nothing you saved is lost.",
+    "retry": "Try again",
+    "noMatch": "Nothing matches your filters",
+    "noMatchHint": "Try a different search or clear the filters.",
+    "cards": "Records"
   },
   "form": {
     "choose": "Choose…",
@@ -5085,7 +5109,8 @@
         "identity": "Identity (photo, ID, thumbprints)",
         "purchases": "Purchases (1,500 kg target)",
         "group": "In a group",
-        "noDebt": "No overdue loan"
+        "noDebt": "No overdue loan",
+        "trees": "Tree survival (farmers without trees keep full points)"
       },
       "group": {
         "members": "Members (25 target)",
@@ -5329,7 +5354,31 @@
       "contactName": "Contact person",
       "contactPhone": "Contact phone",
       "lat": "Latitude",
-      "lng": "Longitude"
+      "lng": "Longitude",
+      "groupType": "Group type",
+      "established": "Established",
+      "paymentOption": "Payment option",
+      "walletNumber": "Wallet number",
+      "group": "Group",
+      "farmer": "Farmer ID",
+      "memberRole": "Role in group",
+      "joinedAt": "Joined",
+      "leaderRole": "Leader role",
+      "zone": "Zone",
+      "grade": "Grade",
+      "price": "Price",
+      "tolerancePct": "Tolerance %",
+      "effectiveFrom": "Effective from",
+      "email": "Email",
+      "role": "Role",
+      "agentType": "Agent type",
+      "date": "Date",
+      "amount": "Amount",
+      "mode": "Paid in",
+      "warehouse": "Warehouse",
+      "bagCode": "Bag code",
+      "commodity": "Commodity",
+      "kg": "Kg"
     },
     "column": "Column in your file",
     "transform": "Transform",
@@ -5387,7 +5436,12 @@
       "badOption": "Not one of the form’s options",
       "unknownCommunity": "Unknown community",
       "unknownLocation": "Unknown location",
-      "gap": "A level is missing"
+      "gap": "A level is missing",
+      "badEmail": "Not an email address",
+      "unknownGroup": "Unknown group",
+      "unknownFarmer": "Unknown farmer ID",
+      "unknownWarehouse": "Unknown warehouse",
+      "unknownRole": "Unknown role"
     },
     "warn": {
       "dupPhone": "Phone already used by {{value}}",
@@ -7101,7 +7155,9 @@
       "group": "Group"
     },
     "exportRates": "Export rates",
-    "sections": "Sections"
+    "sections": "Sections",
+    "remindedAt": "Last reminders {{when}}",
+    "notReminded": "No reminders sent yet"
   },
   "inv": {
     "stock": "Stock",
@@ -7372,7 +7428,9 @@
     "payTitle": "Pay {{number}}",
     "manualHint": "Tick the lines paid outside the app and attach proof.",
     "lineN": "Line {{n}}",
-    "addLine": "Add a line"
+    "addLine": "Add a line",
+    "outOfBounds": "Out of bounds",
+    "outOfBoundsHint": "{{pct}}% of the weight was lost between sending and receiving, above the company's {{bound}}% limit. Check the open discrepancies."
   },
   "sales": {
     "client": "Client",
@@ -9400,10 +9458,21 @@
       "tpl_receipt_sms": "Purchase receipt (SMS)",
       "tpl_overdue_sms": "Loan overdue (SMS)",
       "tpl_invite_email": "Invitation (email)",
-      "report.scheduled": "Scheduled report (email)",
-      "plan.published": "Plan published (push)",
-      "user.invited": "Invitation (email)",
-      "password.reset": "Password reset (email)"
+      "report": {
+        "scheduled": "Scheduled report (email)"
+      },
+      "plan": {
+        "published": "Plan published (push)"
+      },
+      "user": {
+        "invited": "Invitation (email)"
+      },
+      "password": {
+        "reset": "Password reset (email)"
+      },
+      "recovery": {
+        "reminder": "Recovery reminder"
+      }
     },
     "searchOutbox": "Search recipient or text",
     "outboxEmpty": "No messages",
@@ -9614,7 +9683,8 @@
       "cache": "Dashboard cache refresh",
       "reports": "Report schedules",
       "paymentPolling": "Payment status polling",
-      "backups": "Backups"
+      "backups": "Backups",
+      "recoveryReminders": "Recovery reminders"
     },
     "desc": {
       "achievements": "Recompute each published plan's achievement from the records.",
@@ -9626,7 +9696,8 @@
       "cache": "Refresh dashboard widgets.",
       "reports": "Email scheduled reports that are due.",
       "paymentPolling": "Ask providers about payments still unknown or processing.",
-      "backups": "Snapshot every company's data (platform only)."
+      "backups": "Snapshot every company's data (platform only).",
+      "recoveryReminders": "SMS farmers with a balance and push their agents while a recovery window is open (weekly per window)."
     }
   },
   "api": {
@@ -9683,5 +9754,43 @@
     },
     "events": "Webhook events",
     "eventsHint": "Each delivery is signed with your webhook secret. Test deliveries and their log are in Settings → Integrations."
+  },
+  "tour": {
+    "next": "Next",
+    "done": "Done",
+    "skip": "Skip tour",
+    "generic": {
+      "title": "This page shows your company's records. Here is a quick look around.",
+      "primary": "Start here: the main action on this page.",
+      "stats": "Key numbers at a glance. Click a card to filter the list.",
+      "tabs": "Switch between the views of this page.",
+      "filters": "Search, filter and use saved views. Clear filters to see everything again.",
+      "table": "Click a row to open its details. Sort by any column, pick columns and export what you see.",
+      "help": "Replay this tour, see what's configurable here, or open the help centre."
+    }
+  },
+  "share": {
+    "tab": "Shared with us",
+    "sharedBy": "Shared by {{company}}",
+    "readOnly": "Shared by {{company}}: read-only. Your own notes, scores and attributes for these records are kept separately.",
+    "code": "Code",
+    "owner": "Owner",
+    "communitiesHint": "Communities other companies share with you. You can view them but not change them.",
+    "farmersHint": "Farmers other companies share with you. Phone numbers are masked.",
+    "search": "Search shared records",
+    "none": "Nothing shared with you",
+    "population": "Population",
+    "profiled": "Profiled",
+    "gps": "GPS",
+    "phone": "Phone",
+    "registered": "Registered",
+    "crop": "Main crop",
+    "whichCommunities": "Which communities",
+    "allCommunities": "No community picked: every community (and its farmers) is shared.",
+    "searchCommunities": "Search communities",
+    "communitiesCount_one": "{{count}} community",
+    "communitiesCount_other": "{{count}} communities",
+    "pickedCount_one": "{{count}} community picked",
+    "pickedCount_other": "{{count}} communities picked"
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { RouteBoundary } from '@/components/shared/RouteBoundary';
 import { EnvironmentSync } from '@/app/providers';
 import { ActorContext } from '@/stores/hooks';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
@@ -74,7 +75,7 @@ export function MobileShell() {
           <ActorContext.Provider value={actor}>
             <EnvironmentSync />
             <div className="flex min-h-0 flex-1 flex-col">
-              <Outlet />
+              <RouteBoundary phone key={location.pathname}><Outlet /></RouteBoundary>
             </div>
             {!immersive && <BottomTabs onRecord={() => setRecordOpen(true)} />}
             <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} />

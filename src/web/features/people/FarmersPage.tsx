@@ -38,6 +38,7 @@ import { useQualityStore } from '@/stores/qualityStore';
 import { useActor, useCurrentOrg, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { ScoreChip } from './CommunitiesPage';
 import { FarmerForm } from './FarmerForm';
+import { SharedFarmersTab, useSharedCounts } from './SharedRecords';
 import { ActivityFeed, DocumentsPanel, ScoreView, logActivity, useLookups } from './shared';
 import { ruleLabel } from './quality';
 
@@ -141,6 +142,7 @@ export function FarmersPage() {
   };
 
   const current = rows.find((r) => r.id === openId);
+  const shared = useSharedCounts();
   return (
     <>
       {tour.element}
@@ -161,7 +163,9 @@ export function FarmersPage() {
         <TabsList className="mb-5">
           <TabsTrigger value="list">{t('people.list')}</TabsTrigger>
           <TabsTrigger value="dashboard">{t('nav.dashboard')}</TabsTrigger>
+          {shared.farmers.length > 0 && <TabsTrigger value="shared">{t('share.tab')} <Badge tone="info" className="ml-1.5">{shared.farmers.length}</Badge></TabsTrigger>}
         </TabsList>
+        <TabsContent value="shared"><SharedFarmersTab /></TabsContent>
         <TabsContent value="list">
           <FilterBar
             search={q}
@@ -234,7 +238,7 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
       trees: trees.filter((x) => x.farmerId === row.id),
     };
   }, [purchases, payments, loans, memberships, issues, activity, workshops, trees, row.id]);
-  const breakdown = useMemo(() => farmerScore(row, { purchases, memberships, loans }), [row, purchases, memberships, loans]);
+  const breakdown = useMemo(() => farmerScore(row, { purchases, memberships, loans, trees }), [row, purchases, memberships, loans, trees]);
   const rules = settings.qualityRules;
   const update = (patch: Partial<Farmer>, key: string, params: Record<string, unknown> = {}) => {
     const cur = useFarmerStore.getState().farmers.find((x) => x.id === row.id)!;

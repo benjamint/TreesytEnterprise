@@ -39,7 +39,7 @@ export function HelpMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={t('shell.help')}>
+          <Button variant="ghost" size="icon" aria-label={t('shell.help')} data-tour="help-menu">
             <CircleHelp />
           </Button>
         </DropdownMenuTrigger>

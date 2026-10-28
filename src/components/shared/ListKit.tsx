@@ -1,11 +1,12 @@
-import { useCallback, useState, type ReactNode } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useT } from '@/stores/hooks';
+import { useListUiStore } from '@/stores/listUiStore';
 
 export interface FilterDef {
   key: string;
@@ -27,8 +28,15 @@ export interface SavedView {
 export function FilterBar({ search, onSearch, placeholder, filters = [], views = [], onClear, extra }: { search: string; onSearch: (v: string) => void; placeholder: string; filters?: FilterDef[]; views?: SavedView[]; onClear?: () => void; extra?: ReactNode }) {
   const { t } = useT();
   const active = !!search || filters.some((f) => f.value);
+  const { pathname } = useLocation();
+  const clearRef = useRef(onClear);
+  clearRef.current = onClear;
+  useEffect(() => {
+    useListUiStore.getState().set(pathname, active, () => clearRef.current?.());
+  }, [pathname, active]);
+  useEffect(() => () => useListUiStore.getState().set('', false), []);
   return (
-    <div className="mb-4 space-y-3">
+    <div className="mb-4 space-y-3" data-tour="filter-bar">
       {views.length > 0 && (
         <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('table.views')}>
           {views.map((v) => (

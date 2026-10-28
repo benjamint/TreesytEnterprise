@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
@@ -47,7 +48,7 @@ export function OutboundPage() {
     { id: 'received', header: t('inv.receivedKg'), accessorFn: (x) => x.receivedKg ?? null, cell: (c) => (c.getValue() == null ? '—' : f.kg(c.getValue() as number)) },
     { id: 'variance', header: t('inv.variance'), accessorFn: (x) => (x.receivedKg == null ? null : variancePct(x.sentKg, x.receivedKg)), cell: (c) => (c.getValue() == null ? '—' : `${f.number(c.getValue() as number, { maximumFractionDigits: 2 })}%`) },
     { id: 'date', header: t('col.date'), accessorKey: 'createdAt', cell: (c) => f.date(c.getValue() as string) },
-    { id: 'status', header: t('col.status'), accessorKey: 'status', cell: (c) => <StatusBadge status={c.getValue() as string} /> },
+    { id: 'status', header: t('col.status'), accessorKey: 'status', cell: (c) => <span className="inline-flex items-center gap-1.5"><StatusBadge status={c.getValue() as string} />{c.row.original.outOfBounds && <Badge tone="danger">{t('inv.outOfBounds')}</Badge>}</span> },
   ], [t, f, lk, inv]);
   const current = transfers.find((x) => x.id === openId);
   return (
@@ -60,11 +61,12 @@ export function OutboundPage() {
       <DataTable columns={columns} data={rows} onRowClick={(x) => open(x.id)} activeId={openId} getRowId={(x) => x.id} empty={t('inv.emptyTransfers')}
         exportCsv={{ fileName: 'transfers.csv', columns: [{ header: t('col.number'), value: (x) => x.number }, { header: t('inv.from'), value: (x) => inv.warehouseName(x.fromWarehouseId) }, { header: t('inv.to'), value: (x) => inv.warehouseName(x.toWarehouseId) }, { header: t('inv.sentKg'), value: (x) => x.sentKg }, { header: t('inv.receivedKg'), value: (x) => x.receivedKg ?? '' }, { header: t('col.status'), value: (x) => x.status }] }} />
       {current && (
-        <DetailDrawer open onClose={close} title={current.number} subtitle={`${inv.warehouseName(current.fromWarehouseId)} → ${current.kind === 'TRANSFER' ? inv.warehouseName(current.toWarehouseId) : t('inv.toDispatch')}`} badges={<StatusBadge status={current.status} />}
+        <DetailDrawer open onClose={close} title={current.number} subtitle={`${inv.warehouseName(current.fromWarehouseId)} → ${current.kind === 'TRANSFER' ? inv.warehouseName(current.toWarehouseId) : t('inv.toDispatch')}`} badges={<><StatusBadge status={current.status} />{current.outOfBounds && <Badge tone="danger">{t('inv.outOfBounds')}</Badge>}</>}
           tabs={[
             {
               key: 'summary', label: t('inv.tab.summary'), content: (
                 <div className="space-y-4">
+                  {current.outOfBounds && <p className="rounded-ctl border border-danger/40 bg-danger/5 px-3 py-2 text-[13px] text-ink" role="status">{t('inv.outOfBoundsHint', { pct: current.outOfBounds.lossPct, bound: current.outOfBounds.boundPct })}</p>}
                   <Facts items={[[t('col.type'), t(`inv.kind.${current.kind}`)], [t('inv.bags'), f.number(current.bagCodes.length)], [t('inv.sentKg'), f.kg(current.sentKg)], [t('inv.receivedKg'), current.receivedKg != null ? f.kg(current.receivedKg) : '—'],
                     [t('inv.receivingOfficer'), inv.user(current.receivingOfficerId)], [t('buy.created'), `${lk.user(current.createdBy)} · ${f.dateTime(current.createdAt)}`],
                     [t('inv.receipt'), current.inboundId ? <Link key="r" to={`/app/inventory/inbound?open=${current.inboundId}`} className="text-brand hover:underline">{t('inv.openReceipt')}</Link> : '—']]} />

@@ -53,7 +53,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 ## Places and people (Scope 2)
 
 - [x] Location levels + explorer + zones — Settings → Locations (levels, tree editor, CSV import, zones); Locations explorer `/app/locations`: tree by levels, node detail with community / farmer / agent counts, zones, add / edit / move; boundary drawing is a "coming" stub
-- [~] Agent multi-area assignment — agents hold many area nodes; explorer counts agents per node [16]
+- [x] Agent multi-area assignment — agents hold many area nodes (agent detail → Areas & manager); explorer counts agents per node
 - [x] Community profile (v1–v3 fields) — community profile form (Vitara v3) rendered on create / edit and in the drawer's Profile tab
 - [x] Community code pattern — new communities get `{region}-{seq:3}` from Settings → Farmer ID & codes; issued once, never regenerated on edit
 - [x] Leaders — communities and groups: name, role (company list), phone; add / edit / remove
@@ -71,13 +71,13 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Farmer score — farmer model (consent, identity, purchases, group, no overdue loan) with breakdown and recalculate
 - [x] Farmer list / detail / export / profiling report / dashboard — list with all PRD columns, saved views (Women farmers, No consent, Blocked by debt, Flagged), register with duplicate check (phone / ID number), drawer tabs, CSV export with column picker, profiling report by agent, dashboard (gender, age bands, education, income, real household / children averages, registrations, by agent)
 - [x] Mobile communities, farmers and groups — `/m/communities` (list, profile with location, GPS, live profile form, leaders, groups, documents), `/m/farmers` (list, detail with loans and balance, purchases, fix task; edit as a new version, conflict-checked on sync), `/m/groups` (details, form, members, leaders, payment, records); all save offline
-- [ ] Shared farmers / communities [later — company data sharing, PRD A5]
+- [x] Shared farmers / communities — Settings → Data & privacy grants pick the communities to share (their farmers follow); the receiving company gets a read-only "Shared with us" tab on Communities and Farmers with a "Shared by …" chip, masked phones and its own attributes kept separately (seeded: Vitara shares two communities with Kakao Ivoire)
 - [x] Farmer groups profile / members / leaders / documents / payment details — group type form, membership with roles, joined / left, add / remove; MoMo / bank / cash details
 - [x] Group scorecard + manual review — uploading meeting or contribution records resets that manual score and sets Pending review; reviewer scores 1–4 / 1–18 with a note → Completed; recalculation replaces
 - [x] VSLA savings — Savings tab on VSLA groups: fund, saved, out on loan; contributions, loans, repayments, share-out
 - [x] Community import — wizard: template from the community form, map, match parent locations, validate, import (codes from the pattern), quality re-check, undo
 - [x] Farmer import — Journey 15: template (CSV / Excel) from the farmer form, sample file, auto-map with aliases, transforms (leading 0, dd/mm/yyyy…), fuzzy community matching, inline fixes, warnings for likely duplicates, result report, error file, history, undo last import
-- [~] Other imports — locations import in the wizard; groups, members, leaders, recoveries, warehouse loads, price lists, users, agents show "arrives with its module"
+- [x] Other imports — the wizard now imports all 11 types: communities, farmers, locations, groups, group members, leaders, past recoveries (credited to the farmer's loan), opening warehouse loads (bags in stock + movement), price lists, users (as invitations) and agents (invited); each with templates, column matching, validation, error file and undo
 - [x] Mobile data-fix tasks — fix tasks appear on the agent's phone (home alert, Tasks, `/m/tasks/:id`); saving re-checks the record and resolves the flag on the web; offline fixes wait in the outbox until Sync
 
 ## Field agents (Scope 3)
@@ -155,7 +155,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Money (Scope 5)
 
-- [~] Payable types — all 12 types in the engine; agent cash advance, PRE, single and bulk farmer purchase, aggregator purchase and expense, farmer support and loan refunds pay through it now; the others with their modules [16]
+- [x] Payable types — all 12 types pay through the engine: agent cash advance, PRE, single and bulk farmer purchase, aggregator purchase and expense, farmer support, loan refunds, weekly budgets, monthly allowances, commissions, warehouse expenses
 - [x] Payment preview + name lookup — Payees step: network detected from the number, provider override, "Name on wallet ✓" or mismatch warning that must be confirmed
 - [x] Disburse with charges — Charges step: provider fee (tiers, caps, payer), withdrawal charge per provider (% or flat, "include withdrawal charges"), tax, extra charges, total, who pays
 - [x] Extra charges — picked per payment from the company list (company- or payee-paid)
@@ -169,9 +169,9 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Wallet balance — Wallets & balances: card per provider wallet, low-balance alert, paid out today, transactions (payouts, reversals, collections, top-ups), simulated top-up request
 - [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits, withdrawal charge
 - [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker with threshold, batch size, live fee calculator
-- [~] Phone validation by country — libphonenumber-js helper [5]
+- [x] Phone validation by country — libphonenumber-js on farmer registration (web and phone), imports, agent invites, My account and the demo form
 - [x] Collections — mobile-money collection request (agent refund from Reconciliation); the agent's phone shows the approval prompt (PIN); approved money credits the wallet and records the refund; Collections view on Payments
-- [~] Weekly budget / allowance / support payouts — support payouts built; budgets and allowances [16]
+- [x] Weekly budget / allowance / support payouts — support, weekly budgets (net of carry-forwards), monthly allowances and commissions pay through the payments engine with bulk runs
 - [x] Money storage and formatting — integer minor units + currency, only through `formatMoney()`
 
 ## Farmer support (Scope 6)
@@ -221,7 +221,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Agent repayment + finance review — owed = lost kg × blended purchase/loan-produce price (or list price) + logistics share for missing bags; agent pays on the phone with proof; finance approves in full, in part (balance stays) or rejects with a reason
 - [x] Outbound — pick or scan bags; bags out of stock
 - [x] Transfer out / in pipeline — bags in transit, expected at the destination for its officer, received with the same bag statuses; the phone shows each step (received, missing, written off, weight, stock)
-- [~] Transfer weight bounds — each bag checked against the packaging min/max and the transfer tolerance; the overall out-vs-in percentage setting is shown but not yet enforced [18]
+- [x] Transfer weight bounds — each bag checked against the packaging min/max and the transfer tolerance; on receipt the whole load is checked against the company's out-vs-in percentage: above it the transfer is flagged Out of bounds (web and phone), logged and the resolvers notified
 - [x] Stock counts — scheduled (company frequency) or ad hoc, scan on the phone (blind option), expected vs counted, by agent and commodity, photos, adjustment request approved by someone else
 - [x] Warehouse expenses + 4-level approval — company expense types (Settings → Inventory rules), lines per payee, Vitara 4 people / Kakao Ivoire 2, MoMo per line or manual proof, Pending / Partial / Full / Rejected
 - [x] Dispatch (direct + inventory) — from inventory loads pending outbounds (commodity must match the contract) or bought direct from purchase requests; client, optional contract, loading point, driver (name, phone, licence image), truck (plate, image), waybill, expected kg and t; outbounds are marked as loaded
@@ -256,9 +256,9 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Tree list / detail / export — code, species, farmer, community, plot, planted, last visit, round, state, height, health, issues, agent; visit history; export limited to the company's date range
 - [x] Tree maps — clustered pins coloured by state, plot outlines, filter by species and round
 - [x] Tree dashboard — disbursed, planted, farmers with trees, alive %, average height, survival by planting month, species and round, causes of death
-- [~] Tree / community / farmer tree scoring — tree health and survival are recorded; feeding them into farmer and community scores comes with the scoring screens [16]
+- [x] Tree / community / farmer tree scoring — community score counts trees planted, alive and average health; farmer score has a tree-survival component (farmers without trees keep full points)
 - [x] Health score — from the species form's rating less issues found, 0–100
-- [ ] Conservation KPIs / rates [16]
+- [x] Conservation KPIs / rates — Vitara Conservation score card (farmers profiled, farmland, parkland, seedlings, trees monitored, farmers trained) and Conservation rate card; survival rates on the tree dashboard
 - [x] Field mapping — phone: walk the boundary (points appear with live area and accuracy) or tap points; web: draw, drop a point, or import GeoJSON / KML; edit vertices
 - [x] Plot list / detail / images / agreement — plot ID, type, farmer, community, area vs declared, geometry, precision, EUDR status, trees (linked or density estimate), agreement, last monitoring; drawer with map, validation, purchases and lots, monitoring, files, activity
 - [x] Mapping dashboard — plots by type, total and average area, % with a polygon, trees per plot, by agent
@@ -295,7 +295,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Email — every email (reset, invite, approvals, payment failures, scheduled reports) written to the outbox; `/app/notifications` → Outbox with branded email preview, status Sent / Delivered / Failed with reason, Send again
 - [x] SMS — payment and receipt SMS in the outbox with SMS-bubble preview, character / part count, failure reasons (number not reachable…)
 - [x] Push — push messages to agents in the outbox with lock-screen banner preview; failed when the device's push token expired
-- [~] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS reminder switches per window; reminders are not sent automatically by a job yet
+- [x] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS switches per window; the daily "Recovery reminders" job texts farmers with a balance and pushes their agents, at most weekly per window, shown as "Last reminders" on the window
 - [x] Offline sync protocol — every phone save goes through one queue: applied at once when online, kept in the outbox when offline; Sync screen with counts by type, data usage, per-item results, errors kept for retry, and conflicts (the office changed the record first) resolved with Keep office version / Send mine; stores sync across tabs
 - [x] Sync logs (scoped, private, retention) — `/app/sync`: every phone sync logged per type (44 sync types listed), with agent, device, app version, sent / created / updated / failed, Success / Partial / Failed, duration; detail with request / response JSON, personal fields masked unless `sync.viewPayloads` + `farmers.viewSensitive`, and what to tell the agent per error kind; live phone syncs log too; retention from Data & privacy with next purge date and "Run purge now"
 - [x] Devices — Devices tab: person, model, OS, app version (below-minimum badge), push token, last seen; Sign out device (the phone returns to sign-in) and Require update (the phone's next sync is refused until it updates); app-version chart and minimum version setting

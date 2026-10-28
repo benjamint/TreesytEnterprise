@@ -31,6 +31,12 @@ type Step = (typeof STEPS)[number];
 const sel = 'h-10 w-full rounded-ctl border border-line bg-surface px-2 text-[14px] text-ink';
 
 /** Imports (PRD C6): the wizard and the import history with undo. */
+/** Where each import's records are listed. */
+const LIST_ROUTE: Record<ImportType, string> = {
+  farmers: '/app/farmers', communities: '/app/communities', locations: '/app/locations', groups: '/app/groups', members: '/app/groups', leaders: '/app/communities',
+  recoveries: '/app/recovery', warehouseLoads: '/app/warehouses', priceLists: '/app/price-board', users: '/app/settings/users', agents: '/app/agents',
+};
+
 export function ImportsPage() {
   const { t } = useT();
   const [params] = useSearchParams();
@@ -407,7 +413,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
             <div className="flex flex-wrap gap-2">
               {result.errorRows.length > 0 && <Button variant="secondary" onClick={() => downloadErrors(result.errorRows)}><Download /> {t('imp.errorFile')}</Button>}
               <Button variant="secondary" onClick={onHistory}>{t('imp.history')}</Button>
-              <Button variant="secondary" onClick={() => navigate(type === 'farmers' ? '/app/farmers' : type === 'communities' ? '/app/communities' : '/app/locations')}>{t('imp.openList')}</Button>
+              <Button variant="secondary" onClick={() => navigate(type ? LIST_ROUTE[type] : '/app/imports')}>{t('imp.openList')}</Button>
               <Button onClick={() => { reset(); setStep('type'); setType(null); }}>{t('imp.another')}</Button>
             </div>
           </div>

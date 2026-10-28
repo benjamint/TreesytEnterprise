@@ -1,6 +1,7 @@
 import { createJSONStorage, persist, type PersistOptions, type StateStorage } from 'zustand/middleware';
 import { create, type StoreApi, type UseBoundStore } from 'zustand';
-import { getSeed, SEED_VERSION, type SeedData } from '@/data/seed';
+import type { SeedData } from '@/data/seed';
+import { SEED_VERSION } from '@/data/seed/version';
 
 /**
  * Persistence and cross-tab sync (PRD 4.3).
@@ -178,10 +179,13 @@ export async function bootStores(): Promise<void> {
   if (booted) return;
   booted = true;
   let done = 0;
+  // The demo data generator is only downloaded when a store has nothing saved yet (first visit, reset).
+  let seed: Promise<SeedData> | undefined;
+  const getSeed = () => (seed ??= import('@/data/seed').then((m) => m.getSeed()));
   await Promise.all(
     registry.map(async (r) => {
       await r.store.persist.rehydrate();
-      if (!r.store.getState().seeded) r.store.setState({ ...r.seed(getSeed()), seeded: true });
+      if (!r.store.getState().seeded) r.store.setState({ ...r.seed(await getSeed()), seeded: true });
       useBootStore.setState({ progress: ++done / registry.length });
     }),
   );

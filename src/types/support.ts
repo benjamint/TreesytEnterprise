@@ -82,6 +82,8 @@ export interface RecoveryWindow extends OrgEntity {
   status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
   remark?: string;
   reminders: { sms: boolean; push: boolean };
+  /** When the reminders job last sent this window's reminders. */
+  remindedAt?: string;
 }
 
 export interface RecoveryRequest extends OrgEntity {

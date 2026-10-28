@@ -1,4 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
+import { PageTourButton } from '@/components/shared/PageHeader';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useDraggable, useDroppable, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -131,7 +132,7 @@ function Builder({ form }: { form: FormRecord }) {
         <div className="min-w-0">
           <Link to="/app/forms" className="mb-1 inline-flex items-center gap-1 text-[13px] text-muted hover:text-brand"><ArrowLeft className="h-3.5 w-3.5" /> {t('nav.forms')}</Link>
           <div className="flex flex-wrap items-center gap-2">
-            <h1 className="truncate text-[26px] font-semibold text-ink">{form.name}</h1>
+            <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="truncate text-[26px] font-semibold text-ink">{form.name}</h1><PageTourButton /></span>
             <Badge tone={STATUS_TONE[form.status]}>{t(`forms.status.${form.status}`)}</Badge>
             {latest && <Badge tone="neutral">{t('forms.liveVersion', { n: latest.version })}</Badge>}
             {dirty && latest && <Badge tone="warningOutline">{t('forms.unpublished')}</Badge>}

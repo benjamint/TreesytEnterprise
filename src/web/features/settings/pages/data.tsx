@@ -294,7 +294,7 @@ export function PrivacyPage() {
               <tr key={g.id} className={cn(g.status === 'REVOKED' && 'opacity-60')}>
                 <td className="w-32"><Badge tone={outgoing ? 'brand' : 'info'}>{t(outgoing ? 'set.privacy.outgoing' : 'set.privacy.incoming')}</Badge></td>
                 <td className="font-medium text-ink"><span className="flex items-center gap-2"><Flag code={flagOf(other)} /> {orgName(other)}</span></td>
-                <td><div className="flex flex-wrap gap-1">{g.scopes.map((s) => <Badge key={s} tone="neutral">{t(`set.privacy.scope.${s}`)}</Badge>)}</div></td>
+                <td><div className="flex flex-wrap gap-1">{g.scopes.map((s) => <Badge key={s} tone="neutral">{t(`set.privacy.scope.${s}`)}</Badge>)}{g.communityIds?.length ? <Badge tone="info">{t('share.communitiesCount', { count: g.communityIds.length })}</Badge> : null}</div></td>
                 <td className="whitespace-nowrap text-[13px] text-muted">{f.date(g.createdAt)}</td>
                 <td className="w-28"><Badge tone={g.status === 'ACTIVE' ? 'teal' : 'neutral'}>{t(`set.privacy.grantStatus.${g.status}`)}</Badge></td>
                 <td className="w-24 text-right">{outgoing && g.status === 'ACTIVE' && <Button variant="dangerOutline" size="xs" onClick={() => revoke(g)}>{t('set.int.revoke')}</Button>}</td>
@@ -351,8 +351,12 @@ function GrantDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
   const options = orgs.filter((o) => o.id !== orgId && o.type !== 'PLATFORM');
   const [to, setTo] = useState(options[0]?.id ?? '');
   const [scopes, setScopes] = useState<DataSharingGrant['scopes']>(['orders', 'traceability']);
+  const own = useCommunityStore((s) => s.communities).filter((c) => c.orgId === orgId).sort((a, b) => a.name.localeCompare(b.name));
+  const [picked, setPicked] = useState<string[]>([]);
+  const [cq, setCq] = useState('');
+  const people = scopes.includes('farmers') || scopes.includes('communities');
   const create = () => {
-    const g: DataSharingGrant = { id: uid('grant'), fromOrgId: orgId, toOrgId: to, scopes, createdAt: new Date().toISOString(), status: 'ACTIVE' };
+    const g: DataSharingGrant = { id: uid('grant'), fromOrgId: orgId, toOrgId: to, scopes, communityIds: people && picked.length ? picked : undefined, createdAt: new Date().toISOString(), status: 'ACTIVE' };
     usePlatformStore.getState().addGrant(g);
     useActivityStore.getState().addAudit({ id: uid('aud'), orgId, actorId: userId ?? 'system', entity: 'grant', entityId: g.id, key: 'grant.created', after: { to, scopes }, at: g.createdAt });
     toast.success(t('set.privacy.granted', { company: orgs.find((o) => o.id === to)?.name }));
@@ -370,6 +374,15 @@ function GrantDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: 
           <div className="grid grid-cols-2 gap-2">
             {SCOPES.map((s) => <Checkbox key={s} label={t(`set.privacy.scope.${s}`)} checked={scopes.includes(s)} onChange={(e) => setScopes(e.target.checked ? [...scopes, s] : scopes.filter((x) => x !== s))} />)}
           </div>
+          {people && (
+            <Mini label={t('share.whichCommunities')}>
+              <p className="mb-2 text-[12px] text-muted">{picked.length ? t('share.pickedCount', { count: picked.length }) : t('share.allCommunities')}</p>
+              <TextInput value={cq} onChange={setCq} placeholder={t('share.searchCommunities')} aria-label={t('share.searchCommunities')} />
+              <div className="mt-2 grid max-h-44 gap-1 overflow-y-auto rounded-ctl border border-line p-2 sm:grid-cols-2">
+                {own.filter((c) => !cq || c.name.toLowerCase().includes(cq.toLowerCase())).map((c) => <Checkbox key={c.id} label={c.name} checked={picked.includes(c.id)} onChange={(e) => setPicked(e.target.checked ? [...picked, c.id] : picked.filter((x) => x !== c.id))} />)}
+              </div>
+            </Mini>
+          )}
         </div>
         <DialogFooter>
           <Button variant="secondary" onClick={() => onOpenChange(false)}>{t('common.cancel')}</Button>

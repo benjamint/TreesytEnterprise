@@ -14,6 +14,12 @@ import type { OutboxItem } from '@/stores/outboxStore';
 import { ledgerOf } from './recoveryService';
 import { checkStatus } from './paymentService';
 import { registerJob } from './jobScheduler';
+import { sendSms } from './smsGateway';
+import { sendPush } from './pushGateway';
+import { useSupportStore } from '@/stores/supportStore';
+import { useFarmerStore } from '@/stores/farmerStore';
+import { usePlatformStore } from '@/stores/platformStore';
+import { formatMoney } from '@/engines/money';
 
 /** Sync logs, devices, retention, audit and the help centre (PRD K2–K7). */
 const S = () => useSystemStore.getState();
@@ -336,3 +342,42 @@ registerJob('backups', async () => {
   const size = Object.keys(localStorage).filter((k) => k.startsWith('treesyt-demo:')).reduce((s, k) => s + (localStorage.getItem(k)?.length ?? 0), 0);
   return [`snapshot: ${Math.max(1, Math.round(size / 1024))} KB (demo data)`, 'copies: 2 regions', 'kept: 30 days'];
 });
+
+/** Open recovery windows remind farmers with a balance (SMS) and their agents (push), at most once a week per window. */
+export function sendRecoveryReminders(orgId?: string, at = new Date()) {
+  const out: string[] = [];
+  const today = at.toISOString().slice(0, 10);
+  const farmers = new Map(useFarmerStore.getState().farmers.map((f) => [f.id, f]));
+  const users = useAccessStore.getState().users;
+  for (const w of useSupportStore.getState().windows.filter((x) => (!orgId || x.orgId === orgId) && x.status === 'ACTIVE' && x.start <= today && x.end >= today)) {
+    if (w.remindedAt && at.getTime() - new Date(w.remindedAt).getTime() < 7 * DAY) { out.push(`${w.name}: reminded ${w.remindedAt.slice(0, 10)}, next in a week`); continue; }
+    const org = usePlatformStore.getState().orgs.find((o) => o.id === w.orgId);
+    const lang = org?.language === 'fr' ? 'fr' : 'en';
+    const owing = useLoanStore.getState().loans.filter((l) => l.orgId === w.orgId && l.status === 'ACTIVE').map((l) => ({ l, bal: ledgerOf(l, at).balance })).filter((x) => x.bal > 0);
+    let sms = 0;
+    const agentIds = new Set<string>();
+    for (const { l, bal } of owing.slice(0, 40)) {
+      const f = farmers.get(l.farmerId);
+      if (!f) continue;
+      if (f.agentId) agentIds.add(f.agentId);
+      if (w.reminders.sms && f.phone) {
+        const amount = formatMoney(bal, l.principal.currency, org?.locale);
+        sendSms({ orgId: w.orgId, to: f.phone, templateId: 'recovery.reminder', language: lang, body: lang === 'fr' ? `${org?.name ?? ''} : la période de remboursement « ${w.name} » est ouverte jusqu’au ${w.end}. Votre solde : ${amount}.` : `${org?.name ?? ''}: the "${w.name}" repayment window is open until ${w.end}. Your balance: ${amount}.` });
+        sms++;
+      }
+    }
+    let push = 0;
+    if (w.reminders.push) {
+      for (const a of useAgentStore.getState().agents.filter((x) => agentIds.has(x.id))) {
+        const u = users.find((x) => x.id === a.userId);
+        if (!u) continue;
+        sendPush({ orgId: w.orgId, to: u.phone, templateId: 'recovery.reminder', language: u.language, subject: org?.name ?? '', body: u.language === 'fr' ? `Recouvrement « ${w.name} » ouvert jusqu’au ${w.end} : passez voir vos producteurs.` : `Recovery "${w.name}" is open until ${w.end}: visit your farmers with a balance.` });
+        push++;
+      }
+    }
+    useSupportStore.getState().saveWindow({ ...w, remindedAt: at.toISOString() });
+    out.push(`${w.name}: ${sms} SMS, ${push} push`);
+  }
+  return out.length ? out : ['no open windows'];
+}
+registerJob('recoveryReminders', async ({ orgId }) => sendRecoveryReminders(orgId));

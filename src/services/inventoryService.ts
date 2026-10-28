@@ -119,7 +119,7 @@ export function createExpectedDelivery(e: PreExpense, actorId: string): Inbound 
 
 export interface ReceiveBag { code: string; status: Exclude<BagReceipt, 'TOP_UP'>; receivedKg?: number; newCode?: string }
 export interface ReceiveInput { bags: ReceiveBag[]; topUps?: { code: string; kg: number }[]; note?: string; actorId: string; device?: 'web' | 'mobile' }
-export interface ReceiveResult { inbound: Inbound; discrepancies: Discrepancy[]; autoWrittenOff: Discrepancy[]; allocations: Allocation[]; steps: string[]; outOfBounds: string[] }
+export interface ReceiveResult { inbound: Inbound; discrepancies: Discrepancy[]; autoWrittenOff: Discrepancy[]; allocations: Allocation[]; steps: string[]; outOfBounds: string[]; transferLossPct?: number; transferOutOfBounds?: boolean }
 export interface Allocation { discrepancyId: string; bagCode: string; kg: number; inboundNumber: string }
 
 /**
@@ -193,7 +193,16 @@ export function receiveInbound(id: string, input: ReceiveInput): ReceiveResult {
   move(orgId, ib.warehouseId, ib.source.kind === 'TRANSFER' ? 'TRANSFER_IN' : 'IN', ib.commodityId, inBags, receivedKg, ib.number, ib.id, input.actorId);
   steps.push('stock');
 
-  if (ib.source.transferId) W().updateTransfer(ib.source.transferId, { receivedKg, status: 'TRANSFER_COMPLETE' });
+  // Transfers: the whole load is checked against the company's out-vs-in bound as well as bag by bag (PRD H4).
+  const lossPct = ib.expectedKg ? Math.round(((ib.expectedKg - receivedKg) / ib.expectedKg) * 10000) / 100 : 0;
+  const bound = settings.inventoryRules.transferBoundsPct;
+  const transferOutOfBounds = ib.source.kind === 'TRANSFER' && lossPct > bound;
+  if (ib.source.transferId) W().updateTransfer(ib.source.transferId, { receivedKg, status: 'TRANSFER_COMPLETE', outOfBounds: transferOutOfBounds ? { lossPct, boundPct: bound } : undefined });
+  if (transferOutOfBounds) {
+    steps.push('bounds');
+    log(orgId, 'inbound', ib.id, 'inbound.transferOutOfBounds', { pct: lossPct, bound }, 'system');
+    notify(orgId, usersWith(orgId, 'inbound.resolve').filter((u) => u !== input.actorId), 'transferOutOfBounds', { number: ib.number, pct: lossPct, bound }, `/app/inventory/inbound?open=${ib.id}`);
+  }
   log(orgId, 'inbound', ib.id, 'inbound.received', { kg: receivedKg, expected: ib.expectedKg }, input.actorId, device);
   for (const d of auto) log(orgId, 'inbound', ib.id, 'inbound.autoWrittenOff', { code: d.bagCode, kg: d.varianceKg, pct: d.variancePct }, 'system');
   if (open.length) {
@@ -203,7 +212,7 @@ export function receiveInbound(id: string, input: ReceiveInput): ReceiveResult {
     const u = agentUser(ib.agentId);
     if (u && ib.source.kind === 'PRE') notify(orgId, [u], 'repaymentDue', { number: ib.number, amount: repaymentExpected(ib.id).total }, `/m/warehouse/repay/${ib.id}`, 'PAYMENT');
   }
-  return { inbound: inboundOf(ib.id), discrepancies: created, autoWrittenOff: auto, allocations, steps, outOfBounds };
+  return { inbound: inboundOf(ib.id), discrepancies: created, autoWrittenOff: auto, allocations, steps, outOfBounds, transferLossPct: ib.source.kind === 'TRANSFER' ? lossPct : undefined, transferOutOfBounds };
 }
 
 /** Top-up weight goes to the oldest open weight discrepancies of the agent at this warehouse first. */

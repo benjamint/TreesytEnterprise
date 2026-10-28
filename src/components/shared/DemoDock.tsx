@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, ExternalLink, FlaskConical, RotateCcw, Smartphone, Eye, LayoutGrid, Zap } from 'lucide-react';
+import { Copy, ExternalLink, FlaskConical, Loader, PlayCircle, RotateCcw, Smartphone, Eye, LayoutGrid, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ import { registerDemoDevice } from '@/services/systemService';
 export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' | 'mobile' }) {
   const [open, setOpen] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
-  const { codes, links, notes, actions, unseen, markSeen, failNextPayout: failNext, setFailNextPayout: setFailNext } = useDemoStore();
+  const { codes, links, notes, actions, unseen, markSeen, failNextPayout: failNext, setFailNextPayout: setFailNext, listMode, setListMode, autoTours, setAutoTours } = useDemoStore();
   const users = useAccessStore((s) => s.users);
   const memberships = useAccessStore((s) => s.memberships);
   const roles = useAccessStore((s) => s.roles);
@@ -217,6 +217,26 @@ export function DemoDock({ placement = 'web' }: { placement?: 'web' | 'public' |
                 </span>
                 <Switch checked={failNext} onCheckedChange={setFailNext} aria-label={t('demo.failNext')} />
               </label>
+              <label className="flex items-center gap-3 rounded-ctl border border-line px-3.5 py-2.5">
+                <Loader className="h-[18px] w-[18px] text-muted" aria-hidden="true" />
+                <span className="flex-1">
+                  <span className="block text-[14px] font-medium text-ink">{t('demo.listMode')}</span>
+                  <span className="block text-[12px] text-muted">{t('demo.listModeHint')}</span>
+                </span>
+                <select value={listMode} onChange={(e) => setListMode(e.target.value as typeof listMode)} aria-label={t('demo.listMode')} className="h-9 rounded-ctl border border-line bg-surface px-2 text-[13px] text-ink">
+                  {(['normal', 'slow', 'error'] as const).map((m) => <option key={m} value={m}>{t(`demo.listModes.${m}`)}</option>)}
+                </select>
+              </label>
+              {placement === 'web' && (
+                <label className="flex items-center gap-3 rounded-ctl border border-line px-3.5 py-2.5">
+                  <PlayCircle className="h-[18px] w-[18px] text-muted" aria-hidden="true" />
+                  <span className="flex-1">
+                    <span className="block text-[14px] font-medium text-ink">{t('demo.autoTours')}</span>
+                    <span className="block text-[12px] text-muted">{t('demo.autoToursHint')}</span>
+                  </span>
+                  <Switch checked={autoTours} onCheckedChange={setAutoTours} aria-label={t('demo.autoTours')} />
+                </label>
+              )}
               {confirmReset ? (
                 <div className="rounded-ctl border border-danger/30 bg-danger/5 p-3">
                   <p className="text-[13px] text-body">{t('shell.resetConfirm')}</p>

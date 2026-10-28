@@ -369,6 +369,7 @@ function WindowsTab() {
     { id: 'end', header: t('rec.end'), accessorKey: 'end', cell: (c) => f.date(c.getValue() as string) },
     { id: 'left', header: t('rec.daysLeft'), accessorFn: (w) => (w.status === 'ACTIVE' ? daysLeft(w) : null), cell: (c) => (c.getValue() == null ? '—' : t('buy.days', { count: Math.max(0, c.getValue() as number) })) },
     { id: 'status', header: t('col.status'), accessorKey: 'status', cell: (c) => <StatusBadge status={c.getValue() as string} /> },
+    { id: 'reminded', header: t('rec.reminders'), accessorFn: (w) => w.remindedAt ?? '', cell: (c) => { const w = c.row.original; return !w.reminders.sms && !w.reminders.push ? '—' : <span className="text-[13px] text-muted">{w.remindedAt ? t('rec.remindedAt', { when: f.relative(w.remindedAt) }) : t('rec.notReminded')}</span>; } },
     { id: 'remark', header: t('rec.remark'), accessorFn: (w) => w.remark ?? '' },
   ], [t, f, sl, settings.commodities, lang]);
   return (

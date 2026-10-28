@@ -34,6 +34,7 @@ import { TreeList } from '@/web/features/land/shared';
 import { WorkshopList } from '@/web/features/training/WorkshopsPage';
 import { useActor, useCurrentOrg, useFormat, useLang, useOrgRows, useT } from '@/stores/hooks';
 import { CommunityForm } from './CommunityForm';
+import { SharedCommunitiesTab, useSharedCounts } from './SharedRecords';
 import { ActivityFeed, DocumentsPanel, LeadersPanel, ScoreView, logActivity, useLookups } from './shared';
 
 export const COMMUNITY_DOC_TYPES = ['membershipList', 'meetingRecords', 'contributionRecords', 'paymentRecords', 'partnershipAgreement', 'other'];
@@ -117,6 +118,7 @@ export function CommunitiesPage() {
   ], [t, f, lk, terms]);
 
   const current = rows.find((r) => r.id === openId);
+  const shared = useSharedCounts();
   return (
     <>
       {tour.element}
@@ -137,7 +139,9 @@ export function CommunitiesPage() {
         <TabsList className="mb-5">
           <TabsTrigger value="list">{t('people.list')}</TabsTrigger>
           <TabsTrigger value="dashboard">{t('nav.dashboard')}</TabsTrigger>
+          {shared.communities.length > 0 && <TabsTrigger value="shared">{t('share.tab')} <Badge tone="info" className="ml-1.5">{shared.communities.length}</Badge></TabsTrigger>}
         </TabsList>
+        <TabsContent value="shared"><SharedCommunitiesTab /></TabsContent>
         <TabsContent value="list">
           <FilterBar
             search={q}

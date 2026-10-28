@@ -30,8 +30,8 @@ import { seedSystem } from './system';
 import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 21;
-export const SEED = 20261018;
+import { SEED, SEED_VERSION } from './version';
+export { SEED, SEED_VERSION };
 
 export interface SeedData {
   orgs: Organisation[];
@@ -467,11 +467,14 @@ export function buildSeed(now = new Date()): SeedData {
   for (const c of ki.communities.filter((x) => x.agentIds.includes(kiTemplate.id)).slice(0, 2)) c.agentIds = [...c.agentIds, kiMulti.id];
   memberships.push({ id: `mem_${multi.userId}_org_kakao`, userId: multi.userId, orgId: ORG.kakao, roleIds: [roleId(ORG.kakao, 'fieldAgent')], status: 'ACTIVE', title: settings[ORG.kakao]!.agentTypes.find((t) => t.id === 'at_del')?.name.fr });
 
+  // ---- Phase 18: Vitara shares two communities and their farmers with Kakao Ivoire (PRD A5) ----
+  const sharedCommunities = vit.communities.slice(0, 2).map((c) => c.id);
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
   const sys = seedSystem({ clock, users, memberships, roles, agents: cat('agents'), settings, farmers: cat('farmers'), purchases: cat('purchases'), payments: cat('payments') });
   return {
-    orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: grants(clock), users, memberships, roles, settings,
+    orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: [...grants(clock), { id: 'grant_vit_ki', fromOrgId: ORG.vitara, toOrgId: ORG.kakao, scopes: ['communities', 'farmers'], communityIds: sharedCommunities, note: 'Joint women’s savings programme', createdAt: clock.iso(clock.daysAgo(25)), status: 'ACTIVE' }], users, memberships, roles, settings,
     invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: [...sys.audit, ...auditSeed(clock)].sort((a, b) => b.at.localeCompare(a.at)),
     questionTypes: Object.fromEntries(QUESTION_TYPES.map((q) => [q, true])),
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },

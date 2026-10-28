@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   flexRender, getCoreRowModel, getPaginationRowModel, getSortedRowModel, useReactTable, type ColumnDef, type RowSelectionState, type SortingState, type VisibilityState,
 } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Columns3, Download } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+import { AlertTriangle, ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Columns3, Download, RotateCw, SearchX, X } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useDemoStore } from '@/stores/demoStore';
+import { useListUiStore } from '@/stores/listUiStore';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -56,6 +60,19 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
   const { t } = useT();
   const f = useFormat();
   const selectable = !!getRowId && !!bulkActions;
+  const { pathname } = useLocation();
+  const filtersOn = useListUiStore((st) => st.path === pathname && st.active);
+  const clearFilters = useListUiStore((st) => st.clear);
+  // Demo panel → Screen states: a slow network shows skeletons first; "errors" fails until Try again.
+  const listMode = useDemoStore((st) => st.listMode);
+  const [phase, setPhase] = useState<'loading' | 'error' | 'ready'>(listMode === 'normal' ? 'ready' : 'loading');
+  useEffect(() => {
+    if (listMode === 'normal') { setPhase('ready'); return; }
+    setPhase('loading');
+    const id = setTimeout(() => setPhase(listMode === 'error' ? 'error' : 'ready'), 900);
+    return () => clearTimeout(id);
+  }, [listMode]);
+  const retry = () => { setPhase('loading'); setTimeout(() => setPhase('ready'), 700); };
 
   const allColumns = useMemo<ColumnDef<T, unknown>[]>(() => {
     if (!selectable) return columns;
@@ -114,7 +131,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
   };
 
   return (
-    <div className="overflow-hidden rounded-card border border-line bg-surface shadow-soft">
+    <div className="overflow-hidden rounded-card border border-line bg-surface shadow-soft" data-tour="data-table">
       {(columnPicker || exportCsv || selectedRows.length > 0) && (
         <div className="flex min-h-[52px] flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-2">
           {selectedRows.length > 0 ? (
@@ -146,7 +163,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
           </div>
         </div>
       )}
-      <div className="overflow-x-auto scrollbar-thin">
+      <div className={cn('overflow-x-auto scrollbar-thin', phase === 'ready' && data.length > 0 && 'hidden md:block', phase !== 'ready' && 'hidden')}>
         <table className="w-full min-w-[640px] border-collapse text-[14px]">
           <thead className="sticky top-0 bg-canvas">
             {table.getHeaderGroups().map((hg) => (
@@ -171,11 +188,14 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
+            {table.getRowModel().rows.map((row, i) => (
               <tr
                 key={row.id}
+                style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
-                className={cn('h-[52px] border-b border-line last:border-0 transition-colors hover:bg-brand-soft/50', onRowClick && 'cursor-pointer', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/40')}
+                tabIndex={onRowClick ? 0 : undefined}
+                onKeyDown={onRowClick ? (e) => { if (e.key === 'Enter' && e.target === e.currentTarget) onRowClick(row.original); } : undefined}
+                className={cn('row-in h-[52px] border-b border-line last:border-0 transition-colors hover:bg-brand-soft/50 focus-visible:bg-brand-soft/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand', onRowClick && 'cursor-pointer', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/40')}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className={cn('tnum whitespace-nowrap px-4 align-middle text-body', cell.column.id === '_select' && 'w-10 pr-0')}>
@@ -186,8 +206,54 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
             ))}
           </tbody>
         </table>
-        {data.length === 0 && <div className="px-6 py-12 text-center text-[14px] text-muted">{empty ?? t('table.empty')}</div>}
       </div>
+      {phase === 'loading' && (
+        <div className="space-y-3 p-4" role="status" aria-live="polite" aria-label={t('table.loading')}>
+          {Array.from({ length: Math.min(pageSize, 6) }, (_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-4 w-28" /><Skeleton className="h-4 flex-1" /><Skeleton className="hidden h-4 w-24 sm:block" /><Skeleton className="hidden h-6 w-20 rounded-full md:block" />
+            </div>
+          ))}
+        </div>
+      )}
+      {phase === 'error' && (
+        <div className="flex flex-col items-center gap-3 px-6 py-12 text-center" role="alert">
+          <span className="rounded-full bg-danger/10 p-3 text-danger"><AlertTriangle className="h-5 w-5" aria-hidden="true" /></span>
+          <div><p className="font-medium text-ink">{t('table.errorTitle')}</p><p className="text-[14px] text-muted">{t('table.errorHint')}</p></div>
+          <Button variant="secondary" size="sm" onClick={retry}><RotateCw /> {t('table.retry')}</Button>
+        </div>
+      )}
+      {phase === 'ready' && data.length === 0 && (filtersOn ? (
+        <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+          <span className="rounded-full bg-canvas p-3 text-muted"><SearchX className="h-5 w-5" aria-hidden="true" /></span>
+          <div><p className="font-medium text-ink">{t('table.noMatch')}</p><p className="text-[14px] text-muted">{t('table.noMatchHint')}</p></div>
+          {clearFilters && <Button variant="secondary" size="sm" onClick={clearFilters}><X /> {t('table.clearFilters')}</Button>}
+        </div>
+      ) : <div className="px-6 py-12 text-center text-[14px] text-muted">{empty ?? t('table.empty')}</div>)}
+      {phase === 'ready' && data.length > 0 && (
+        <ul className="divide-y divide-line md:hidden" aria-label={t('table.cards')}>
+          {table.getRowModel().rows.map((row) => {
+            const cells = row.getVisibleCells().filter((c) => c.column.id !== '_select');
+            const [first, ...rest] = cells;
+            const head = (c: (typeof cells)[number]) => { const h = c.column.columnDef.header; return typeof h === 'string' ? h : ''; };
+            return (
+              <li key={row.id} className={cn('px-4 py-3', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/40')}>
+                <div className="flex items-start gap-3">
+                  {selectable && <input type="checkbox" aria-label={t('table.selectRow')} checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} className="mt-1 h-4 w-4 accent-[rgb(var(--brand))]" />}
+                  <div role={onRowClick ? 'button' : undefined} tabIndex={onRowClick ? 0 : undefined} onClick={onRowClick ? () => onRowClick(row.original) : undefined} onKeyDown={onRowClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick(row.original); } } : undefined} className={cn('min-w-0 flex-1 rounded-ctl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand', onRowClick && 'cursor-pointer')}>
+                    {first && <div className="mb-1.5 font-medium text-ink">{flexRender(first.column.columnDef.cell, first.getContext())}</div>}
+                    <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[13px]">
+                      {rest.slice(0, 6).map((c) => (
+                        <div key={c.id} className="min-w-0"><dt className="text-[11px] uppercase tracking-wide text-muted">{head(c)}</dt><dd className="truncate text-body">{flexRender(c.column.columnDef.cell, c.getContext())}</dd></div>
+                      ))}
+                    </dl>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-3 text-[13px] text-muted">
         <span className="tnum">{`${f.number(from)}–${f.number(to)} / ${f.number(data.length)}`}</span>
         <div className="flex gap-2">

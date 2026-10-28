@@ -98,6 +98,8 @@ export interface Transfer extends OrgEntity {
   /** The dispatch order an outbound was loaded on. */
   dispatchId?: string;
   status: 'DISPATCHED' | 'TRANSFER_PENDING' | 'TRANSFER_COMPLETE';
+  /** Set when the weight received is further below the weight sent than the company allows. */
+  outOfBounds?: { lossPct: number; boundPct: number };
   device?: 'web' | 'mobile';
   note?: string;
 }

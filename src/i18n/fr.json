@@ -677,7 +677,8 @@
     "commissionPaid": "Commission {{number}} payée : {{amount}}",
     "reportFiled": "Un rapport a été ouvert sur votre travail ({{number}})",
     "reportAssigned": "Rapport {{number}} qui vous est attribué",
-    "reportResponse": "L’agent a répondu au rapport {{number}}"
+    "reportResponse": "L’agent a répondu au rapport {{number}}",
+    "transferOutOfBounds": "Le transfert {{number}} a perdu {{pct}} % de son poids (limite {{bound}} %)"
   },
   "activity": {
     "workflow": {
@@ -719,7 +720,8 @@
       "membersAdded_other": "{{count}} membres ajoutés",
       "paymentUpdated": "Coordonnées de paiement mises à jour",
       "scored": "Score recalculé : {{score}}",
-      "reviewed": "Revue manuelle terminée — score {{score}} ({{note}})"
+      "reviewed": "Revue manuelle terminée — score {{score}} ({{note}})",
+      "imported": "Groupement {{name}} importé"
     },
     "location": {
       "created": "{{name}} ajouté sous {{path}}",
@@ -877,7 +879,8 @@
       "settled": "Prêt soldé",
       "cashConfirmed": "Reçu d'espèces de {{amount}} confirmé par la finance",
       "refunded": "Trop-perçu de {{amount}} remboursé ({{method}})",
-      "migrated": "Migré depuis l'archive : {{type}}, {{amount}}"
+      "migrated": "Migré depuis l'archive : {{type}}, {{amount}}",
+      "repaymentImported": "Remboursement passé de {{amount}} du {{date}} importé"
     },
     "window": {
       "created": "Fenêtre de recouvrement {{name}} créée",
@@ -901,7 +904,8 @@
       "repaymentSubmitted": "Remboursement de l'agent de {{amount}} soumis ({{method}})",
       "repaymentApproved": "La finance a approuvé le remboursement de {{amount}}",
       "repaymentPartial": "La finance a approuvé {{amount}} ; {{balance}} reste dû : {{reason}}",
-      "repaymentRejected": "La finance a rejeté le remboursement : {{reason}}"
+      "repaymentRejected": "La finance a rejeté le remboursement : {{reason}}",
+      "transferOutOfBounds": "Chargement complet {{pct}} % sous le poids envoyé (limite {{bound}} %)"
     },
     "transfer": {
       "sent_one": "Transfert {{number}} : {{count}} sac ({{kg}} kg) envoyé à {{to}}",
@@ -2181,7 +2185,11 @@
     "noAccessTitle": "Vous ne pouvez pas ouvrir cette page",
     "moduleOffTitle": "Cet espace est désactivé",
     "crashed": "Une erreur est survenue sur cette page.",
-    "reload": "Recharger"
+    "reload": "Recharger la page",
+    "pageTitle": "Un problème est survenu sur cette page",
+    "pageHint": "Réessayez. Si cela continue, rechargez la page : vos données restent dans ce navigateur.",
+    "offlineTitle": "Cette page n’a pas pu se charger",
+    "offlineHint": "Vous êtes peut-être hors ligne. Reconnectez-vous et rechargez la page."
   },
   "carousel": {
     "payments": "Payez les producteurs en quelques minutes, dans toutes les devises.",
@@ -2327,7 +2335,16 @@
       "officeEdit": "Le bureau modifie « {{label}} » sur le web",
       "supportConfirm": "L'agent confirme les bénéficiaires de {{number}}",
       "supportFulfil": "L'agent enregistre la livraison de {{number}}"
-    }
+    },
+    "listMode": "États d’écran",
+    "listModeHint": "Afficher les listes normalement, lentement (squelettes d’abord) ou en erreur (avec Réessayer).",
+    "listModes": {
+      "normal": "Normal",
+      "slow": "Réseau lent",
+      "error": "Erreurs"
+    },
+    "autoTours": "Visites à la première ouverture",
+    "autoToursHint": "Lancer la visite de chaque page la première fois dans cette session."
   },
   "auth": {
     "home": "Accueil TreeSyt",
@@ -4798,7 +4815,14 @@
     "previous": "Précédent",
     "next": "Suivant",
     "views": "Vues enregistrées",
-    "clearFilters": "Effacer les filtres"
+    "clearFilters": "Effacer les filtres",
+    "loading": "Chargement",
+    "errorTitle": "Cette liste ne s’est pas chargée",
+    "errorHint": "Vérifiez votre connexion et réessayez. Rien de ce que vous avez enregistré n’est perdu.",
+    "retry": "Réessayer",
+    "noMatch": "Aucun résultat pour ces filtres",
+    "noMatchHint": "Essayez une autre recherche ou effacez les filtres.",
+    "cards": "Fiches"
   },
   "form": {
     "choose": "Choisir…",
@@ -5085,7 +5109,8 @@
         "identity": "Identité (photo, pièce, empreintes)",
         "purchases": "Achats (objectif 1 500 kg)",
         "group": "Membre d’un groupement",
-        "noDebt": "Aucun prêt en retard"
+        "noDebt": "Aucun prêt en retard",
+        "trees": "Survie des arbres (sans arbres : points complets)"
       },
       "group": {
         "members": "Membres (objectif 25)",
@@ -5369,7 +5394,12 @@
       "badOption": "Ne fait pas partie des options du formulaire",
       "unknownCommunity": "Communauté inconnue",
       "unknownLocation": "Localité inconnue",
-      "gap": "Un niveau manque"
+      "gap": "Un niveau manque",
+      "badEmail": "Adresse e-mail non valide",
+      "unknownGroup": "Groupement inconnu",
+      "unknownFarmer": "ID producteur inconnu",
+      "unknownWarehouse": "Magasin inconnu",
+      "unknownRole": "Rôle inconnu"
     },
     "warn": {
       "dupPhone": "Téléphone déjà utilisé par {{value}}",
@@ -5419,7 +5449,31 @@
       "contactName": "Personne de contact",
       "contactPhone": "Téléphone du contact",
       "lat": "Latitude",
-      "lng": "Longitude"
+      "lng": "Longitude",
+      "groupType": "Type de groupement",
+      "established": "Créé le",
+      "paymentOption": "Mode de paiement",
+      "walletNumber": "Numéro de portefeuille",
+      "group": "Groupement",
+      "farmer": "ID producteur",
+      "memberRole": "Rôle dans le groupement",
+      "joinedAt": "Adhésion",
+      "leaderRole": "Fonction",
+      "zone": "Zone",
+      "grade": "Qualité",
+      "price": "Prix",
+      "tolerancePct": "Tolérance %",
+      "effectiveFrom": "À partir du",
+      "email": "E-mail",
+      "role": "Rôle",
+      "agentType": "Type d’agent",
+      "date": "Date",
+      "amount": "Montant",
+      "mode": "Payé en",
+      "warehouse": "Magasin",
+      "bagCode": "Code du sac",
+      "commodity": "Produit",
+      "kg": "Kg"
     },
     "moreFields_one": "{{count}} autre champ absent du fichier",
     "moreFields_other": "{{count}} autres champs absents du fichier"
@@ -7101,7 +7155,9 @@
       "group": "Groupe"
     },
     "exportRates": "Exporter les taux",
-    "sections": "Sections"
+    "sections": "Sections",
+    "remindedAt": "Derniers rappels {{when}}",
+    "notReminded": "Aucun rappel envoyé"
   },
   "inv": {
     "stock": "Stock",
@@ -7372,7 +7428,9 @@
     "payTitle": "Payer {{number}}",
     "manualHint": "Cochez les lignes payées hors de l'application et joignez une preuve.",
     "lineN": "Ligne {{n}}",
-    "addLine": "Ajouter une ligne"
+    "addLine": "Ajouter une ligne",
+    "outOfBounds": "Hors limites",
+    "outOfBoundsHint": "{{pct}} % du poids a été perdu entre l’envoi et la réception, au-delà de la limite de {{bound}} %. Vérifiez les écarts ouverts."
   },
   "sales": {
     "client": "Client",
@@ -9400,10 +9458,21 @@
       "tpl_receipt_sms": "Reçu d’achat (SMS)",
       "tpl_overdue_sms": "Prêt en retard (SMS)",
       "tpl_invite_email": "Invitation (e-mail)",
-      "report.scheduled": "Rapport planifié (e-mail)",
-      "plan.published": "Plan publié (push)",
-      "user.invited": "Invitation (e-mail)",
-      "password.reset": "Réinitialisation du mot de passe (e-mail)"
+      "report": {
+        "scheduled": "Rapport planifié (e-mail)"
+      },
+      "plan": {
+        "published": "Plan publié (push)"
+      },
+      "user": {
+        "invited": "Invitation (e-mail)"
+      },
+      "password": {
+        "reset": "Réinitialisation du mot de passe (e-mail)"
+      },
+      "recovery": {
+        "reminder": "Rappel de recouvrement"
+      }
     },
     "searchOutbox": "Rechercher un destinataire ou un texte",
     "outboxEmpty": "Aucun message",
@@ -9614,7 +9683,8 @@
       "cache": "Rafraîchissement des tableaux de bord",
       "reports": "Rapports planifiés",
       "paymentPolling": "Suivi des paiements",
-      "backups": "Sauvegardes"
+      "backups": "Sauvegardes",
+      "recoveryReminders": "Rappels de recouvrement"
     },
     "desc": {
       "achievements": "Recalcule la réalisation de chaque plan publié à partir des fiches.",
@@ -9626,7 +9696,8 @@
       "cache": "Rafraîchit les widgets du tableau de bord.",
       "reports": "Envoie par e-mail les rapports planifiés dus.",
       "paymentPolling": "Interroge les opérateurs sur les paiements inconnus ou en cours.",
-      "backups": "Sauvegarde les données de chaque entreprise (plateforme seulement)."
+      "backups": "Sauvegarde les données de chaque entreprise (plateforme seulement).",
+      "recoveryReminders": "SMS aux producteurs avec un solde et push à leurs agents tant qu’une période est ouverte (une fois par semaine)."
     }
   },
   "api": {
@@ -9683,5 +9754,43 @@
     },
     "events": "Événements webhook",
     "eventsHint": "Chaque envoi est signé avec le secret du webhook. Les envois de test et leur journal sont dans Paramètres → Intégrations."
+  },
+  "tour": {
+    "next": "Suivant",
+    "done": "Terminer",
+    "skip": "Passer la visite",
+    "generic": {
+      "title": "Cette page présente les fiches de votre entreprise. Petit tour d’horizon.",
+      "primary": "Commencez ici : l’action principale de la page.",
+      "stats": "Les chiffres clés en un coup d’œil. Cliquez sur une carte pour filtrer la liste.",
+      "tabs": "Passez d’une vue à l’autre de cette page.",
+      "filters": "Recherchez, filtrez et utilisez les vues enregistrées. Effacez les filtres pour tout revoir.",
+      "table": "Cliquez sur une ligne pour ouvrir le détail. Triez, choisissez les colonnes et exportez ce que vous voyez.",
+      "help": "Rejouez cette visite, voyez ce qui est paramétrable ici ou ouvrez le centre d’aide."
+    }
+  },
+  "share": {
+    "tab": "Partagés avec nous",
+    "sharedBy": "Partagé par {{company}}",
+    "readOnly": "Partagé par {{company}} : lecture seule. Vos propres notes, scores et attributs pour ces fiches sont conservés à part.",
+    "code": "Code",
+    "owner": "Propriétaire",
+    "communitiesHint": "Les communautés que d’autres entreprises partagent avec vous. Vous pouvez les consulter mais pas les modifier.",
+    "farmersHint": "Les producteurs que d’autres entreprises partagent avec vous. Les numéros sont masqués.",
+    "search": "Rechercher dans les fiches partagées",
+    "none": "Rien n’est partagé avec vous",
+    "population": "Population",
+    "profiled": "Profilée le",
+    "gps": "GPS",
+    "phone": "Téléphone",
+    "registered": "Enregistré le",
+    "crop": "Culture principale",
+    "whichCommunities": "Quelles communautés",
+    "allCommunities": "Aucune communauté choisie : toutes (et leurs producteurs) sont partagées.",
+    "searchCommunities": "Rechercher une communauté",
+    "communitiesCount_one": "{{count}} communauté",
+    "communitiesCount_other": "{{count}} communautés",
+    "pickedCount_one": "{{count}} communauté choisie",
+    "pickedCount_other": "{{count}} communautés choisies"
   }
 }

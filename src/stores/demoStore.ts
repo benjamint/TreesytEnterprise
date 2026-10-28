@@ -11,6 +11,7 @@ export interface DemoCode { id: string; label: 'twoStep' | 'verifyEmail' | 'mobi
 export interface DemoLink { id: string; label: 'reset' | 'invite'; to: string; href: string; at: string }
 export interface DemoNote { id: string; key: string; params?: Record<string, unknown> }
 /** A page's demo shortcut (e.g. "sync the agent's purchases"). Not persisted. */
+export type ListMode = 'normal' | 'slow' | 'error';
 export interface DemoAction { id: string; key: string; params?: Record<string, unknown>; run: () => void }
 
 interface DemoState {
@@ -20,6 +21,10 @@ interface DemoState {
   actions: DemoAction[];
   /** The next simulated payout fails (to show retry). */
   failNextPayout: boolean;
+  /** Simulated list behaviour, to show loading skeletons and error states (PRD 15). */
+  listMode: ListMode;
+  /** Page tours run once per page per session. */
+  autoTours: boolean;
   /** Items the user hasn't looked at yet: shows a dot on the Demo icon (the panel never opens by itself). */
   unseen: number;
   pushCode: (c: Omit<DemoCode, 'id' | 'at'>) => void;
@@ -27,6 +32,8 @@ interface DemoState {
   setNotes: (notes: DemoNote[]) => void;
   setActions: (actions: DemoAction[]) => void;
   setFailNextPayout: (v: boolean) => void;
+  setListMode: (m: ListMode) => void;
+  setAutoTours: (v: boolean) => void;
   markSeen: () => void;
 }
 
@@ -38,14 +45,18 @@ export const useDemoStore = create<DemoState>()(
       notes: [],
       actions: [],
       failNextPayout: false,
+      listMode: 'normal',
+      autoTours: true,
       unseen: 0,
       pushCode: (c) => set((s) => ({ codes: [{ ...c, id: uid('code'), at: new Date().toISOString() }, ...s.codes].slice(0, 6), unseen: s.unseen + 1 })),
       pushLink: (l) => set((s) => ({ links: [{ ...l, id: uid('link'), at: new Date().toISOString() }, ...s.links].slice(0, 6), unseen: s.unseen + 1 })),
       setNotes: (notes) => set({ notes }),
       setActions: (actions) => set({ actions }),
       setFailNextPayout: (failNextPayout) => set({ failNextPayout }),
+      setListMode: (listMode) => set({ listMode }),
+      setAutoTours: (autoTours) => set({ autoTours }),
       markSeen: () => set({ unseen: 0 }),
     }),
-    { name: 'treesyt-demo:v1:demoPanel', storage: createJSONStorage(() => sessionStorage), partialize: (s) => ({ codes: s.codes, links: s.links, unseen: s.unseen, failNextPayout: s.failNextPayout }) },
+    { name: 'treesyt-demo:v1:demoPanel', storage: createJSONStorage(() => sessionStorage), partialize: (s) => ({ codes: s.codes, links: s.links, unseen: s.unseen, failNextPayout: s.failNextPayout, listMode: s.listMode, autoTours: s.autoTours }) },
   ),
 );

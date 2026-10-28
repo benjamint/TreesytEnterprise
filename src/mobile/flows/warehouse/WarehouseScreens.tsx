@@ -149,6 +149,7 @@ export function ReceiveScreen() {
             })}
           </ol>
           {!!res?.allocations.length && <p className="rounded-ctl bg-canvas px-4 py-3 text-[13px] text-body">{t('inv.allocated', { list: res.allocations.map((a) => `${a.inboundNumber} ${f.kg(a.kg)}`).join(', ') })}</p>}
+          {res?.transferOutOfBounds && <p className="rounded-ctl border border-danger/40 bg-danger/5 px-4 py-3 text-[14px] text-ink" role="status">{t('inv.outOfBoundsHint', { pct: res.transferLossPct, bound: settings.inventoryRules.transferBoundsPct })}</p>}
           {open.length > 0 && x.source.kind === 'PRE' && <p className="rounded-ctl border border-warning/40 bg-warning/5 px-4 py-3 text-[14px] text-ink">{t('mobile.m8.agentNotified', { name: lk.agent(x.agentId) })}</p>}
         </div>
         <div className="shrink-0 border-t border-line p-4"><Button size="lg" className="w-full" onClick={() => navigate('/m/warehouse')}>{t('mobile.m5.done')}</Button></div>

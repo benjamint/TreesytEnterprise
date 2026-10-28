@@ -4,7 +4,7 @@ import { latency, uid } from '@/lib/utils';
 import { useSystemStore } from '@/stores/systemStore';
 
 /** Scheduled jobs (PRD 4.4, K6): each has a schedule in the company time zone and can be run on demand. */
-export type JobKey = 'achievements' | 'penalties' | 'allowances' | 'scores' | 'interest' | 'retention' | 'cache' | 'reports' | 'paymentPolling' | 'backups';
+export type JobKey = 'achievements' | 'penalties' | 'allowances' | 'scores' | 'interest' | 'retention' | 'cache' | 'reports' | 'paymentPolling' | 'backups' | 'recoveryReminders';
 
 export type JobSchedule =
   | { every: 'MINUTES'; minutes: number }
@@ -21,6 +21,7 @@ export const JOBS: JobDef[] = [
   { key: 'allowances', schedule: { every: 'MONTHLY', day: 1, time: '07:00' }, module: 'allowances' },
   { key: 'scores', schedule: { every: 'DAILY', time: '02:00' }, module: 'fieldTeam' },
   { key: 'interest', schedule: { every: 'DAILY', time: '01:00' }, module: 'recovery' },
+  { key: 'recoveryReminders', schedule: { every: 'DAILY', time: '08:00' }, module: 'recovery' },
   { key: 'retention', schedule: { every: 'DAILY', time: '03:00' } },
   { key: 'cache', schedule: { every: 'MINUTES', minutes: 15 }, module: 'dashboard' },
   { key: 'reports', schedule: { every: 'HOURLY', minute: 0 }, module: 'reports' },

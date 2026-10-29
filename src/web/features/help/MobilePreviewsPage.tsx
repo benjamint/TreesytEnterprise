@@ -42,7 +42,7 @@ export function MobilePreviewsPage() {
           )
         }
       />
-      <p className="mb-6 max-w-2xl text-[15px] text-muted">{t('mobileFlows.intro')}</p>
+      <p className="mb-6 max-w-2xl text-[14px] text-muted">{t('mobileFlows.intro')}</p>
       {fieldUsers.length > 0 && (
         <div className="mb-8">
           <div className="eyebrow mb-3">{t('mobileFlows.openAs')}</div>
@@ -73,7 +73,7 @@ export function MobilePreviewsPage() {
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-mono text-[13px] font-semibold text-brand">{flow}</span>
               </div>
-              <h2 className="text-[17px]">{t(`mobileFlows.${flow}.title`)}</h2>
+              <h2 className="text-[15px]">{t(`mobileFlows.${flow}.title`)}</h2>
               <p className="mt-1 text-[14px] text-muted">{t(`mobileFlows.${flow}.desc`)}</p>
             </div>
             <Button variant="secondary" disabled={!current} onClick={() => current && openMobileWindow(orgId, current.u.id, flow)}>

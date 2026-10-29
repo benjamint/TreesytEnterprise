@@ -25,6 +25,8 @@ export default {
         surface: token('surface'),
         canvas: token('canvas'),
         line: token('line'),
+        'line-strong': token('line-strong'),
+        subtle: token('subtle'),
         info: token('info'),
         success: token('success'),
         warning: token('warning'),
@@ -44,13 +46,20 @@ export default {
         mono: ['"JetBrains Mono Variable"', '"JetBrains Mono"', 'ui-monospace', 'monospace'],
       },
       fontSize: {
-        base: ['15px', '24px'],
-        eyebrow: ['12px', { lineHeight: '16px', letterSpacing: '0.08em', fontWeight: '600' }],
+        base: ['var(--text-base)', 'var(--leading-base)'],
+        eyebrow: ['12px', { lineHeight: '16px', fontWeight: '500' }],
       },
-      borderRadius: { chip: '8px', ctl: '12px', card: '16px', panel: '24px' },
+      // Control sizes and radii are variables: the web app is compact, the phone app keeps
+      // its large tap targets (PRD 9: 56 px inputs, 52 px buttons) via `.mobile-ui`.
+      height: { ctl: 'var(--ctl-sm)', 'ctl-lg': 'var(--ctl)', btn: 'var(--btn)', 'btn-sm': 'var(--btn-sm)', 'btn-xs': 'var(--btn-xs)', 'btn-lg': 'var(--btn-lg)' },
+      width: { btn: 'var(--btn)', 'btn-sm': 'var(--btn-sm)' },
+      borderRadius: { chip: 'var(--r-chip)', ctl: 'var(--r-ctl)', card: 'var(--r-card)', panel: 'var(--r-panel)' },
       boxShadow: {
-        soft: '0 1px 2px rgba(15,42,32,.04), 0 8px 24px rgba(15,42,32,.06)',
-        inner: 'inset 0 1px 0 rgba(255,255,255,.18)',
+        soft: '0 1px 2px rgb(var(--shadow) / .05)',
+        xs: '0 1px 1px rgb(var(--shadow) / .06)',
+        raised: '0 0 0 1px rgb(var(--shadow) / .03), 0 2px 6px -1px rgb(var(--shadow) / .08)',
+        pop: '0 0 0 1px rgb(var(--shadow) / .04), 0 6px 12px -4px rgb(var(--shadow) / .08), 0 28px 56px -16px rgb(var(--shadow) / .28)',
+        inner: 'inset 0 1px 0 rgb(255 255 255 / .14), 0 1px 2px rgb(var(--shadow) / .18)',
       },
       backgroundImage: { ai: 'linear-gradient(90deg, #14583F, #B8E05A)' },
       keyframes: {

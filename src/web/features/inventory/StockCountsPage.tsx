@@ -158,7 +158,7 @@ function ScheduleDialog({ onClose }: { onClose: (id?: string) => void }) {
   const inv = useInventory();
   const [warehouseId, setWarehouseId] = useState(inv.warehouses[0]?.id ?? '');
   const [date, setDate] = useState(new Date(Date.now() + 2 * 86_400_000).toISOString().slice(0, 10));
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>

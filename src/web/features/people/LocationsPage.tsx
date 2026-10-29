@@ -155,13 +155,13 @@ export function LocationsExplorerPage() {
               ]} />
               {counts.children.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-[15px] font-semibold text-ink">{t('people.loc.children', { level: levelLabel(levels, counts.children[0]!.levelId, lang), count: counts.children.length })}</h3>
+                  <h3 className="mb-2 text-[14px] font-semibold text-ink">{t('people.loc.children', { level: levelLabel(levels, counts.children[0]!.levelId, lang), count: counts.children.length })}</h3>
                   <div className="flex flex-wrap gap-2">{counts.children.map((c) => <button key={c.id} type="button" onClick={() => { setSelected(c.id); setOpen((o) => new Set([...o, node.id])); }} className="rounded-full border border-line px-3 py-1 text-[13px] text-body hover:border-brand/50 hover:text-brand">{c.name}</button>)}</div>
                 </div>
               )}
               {counts.communities.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-[15px] font-semibold text-ink">{terms.communities}</h3>
+                  <h3 className="mb-2 text-[14px] font-semibold text-ink">{terms.communities}</h3>
                   <ul className="divide-y divide-line rounded-ctl border border-line">
                     {counts.communities.slice(0, 30).map((c) => <li key={c.id}><button type="button" onClick={() => navigate(`/app/communities?open=${c.id}`)} className="flex w-full items-center gap-3 px-4 py-2 text-left text-[14px] hover:bg-canvas"><span className="font-mono text-[12px] text-muted">{c.code}</span><span className="flex-1 text-ink">{c.name}</span><span className="text-[12px] text-muted">{f.number(c.population)}</span></button></li>)}
                   </ul>
@@ -206,7 +206,7 @@ function NodeDialog({ edit, nodes, onClose, onSave }: { edit: Edit; nodes: Locat
           )}
           {edit.mode === 'move' && parentLevel && (
             <Field label={t('people.loc.newParent', { level: levelLabel(levels, parentLevel.id, lang) })}>
-              <select value={n.parentId ?? ''} onChange={(e) => setN({ ...n, parentId: e.target.value })} aria-label={t('people.loc.parent')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
+              <select value={n.parentId ?? ''} onChange={(e) => setN({ ...n, parentId: e.target.value })} aria-label={t('people.loc.parent')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 {parents.map((p) => <option key={p.id} value={p.id}>{pathLabel(nodes, p.id)}</option>)}
               </select>
             </Field>

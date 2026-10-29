@@ -111,7 +111,7 @@ function NewTransferSheet({ onClose }: { onClose: (id?: string) => void }) {
       onClose(tr.id);
     } catch (e) { toast.error(t(`inv.err.${(e as Error).message}`)); }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -128,7 +128,7 @@ function NewTransferSheet({ onClose }: { onClose: (id?: string) => void }) {
             </div>
           )}
           <div>
-            <div className="mb-2 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('inv.pickBags')}</h3><span className="text-[13px] text-muted">{t('inv.pickedLine', { count: picked.length, kg: f.kg(kg) })}</span></div>
+            <div className="mb-2 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-ink">{t('inv.pickBags')}</h3><span className="text-[13px] text-muted">{t('inv.pickedLine', { count: picked.length, kg: f.kg(kg) })}</span></div>
             <div className="mb-2 flex gap-2">
               <Input value={scan} onChange={(e) => setScan(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addScan()} placeholder={t('inv.scanOrType')} aria-label={t('inv.scanOrType')} />
               <Button variant="secondary" onClick={() => (scan ? addScan() : setPicked([...picked, ...bags.map((b) => b.code).filter((c) => !picked.includes(c)).slice(0, 1)]))}><QrCode /> {t('inv.scan')}</Button>

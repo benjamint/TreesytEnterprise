@@ -15,7 +15,7 @@ export const DropdownMenuContent = React.forwardRef<React.ElementRef<typeof Drop
       <DropdownMenuPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
-        className={cn('z-50 min-w-[14rem] overflow-hidden rounded-card border border-line bg-surface p-1.5 text-ink shadow-soft data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95', className)}
+        className={cn('z-50 min-w-[14rem] overflow-hidden rounded-ctl border border-line bg-surface p-1 text-ink shadow-pop data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95', className)}
         {...props}
       />
     </DropdownMenuPrimitive.Portal>
@@ -27,7 +27,7 @@ export const DropdownMenuItem = React.forwardRef<React.ElementRef<typeof Dropdow
   ({ className, ...props }, ref) => (
     <DropdownMenuPrimitive.Item
       ref={ref}
-      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip px-2.5 py-2 text-[14px] outline-none transition-colors focus:bg-brand-soft focus:text-ink data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:text-muted', className)}
+      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip px-2.5 py-1.5 text-[14px] outline-none transition-colors focus:bg-canvas focus:text-ink data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-4 [&_svg]:text-muted', className)}
       {...props}
     />
   ),
@@ -38,7 +38,7 @@ export const DropdownMenuRadioItem = React.forwardRef<React.ElementRef<typeof Dr
   ({ className, children, ...props }, ref) => (
     <DropdownMenuPrimitive.RadioItem
       ref={ref}
-      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip py-2 pl-8 pr-2.5 text-[14px] outline-none focus:bg-brand-soft', className)}
+      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip py-1.5 pl-8 pr-2.5 text-[14px] outline-none focus:bg-canvas', className)}
       {...props}
     >
       <span className="absolute left-2.5 flex h-4 w-4 items-center justify-center">
@@ -56,7 +56,7 @@ export const DropdownMenuCheckboxItem = React.forwardRef<React.ElementRef<typeof
   ({ className, children, ...props }, ref) => (
     <DropdownMenuPrimitive.CheckboxItem
       ref={ref}
-      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip py-2 pl-8 pr-2.5 text-[14px] outline-none focus:bg-brand-soft', className)}
+      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip py-1.5 pl-8 pr-2.5 text-[14px] outline-none focus:bg-canvas', className)}
       {...props}
     >
       <span className="absolute left-2.5 flex h-4 w-4 items-center justify-center">
@@ -75,6 +75,6 @@ export function DropdownMenuLabel({ className, ...props }: React.HTMLAttributes<
 }
 
 export const DropdownMenuSeparator = React.forwardRef<React.ElementRef<typeof DropdownMenuPrimitive.Separator>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>>(
-  ({ className, ...props }, ref) => <DropdownMenuPrimitive.Separator ref={ref} className={cn('-mx-1.5 my-1.5 h-px bg-line', className)} {...props} />,
+  ({ className, ...props }, ref) => <DropdownMenuPrimitive.Separator ref={ref} className={cn('-mx-1 my-1 h-px bg-line', className)} {...props} />,
 );
 DropdownMenuSeparator.displayName = 'DropdownMenuSeparator';

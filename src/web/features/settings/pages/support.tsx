@@ -110,7 +110,7 @@ export function SupportLoansPage() {
           <Mini label={t('set.support.window')}><NumberInput value={support.recoveryWindowDays} min={1} suffix={t('set.days')} onChange={(v) => setS({ recoveryWindowDays: Math.round(v) })} /></Mini>
           <Mini label={t('set.support.minScore')}><NumberInput value={support.minGroupScore} min={0} max={100} onChange={(v) => setS({ minGroupScore: Math.round(v) })} /></Mini>
           <Mini label={t('set.support.modes')}>
-            <div className="flex h-11 flex-wrap items-center gap-4">
+            <div className="flex h-ctl flex-wrap items-center gap-4">
               {(['CASH', 'PRODUCE', 'MIXED'] as const).map((m) => (
                 <Checkbox key={m} label={t(`set.support.mode.${m}`)} checked={support.repaymentModes.includes(m)} onChange={(e) => setS({ repaymentModes: e.target.checked ? [...support.repaymentModes, m] : support.repaymentModes.filter((x) => x !== m) })} />
               ))}

@@ -32,7 +32,7 @@ import { useLandLookups, usePageTab } from '@/web/features/land/shared';
 const STATUSES: WorkshopStatus[] = ['PLANNED', 'HELD', 'CANCELLED', 'ARCHIVED'];
 const TONE: Record<WorkshopStatus, 'info' | 'success' | 'danger' | 'neutral'> = { PLANNED: 'info', HELD: 'success', CANCELLED: 'danger', ARCHIVED: 'neutral' };
 const today = () => new Date().toISOString().slice(0, 10);
-const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 
 /** Names for training screens: topics and groups. */
 export function useTrainingLookups() {
@@ -153,7 +153,7 @@ function Calendar({ rows, onOpen }: { rows: Workshop[]; onOpen: (id: string) => 
   return (
     <section className="rounded-card border border-line bg-surface p-4 shadow-soft" aria-label={t('ws.tab.calendar')}>
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-[15px] font-semibold text-ink">{f.date(`${month}-15`, 'MMMM yyyy')}</h3>
+        <h3 className="text-[14px] font-semibold text-ink">{f.date(`${month}-15`, 'MMMM yyyy')}</h3>
         <div className="flex gap-1">
           <Button size="sm" variant="ghost" onClick={() => shift(-1)} aria-label={t('ws.prevMonth')}><ChevronLeft /></Button>
           <Button size="sm" variant="secondary" onClick={() => setMonth(today().slice(0, 7))}>{t('ws.thisMonth')}</Button>
@@ -200,10 +200,10 @@ function Dashboard({ rows }: { rows: Workshop[] }) {
         {([[t('ws.created'), d.created], [t('ws.held'), d.held], [t('ws.upcoming'), d.upcoming], [t('ws.cancelled'), d.cancelled], [t('ws.farmersTrained'), d.farmersTrained], [t('ws.attendance'), d.attendance]] as [string, number][]).map(([k, v]) => <StatCard key={k} label={k} value={f.number(v)} />)}
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className={card}><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('ws.byTopic')}</h3>{d.byTopic.length ? <HBars data={d.byTopic.map(([id, v]) => ({ label: tl.topicName(id), value: v }))} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
-        <section className={card}><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('ws.byAgent')}</h3>{d.byAgent.length ? <HBars data={d.byAgent.map(([id, v]) => ({ label: lk.agent(id), value: v }))} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
-        <section className={card}><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('ws.heldByMonth')}</h3>{d.byMonth.length ? <Lines data={d.byMonth.map(([k, v]) => ({ label: f.date(`${k}-15`, 'MMM yy'), held: v }))} series={[{ key: 'held', label: t('ws.held'), index: 0 }]} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
-        <section className={card}><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('ws.ratingByAgent')}</h3>{ratings.length ? <HBars data={ratings} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} / 5`} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
+        <section className={card}><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('ws.byTopic')}</h3>{d.byTopic.length ? <HBars data={d.byTopic.map(([id, v]) => ({ label: tl.topicName(id), value: v }))} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
+        <section className={card}><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('ws.byAgent')}</h3>{d.byAgent.length ? <HBars data={d.byAgent.map(([id, v]) => ({ label: lk.agent(id), value: v }))} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
+        <section className={card}><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('ws.heldByMonth')}</h3>{d.byMonth.length ? <Lines data={d.byMonth.map(([k, v]) => ({ label: f.date(`${k}-15`, 'MMM yy'), held: v }))} series={[{ key: 'held', label: t('ws.held'), index: 0 }]} format={(v) => f.number(v)} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
+        <section className={card}><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('ws.ratingByAgent')}</h3>{ratings.length ? <HBars data={ratings} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} / 5`} /> : <TabEmpty>{t('ws.noneHeld')}</TabEmpty>}</section>
       </div>
     </div>
   );
@@ -248,7 +248,7 @@ function WorkshopDrawer({ w, onClose }: { w: Workshop; onClose: () => void }) {
             key: 'details', label: t('ws.tab.details'), content: (
               <div className="space-y-5">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {([[t('ws.expected'), f.number(w.expected)], [t('ws.actual'), done ? f.number(st.attendees) : '—'], [t('ws.guests'), done ? f.number(st.guests) : '—'], [t('ws.avgRating'), st.avgRating == null ? '—' : `${f.number(st.avgRating, { maximumFractionDigits: 1 })} / 5`]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{v}</div></div>)}
+                  {([[t('ws.expected'), f.number(w.expected)], [t('ws.actual'), done ? f.number(st.attendees) : '—'], [t('ws.guests'), done ? f.number(st.guests) : '—'], [t('ws.avgRating'), st.avgRating == null ? '—' : `${f.number(st.avgRating, { maximumFractionDigits: 1 })} / 5`]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{v}</div></div>)}
                 </div>
                 <Facts items={[
                   [t('ws.topic'), tl.topicName(w.topicId)], [t('ws.category'), topic ? t(`ws.cat.${topic.category}`) : '—'],

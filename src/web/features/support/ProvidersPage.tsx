@@ -132,7 +132,7 @@ function ProviderSheet({ provider, onClose }: { provider?: ServiceProvider; onCl
     : { name: '', typeIds: [sl.types.find((x) => x.needsProvider)?.id ?? sl.types[0]?.id ?? ''], offers: [], location: '', phone: '', status: 'ACTIVE', wallet: { providerId: momo[0]?.id ?? '', number: '', name: '' } });
   const [offer, setOffer] = useState('');
   const invalid = !v.name.trim() || !v.typeIds.length || !v.phone.trim() || !v.location.trim();
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   const save = () => { const p = saveProvider(orgId, userId ?? 'system', { ...v, wallet: v.wallet?.number ? { ...v.wallet, name: v.wallet.name || v.name.toUpperCase() } : undefined }, provider?.id); toast.success(t('sup.toast.providerSaved', { name: p.name })); onClose(p.id); };
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
@@ -141,7 +141,7 @@ function ProviderSheet({ provider, onClose }: { provider?: ServiceProvider; onCl
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
           <Field label={t('col.name')}><Input value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} aria-label={t('col.name')} autoFocus /></Field>
           <div>
-            <div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('sup.category')}</div>
+            <div className="mb-1.5 text-[12px] font-medium text-muted">{t('sup.category')}</div>
             <div className="flex flex-wrap gap-4">{sl.types.map((x) => <Checkbox key={x.id} label={sl.typeName(x.id)} checked={v.typeIds.includes(x.id)} onChange={(e) => setV({ ...v, typeIds: e.target.checked ? [...v.typeIds, x.id] : v.typeIds.filter((y) => y !== x.id) })} />)}</div>
           </div>
           <Field label={t('sup.offers')} helper={t('sup.offersHint')}>

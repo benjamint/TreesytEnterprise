@@ -47,12 +47,12 @@ function KpiRow() {
     { key: 'reconGap', value: f.money(kpis.reconGap, { compact: true }), hint: f.money(kpis.reconGap), icon: Scale, to: '/app/reconciliation' },
   ];
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-ctl border border-line bg-line sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
       {items.map((k) => (
-        <button key={k.key} type="button" onClick={() => navigate(k.to)} className="flex min-h-[112px] flex-col justify-between rounded-ctl border border-line bg-canvas/60 p-4 text-left transition-colors hover:border-brand/40 hover:bg-brand-soft/30">
+        <button key={k.key} type="button" onClick={() => navigate(k.to)} className="flex min-h-[104px] flex-col justify-between gap-3 bg-surface p-4 text-left transition-colors hover:bg-subtle focus-visible:relative">
           <span className="flex items-center justify-between gap-2">
-            <span className="eyebrow">{t(`dashboard.kpi.${k.key}`)}</span>
-            <k.icon className="h-4 w-4 text-muted" aria-hidden="true" />
+            <span className="text-[13px] font-medium text-muted">{t(`dashboard.kpi.${k.key}`)}</span>
+            <k.icon className="h-4 w-4 text-muted/70" aria-hidden="true" />
           </span>
           <span>
             <span className="tnum block text-[24px] font-semibold leading-tight tracking-[-0.02em] text-ink">{k.value}</span>
@@ -172,7 +172,7 @@ function VolumeByCommodity() {
   const rest = ranked.slice(5).reduce((s, [, kg]) => s + kg, 0);
   const data = rest ? [...head, { label: t('chart.other'), value: Math.round(rest), index: -1 }] : head;
   const total = data.reduce((s, d) => s + d.value, 0);
-  return <Donut data={data} format={(v) => f.kg(v)} center={<><span className="tnum text-[18px] font-semibold text-ink">{f.number(Math.round(total / 1000))}</span><span className="text-[11px] text-muted">{t('chart.tonnes')}</span></>} />;
+  return <Donut data={data} format={(v) => f.kg(v)} center={<><span className="tnum text-[16px] font-semibold text-ink">{f.number(Math.round(total / 1000))}</span><span className="text-[11px] text-muted">{t('chart.tonnes')}</span></>} />;
 }
 
 function TopCommunities() {

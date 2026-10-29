@@ -67,7 +67,7 @@ export function WalletsPage() {
             <section key={w.id} className={cn('rounded-card border bg-surface p-5 shadow-soft transition-colors', w.id === wallet?.id ? 'border-brand' : 'border-line', low && 'ring-1 ring-warning/40')} aria-label={w.name}>
               <button type="button" onClick={() => setSelected(w.id)} className="w-full text-left" aria-pressed={w.id === wallet?.id}>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 text-[15px] font-semibold text-ink"><WalletIcon className="h-4 w-4 text-brand" aria-hidden="true" />{w.name}</span>
+                  <span className="flex items-center gap-2 text-[14px] font-semibold text-ink"><WalletIcon className="h-4 w-4 text-brand" aria-hidden="true" />{w.name}</span>
                   {low && <Badge tone="warning"><AlertTriangle className="h-3 w-3" /> {t('wal.low')}</Badge>}
                 </div>
                 <div className="tnum mt-3 text-[30px] font-semibold leading-none text-ink">{f.money(w.balance)}</div>
@@ -85,7 +85,7 @@ export function WalletsPage() {
       </div>
       {wallet && (
         <>
-          <h2 className="mb-3 text-[18px] font-semibold text-ink">{t('wal.transactions', { wallet: wallet.name })}</h2>
+          <h2 className="mb-3 text-[16px] font-semibold text-ink">{t('wal.transactions', { wallet: wallet.name })}</h2>
           <DataTable columns={columns} data={txns} pageSize={15} exportCsv={{ fileName: 'wallet-transactions.csv', columns: [
             { header: t('col.date'), value: (x) => x.at }, { header: t('col.type'), value: (x) => x.kind }, { header: t('wal.party'), value: (x) => x.label }, { header: t('col.reference'), value: (x) => x.reference }, { header: t('col.amount'), value: (x) => x.amount.amountMinor / 100 },
           ] }} empty={t('wal.noTxns')} />

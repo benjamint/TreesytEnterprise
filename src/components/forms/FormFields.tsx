@@ -1,6 +1,8 @@
+import { Fragment } from 'react';
 import type { FormSchema, Question, ValidationError } from '@/engines/forms';
 import { DISPLAY_TYPES, formFlow, isRequired, withCalculated } from '@/engines/forms';
 import { cn } from '@/lib/utils';
+import { factCell, factLabel, factsGrid, factValue } from '@/components/shared/ListKit';
 import { useLang, useT } from '@/stores/hooks';
 import { Photo } from './media';
 import { OTHER, QuestionInput, optLabel, qLabel } from './QuestionInput';
@@ -39,7 +41,7 @@ export function FormRenderer({ form, answers, onChange, errors = [], columns = 2
               }
               return (
                 <div key={q.id} className={cn('min-w-0', WIDE.includes(q.type) && 'sm:col-span-2')}>
-                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">
+                  <span className="mb-1.5 block text-[13px] font-medium text-ink">
                     {qLabel(q, lang)}{isRequired(q, answers) && <span className="text-danger"> *</span>}
                   </span>
                   {help && <span className="-mt-0.5 mb-1.5 block text-[12px] text-muted">{help}</span>}
@@ -93,15 +95,24 @@ export function AnswersView({ form, answers, masked = [] }: { form: FormSchema; 
   const lang = useLang();
   const { t } = useT();
   const shown = formFlow(form, answers).flatMap((s) => s.questions).filter((q) => q.type !== 'note');
+  const isWide = (q: Question) => ['image', 'signature', 'table', 'repeatGroup'].includes(q.type) && !isBlank(answers[q.id]);
+  // A wide answer after an odd count leaves a gap; fill it so the hairline grid stays closed.
+  let col = 0;
+  const gapBefore = new Set<string>();
+  for (const q of shown) {
+    if (isWide(q)) { if (col === 1) gapBefore.add(q.id); col = 0; } else col = 1 - col;
+  }
   return (
-    <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+    <dl className={factsGrid(2)}>
       {shown.map((q) => {
         const v = answers[q.id];
-        const wide = ['image', 'signature', 'table', 'repeatGroup'].includes(q.type) && !isBlank(v);
+        const wide = isWide(q);
         return (
-          <div key={q.id} className={cn('min-w-0', wide && 'sm:col-span-2')}>
-            <dt className="text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{qLabel(q, lang)}</dt>
-            <dd className="mt-0.5 text-[14px] text-ink">
+          <Fragment key={q.id}>
+          {gapBefore.has(q.id) && <div className="hidden bg-surface sm:block" aria-hidden="true" />}
+          <div className={cn(factCell, wide && 'sm:col-span-2')}>
+            <dt className={factLabel}>{qLabel(q, lang)}</dt>
+            <dd className={factValue}>
               {masked.includes(q.id) ? <span className="text-muted">{t('form.masked')}</span>
                 : q.type === 'image' && Array.isArray(v) && v.length ? <div className="mt-1 flex flex-wrap gap-2">{(v as string[]).map((p, i) => <Photo key={i} src={p} className="h-20 w-28 rounded-ctl border border-line" />)}</div>
                 : q.type === 'signature' && typeof v === 'string' && v.startsWith('data:') ? <img src={v} alt={t('form.media.signed')} className="mt-1 h-16 rounded-ctl border border-line bg-surface" />
@@ -110,8 +121,10 @@ export function AnswersView({ form, answers, masked = [] }: { form: FormSchema; 
                 ) : <span className={cn(DISPLAY_TYPES.includes(q.type) && 'tnum font-semibold')}>{answerText(q, v, t, lang, answers[`${q.id}__other`])}</span>}
             </dd>
           </div>
+          </Fragment>
         );
       })}
+      {col === 1 && <div className="hidden bg-surface sm:block" aria-hidden="true" />}
     </dl>
   );
 }

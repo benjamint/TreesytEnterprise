@@ -30,8 +30,8 @@ function UsageChart({ title, data, format }: { title: string; data: { month: str
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-[15px]">{title}</CardTitle>
-        <span className="tnum text-[15px] font-semibold text-ink">{format(data[data.length - 1]?.value ?? 0)}</span>
+        <CardTitle className="text-[14px]">{title}</CardTitle>
+        <span className="tnum text-[14px] font-semibold text-ink">{format(data[data.length - 1]?.value ?? 0)}</span>
       </CardHeader>
       <CardContent className="h-[180px] pt-2">
         {empty ? (

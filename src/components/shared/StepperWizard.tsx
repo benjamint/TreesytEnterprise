@@ -48,7 +48,7 @@ export function StepTitle({ eyebrow, title, description }: { eyebrow?: ReactNode
     <div className="mb-8">
       {eyebrow && <div className="eyebrow mb-2">{eyebrow}</div>}
       <h2 className="text-[26px] leading-tight">{title}</h2>
-      {description && <p className="mt-2 text-[15px] text-muted">{description}</p>}
+      {description && <p className="mt-1 text-[14px] text-muted">{description}</p>}
     </div>
   );
 }

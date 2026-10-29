@@ -65,6 +65,11 @@ export function MobileShell() {
   );
 
   useEffect(() => setRecordOpen(false), [location.pathname]);
+  // Large phone-app controls apply to the whole document, so sheets rendered in portals get them too.
+  useEffect(() => {
+    document.documentElement.classList.add('mobile-ui');
+    return () => document.documentElement.classList.remove('mobile-ui');
+  }, []);
   // Step-by-step flows take the whole screen; their sticky action button replaces the tab bar.
   const immersive = /^\/m\/(surveys\/.+|farmers\/(new|[^/]+\/edit)|communities\/.+|groups\/.+|buying\/(purchase|voice|pre\/new|requests\/new)|support\/new|warehouse\/(receive|outbound|count|resolve)|recovery\/(new|[^/]+\/repay)|preview\/.+|tasks\/.+)/.test(location.pathname);
 

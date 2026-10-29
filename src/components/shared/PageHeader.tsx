@@ -3,22 +3,8 @@ import Joyride, { STATUS, type Step } from 'react-joyride';
 import { CircleHelp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tip } from '@/components/ui/tooltip';
-import { useDemoStore } from '@/stores/demoStore';
 import { useT } from '@/stores/hooks';
 import { TOUR_EVENT, useCurrentRoute } from '@/web/layout/HelpMenu';
-
-/** Tours run once per page per browser session (PRD 6.5); never under browser automation. */
-const seenKey = (route: string) => `treesyt-tour:${route}`;
-function firstVisit(route: string) {
-  try {
-    if (sessionStorage.getItem(seenKey(route))) return false;
-    sessionStorage.setItem(seenKey(route), '1');
-    return true;
-  } catch {
-    return false;
-  }
-}
-const automated = () => typeof navigator !== 'undefined' && navigator.webdriver;
 
 /** The parts of a page a tour can point at, in reading order. */
 const TARGETS: [string, string][] = [
@@ -42,12 +28,12 @@ function useGenericTour(routeKey?: string) {
     <Joyride steps={steps} run continuous showSkipButton showProgress scrollOffset={120}
       callback={(d) => { if (d.status === STATUS.FINISHED || d.status === STATUS.SKIPPED) setRun(false); }}
       locale={{ back: t('mobile.back'), close: t('common.close'), last: t('tour.done'), next: t('tour.next'), skip: t('tour.skip') }}
-      styles={{ options: { primaryColor: 'rgb(var(--brand))', zIndex: 80, textColor: '#33413B' } }} />
+      styles={{ options: { primaryColor: 'rgb(var(--brand))', zIndex: 80, textColor: 'rgb(var(--body))', backgroundColor: 'rgb(var(--surface))', arrowColor: 'rgb(var(--surface))' }, tooltip: { borderRadius: 12, padding: 16, fontSize: 14 }, tooltipContent: { padding: '8px 4px' }, buttonNext: { borderRadius: 8, fontSize: 13, padding: '8px 12px' }, buttonBack: { fontSize: 13 }, buttonSkip: { fontSize: 13 } }} />
   ) : null;
   return { start, element };
 }
 
-/** List/detail page header: title, one-line description, one primary action, "?" tour (PRD 6.2). */
+/** List/detail page header: title, one-line description, one primary action, "?" tour (PRD 6.2). Tours run only when asked for. */
 export function PageHeader({
   eyebrow,
   title,
@@ -67,7 +53,6 @@ export function PageHeader({
   const route = useCurrentRoute();
   const generic = useGenericTour(route?.key);
   const tour = onTour ?? generic.start;
-  const autoTours = useDemoStore((s) => s.autoTours);
   const tourRef = useRef(tour);
   tourRef.current = tour;
   // Pages with their own tour listen for Help → Replay tour themselves.
@@ -77,27 +62,22 @@ export function PageHeader({
     window.addEventListener(TOUR_EVENT, replay);
     return () => window.removeEventListener(TOUR_EVENT, replay);
   }, [onTour]);
-  useEffect(() => {
-    if (!route || !autoTours || automated() || !firstVisit(route.key)) return;
-    const id = setTimeout(() => tourRef.current(), 900);
-    return () => clearTimeout(id);
-  }, [route, autoTours]);
   return (
-    <header className="flex flex-col gap-5 pb-8 md:flex-row md:items-end md:justify-between" data-tour="page-header">
-      <div className="min-w-0 space-y-2">
+    <header className="flex flex-col gap-4 pb-6 md:flex-row md:items-end md:justify-between" data-tour="page-header">
+      <div className="min-w-0 space-y-1">
         {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-        <div className="flex items-center gap-3">
-          <h1 className="text-[28px] leading-[1.15] md:text-[32px] lg:text-[36px]" data-tour="page-title">{title}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-[22px] leading-[1.2] tracking-[-0.02em] md:text-[24px]" data-tour="page-title">{title}</h1>
           <Tip label={t('common.tour')}>
-            <button type="button" onClick={tour} className="rounded-full p-1 text-muted hover:bg-brand-soft hover:text-brand" aria-label={t('common.tour')} data-tour="page-tour">
-              <CircleHelp className="h-5 w-5" />
+            <button type="button" onClick={tour} className="rounded-full p-1 text-muted transition-colors hover:bg-canvas hover:text-ink" aria-label={t('common.tour')} data-tour="page-tour">
+              <CircleHelp className="h-4 w-4" />
             </button>
           </Tip>
         </div>
-        {description && <p className="max-w-2xl text-[15px] text-muted">{description}</p>}
+        {description && <p className="max-w-2xl text-[14px] text-muted">{description}</p>}
       </div>
       {(primary || actions) && (
-        <div className="flex shrink-0 flex-wrap items-center gap-3" data-tour="page-primary">
+        <div className="flex shrink-0 flex-wrap items-center gap-2" data-tour="page-primary">
           {actions}
           {primary}
         </div>
@@ -109,12 +89,11 @@ export function PageHeader({
 
 export { Button };
 
-/** For pages with their own header layout: the same "?" tour button (and first-visit auto-run). */
+/** For pages with their own header layout: the same "?" tour button. */
 export function PageTourButton() {
   const { t } = useT();
   const route = useCurrentRoute();
   const generic = useGenericTour(route?.key);
-  const autoTours = useDemoStore((s) => s.autoTours);
   const ref = useRef(generic.start);
   ref.current = generic.start;
   useEffect(() => {
@@ -122,16 +101,11 @@ export function PageTourButton() {
     window.addEventListener(TOUR_EVENT, replay);
     return () => window.removeEventListener(TOUR_EVENT, replay);
   }, []);
-  useEffect(() => {
-    if (!route || !autoTours || automated() || !firstVisit(route.key)) return;
-    const id = setTimeout(() => ref.current(), 900);
-    return () => clearTimeout(id);
-  }, [route, autoTours]);
   return (
     <>
       <Tip label={t('common.tour')}>
-        <button type="button" onClick={generic.start} className="rounded-full p-1 text-muted hover:bg-brand-soft hover:text-brand" aria-label={t('common.tour')} data-tour="page-tour">
-          <CircleHelp className="h-5 w-5" />
+        <button type="button" onClick={generic.start} className="rounded-full p-1 text-muted transition-colors hover:bg-canvas hover:text-ink" aria-label={t('common.tour')} data-tour="page-tour">
+          <CircleHelp className="h-4 w-4" />
         </button>
       </Tip>
       {generic.element}

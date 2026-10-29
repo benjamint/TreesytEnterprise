@@ -137,7 +137,7 @@ function Responses({ form }: { form: FormRecord }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <Link to={`/app/forms/${form.id}`} className="mb-1 inline-flex items-center gap-1 text-[13px] text-muted hover:text-brand"><ArrowLeft className="h-3.5 w-3.5" /> {form.name}</Link>
-          <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="text-[28px] font-semibold text-ink">{t('forms.responses')}</h1><PageTourButton /></span>
+          <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="text-[24px] font-semibold text-ink">{t('forms.responses')}</h1><PageTourButton /></span>
           <p className="text-[14px] text-muted">{t('forms.r.summary', { count: rows.length, shown: shown.length })}</p>
         </div>
         <div className="flex gap-2">
@@ -303,7 +303,7 @@ export function QuestionSummary({ q, values, total }: { q: Question; values: unk
   } else if (['number', 'decimal', 'currency', 'calculated', 'year'].includes(q.type)) {
     const nums = answered.map(Number).filter(Number.isFinite);
     const stats = nums.length ? [[t('forms.a.average'), nums.reduce((s, x) => s + x, 0) / nums.length], [t('forms.a.median'), median(nums)], [t('set.commodities.min'), Math.min(...nums)], [t('set.commodities.max'), Math.max(...nums)]] as const : [];
-    body = <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map(([k, v]) => <div key={k} className="rounded-ctl bg-canvas p-3"><div className="eyebrow">{k}</div><div className="tnum mt-1 text-[18px] font-semibold text-ink">{f.number(v, { maximumFractionDigits: 1 })}</div></div>)}</div>;
+    body = <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{stats.map(([k, v]) => <div key={k} className="rounded-ctl bg-canvas p-3"><div className="eyebrow">{k}</div><div className="tnum mt-1 text-[16px] font-semibold text-ink">{f.number(v, { maximumFractionDigits: 1 })}</div></div>)}</div>;
   } else if (q.type === 'image') {
     body = <div className="flex flex-wrap gap-2">{answered.slice(0, 8).flatMap((v) => (v as string[]).slice(0, 1)).map((p, i) => <Photo key={i} src={p} className="h-14 w-20 rounded-[8px] border border-line" />)}</div>;
   } else if (['shortText', 'longText', 'email', 'phone', 'contact'].includes(q.type)) {
@@ -325,7 +325,7 @@ function Analytics({ form, rows, lists }: { form: FormRecord; rows: SurveyRespon
   const bounds = gps.length ? ([[Math.min(...gps.map((r) => r.gps!.lat)) - 0.05, Math.min(...gps.map((r) => r.gps!.lng)) - 0.05], [Math.max(...gps.map((r) => r.gps!.lat)) + 0.05, Math.max(...gps.map((r) => r.gps!.lng)) + 0.05]] as [[number, number], [number, number]]) : null;
   const avgCompletion = rows.length ? rows.reduce((s, r) => s + r.completion, 0) / rows.length : 0;
   if (!rows.length) return <TabEmpty>{t('forms.r.empty')}</TabEmpty>;
-  const card = (k: string, v: string) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{k}</div><div className="tnum mt-2 text-[28px] font-semibold text-ink">{v}</div></div>;
+  const card = (k: string, v: string) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{k}</div><div className="tnum mt-2 text-[24px] font-semibold text-ink">{v}</div></div>;
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-4">
@@ -335,15 +335,15 @@ function Analytics({ form, rows, lists }: { form: FormRecord; rows: SurveyRespon
         {card(t('forms.a.agents'), f.number(new Set(rows.map((r) => r.agentId)).size))}
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('forms.a.overTime')}</h3><StackedColumns data={weeks} series={[{ key: 'responses', label: t('forms.responses'), index: 0 }]} format={(v) => f.number(v)} /></div>
+        <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('forms.a.overTime')}</h3><StackedColumns data={weeks} series={[{ key: 'responses', label: t('forms.responses'), index: 0 }]} format={(v) => f.number(v)} /></div>
         <div className="rounded-card border border-line bg-surface p-5 shadow-soft">
-          <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('forms.a.map')}</h3>
+          <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('forms.a.map')}</h3>
           <div className="h-[260px] overflow-hidden rounded-ctl border border-line">
             {bounds && <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}><TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />{gps.slice(0, 400).map((r) => <CircleMarker key={r.id} center={[r.gps!.lat, r.gps!.lng]} radius={4} pathOptions={{ color: '#fff', weight: 1, fillColor: '#2a78d6', fillOpacity: 0.85 }} />)}</MapContainer>}
           </div>
         </div>
       </div>
-      <h3 className="pt-2 text-[17px] font-semibold text-ink">{t('forms.a.byQuestion')}</h3>
+      <h3 className="pt-2 text-[15px] font-semibold text-ink">{t('forms.a.byQuestion')}</h3>
       <div className="grid gap-4 lg:grid-cols-2">
         {allQuestions(schema).filter((q) => q.type !== 'note' && !q.sensitive).map((q) => <QuestionSummary key={q.id} q={q} values={rows.map((r) => r.answers[q.id])} total={rows.length} />)}
       </div>

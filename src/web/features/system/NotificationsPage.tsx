@@ -182,7 +182,7 @@ function EmailPreview({ m }: { m: OutboxMessage }) {
       </div>
       <div className="space-y-1 border-b border-[#e3e8e5] px-5 py-3 text-[12px] text-[#5d6b64]">
         <div>{`${t('ntf.to')}: ${m.recipient}`}</div>
-        <div className="text-[15px] font-semibold text-[#1d2b24]">{m.subject}</div>
+        <div className="text-[14px] font-semibold text-[#1d2b24]">{m.subject}</div>
       </div>
       <div className="whitespace-pre-line px-5 py-4 text-[14px] leading-relaxed">{m.body}</div>
       <div className="border-t border-[#e3e8e5] px-5 py-3 text-[11px] text-[#5d6b64]">{org.branding.emailFooter ?? `${org.legalName} · ${t('ntf.sentBy')}`}</div>

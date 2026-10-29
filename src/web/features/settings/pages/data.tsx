@@ -188,7 +188,7 @@ function NewKeyDialog({ open, onOpenChange, onCreate }: { open: boolean; onOpenC
           <div className="space-y-4">
             <Mini label={t('set.int.keyName')}><TextInput value={name} onChange={setName} autoFocus /></Mini>
             <div>
-              <div className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.int.scopes')}</div>
+              <div className="mb-2 text-[12px] font-medium text-muted">{t('set.int.scopes')}</div>
               <div className="grid grid-cols-2 gap-2">
                 {API_SCOPES.map((s) => <Checkbox key={s} label={<span className="font-mono text-[13px]">{s}</span>} checked={scopes.includes(s)} onChange={(e) => setScopes(e.target.checked ? [...scopes, s] : scopes.filter((x) => x !== s))} />)}
               </div>

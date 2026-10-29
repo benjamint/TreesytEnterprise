@@ -41,7 +41,7 @@ const DOC_TYPES = ['meetingRecords', 'contributionRecords', 'membershipList', 'o
 /** Uploading one of these resets the matching manual score and asks for a review (PRD C4). */
 const REVIEWED_DOCS: Record<string, keyof ManualScores> = { meetingRecords: 'meetingMinutes', contributionRecords: 'contributionRecords' };
 const LEADER_POSITIONS = { en: ['President', 'Secretary', 'Treasurer', 'Organiser'], fr: ['Président(e)', 'Secrétaire', 'Trésorier(ère)', 'Animateur(trice)'] };
-const sel = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+const sel = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 
 function useGroupRows() {
   const groups = useOrgRows(useGroupStore((s) => s.groups));
@@ -178,7 +178,7 @@ function GroupForm({ group, onClose }: { group?: FarmerGroup; onClose: (id?: str
             <Field label={t('people.group.established')}><Input compact type="date" value={g.established} onChange={(e) => setG({ ...g, established: e.target.value })} aria-label={t('people.group.established')} /></Field>
           </div>
           <div>
-            <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
+            <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
             <FormFields form={form} answers={g.customFields} onChange={(customFields) => setG({ ...g, customFields })} errors={tried ? errors : []} />
           </div>
         </div>
@@ -412,7 +412,7 @@ function ManualReview({ group, manual, onSave }: { group: FarmerGroup; manual: M
   const valid = mm !== '' && cr !== '' && mm >= 1 && mm <= 4 && cr >= 1 && cr <= 18;
   return (
     <div className={`rounded-ctl border p-4 ${group.scoreStatus === 'PENDING_REVIEW' ? 'border-warning/40 bg-warning/5' : 'border-line'}`}>
-      <h3 className="text-[15px] font-semibold text-ink">{t('people.group.manualReview')}</h3>
+      <h3 className="text-[14px] font-semibold text-ink">{t('people.group.manualReview')}</h3>
       <p className="mt-1 text-[13px] text-muted">{group.scoreStatus === 'PENDING_REVIEW' ? t('people.group.reviewPending') : t('people.group.reviewDone', { by: lk.user(manual.reviewedBy ?? 'system'), date: manual.reviewedAt ? f.date(manual.reviewedAt) : '—' })}</p>
       {canEdit && (<>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">

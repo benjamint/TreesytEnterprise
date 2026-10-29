@@ -317,10 +317,19 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Build, lint and tests pass; quality tests check that no record points at another company's record, that components have no hard-coded English, and that every literal translation key exists
 - [x] Every list: loading skeleton and error with Try again (Demo panel → Screen states), empty state with an illustration (helpful actions where the company has nothing yet), filtered-empty with Clear filters
 - [x] Page error boundary with Try again / Reload; skeleton while a page's code loads
-- [x] Tours on every page (built from the page's title, action, stats, tabs, filters, table and help), auto-run on first visit per session, switch in the Demo panel
+- [x] Tours on every page (built from the page's title, action, stats, tabs, filters, table and help), started from the page's ? button or Help → Replay tour; they never open by themselves
 - [x] Motion — page fade-and-rise, list stagger, stat count-up, drawer slide, success toasts; all off for people who prefer reduced motion
 - [x] Responsive — 65 routes checked at 1440, 1024, 768 and 390 px with no horizontal overflow; tables become stacked cards under 768 px; sidebar → icon rail → sheet menu
 - [x] Dark mode — same routes in dark; text on brand-coloured and status-coloured surfaces picks a readable colour, also for company brand colours
 - [x] Accessibility — axe-core (WCAG 2 A/AA) on every route in light and dark; colour contrast AA (muted text, status colours, avatars), names on every control, keyboard-reachable table rows and cards, focusable scroll areas, visible focus rings, skip link
 - [x] Performance — each page loads on demand; the demo-data generator downloads only on first visit or reset; first page ≈ 760 KB gzipped; lists paginate (no more than 15–50 rows in the DOM)
 - [x] All 15 demo journeys run end to end in the browser with no console errors (external map tiles are blocked in the test sandbox)
+
+## Design refresh (after Phase 18)
+
+- [x] Compact web design system: 14 px base text, 36 px buttons, 40 px inputs (36 px in filter bars), radius 8 / 12 / 16, neutral hairline borders, quiet sentence-case labels, layered shadows for floating surfaces
+- [x] The phone app keeps the PRD's large controls (56 px inputs, 52 px buttons, uppercase labels) through `.mobile-ui`, which also covers its pop-up sheets
+- [x] Detail drawer floats with a margin on every side, rounded corners and a soft shadow
+- [x] Label / value details in bordered cells with hairlines between them (drawer overviews and form answers)
+- [x] Dashboard key figures as one divided metrics strip; tables with a quiet header row and neutral hover
+- [x] Deviation from PRD 6.1 component sizes on the web (52 px buttons, 56 px inputs, uppercase labels), made on request for a cleaner, denser look

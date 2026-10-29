@@ -45,7 +45,7 @@ export function QuestionInput({ q, value, onChange, invalid, big, answers = {}, 
   const { t } = useT();
   const base = useBaseGps();
   const aria = qLabel(q, lang);
-  const h = big ? 'h-12 text-[16px]' : 'h-11 text-[14px]';
+  const h = big ? 'h-12 text-[16px]' : 'h-ctl text-[14px]';
   const inv = invalid && 'border-danger';
   const options = useMemo(() => (q.randomise ? shuffled(q.options ?? [], q.id) : q.options ?? []), [q.options, q.randomise, q.id]);
   const placeholder = q.placeholder?.[lang] ?? q.placeholder?.en;
@@ -80,7 +80,7 @@ export function QuestionInput({ q, value, onChange, invalid, big, answers = {}, 
       return <textarea value={String(value ?? '')} placeholder={placeholder} onChange={(e) => onChange(e.target.value || undefined)} rows={big ? 4 : 3} aria-label={aria} className={cn(field, 'p-3', big ? 'text-[16px]' : 'text-[14px]', inv)} />;
     case 'yesNo':
       return (
-        <div className={cn('flex items-center gap-1 rounded-ctl border border-line bg-canvas p-1', big ? 'h-14' : 'h-11', inv)} role="radiogroup" aria-label={aria}>
+        <div className={cn('flex items-center gap-1 rounded-ctl border border-line bg-canvas p-1', big ? 'h-14' : 'h-ctl', inv)} role="radiogroup" aria-label={aria}>
           {[true, false].map((v) => (
             <button key={String(v)} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)} className={cn('h-full flex-1 rounded-[8px] font-medium', big ? 'text-[16px]' : 'text-[13px]', value === v ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>
               {t(v ? 'common.yes' : 'common.no')}
@@ -340,7 +340,7 @@ function LocationPicker({ value, onChange, big }: { value?: string; onChange: (v
         const parent = i === 0 ? null : path[i - 1];
         const opts = nodes.filter((n) => n.levelId === l.id && (i === 0 || n.parentId === parent)).sort((a, b) => a.name.localeCompare(b.name));
         return (
-          <select key={l.id} value={path[i] ?? ''} onChange={(e) => onChange(e.target.value || parent || undefined)} aria-label={l.label[lang] ?? l.label.en} className={cn(field, big ? 'h-12 text-[16px]' : 'h-11 text-[14px]', 'px-3')}>
+          <select key={l.id} value={path[i] ?? ''} onChange={(e) => onChange(e.target.value || parent || undefined)} aria-label={l.label[lang] ?? l.label.en} className={cn(field, big ? 'h-12 text-[16px]' : 'h-ctl text-[14px]', 'px-3')}>
             <option value="">{l.label[lang] ?? l.label.en ?? t('form.choose')}</option>
             {opts.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
           </select>

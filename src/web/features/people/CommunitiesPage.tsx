@@ -246,7 +246,7 @@ function CommunityDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => vo
                 [terms.farmers, f.number(row.farmers)], [t('people.boughtKg'), f.kg(Math.round(row.kg))],
               ]} />
               <div>
-                <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('col.score')}</h3>
+                <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('col.score')}</h3>
                 <ScoreView model={COMMUNITY_MODEL} breakdown={breakdown} prefix="people.score.community" stored={row.score} onRecalculate={recalc} />
               </div>
             </div>
@@ -308,11 +308,11 @@ function CommunityDashboard({ rows }: { rows: Row[] }) {
   const bought = rows.filter((r) => r.kg > 0).length;
   const avg = rows.length ? rows.reduce((s, r) => s + r.farmers, 0) / rows.length : 0;
   const card = (label: string, value: string) => (
-    <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{label}</div><div className="tnum mt-2 text-[28px] font-semibold text-ink">{value}</div></div>
+    <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{label}</div><div className="tnum mt-2 text-[24px] font-semibold text-ink">{value}</div></div>
   );
   const topList = (title: string, list: Row[], value: (r: Row) => string) => (
     <div className="rounded-card border border-line bg-surface p-5 shadow-soft">
-      <h3 className="mb-3 text-[15px] font-semibold text-ink">{title}</h3>
+      <h3 className="mb-3 text-[14px] font-semibold text-ink">{title}</h3>
       <ol className="space-y-2">{list.map((r, i) => <li key={r.id}><button type="button" onClick={() => navigate(`/app/communities?open=${r.id}`)} className="flex w-full items-center gap-3 text-left text-[14px] hover:text-brand"><span className="tnum w-5 text-muted">{i + 1}</span><span className="flex-1 text-ink">{r.name}</span><span className="tnum text-body">{value(r)}</span></button></li>)}</ol>
     </div>
   );
@@ -328,7 +328,7 @@ function CommunityDashboard({ rows }: { rows: Row[] }) {
         {topList(t('people.dash.topScore'), [...rows].sort((a, b) => b.score - a.score).slice(0, 3), (r) => f.number(r.score))}
       </div>
       <div className="rounded-card border border-line bg-surface p-5 shadow-soft">
-        <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('people.dash.overTime')}</h3>
+        <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('people.dash.overTime')}</h3>
         <StackedColumns data={months.map((m) => ({ label: m.label, profiled: m.value }))} series={[{ key: 'profiled', label: t('people.dash.profiled'), index: 0 }]} format={(v) => f.number(v)} />
       </div>
     </div>

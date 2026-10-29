@@ -134,10 +134,10 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
   return (
     <div className="overflow-hidden rounded-card border border-line bg-surface shadow-soft" data-tour="data-table">
       {(columnPicker || exportCsv || selectedRows.length > 0) && (
-        <div className="flex min-h-[52px] flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-2">
+        <div className="flex min-h-[48px] flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-1.5">
           {selectedRows.length > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[14px] font-medium text-ink">{t('table.selected', { count: selectedRows.length })}</span>
+              <span className="text-[13px] font-medium text-ink">{t('table.selected', { count: selectedRows.length })}</span>
               {bulkActions?.(selectedRows, () => setSelection({}))}
               <Button variant="ghost" size="sm" onClick={() => setSelection({})}>{t('table.clearSelection')}</Button>
             </div>
@@ -166,17 +166,17 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
       )}
       <div className={cn('overflow-x-auto scrollbar-thin', phase === 'ready' && data.length > 0 && 'hidden md:block', phase !== 'ready' && 'hidden')}>
         <table className="w-full min-w-[640px] border-collapse text-[14px]">
-          <thead className="sticky top-0 bg-canvas">
+          <thead className="sticky top-0 bg-subtle">
             {table.getHeaderGroups().map((hg) => (
               <tr key={hg.id}>
                 {hg.headers.map((h) => {
                   const sorted = h.column.getIsSorted();
                   return (
-                    <th key={h.id} scope="col" className={cn('h-11 whitespace-nowrap border-b border-line px-4 text-left align-middle', h.column.id === '_select' && 'w-10 pr-0')}>
+                    <th key={h.id} scope="col" className={cn('h-9 whitespace-nowrap border-b border-line px-4 text-left align-middle text-[12px] font-medium text-muted', h.column.id === '_select' && 'w-10 pr-0')}>
                       {h.isPlaceholder ? null : h.column.id === '_select' || (typeof h.column.columnDef.header === 'string' && !h.column.columnDef.header) || !h.column.getCanSort() ? (
                         flexRender(h.column.columnDef.header, h.getContext())
                       ) : (
-                        <button type="button" onClick={h.column.getToggleSortingHandler()} className="eyebrow inline-flex items-center gap-1 hover:text-ink" disabled={!h.column.getCanSort()}>
+                        <button type="button" onClick={h.column.getToggleSortingHandler()} className="-mx-1 inline-flex items-center gap-1 rounded px-1 text-[12px] font-medium text-muted transition-colors hover:text-ink" disabled={!h.column.getCanSort()}>
                           {flexRender(h.column.columnDef.header, h.getContext())}
                           {sorted === 'asc' && <ArrowUp className="h-3 w-3" />}
                           {sorted === 'desc' && <ArrowDown className="h-3 w-3" />}
@@ -196,7 +196,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
                 onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                 tabIndex={onRowClick ? 0 : undefined}
                 onKeyDown={onRowClick ? (e) => { if (e.key === 'Enter' && e.target === e.currentTarget) onRowClick(row.original); } : undefined}
-                className={cn('row-in h-[52px] border-b border-line last:border-0 transition-colors hover:bg-brand-soft/50 focus-visible:bg-brand-soft/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand', onRowClick && 'cursor-pointer', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/40')}
+                className={cn('row-in h-12 border-b border-line last:border-0 transition-colors hover:bg-subtle focus-visible:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand', onRowClick && 'cursor-pointer', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/50 hover:bg-brand-soft/60')}
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className={cn('tnum whitespace-nowrap px-4 align-middle text-body', cell.column.id === '_select' && 'w-10 pr-0')}>
@@ -235,17 +235,20 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
         <ul className="divide-y divide-line md:hidden" aria-label={t('table.cards')}>
           {table.getRowModel().rows.map((row) => {
             const cells = row.getVisibleCells().filter((c) => c.column.id !== '_select');
-            const [first, ...rest] = cells;
             const head = (c: (typeof cells)[number]) => { const h = c.column.columnDef.header; return typeof h === 'string' ? h : ''; };
+            // A leading column without a header (avatar, status dot) joins the next one as the card title.
+            const lead = cells.length > 1 && !head(cells[0]!) ? 2 : 1;
+            const titleCells = cells.slice(0, lead);
+            const rest = cells.slice(lead);
             return (
               <li key={row.id} className={cn('px-4 py-3', (row.getIsSelected() || (activeId && row.id === activeId)) && 'bg-brand-soft/40')}>
                 <div className="flex items-start gap-3">
                   {selectable && <input type="checkbox" aria-label={t('table.selectRow')} checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} className="mt-1 h-4 w-4 accent-[rgb(var(--brand))]" />}
                   <div role={onRowClick ? 'button' : undefined} tabIndex={onRowClick ? 0 : undefined} onClick={onRowClick ? () => onRowClick(row.original) : undefined} onKeyDown={onRowClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick(row.original); } } : undefined} className={cn('min-w-0 flex-1 rounded-ctl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand', onRowClick && 'cursor-pointer')}>
-                    {first && <div className="mb-1.5 font-medium text-ink">{flexRender(first.column.columnDef.cell, first.getContext())}</div>}
-                    <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-[13px]">
+                    {titleCells.length > 0 && <div className="mb-2 flex min-w-0 items-center gap-2.5 font-medium text-ink">{titleCells.map((c) => <span key={c.id} className="min-w-0 truncate">{flexRender(c.column.columnDef.cell, c.getContext())}</span>)}</div>}
+                    <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[13px]">
                       {rest.slice(0, 6).map((c) => (
-                        <div key={c.id} className="min-w-0"><dt className="text-[11px] uppercase tracking-wide text-muted">{head(c)}</dt><dd className="truncate text-body">{flexRender(c.column.columnDef.cell, c.getContext())}</dd></div>
+                        <div key={c.id} className="min-w-0"><dt className="text-[12px] text-muted">{head(c)}</dt><dd className="truncate text-body">{flexRender(c.column.columnDef.cell, c.getContext())}</dd></div>
                       ))}
                     </dl>
                   </div>
@@ -255,7 +258,7 @@ export function DataTable<T>({ columns, data, pageSize = 10, onRowClick, getRowI
           })}
         </ul>
       )}
-      <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-3 text-[13px] text-muted">
+      <div className="flex items-center justify-between gap-3 border-t border-line px-4 py-2.5 text-[13px] text-muted">
         <span className="tnum">{`${f.number(from)}–${f.number(to)} / ${f.number(data.length)}`}</span>
         <div className="flex gap-2">
           <Button variant="secondary" size="iconSm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label={t('table.previous')}>

@@ -136,7 +136,7 @@ export function MobilePage() {
             <table className="w-full min-w-[520px] text-[14px]">
               <thead>
                 <tr className="bg-canvas">
-                  <th className="px-3 py-2.5 text-left text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.mobile.tile')}</th>
+                  <th className="px-3 py-2.5 text-left text-[12px] font-medium text-muted">{t('set.mobile.tile')}</th>
                   {agentTypes.map((a) => <th key={a.id} className="px-3 py-2.5 text-center text-[12px] font-semibold text-ink">{typeName(a)}</th>)}
                 </tr>
               </thead>

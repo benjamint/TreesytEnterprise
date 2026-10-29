@@ -100,7 +100,7 @@ export function Markdown({ source }: { source: string }) {
     const h = /^(#{1,3})\s+(.*)$/.exec(line);
     if (h) {
       const level = h[1]!.length;
-      const cls = level === 1 ? 'text-[22px] font-semibold text-ink' : level === 2 ? 'mt-2 text-[17px] font-semibold text-ink' : 'text-[15px] font-semibold text-ink';
+      const cls = level === 1 ? 'text-[22px] font-semibold text-ink' : level === 2 ? 'mt-2 text-[15px] font-semibold text-ink' : 'text-[14px] font-semibold text-ink';
       blocks.push(level === 1 ? <h2 key={k++} className={cls}>{inline(h[2]!, `h${k}`)}</h2> : <h3 key={k++} className={cls}>{inline(h[2]!, `h${k}`)}</h3>);
       i++;
       continue;
@@ -132,5 +132,5 @@ export function Markdown({ source }: { source: string }) {
     while (i < lines.length && lines[i]!.trim() && !/^(#{1,3}\s|>|\s*([-*]|\d+\.)\s)/.test(lines[i]!)) { para.push(lines[i]!); i++; }
     blocks.push(<p key={k++}>{inline(para.join(' '), `p${k}`)}</p>);
   }
-  return <div className="space-y-3 text-[15px] leading-relaxed text-body">{blocks}</div>;
+  return <div className="space-y-3 text-[14px] leading-relaxed text-body">{blocks}</div>;
 }

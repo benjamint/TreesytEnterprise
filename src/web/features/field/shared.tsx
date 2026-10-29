@@ -100,6 +100,6 @@ export function useCfReason() {
   };
 }
 
-export const selectCls = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+export const selectCls = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 
 export type { Agent };

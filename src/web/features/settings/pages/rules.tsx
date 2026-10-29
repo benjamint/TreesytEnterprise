@@ -288,7 +288,7 @@ function TemplateEditor({ tpl, onChange }: { tpl: MessageTemplate; onChange: (p:
         {tpl.subject && <Mini label={t('set.notif.subject')}><LangInputs label={t('set.notif.subject')} value={tpl.subject} onChange={(subject) => onChange({ subject })} languages={langs} /></Mini>}
         <Mini label={t('set.notif.body')}><LangInputs multiline label={t('set.notif.body')} value={tpl.body} onChange={(body) => onChange({ body })} languages={langs} /></Mini>
         <div>
-          <div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.notif.variables')}</div>
+          <div className="mb-1.5 text-[12px] font-medium text-muted">{t('set.notif.variables')}</div>
           <div className="flex flex-wrap gap-1.5">
             {used.map((v) => <code key={v} className="rounded bg-canvas px-2 py-0.5 text-[12px] text-ink">{`{{${v}}}`}</code>)}
           </div>

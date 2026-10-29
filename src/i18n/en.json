@@ -2342,9 +2342,7 @@
       "normal": "Normal",
       "slow": "Slow network",
       "error": "Errors"
-    },
-    "autoTours": "Tours on first visit",
-    "autoToursHint": "Run each page's tour the first time you open it in this session."
+    }
   },
   "auth": {
     "home": "TreeSyt home",

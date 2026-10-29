@@ -75,7 +75,7 @@ export function ApiDocsPage() {
       <div className="space-y-8">
         {groups.map((g) => (
           <section key={g} aria-labelledby={`api-${g}`}>
-            <h2 id={`api-${g}`} className="mb-3 text-[18px] font-semibold text-ink">{t(`api.group.${g}`)}</h2>
+            <h2 id={`api-${g}`} className="mb-3 text-[16px] font-semibold text-ink">{t(`api.group.${g}`)}</h2>
             <div className="space-y-3">
               {shown.filter((e) => e.group === g).map((e) => {
                 const curl = `curl -X ${e.method} "${base}${e.path.replace('{id}', 'ID')}" \\\n  -H "Authorization: Bearer ${key ? `${key.prefix}…` : 'YOUR_KEY'}"${e.body ? ` \\\n  -H "Content-Type: application/json" \\\n  -d '${JSON.stringify(e.body)}'` : ''}`;
@@ -96,11 +96,11 @@ export function ApiDocsPage() {
                             <tbody className="divide-y divide-line">{e.params.map(([n, ty, u]) => <tr key={n}><td className="py-1.5 font-mono text-[12px] text-ink">{n}</td><td className="py-1.5 text-body">{ty}</td><td className="py-1.5 text-muted">{t(`api.paramUse.${u}`)}</td></tr>)}</tbody>
                           </table>
                         )}
-                        {e.body !== undefined && <><h4 className="text-[12px] font-semibold uppercase tracking-wide text-muted">{t('api.requestBody')}</h4><JsonBlock value={e.body} label={t('api.requestBody')} /></>}
-                        <div className="flex items-center justify-between"><h4 className="text-[12px] font-semibold uppercase tracking-wide text-muted">{t('api.example')}</h4><Button size="xs" variant="ghost" onClick={() => copy(curl)}><Copy /> {t('api.copy')}</Button></div>
+                        {e.body !== undefined && <><h4 className="text-[12px] font-medium text-muted">{t('api.requestBody')}</h4><JsonBlock value={e.body} label={t('api.requestBody')} /></>}
+                        <div className="flex items-center justify-between"><h4 className="text-[12px] font-medium text-muted">{t('api.example')}</h4><Button size="xs" variant="ghost" onClick={() => copy(curl)}><Copy /> {t('api.copy')}</Button></div>
                         <pre className="overflow-x-auto rounded-ctl bg-[#0f2a20] p-3 font-mono text-[12px] leading-relaxed text-[#d7efe4]">{curl}</pre>
                       </div>
-                      <div><h4 className="mb-2 text-[12px] font-semibold uppercase tracking-wide text-muted">{t('api.response', { code: e.method === 'POST' ? '201' : '200' })}</h4><JsonBlock value={e.response} label={t('api.response', { code: '200' })} /></div>
+                      <div><h4 className="mb-2 text-[12px] font-medium text-muted">{t('api.response', { code: e.method === 'POST' ? '201' : '200' })}</h4><JsonBlock value={e.response} label={t('api.response', { code: '200' })} /></div>
                     </div>
                   </details>
                 );
@@ -109,7 +109,7 @@ export function ApiDocsPage() {
           </section>
         ))}
         <section aria-labelledby="api-events">
-          <h2 id="api-events" className="mb-1 text-[18px] font-semibold text-ink">{t('api.events')}</h2>
+          <h2 id="api-events" className="mb-1 text-[16px] font-semibold text-ink">{t('api.events')}</h2>
           <p className="mb-3 text-[13px] text-muted">{t('api.eventsHint')}</p>
           <div className="grid gap-3 lg:grid-cols-3">
             {EVENTS.map(([name, sample]) => <div key={name} className="rounded-card border border-line bg-surface p-4 shadow-soft"><code className="mb-2 block font-mono text-[13px] font-semibold text-ink">{name}</code><JsonBlock value={sample} label={name} /></div>)}

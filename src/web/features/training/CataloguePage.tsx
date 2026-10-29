@@ -23,7 +23,7 @@ import { useTrainingLookups } from './WorkshopsPage';
 const CATEGORIES: TopicCategory[] = ['AGRONOMY', 'CONSERVATION', 'FINANCE', 'SAFETY', 'QUALITY', 'SOCIAL'];
 const AUDIENCES: TopicAudience[] = ['FARMERS', 'GROUPS', 'STAFF'];
 const SECTORS = Object.keys(TOPIC_TEMPLATES);
-const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 
 /** Training catalogue (PRD G3): topics per language, category, duration, materials, quiz form, audience; starter templates by sector. */
 export function TrainingCataloguePage() {

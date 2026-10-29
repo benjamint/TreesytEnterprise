@@ -227,7 +227,7 @@ export function AggExpenseSheet({ expense, acsId, onClose }: { expense?: Aggrega
       onClose(e.id);
     }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -242,7 +242,7 @@ export function AggExpenseSheet({ expense, acsId, onClose }: { expense?: Aggrega
             <Field label={t('buy.numberOfBags')}><Input compact type="number" min={1} value={bags} onChange={(e) => setBags(e.target.value)} aria-label={t('buy.numberOfBags')} /></Field>
           </div>
           <div>
-            <div className="mb-2 flex items-center justify-between gap-3"><h3 className="text-[15px] font-semibold text-ink">{t('buy.expenseLines')}</h3>
+            <div className="mb-2 flex items-center justify-between gap-3"><h3 className="text-[14px] font-semibold text-ink">{t('buy.expenseLines')}</h3>
               <select value="" onChange={(e) => e.target.value && add(e.target.value)} aria-label={t('buy.addLine')} className="h-10 max-w-[60%] rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 <option value="">{t('agg.addLineCount', { count: types.length })}</option>
                 {types.filter((x) => !lines.some((l) => l.expenseTypeId === x.id)).map((x) => <option key={x.id} value={x.id}>{`${x.name} · ${t(`buy.basis.${x.basis}`)}`}</option>)}
@@ -258,7 +258,7 @@ export function AggExpenseSheet({ expense, acsId, onClose }: { expense?: Aggrega
                       <div className="mt-2 grid grid-cols-3 gap-2">
                         <Input compact type="number" value={l.quantity} onChange={(e) => setLines(lines.map((y, j) => (j === i ? { ...y, quantity: e.target.value } : y)))} aria-label={`${x.name} ${t('col.quantity')}`} />
                         <Input compact type="number" value={l.rate} onChange={(e) => setLines(lines.map((y, j) => (j === i ? { ...y, rate: e.target.value } : y)))} aria-label={`${x.name} ${t('buy.rate')}`} />
-                        <div className={cn('flex h-11 items-center justify-end rounded-ctl bg-canvas px-3 tnum text-[14px] font-medium', l.capped ? 'text-warning' : 'text-ink')}>{f.money({ amountMinor: l.amount, currency: f.org.currency })}</div>
+                        <div className={cn('flex h-ctl items-center justify-end rounded-ctl bg-canvas px-3 tnum text-[14px] font-medium', l.capped ? 'text-warning' : 'text-ink')}>{f.money({ amountMinor: l.amount, currency: f.org.currency })}</div>
                       </div>
                       {l.capped && x.cap && <p className="mt-1 text-[12px] text-warning">{t('buy.capHint', { cap: f.money(x.cap) })}</p>}
                     </li>
@@ -268,7 +268,7 @@ export function AggExpenseSheet({ expense, acsId, onClose }: { expense?: Aggrega
             ) : <TabEmpty>{t('buy.noLines')}</TabEmpty>}
           </div>
           <section className="space-y-3 rounded-card border border-line p-4">
-            <h3 className="text-[15px] font-semibold text-ink">{t('col.payee')}</h3>
+            <h3 className="text-[14px] font-semibold text-ink">{t('col.payee')}</h3>
             <div className="grid gap-3 sm:grid-cols-3">
               <Field label={t('buy.walletName')}><Input value={payee.name} onChange={(e) => setPayee({ ...payee, name: e.target.value })} aria-label={t('buy.walletName')} /></Field>
               <Field label={t('agg.network')}><select value={payee.providerId} onChange={(e) => setPayee({ ...payee, providerId: e.target.value })} aria-label={t('agg.network')} className={select}>{momo.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></Field>

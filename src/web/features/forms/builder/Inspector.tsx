@@ -24,7 +24,7 @@ const CORE_FIELDS: Partial<Record<FormBinding, string[]>> = {
 function Row({ label, children, hint }: { label: string; children: ReactNode; hint?: ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label}</span>
+      <span className="mb-1 block text-[13px] font-medium text-ink">{label}</span>
       {children}
       {hint && <span className="mt-1 block text-[12px] text-muted">{hint}</span>}
     </label>
@@ -48,7 +48,7 @@ function LangPair({ label, value, onChange, multiline }: { label: string; value?
   const v = value ?? {};
   return (
     <div className="space-y-1.5">
-      <span className="block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label}</span>
+      <span className="block text-[12px] font-medium text-muted">{label}</span>
       {(['en', 'fr'] as const).map((lang) => (
         <div key={lang} className="flex items-start gap-2">
           <span className="mt-2.5 w-6 text-[11px] font-semibold uppercase text-muted">{lang}</span>
@@ -201,10 +201,10 @@ export function QuestionInspector({ q, onChange, earlier, sections, binding, lis
       )}
 
       <Group title={t('forms.ins.logic')} open={!!(q.showIf || q.requiredIf || q.jump)} badge={(q.showIf || q.jump) && <Badge tone="info">{t('forms.ins.hasLogic')}</Badge>}>
-        <div><span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('forms.ins.showIf')}</span><LogicEditor value={q.showIf} onChange={(showIf) => set({ showIf })} questions={earlier} /></div>
-        {!['note', 'calculated'].includes(q.type) && <div><span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('forms.ins.requiredIf')}</span><LogicEditor value={q.requiredIf} onChange={(requiredIf) => set({ requiredIf })} questions={[...earlier, q]} /></div>}
+        <div><span className="mb-1 block text-[13px] font-medium text-ink">{t('forms.ins.showIf')}</span><LogicEditor value={q.showIf} onChange={(showIf) => set({ showIf })} questions={earlier} /></div>
+        {!['note', 'calculated'].includes(q.type) && <div><span className="mb-1 block text-[13px] font-medium text-ink">{t('forms.ins.requiredIf')}</span><LogicEditor value={q.requiredIf} onChange={(requiredIf) => set({ requiredIf })} questions={[...earlier, q]} /></div>}
         <div>
-          <span className="mb-1 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('forms.ins.jump')}</span>
+          <span className="mb-1 block text-[13px] font-medium text-ink">{t('forms.ins.jump')}</span>
           <LogicEditor value={q.jump?.when} onChange={(when) => set({ jump: when ? { when, to: q.jump?.to ?? 'END' } : undefined })} questions={[...earlier, q]} />
           {q.jump && (
             <select className={cn(sel, 'mt-2')} value={q.jump.to} onChange={(e) => set({ jump: { ...q.jump!, to: e.target.value } })} aria-label={t('forms.ins.jumpTo')}>

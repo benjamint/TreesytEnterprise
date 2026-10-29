@@ -124,26 +124,26 @@ export function FarmerForm({ open, onClose, farmer, onOpenFarmer }: { open: bool
             <Field label={t('people.farmer.firstName')} error={tried ? errs.firstName : undefined}><Input compact value={firstName} onChange={(e) => setFirstName(e.target.value)} aria-label={t('people.farmer.firstName')} /></Field>
             <Field label={t('people.farmer.lastName')} error={tried ? errs.lastName : undefined}><Input compact value={lastName} onChange={(e) => setLastName(e.target.value)} aria-label={t('people.farmer.lastName')} /></Field>
             <Field label={t('col.gender')}>
-              <select value={gender} onChange={(e) => setGender(e.target.value as Farmer['gender'])} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('col.gender')}>
+              <select value={gender} onChange={(e) => setGender(e.target.value as Farmer['gender'])} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('col.gender')}>
                 {(['F', 'M'] as const).map((g) => <option key={g} value={g}>{t(`gender.${g}`)}</option>)}
               </select>
             </Field>
             <Field label={dob ? t('people.farmer.dobAge', { age: ageOf(dob) }) : t('people.farmer.dob')} error={tried ? errs.dob : undefined}><Input compact type="date" value={dob} onChange={(e) => setDob(e.target.value)} aria-label={t('people.farmer.dob')} /></Field>
             <Field label={t('people.phone')} error={errs.phone}><Input compact type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setDupOk(false); }} placeholder={country === 'CI' ? '07 01 23 45 67' : '024 123 4567'} aria-label={t('people.phone')} /></Field>
             <Field label={terms.community} error={tried ? errs.community : undefined}>
-              <select value={communityId} onChange={(e) => setCommunityId(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={terms.community}>
+              <select value={communityId} onChange={(e) => setCommunityId(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={terms.community}>
                 {communities.map((c) => <option key={c.id} value={c.id}>{c.name} · {c.code}</option>)}
               </select>
             </Field>
             <Field label={t('people.farmer.registered')}><Input compact type="date" value={registeredAt} onChange={(e) => setRegisteredAt(e.target.value)} aria-label={t('people.farmer.registered')} /></Field>
             <Field label={t('people.farmer.crop')}>
-              <select value={crop} onChange={(e) => setCrop(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('people.farmer.crop')}>
+              <select value={crop} onChange={(e) => setCrop(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('people.farmer.crop')}>
                 {settings.commodities.map((c) => <option key={c.id} value={c.id}>{lk.commodity(c.id)}</option>)}
               </select>
             </Field>
           </div>
           <div>
-            <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
+            <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
             <FormFields form={form} answers={answers} onChange={(a) => { setAnswers(a); if (a.idNumber !== answers.idNumber) setDupOk(false); }} errors={tried ? formErrors : []} />
           </div>
         </div>

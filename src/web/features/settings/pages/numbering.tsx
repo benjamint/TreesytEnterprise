@@ -68,8 +68,8 @@ function NumberingEditor({ page, docTypes, exclude }: { page: 'numbering' | 'far
 
   return (
     <SettingsFrame page={page} {...bind(d)} errors={errors}>
-      <div className="sticky top-16 z-10 -mx-1 rounded-card border border-line bg-surface/95 p-3 backdrop-blur">
-        <div className="mb-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.numbering.tokens')}</div>
+      <div className="sticky top-[68px] z-10 -mx-1 rounded-card border border-line bg-surface/95 p-3 backdrop-blur">
+        <div className="mb-2 text-[12px] font-medium text-muted">{t('set.numbering.tokens')}</div>
         <div className="flex flex-wrap gap-1.5">
           {TOKENS.map((tok) => (
             <button key={tok} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => insert(tok)} disabled={!focused} className="rounded-full border border-line px-2.5 py-1 font-mono text-[12px] text-ink hover:border-brand/40 hover:bg-brand-soft disabled:opacity-50" title={t(`set.numbering.token.${tok}`)}>
@@ -93,11 +93,11 @@ function NumberingEditor({ page, docTypes, exclude }: { page: 'numbering' | 'far
                   <div className="text-[12px] text-muted">{t('set.numbering.issued', { count: current, n: f.number(current) })}</div>
                 </div>
                 <label className="block">
-                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.numbering.prefix')}</span>
+                  <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('set.numbering.prefix')}</span>
                   <TextInput value={p.prefix} onChange={(prefix) => set(p.docType, { prefix: prefix.toUpperCase() })} className="font-mono" />
                 </label>
                 <label className="block min-w-0">
-                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.numbering.pattern')}</span>
+                  <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('set.numbering.pattern')}</span>
                   <TextInput
                     ref={(el: HTMLInputElement | null) => { inputs.current[p.docType] = el; }}
                     value={p.pattern}
@@ -108,12 +108,12 @@ function NumberingEditor({ page, docTypes, exclude }: { page: 'numbering' | 'far
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.numbering.scope')}</span>
+                  <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('set.numbering.scope')}</span>
                   <Select value={p.scope} onChange={(scope) => set(p.docType, { scope })} options={SCOPES.map((s) => ({ value: s, label: t(`set.numbering.scopeName.${s}`) }))} />
                 </label>
                 <div className="min-w-0 rounded-ctl bg-canvas px-3 py-2" aria-live="polite">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.numbering.next')}</div>
-                  <div className="truncate font-mono text-[15px] font-semibold text-ink">{next}</div>
+                  <div className="text-[12px] font-medium text-muted">{t('set.numbering.next')}</div>
+                  <div className="truncate font-mono text-[14px] font-semibold text-ink">{next}</div>
                 </div>
               </div>
             );

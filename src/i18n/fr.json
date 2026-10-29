@@ -2342,9 +2342,7 @@
       "normal": "Normal",
       "slow": "Réseau lent",
       "error": "Erreurs"
-    },
-    "autoTours": "Visites à la première ouverture",
-    "autoToursHint": "Lancer la visite de chaque page la première fois dans cette session."
+    }
   },
   "auth": {
     "home": "Accueil TreeSyt",

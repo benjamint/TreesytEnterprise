@@ -25,8 +25,8 @@ export function PlansPage() {
               <Badge tone="brand">{t('platform.companiesOnPlan', { count: companies })}</Badge>
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-ctl bg-canvas p-3"><dt className="eyebrow">{t('platform.col.agents')}</dt><dd className="tnum mt-1 text-[18px] font-semibold text-ink">{f.number(p.limits.agents)}</dd></div>
-              <div className="rounded-ctl bg-canvas p-3"><dt className="eyebrow">{t('col.farmers')}</dt><dd className="tnum mt-1 text-[18px] font-semibold text-ink">{f.number(p.limits.farmers)}</dd></div>
+              <div className="rounded-ctl bg-canvas p-3"><dt className="eyebrow">{t('platform.col.agents')}</dt><dd className="tnum mt-1 text-[16px] font-semibold text-ink">{f.number(p.limits.agents)}</dd></div>
+              <div className="rounded-ctl bg-canvas p-3"><dt className="eyebrow">{t('col.farmers')}</dt><dd className="tnum mt-1 text-[16px] font-semibold text-ink">{f.number(p.limits.farmers)}</dd></div>
             </dl>
             <div className="eyebrow mb-2 mt-6">{t('platform.modulesOn', { count: mods.length, total: 28 })}</div>
             <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5">

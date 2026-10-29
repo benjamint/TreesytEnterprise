@@ -325,7 +325,7 @@ function WalletDialog({ initial, providers, onClose, onSave }: { initial: { prov
         <DialogHeader><DialogTitle>{t('buy.editWallet')}</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <Field label={t('col.provider')}>
-            <select value={w.providerId} onChange={(e) => setW({ ...w, providerId: e.target.value })} aria-label={t('col.provider')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
+            <select value={w.providerId} onChange={(e) => setW({ ...w, providerId: e.target.value })} aria-label={t('col.provider')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
               {providers.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
             </select>
           </Field>

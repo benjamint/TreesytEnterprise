@@ -209,7 +209,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
       <div className="rounded-card border border-line bg-surface p-6 shadow-soft">
         {step === 'type' && (
           <div>
-            <h2 className="mb-1 text-[18px] font-semibold text-ink">{t('imp.chooseType')}</h2>
+            <h2 className="mb-1 text-[16px] font-semibold text-ink">{t('imp.chooseType')}</h2>
             <p className="mb-4 text-[14px] text-muted">{t('imp.chooseTypeHint')}</p>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {ALL_IMPORTS.map((x) => {
@@ -231,7 +231,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
         {step === 'upload' && type && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-[18px] font-semibold text-ink">{t('imp.uploadTitle', { type: t(`imp.type.${type}`).toLocaleLowerCase() })}</h2>
+              <h2 className="text-[16px] font-semibold text-ink">{t('imp.uploadTitle', { type: t(`imp.type.${type}`).toLocaleLowerCase() })}</h2>
               <p className="mt-1 text-[14px] text-muted">{t('imp.uploadHint', { count: fields.length })}</p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -262,12 +262,12 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
         {step === 'map' && parsed && (
           <div className="space-y-4">
             <div>
-              <h2 className="text-[18px] font-semibold text-ink">{t('imp.mapTitle')}</h2>
+              <h2 className="text-[16px] font-semibold text-ink">{t('imp.mapTitle')}</h2>
               <p className="mt-1 text-[14px] text-muted">{t('imp.mapHint', { file: fileName, rows: f.number(parsed.rows.length), columns: parsed.headers.length })}</p>
             </div>
             <div className="overflow-x-auto rounded-ctl border border-line">
               <table className="w-full text-[14px]">
-                <thead className="bg-canvas text-left text-[12px] uppercase tracking-[0.06em] text-label">
+                <thead className="bg-canvas text-left text-[12px] font-medium text-muted">
                   <tr><th className="px-3 py-2">{t('imp.fieldCol')}</th><th className="px-3 py-2">{t('imp.column')}</th><th className="px-3 py-2">{t('imp.transform')}</th><th className="px-3 py-2">{t('imp.preview')}</th></tr>
                 </thead>
                 <tbody className="divide-y divide-line">
@@ -296,7 +296,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
         {step === 'match' && parsed && (
           <div className="space-y-4">
             <div>
-              <h2 className="text-[18px] font-semibold text-ink">{t('imp.matchTitle')}</h2>
+              <h2 className="text-[16px] font-semibold text-ink">{t('imp.matchTitle')}</h2>
               <p className="mt-1 text-[14px] text-muted">{t('imp.matchHint', { exact: placeValues.length - needsMatch.length, total: placeValues.length })}</p>
             </div>
             {needsMatch.length ? (
@@ -329,7 +329,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
           <div className="space-y-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="text-[18px] font-semibold text-ink">{t('imp.previewTitle')}</h2>
+                <h2 className="text-[16px] font-semibold text-ink">{t('imp.previewTitle')}</h2>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Badge tone="success">{t('imp.ready', { count: rows.length - bad.length })}</Badge>
                   {bad.length > 0 && <Badge tone="danger">{t('imp.withErrors', { count: bad.length })}</Badge>}
@@ -392,7 +392,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-8 w-8 text-success" aria-hidden="true" />
               <div>
-                <h2 className="text-[18px] font-semibold text-ink">{t('imp.doneTitle')}</h2>
+                <h2 className="text-[16px] font-semibold text-ink">{t('imp.doneTitle')}</h2>
                 <p className="text-[14px] text-muted">{t('imp.doneHint', { file: result.run.fileName })}</p>
               </div>
             </div>
@@ -400,7 +400,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
               {([['created', result.run.created], ['updated', result.run.updated], ['skipped', result.run.skipped], ['flags', result.flags]] as const).map(([k, v]) => (
                 <div key={k} className={cn('rounded-ctl border p-4', k === 'flags' && v > 0 ? 'border-warning/40 bg-warning/5' : 'border-line')}>
                   <div className="eyebrow">{t(`imp.result.${k}`)}</div>
-                  <div className="tnum mt-1 text-[28px] font-semibold text-ink">{f.number(v)}</div>
+                  <div className="tnum mt-1 text-[24px] font-semibold text-ink">{f.number(v)}</div>
                 </div>
               ))}
             </div>

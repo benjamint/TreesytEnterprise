@@ -230,7 +230,7 @@ function Compare({ roles, nameOf }: { roles: Role[]; nameOf: (r: Role) => string
             <table className="w-full text-[13px]">
               <thead className="sticky top-0 bg-canvas">
                 <tr>
-                  <th className="px-3 py-2.5 text-left text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.roles.permission')}</th>
+                  <th className="px-3 py-2.5 text-left text-[12px] font-medium text-muted">{t('set.roles.permission')}</th>
                   {cols.map((r) => <th key={r.id} className="px-3 py-2.5 text-center text-[12px] font-semibold text-ink">{nameOf(r)}</th>)}
                 </tr>
               </thead>

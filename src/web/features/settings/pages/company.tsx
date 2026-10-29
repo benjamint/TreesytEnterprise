@@ -90,7 +90,7 @@ export function ProfilePage() {
 
       <Section title={t('set.profile.regional')} description={t('set.profile.regionalHint')}>
         <div className="mb-5">
-          <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.profile.countries')}</span>
+          <span className="mb-2 block text-[12px] font-medium text-muted">{t('set.profile.countries')}</span>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             {countries.map((c) => (
               <Checkbox key={c.code} label={c.name[lang]} checked={v.countries.includes(c.code)} onChange={(e) => toggleCountry(c.code, e.target.checked)} />
@@ -111,7 +111,7 @@ export function ProfilePage() {
             <Select value={v.language} onChange={(x) => setLanguage(x as Lang)} options={LANGS.map((l) => ({ value: l, label: t(`set.lang.${l}`) }))} />
           </Mini>
           <Mini label={t('set.profile.languages')}>
-            <div className="flex h-11 items-center gap-5">
+            <div className="flex h-ctl items-center gap-5">
               {LANGS.map((l) => (
                 <Checkbox key={l} label={t(`set.lang.${l}`)} checked={v.languages.includes(l)} disabled={l === v.language} onChange={(e) => d.set('languages', e.target.checked ? [...v.languages, l] : v.languages.filter((x) => x !== l))} />
               ))}
@@ -184,7 +184,7 @@ export function BrandingPage() {
               <Mini label={t('set.branding.logoText')}><TextInput value={b.logoText} maxLength={3} onChange={(x) => set({ logoText: x.toUpperCase() })} /></Mini>
               <Mini label={t('set.branding.color')}>
                 <div className="flex items-center gap-2">
-                  <input type="color" value={b.primaryColor} onChange={(e) => set({ primaryColor: e.target.value })} aria-label={t('set.branding.color')} className="h-11 w-12 cursor-pointer rounded-ctl border border-line bg-surface p-1" />
+                  <input type="color" value={b.primaryColor} onChange={(e) => set({ primaryColor: e.target.value })} aria-label={t('set.branding.color')} className="h-ctl w-12 cursor-pointer rounded-ctl border border-line bg-surface p-1" />
                   <TextInput value={b.primaryColor} onChange={(x) => set({ primaryColor: x })} className="font-mono" />
                 </div>
                 <div className="mt-2 flex gap-1.5">
@@ -294,7 +294,7 @@ export function ModulesPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-card border border-line bg-canvas px-5 py-4">
         <div>
           <div className="eyebrow mb-1">{t('set.modules.plan')}</div>
-          <div className="text-[17px] font-semibold text-ink">{plan?.name}</div>
+          <div className="text-[15px] font-semibold text-ink">{plan?.name}</div>
           <p className="text-[13px] text-muted">{t('set.modules.planHint', { count: inPlan.size })}</p>
         </div>
         <Button variant="secondary" onClick={() => comingSoon()}>
@@ -327,7 +327,7 @@ export function ModulesPage() {
             <div key={m.key} className={cn('flex flex-col rounded-card border p-5 transition-colors', on ? 'border-brand/30 bg-surface' : 'border-line bg-canvas')}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-[15px] font-semibold text-ink">{t(`module.${m.key}`)}</div>
+                  <div className="text-[14px] font-semibold text-ink">{t(`module.${m.key}`)}</div>
                   <p className="mt-0.5 text-[13px] text-muted">{t(`set.modules.desc.${m.key}`)}</p>
                 </div>
                 <Switch checked={on} disabled={m.core || !allowed} onCheckedChange={(x) => toggle(m.key, x)} aria-label={t(`module.${m.key}`)} />
@@ -386,9 +386,9 @@ export function TerminologyPage() {
           <table className="w-full min-w-[560px] text-[14px]">
             <thead>
               <tr className="bg-canvas text-left">
-                <th className="px-3 py-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.terms.term')}</th>
+                <th className="px-3 py-2.5 text-[12px] font-medium text-muted">{t('set.terms.term')}</th>
                 {langs.map((l) => (
-                  <th key={l} className="px-3 py-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t(`set.lang.${l}`)}</th>
+                  <th key={l} className="px-3 py-2.5 text-[12px] font-medium text-muted">{t(`set.lang.${l}`)}</th>
                 ))}
               </tr>
             </thead>

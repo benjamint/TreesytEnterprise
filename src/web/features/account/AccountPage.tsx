@@ -26,7 +26,7 @@ function Section({ title, description, children }: { title: string; description?
     <Card>
       <CardContent className="grid gap-8 p-8 lg:grid-cols-[280px_1fr]">
         <div>
-          <h2 className="text-[17px]">{title}</h2>
+          <h2 className="text-[15px]">{title}</h2>
           {description && <p className="mt-1 text-[14px] text-muted">{description}</p>}
         </div>
         <div className="max-w-xl">{children}</div>

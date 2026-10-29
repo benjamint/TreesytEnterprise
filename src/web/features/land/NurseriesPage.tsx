@@ -80,12 +80,12 @@ export function NurseriesPage() {
       </div>
       <div className="mb-5 grid gap-5 lg:grid-cols-2">
         <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
-          <div className="mb-3 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('land.germinationTrend')}</h3>
+          <div className="mb-3 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-ink">{t('land.germinationTrend')}</h3>
             <div className="flex gap-1" role="group" aria-label={t('land.period')}>{(['day', 'month', 'year'] as const).map((p) => <button key={p} type="button" aria-pressed={period === p} onClick={() => setPeriod(p)} className={cn('rounded-chip px-2.5 py-1 text-[12px] font-medium', period === p ? 'bg-brand text-on-brand' : 'text-muted hover:bg-canvas')}>{t(`land.periodName.${p}`)}</button>)}</div>
           </div>
           {history.length ? <Lines data={history} series={[{ key: 'germinated', label: t('land.germinated'), index: 0 }, { key: 'alive', label: t('land.alive'), index: 2 }]} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noRounds')}</TabEmpty>}
         </section>
-        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('land.aliveBySpecies')}</h3>{bySpecies.length ? <HBars data={bySpecies} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noBatches')}</TabEmpty>}</section>
+        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('land.aliveBySpecies')}</h3>{bySpecies.length ? <HBars data={bySpecies} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noBatches')}</TabEmpty>}</section>
       </div>
       <FilterBar search={q} onSearch={setQ} placeholder={t('land.searchNurseries')}
         views={(['all', 'due', 'noAgreement'] as const).map((v) => ({ key: v, label: t(`land.nView.${v}`), active: view === v, onSelect: () => setView(v), count: rows.filter((n) => inView(n, v)).length }))}
@@ -133,7 +133,7 @@ function NurseryDrawer({ nursery: n, onClose }: { nursery: Nursery; onClose: () 
           {
             key: 'profile', label: t('land.tab.profile'), content: (
               <div className="space-y-5">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{([[t('land.potted'), tot.potted], [t('land.germinated'), tot.germinated], [t('land.alive'), tot.alive], [t('land.disbursed'), tot.disbursed]] as [string, number][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{f.number(v)}</div></div>)}</div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{([[t('land.potted'), tot.potted], [t('land.germinated'), tot.germinated], [t('land.alive'), tot.alive], [t('land.disbursed'), tot.disbursed]] as [string, number][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{f.number(v)}</div></div>)}</div>
                 <Facts items={[
                   [t('col.community'), lk.community(n.communityId)], [t('col.agent'), lk.agent(n.agentId)],
                   [t('land.gps'), `${n.gps.lat.toFixed(5)}, ${n.gps.lng.toFixed(5)}`], [t('land.fenced'), n.fenced ? t('common.yes') : t('common.no')],
@@ -249,7 +249,7 @@ function BatchDialog({ nursery: n, onClose }: { nursery: Nursery; onClose: () =>
       <DialogContent>
         <DialogHeader><DialogTitle>{t('land.addBatch')}</DialogTitle><DialogDescription>{n.name}</DialogDescription></DialogHeader>
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label={t('land.species')}><select value={speciesId} onChange={(e) => setSpeciesId(e.target.value)} aria-label={t('land.species')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{ll.species.map((s) => <option key={s.id} value={s.id}>{ll.speciesName(s.id)}</option>)}</select></Field>
+          <Field label={t('land.species')}><select value={speciesId} onChange={(e) => setSpeciesId(e.target.value)} aria-label={t('land.species')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{ll.species.map((s) => <option key={s.id} value={s.id}>{ll.speciesName(s.id)}</option>)}</select></Field>
           <Field label={t('land.polyBags')}><Input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} aria-label={t('land.polyBags')} /></Field>
           <Field label={t('land.sownAt')}><Input type="date" value={sownAt} onChange={(e) => setSownAt(e.target.value)} aria-label={t('land.sownAt')} /></Field>
         </div>
@@ -271,7 +271,7 @@ function NewNurserySheet({ onClose }: { onClose: (id?: string) => void }) {
   const set = (p: Partial<typeof v>) => setV({ ...v, ...p });
   const community = lk.communities.find((c) => c.id === v.communityId);
   const invalid = !v.name.trim() || !v.communityId || !v.repName.trim() || batches.some((b) => !(Number(b.quantity) > 0));
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   const save = () => {
     const n = createNursery({
       orgId, name: v.name.trim(), communityId: v.communityId, agentId: v.agentId || undefined, gps: { lat: Number(((community?.gps.lat ?? 0) + 0.002).toFixed(6)), lng: Number(((community?.gps.lng ?? 0) + 0.002).toFixed(6)), accuracy: 5 },

@@ -64,7 +64,7 @@ export function HelpMenu() {
           <DialogHeader>
             <DialogTitle>{t('help.shortcutsTitle')}</DialogTitle>
           </DialogHeader>
-          <dl className="space-y-3 text-[15px]">
+          <dl className="space-y-3 text-[14px]">
             {[
               ['⌘ K', 'shell.shortcutPalette'],
               ['?', 'shell.shortcutHelp'],
@@ -82,7 +82,7 @@ export function HelpMenu() {
       <Sheet open={configurable} onOpenChange={setConfigurable}>
         <SheetContent closeLabel={t('common.close')} className="max-w-[440px] p-8">
           <SheetTitle className="text-xl font-semibold text-ink">{t('shell.whatsConfigurable')}</SheetTitle>
-          <SheetDescription className="mt-1.5 text-[15px] text-muted">
+          <SheetDescription className="mt-1.5 text-[14px] text-muted">
             {route?.configurable?.length ? t('shell.configurableIntro', { company: org.name }) : t('shell.configurableNone')}
           </SheetDescription>
           <ul className="mt-6 space-y-2">

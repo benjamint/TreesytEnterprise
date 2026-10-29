@@ -37,7 +37,7 @@ export function Stat({ label, value, hint, onClick, active }: { label: string; v
   return (
     <button type="button" onClick={onClick} className={cn('flex flex-col items-start justify-start rounded-card border bg-surface p-5 text-left shadow-soft transition-colors', active ? 'border-brand' : 'border-line hover:border-brand/40')}>
       <div className="eyebrow">{label}</div>
-      <div className="tnum mt-2 text-[28px] font-semibold leading-none text-ink">{value}</div>
+      <div className="tnum mt-2 text-[24px] font-semibold leading-none text-ink">{value}</div>
       {hint && <div className="mt-1 text-[13px] text-muted">{hint}</div>}
     </button>
   );
@@ -48,7 +48,7 @@ export function FileSlot({ label, value, onChange, optional, sample }: { label: 
   const { t } = useT();
   return (
     <div>
-      <div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label}{optional && <span className="ml-1 font-normal normal-case tracking-normal text-muted">{t('agg.optional')}</span>}</div>
+      <div className="mb-1.5 text-[12px] font-medium text-muted">{label}{optional && <span className="ml-1 font-normal normal-case tracking-normal text-muted">{t('agg.optional')}</span>}</div>
       <div className="flex flex-wrap items-center gap-2 rounded-ctl border border-dashed border-line p-2.5">
         <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-ctl bg-surface px-3 text-[13px] font-medium text-ink ring-1 ring-line hover:bg-canvas">
           {t('agg.upload')}

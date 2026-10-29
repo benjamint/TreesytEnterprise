@@ -179,7 +179,7 @@ export function TreeList({ trees, showFarmer }: { trees: Tree[]; showFarmer?: bo
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-3 gap-2">
-        {([[t('land.planted'), trees.length], [t('land.alive'), alive], [t('land.survivalPct'), trees.length ? Math.round((alive / trees.length) * 100) : 0]] as [string, number][]).map(([k, v], i) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{f.number(v)}{i === 2 ? '%' : ''}</div></div>)}
+        {([[t('land.planted'), trees.length], [t('land.alive'), alive], [t('land.survivalPct'), trees.length ? Math.round((alive / trees.length) * 100) : 0]] as [string, number][]).map(([k, v], i) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{f.number(v)}{i === 2 ? '%' : ''}</div></div>)}
       </div>
       <p className="text-[13px] text-muted">{[...bySpecies].map(([id, n]) => `${ll.speciesName(id)} ${f.number(n)}`).join(' · ')}</p>
       <ul className="divide-y divide-line rounded-ctl border border-line text-[13px]">

@@ -13,15 +13,15 @@ export function StatCard({ label, value, hint, icon: Icon, onClick, className }:
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18 }}
       data-tour="stat"
-      className={cn('flex min-h-[132px] flex-col justify-between rounded-card border border-line bg-surface p-6 text-left shadow-soft', onClick && 'transition-colors hover:border-brand/40', className)}
+      className={cn('flex min-h-[112px] flex-col justify-between gap-3 rounded-card border border-line bg-surface p-5 text-left shadow-soft', onClick && 'transition-[border-color,box-shadow] hover:border-line-strong hover:shadow-raised', className)}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="eyebrow">{label}</span>
-        {Icon && <Icon className="h-[18px] w-[18px] text-muted" aria-hidden="true" />}
+        <span className="text-[13px] font-medium text-muted">{label}</span>
+        {Icon && <Icon className="h-4 w-4 text-muted" aria-hidden="true" />}
       </div>
       <div>
-        <div className="tnum text-[28px] font-semibold leading-tight tracking-[-0.02em] text-ink"><CountUp value={value} /></div>
-        {hint && <div className="mt-1 text-[13px] text-muted">{hint}</div>}
+        <div className="tnum text-[24px] font-semibold leading-tight tracking-[-0.02em] text-ink"><CountUp value={value} /></div>
+        {hint && <div className="mt-1 text-[12px] text-muted">{hint}</div>}
       </div>
     </Comp>
   );

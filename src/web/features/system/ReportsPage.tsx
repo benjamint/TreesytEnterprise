@@ -233,7 +233,7 @@ function ReportViewer({ id, onBack, onEdit, onOpen, onExports }: { id: string; o
       </div>
       {res.groups && r.chart !== 'TABLE' && (
         <section className="mb-5 rounded-card border border-line bg-surface p-5 shadow-soft">
-          <h2 className="mb-3 text-[15px] font-semibold text-ink">{t('rpt.chartTitle', { measure: measureCol ? rt.heading(measureCol) : t('rpt.count'), by: rt.heading({ key: r.groupBy! }) })}</h2>
+          <h2 className="mb-3 text-[14px] font-semibold text-ink">{t('rpt.chartTitle', { measure: measureCol ? rt.heading(measureCol) : t('rpt.count'), by: rt.heading({ key: r.groupBy! }) })}</h2>
           <ReportChartView r={r} groups={res.groups} measureCol={measureCol} />
         </section>
       )}
@@ -444,7 +444,7 @@ function ReportBuilder({ id, onDone }: { id?: string; onDone: (id?: string) => v
             </div>
             {form.length > 0 && (
               <>
-                <h4 className="mb-1 mt-3 text-[12px] font-semibold uppercase tracking-wide text-muted">{t('rpt.formFields')}</h4>
+                <h4 className="mb-1 mt-3 text-[12px] font-medium text-muted">{t('rpt.formFields')}</h4>
                 <div className="grid max-h-48 gap-1 overflow-y-auto rounded-ctl border border-line p-2 sm:grid-cols-2">
                   {form.map((c) => <Checkbox key={c.key} label={rt.heading(c)} checked={columns.includes(c.key)} onChange={() => toggle(c.key)} />)}
                 </div>
@@ -510,7 +510,7 @@ function ReportBuilder({ id, onDone }: { id?: string; onDone: (id?: string) => v
 function Step({ n, title, hint, children }: { n: number; title: string; hint?: string; children: React.ReactNode }) {
   return (
     <section className="rounded-card border border-line bg-surface p-4 shadow-soft">
-      <h3 className="mb-3 flex items-center gap-2 text-[15px] font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-soft text-[12px] text-brand">{n}</span>{title}{hint && <span className="ml-auto text-[12px] font-normal text-muted">{hint}</span>}</h3>
+      <h3 className="mb-3 flex items-center gap-2 text-[14px] font-semibold text-ink"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-soft text-[12px] text-brand">{n}</span>{title}{hint && <span className="ml-auto text-[12px] font-normal text-muted">{hint}</span>}</h3>
       {children}
     </section>
   );

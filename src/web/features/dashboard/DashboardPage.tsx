@@ -167,7 +167,7 @@ export function DashboardPage() {
       {!editing && <SetupChecklist />}
 
       {editing && (
-        <div className="sticky top-16 z-20 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand/30 bg-surface/95 px-5 py-3 shadow-soft backdrop-blur">
+        <div className="sticky top-[68px] z-20 mb-6 flex flex-wrap items-center justify-between gap-3 rounded-card border border-brand/30 bg-surface/95 px-5 py-3 shadow-soft backdrop-blur">
           <span className="text-[14px] text-body">{t('dashboard.editHint')}</span>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" size="sm" onClick={() => setLibrary(true)}><Plus /> {t('dashboard.addWidget')}</Button>
@@ -261,7 +261,7 @@ function WidgetCard({ placement, editing, onResize, onRemove }: { placement: Wid
             <GripVertical className="h-4 w-4" />
           </button>
         )}
-        <h2 className="min-w-0 flex-1 truncate text-[16px] font-semibold text-ink">{t(`dashboard.widget.${def.id}`)}</h2>
+        <h2 className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-[-0.01em] text-ink">{t(`dashboard.widget.${def.id}`)}</h2>
         {editing && sizes.length > 1 && (
           <div className="flex rounded-chip border border-line p-0.5" role="radiogroup" aria-label={t('dashboard.size')}>
             {sizes.map((s) => (

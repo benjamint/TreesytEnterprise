@@ -141,8 +141,8 @@ function PlotDashboard({ plots }: { plots: Plot[] }) {
         <StatCard label={t('land.treesPerPlot')} value={f.number(treesPerPlot)} />
       </div>
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('land.byType')}</h3>{byType.length ? <Donut data={byType} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noPlots')}</TabEmpty>}</section>
-        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('land.byAgent')}</h3><HBars data={byAgent} format={(v) => f.number(v)} /></section>
+        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('land.byType')}</h3>{byType.length ? <Donut data={byType} format={(v) => f.number(v)} /> : <TabEmpty>{t('land.noPlots')}</TabEmpty>}</section>
+        <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('land.byAgent')}</h3><HBars data={byAgent} format={(v) => f.number(v)} /></section>
       </div>
     </div>
   );
@@ -295,7 +295,7 @@ function MapPlotSheet({ onClose }: { onClose: (id?: string) => void }) {
       onClose(p.id);
     } catch (e) { toast.error(t(`land.error.${(e as Error).message}`, { defaultValue: (e as Error).message })); }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0 sm:max-w-[760px]">

@@ -102,7 +102,7 @@ export function Sidebar({ rail = false, onNavigate }: { rail?: boolean; onNaviga
                   className="group flex h-7 w-full items-center gap-1 rounded-chip px-2.5 text-left text-[12px] font-medium text-muted transition-colors hover:text-ink disabled:cursor-default disabled:hover:text-muted"
                 >
                   <span className="flex-1 truncate">{t(`nav.section.${section}`)}</span>
-                  {!open && <span className="tnum mr-1 text-[11px] text-muted/80">{items.length}</span>}
+                  {!open && <span className="tnum mr-1 text-[12px] text-muted">{items.length}</span>}
                   <ChevronRight className={cn('h-3.5 w-3.5 transition-transform duration-150', open && 'rotate-90', hasActive && 'opacity-0')} aria-hidden="true" />
                 </button>
               )}

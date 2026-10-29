@@ -83,7 +83,7 @@ export function ApprovalTimeline({ record, def }: { record: WorkflowRecord; def:
           return (
             <li key={s.id} className="relative flex gap-3 pb-5 last:pb-0">
               {i < steps.length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-2rem)] w-px bg-line" aria-hidden="true" />}
-              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border', state === 'done' && 'border-success bg-success text-white', state === 'rejected' && 'border-danger bg-danger text-white', state === 'held' && 'border-warning text-warning', state === 'current' && 'border-brand bg-brand-soft text-brand', state === 'upcoming' && 'border-line text-muted')}>
+              <span className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-full border', state === 'done' && 'border-success bg-success text-white dark:text-canvas', state === 'rejected' && 'border-danger bg-danger text-white dark:text-canvas', state === 'held' && 'border-warning text-warning', state === 'current' && 'border-brand bg-brand-soft text-brand', state === 'upcoming' && 'border-line text-muted')}>
                 <Icon className="h-4 w-4" aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1 pt-1">
@@ -167,7 +167,7 @@ export function EvidenceIcons({ evidence }: { evidence: Purchase['evidence'] }) 
     <span className="inline-flex gap-1">
       {items.map(({ k, on, I }) => (
         <Tip key={k} label={`${t(`buy.evidence.${k}`)} · ${on ? t('common.yes') : t('common.no')}`}>
-          <span className={cn('flex h-6 w-6 items-center justify-center rounded-full', on ? 'bg-brand-soft text-brand' : 'bg-canvas text-muted/50')} aria-label={`${t(`buy.evidence.${k}`)}: ${on ? t('common.yes') : t('common.no')}`}>
+          <span role="img" className={cn('flex h-6 w-6 items-center justify-center rounded-full', on ? 'bg-brand-soft text-brand' : 'bg-canvas text-muted/50')} aria-label={`${t(`buy.evidence.${k}`)}: ${on ? t('common.yes') : t('common.no')}`}>
             <I className="h-3.5 w-3.5" />
           </span>
         </Tip>
@@ -197,11 +197,12 @@ export function VoicePlayer({ id, seconds = 14 }: { id: string; seconds?: number
 
 /** A simple signature mark for seeded "sig-n" evidence (real captures are data URLs). */
 export function SignatureImage({ value, className }: { value: string; className?: string }) {
+  const { t } = useT();
   if (value.startsWith('data:')) return <img src={value} alt="" className={cn('h-16 rounded-ctl border border-line bg-surface object-contain', className)} />;
   const n = Number(value.replace(/\D/g, '')) || 1;
   const d = ['M10 40 C30 10 40 60 60 30 S90 20 110 38 S150 50 170 22', 'M12 36 Q40 4 58 34 T98 30 Q120 10 140 40 L168 26', 'M8 30 C24 50 44 8 66 36 C84 56 100 12 124 32 S160 44 172 20', 'M14 42 L34 14 L52 40 Q80 4 104 36 T170 28'][(n - 1) % 4];
   return (
-    <svg viewBox="0 0 180 60" className={cn('h-16 rounded-ctl border border-line bg-surface', className)} role="img" aria-label="signature">
+    <svg viewBox="0 0 180 60" className={cn('h-16 rounded-ctl border border-line bg-surface', className)} role="img" aria-label={t('buy.evidence.signature')}>
       <path d={d} fill="none" stroke="#0F2A20" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );

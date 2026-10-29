@@ -91,6 +91,9 @@ export interface DataSharingGrant {
   fromOrgId: string;
   toOrgId: string;
   scopes: ('farmers' | 'communities' | 'purchases' | 'orders' | 'traceability' | 'impact')[];
+  /** Farmers and communities shared: these communities (and their farmers); every community when empty. */
+  communityIds?: string[];
+  note?: string;
   createdAt: ISODate;
   status: 'ACTIVE' | 'REVOKED';
 }

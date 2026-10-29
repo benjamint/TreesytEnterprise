@@ -5,7 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/sonner';
 import { LogoBadge } from '@/components/shared/Logo';
 import { termVariables } from '@/engines/terminology';
-import { brandTokens, channels } from '@/lib/color';
+import { brandTokens, channels, textOn } from '@/lib/color';
 // Every domain store must be registered before boot hydrates them.
 import '@/stores';
 import { bootStores, persistenceEvents, useBootStore } from '@/stores/persistence';
@@ -34,12 +34,13 @@ export function EnvironmentSync() {
     root.classList.toggle('dark', dark);
     const color = org?.branding.primaryColor ?? DEFAULT_BRAND;
     if (color.toUpperCase() === DEFAULT_BRAND) {
-      ['--brand', '--brand-hover', '--brand-soft'].forEach((v) => root.style.removeProperty(v));
+      ['--brand', '--brand-hover', '--brand-soft', '--on-brand'].forEach((v) => root.style.removeProperty(v));
     } else {
       const tk = brandTokens(color, dark);
       root.style.setProperty('--brand', channels(tk.brand));
       root.style.setProperty('--brand-hover', channels(tk.hover));
       root.style.setProperty('--brand-soft', channels(tk.soft));
+      root.style.setProperty('--on-brand', channels(textOn(tk.brand)));
     }
   }, [theme, org?.branding.primaryColor]);
 

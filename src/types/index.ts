@@ -8,3 +8,8 @@ export * from './money';
 export * from './system';
 export * from './forms';
 export * from './support';
+export * from './inventory';
+export * from './sales';
+export * from './land';
+export * from './training';
+export * from './fieldTeam';

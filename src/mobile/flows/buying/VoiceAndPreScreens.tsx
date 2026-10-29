@@ -108,7 +108,8 @@ export function NewPreScreen() {
   const [requestId, setRequestId] = useState(eligible[0]?.id ?? '');
   const reqBags = useMemo(() => {
     const ids = new Set(purchases.filter((p) => p.requestId === requestId).map((p) => p.id));
-    return allBags.filter((b) => b.purchaseIds.some((id) => ids.has(id)) && b.status !== 'REPLACED');
+    // The bags still with the agent travel on this PRE.
+    return allBags.filter((b) => b.purchaseIds.some((id) => ids.has(id)) && (b.status === 'WITH_AGENT' || b.status === 'IN_TRANSIT'));
   }, [allBags, purchases, requestId]);
   const [bags, setBags] = useState('');
   const n = Number(bags || reqBags.length || 0);

@@ -287,7 +287,7 @@ export function NewCompanyWizard() {
               <ol className="flex flex-wrap items-center gap-2 text-[13px]">
                 {[t('wizard.flow.submitted'), t('wizard.flow.ops'), ...(d.approvals === 'threeThreshold' ? [t('wizard.flow.director', { amount: money(d.thresholdMajor) })] : []), ...(d.approvals !== 'one' ? [t('wizard.flow.finance')] : []), t('wizard.flow.approved')].map((s, i, arr) => (
                   <li key={s} className="flex items-center gap-2">
-                    <span className={cn('rounded-full px-3 py-1.5 font-medium', i === 0 || i === arr.length - 1 ? 'bg-surface text-muted' : 'bg-brand text-white')}>{s}</span>
+                    <span className={cn('rounded-full px-3 py-1.5 font-medium', i === 0 || i === arr.length - 1 ? 'bg-surface text-muted' : 'bg-brand text-on-brand')}>{s}</span>
                     {i < arr.length - 1 && <ArrowRight className="h-4 w-4 text-muted" aria-hidden="true" />}
                   </li>
                 ))}

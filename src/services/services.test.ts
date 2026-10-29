@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { buildSeed } from '@/data/seed';
 import { emptyDraft, TEMPLATE_COMMODITIES } from '@/data/templates/companyTemplates';
 import { useAccessStore } from '@/stores/accessStore';
@@ -53,6 +53,9 @@ describe('auth service', () => {
   });
 
   it('accepts a pending invite and rejects an expired one', () => {
+    // Invite expiry is relative to when the seed was built, so check it on that day.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date('2026-10-18T12:00:00Z'));
     expect(checkInvite('inv-kakao-expired')).toEqual({ ok: false, reason: 'expired' });
     const r = acceptInvite('inv-vitara-akosua', 'Akosua Dery', 'Akosua2026');
     expect(r.ok).toBe(true);
@@ -62,6 +65,8 @@ describe('auth service', () => {
     expect(useSessionStore.getState().userId).toBe(u.id);
     expect(checkInvite('inv-vitara-akosua')).toEqual({ ok: false, reason: 'used' });
   });
+
+  afterEach(() => vi.useRealTimers());
 });
 
 describe('company service (journey 12)', () => {

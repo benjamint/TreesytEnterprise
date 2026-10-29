@@ -3,6 +3,7 @@ import { announce } from '@/stores/persistence';
 import { useAccessStore } from '@/stores/accessStore';
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useOutboxStore, type OutboxItem, type OutboxType } from '@/stores/outboxStore';
+import { logBlockedSync, logSync, syncBlock } from './systemService';
 
 /**
  * Mobile offline layer (PRD 4.3, M2): every save on the phone goes through `saveOrQueue`. Online it
@@ -48,6 +49,14 @@ const isConflict = (item: OutboxItem) => {
 export async function syncOutbox(userId: string, onResult?: (r: SyncResult) => void): Promise<SyncResult[]> {
   const items = useOutboxStore.getState().items.filter((i) => i.userId === userId);
   const out: SyncResult[] = [];
+  const orgId = useMobileSessionStore.getState().orgId ?? items[0]?.orgId ?? '';
+  // The office can sign a phone out or require an update (PRD K3): nothing syncs until then.
+  const block = syncBlock(userId, orgId);
+  if (block) {
+    logBlockedSync(userId, orgId, block, items.length);
+    throw new Error(block);
+  }
+  const started = performance.now();
   for (const item of items) {
     await latency(250, 500);
     let r: SyncResult;
@@ -69,6 +78,7 @@ export async function syncOutbox(userId: string, onResult?: (r: SyncResult) => v
     onResult?.(r);
   }
   useMobileSessionStore.getState().markSynced();
+  logSync(userId, orgId, items, out, Math.round(performance.now() - started));
   const synced = out.filter((r) => r.outcome === 'synced').length;
   if (synced) announce('mobileSynced', { count: synced, name: nameOf(userId) });
   return out;

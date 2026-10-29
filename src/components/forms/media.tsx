@@ -119,15 +119,8 @@ export function GpsCapture({ value, onChange, base, big }: { value?: Gps; onChan
 
 export type Polygon = { points: [number, number][]; areaHa: number };
 
-/** Shoelace area on a local projection, in hectares. */
-export function polygonAreaHa(points: [number, number][]): number {
-  if (points.length < 3) return 0;
-  const lat0 = (points.reduce((s, p) => s + p[0], 0) / points.length) * (Math.PI / 180);
-  const xy = points.map(([la, lo]) => [lo * 111_320 * Math.cos(lat0), la * 110_540] as const);
-  let a = 0;
-  for (let i = 0; i < xy.length; i++) { const [x1, y1] = xy[i]!; const [x2, y2] = xy[(i + 1) % xy.length]!; a += x1 * y2 - x2 * y1; }
-  return Math.round((Math.abs(a) / 2 / 10_000) * 100) / 100;
-}
+import { polygonAreaHa } from '@/engines/geo';
+export { polygonAreaHa };
 
 export function PolygonCapture({ value, onChange, base, big }: { value?: Polygon; onChange: (v: Polygon) => void; base: { lat: number; lng: number }; big?: boolean }) {
   const { t } = useT();

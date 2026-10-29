@@ -253,7 +253,7 @@ function GroupDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => void; 
                   {mine.map((m) => {
                     const x = farmerById.get(m.farmerId);
                     return (
-                      <li key={m.id} className={`flex items-center gap-3 px-4 py-2.5 ${m.leftAt ? 'opacity-60' : ''}`}>
+                      <li key={m.id} className={`flex items-center gap-3 px-4 py-2.5 ${m.leftAt ? 'bg-canvas/70 [&_td]:text-muted' : ''}`}>
                         <button type="button" onClick={() => navigate(`/app/farmers?open=${m.farmerId}`)} className="min-w-0 flex-1 text-left">
                           <div className="truncate text-[14px] font-medium text-ink">{x ? `${x.firstName} ${x.lastName}` : m.farmerId}</div>
                           <div className="text-[12px] text-muted">{x?.farmerCode} · {t('people.group.joined', { date: f.date(m.joinedAt) })}{m.leftAt ? ` · ${t('people.group.left', { date: f.date(m.leftAt) })}` : ''}</div>

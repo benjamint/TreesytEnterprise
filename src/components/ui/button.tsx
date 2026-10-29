@@ -8,10 +8,10 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-brand text-white shadow-inner hover:bg-brand-hover',
+        primary: 'bg-brand text-on-brand shadow-inner hover:bg-brand-hover',
         secondary: 'bg-surface text-ink border border-line hover:bg-canvas',
         ghost: 'text-ink hover:bg-brand-soft/70',
-        danger: 'bg-danger text-white hover:bg-danger/90',
+        danger: 'bg-danger text-white hover:bg-danger/90 dark:text-canvas',
         dangerOutline: 'border border-danger/40 text-danger bg-surface hover:bg-danger/5',
         link: 'text-ink underline underline-offset-[3px] decoration-1 hover:text-brand px-0 h-auto',
       },

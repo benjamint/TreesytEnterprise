@@ -161,7 +161,7 @@ function PreDrawer({ pre: e, onClose, onEdit }: { pre: PreExpense; onClose: () =
                 </table>
                 <Facts items={[[t('buy.costPerBag'), f.money({ amountMinor: Math.round(e.total.amountMinor / Math.max(1, e.bags)), currency: e.total.currency })], [t('col.payee'), `${e.payee.name} · ${e.payee.number}`], [terms.purchaseRequest, req ? <Link key="r" to={`/app/purchase-requests?open=${req.id}`} className="font-mono text-brand hover:underline">{req.number}</Link> : '—'], [t('buy.created'), f.dateTime(e.createdAt)]]} />
                 {!!e.bagCodes?.length && <div><div className="eyebrow mb-1.5">{t('buy.scannedBags')}</div><div className="flex flex-wrap gap-1.5">{e.bagCodes.map((c) => <Badge key={c} tone="neutral" className="font-mono">{c}</Badge>)}</div></div>}
-                {e.expectedDelivery && <p className="flex items-center gap-2 rounded-ctl border border-info/30 bg-info/5 px-3 py-2 text-[14px] text-ink"><Truck className="h-4 w-4 text-info" />{t('buy.expectedDelivery', { count: e.expectedDelivery.bags, warehouse: warehouses.find((w) => w.id === e.expectedDelivery!.warehouseId)?.name ?? '—' })}</p>}
+                {e.expectedDelivery && <p className="flex items-center gap-2 rounded-ctl border border-info/30 bg-info/5 px-3 py-2 text-[14px] text-ink"><Truck className="h-4 w-4 text-info" />{t('buy.expectedDelivery', { count: e.expectedDelivery.bags, warehouse: warehouses.find((w) => w.id === e.expectedDelivery!.warehouseId)?.name ?? '—' })}{e.expectedDelivery.inboundId && <Link to={`/app/inventory/inbound?open=${e.expectedDelivery.inboundId}`} className="ml-auto shrink-0 font-medium text-brand hover:underline">{t('inv.openReceipt')}</Link>}</p>}
                 {!canEditPre(e) && e.status !== 'APPROVED' && <p className="text-[12px] text-muted">{t('buy.preLocked')}</p>}
               </div>
             ),
@@ -289,7 +289,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
                 <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-ctl border border-line p-3">
                   {reqBags.map((b) => {
                     const on = codes.includes(b.code);
-                    return <button key={b.id} type="button" aria-pressed={on} onClick={() => setCodes(on ? codes.filter((c) => c !== b.code) : [...codes, b.code])} className={cn('rounded-full border px-2.5 py-1 font-mono text-[12px]', on ? 'border-brand bg-brand text-white' : 'border-line text-body hover:border-brand/40')}>{b.code}</button>;
+                    return <button key={b.id} type="button" aria-pressed={on} onClick={() => setCodes(on ? codes.filter((c) => c !== b.code) : [...codes, b.code])} className={cn('rounded-full border px-2.5 py-1 font-mono text-[12px]', on ? 'border-brand bg-brand text-on-brand' : 'border-line text-body hover:border-brand/40')}>{b.code}</button>;
                   })}
                 </div>
               ) : <p className="text-[13px] text-muted">{t('buy.noBagsToScan')}</p>}

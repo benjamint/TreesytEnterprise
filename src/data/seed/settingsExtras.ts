@@ -1,3 +1,4 @@
+import { kakaoFieldTeam, vitaraFieldTeam } from './fieldTeamSettings';
 import type { Commodity, Lang, OrgSettings } from '@/types';
 import { formBindingsFor } from '@/data/forms/library';
 import type { NotificationRule } from '@/engines/notify';
@@ -11,7 +12,7 @@ import { toMinor } from '@/engines/money';
  */
 export type ExtraSettings = Pick<
   OrgSettings,
-  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'support' | 'fieldTeam' | 'qualityRules'
+  | 'features' | 'extraCharges' | 'pricing' | 'inventoryRules' | 'sales' | 'land' | 'training' | 'support' | 'fieldTeam' | 'qualityRules'
   | 'formBindings' | 'biometrics' | 'notificationRules' | 'templates' | 'messaging' | 'integrations' | 'privacy'
 >;
 
@@ -127,6 +128,11 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       tolerances: tolerances(commodities), transferBoundsPct: 1, autoWriteOff: true,
       stockCount: { frequency: 'MONTHLY', basis: 'FULL', blind: true },
       liability: { payer: 'AGENT', priceBasis: 'PURCHASE', includeLogistics: true },
+      expenseTypes: [
+        { id: 'wx_in', name: { en: 'Inbound handling', fr: 'Manutention à l’entrée' }, basis: 'PER_BAG', defaultRateMinor: m(1.5) },
+        { id: 'wx_out', name: { en: 'Outbound handling', fr: 'Manutention à la sortie' }, basis: 'PER_BAG', defaultRateMinor: m(1.5) },
+        { id: 'wx_maint', name: { en: 'Maintenance', fr: 'Entretien' }, basis: 'FLAT', defaultRateMinor: m(400) },
+      ],
     },
     support: {
       types: [
@@ -139,33 +145,7 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       recoveryWindowDays: 180, repaymentModes: ['CASH', 'PRODUCE', 'MIXED'], blockOnDebt: true, minGroupScore: 60, linkPurchaseRequest: true,
       feedback: { experience: ['Excellent', 'Very good', 'Good', 'Bad', 'Very bad'], lendAgain: true },
     },
-    fieldTeam: {
-      plan: { minDays: 3, maxDays: 6, planAheadWeeks: 2 },
-      reportingLevels: 3,
-      costCategories: [
-        { id: 'cc_fuel', name: 'Fuel', maxPerDayMinor: m(80), maxPerWeekMinor: m(400), receiptRequired: true },
-        { id: 'cc_airtime', name: 'Airtime & data', maxPerDayMinor: m(10), maxPerWeekMinor: m(50), receiptRequired: false },
-        { id: 'cc_perdiem', name: 'Per diem', maxPerDayMinor: m(60), maxPerWeekMinor: m(300), receiptRequired: false },
-        { id: 'cc_lodging', name: 'Lodging', maxPerDayMinor: m(150), maxPerWeekMinor: m(450), receiptRequired: true },
-      ],
-      penaltyBands: [
-        { id: 'pb_1', fromPct: 0, toPct: 50, penaltyPct: 20 },
-        { id: 'pb_2', fromPct: 50, toPct: 80, penaltyPct: 10 },
-        { id: 'pb_3', fromPct: 80, toPct: 100, penaltyPct: 0 },
-      ],
-      carryForward: true,
-      allowanceTypes: [
-        { id: 'al_maint', name: 'Motorbike maintenance', amountMinor: m(250), frequency: 'MONTHLY' },
-        { id: 'al_airtime', name: 'Weekly airtime', amountMinor: m(20), frequency: 'WEEKLY' },
-      ],
-      unusedReasons: ['Community visit cancelled', 'Rain', 'Shared transport', 'Market closed'],
-      issueCategories: [
-        { id: 'ic_absent', name: 'Absent from planned community', consequence: 'WARNING' },
-        { id: 'ic_receipt', name: 'Missing or false receipt', consequence: 'PENALTY' },
-        { id: 'ic_price', name: 'Paid farmers below list price', consequence: 'SUSPENSION' },
-        { id: 'ic_late', name: 'Late sync', consequence: 'NOTE' },
-      ],
-    },
+    fieldTeam: vitaraFieldTeam(m),
     qualityRules: rules(),
     formBindings: formBindingsFor(orgId),
     biometrics: { thumbprint: true, consentType: 'AUDIO', consentText: consent, nfcCards: true, cardKeyRotatedAt: '2026-06-01T09:00:00.000Z' },
@@ -193,6 +173,103 @@ export function vitaraExtras(orgId: string, commodities: Commodity[], currency =
       accounting: 'NONE',
     },
     privacy: { retentionDays: { syncLogs: 90, payloads: 30, audio: 365, photos: 730, activity: 2555 } },
+    sales: {
+      // Vitara's payment terms and packaging catalogue today (PRD H7).
+      paymentTerms: [
+        { id: 'pt_after', name: { en: '100% after delivery', fr: '100 % après livraison' }, instalments: [{ pct: 100, trigger: 'AFTER_DELIVERY', days: 30 }] },
+        { id: 'pt_on', name: { en: '100% on delivery', fr: '100 % à la livraison' }, instalments: [{ pct: 100, trigger: 'DELIVERY', days: 0 }] },
+        { id: 'pt_5050', name: { en: '50% advance, 50% on delivery', fr: '50 % d’avance, 50 % à la livraison' }, instalments: [{ pct: 50, trigger: 'SIGNATURE', days: 7 }, { pct: 50, trigger: 'DELIVERY', days: 0 }] },
+        { id: 'pt_3070', name: { en: '30% advance, 70% after delivery', fr: '30 % d’avance, 70 % après livraison' }, instalments: [{ pct: 30, trigger: 'SIGNATURE', days: 7 }, { pct: 70, trigger: 'AFTER_DELIVERY', days: 14 }] },
+      ],
+      packaging: [{ id: 'pk_pp', name: { en: 'PP sacks', fr: 'Sacs PP' } }, { id: 'pk_jute', name: { en: 'Jute sacks', fr: 'Sacs de jute' } }, { id: 'pk_box', name: { en: 'Boxes', fr: 'Cartons' } }],
+      templates: commodities.slice(0, 2).map((c, i) => ({
+        id: `ct_${c.id}`, name: `${c.name.en ?? c.code} — export`, commodityId: c.id, unitId: 't', paymentTermId: i ? 'pt_3070' : 'pt_5050', packagingId: i ? 'pk_pp' : 'pk_jute', tolerancePct: 2,
+        deliveryPoint: 'Tema Port', clauses: 'Seller delivers the goods to the delivery point within the shipment window. Weights are as per the buyer’s weighbridge. Quality as per the specification; rejected lots are replaced at the seller’s cost.',
+      })),
+      impactKpis: ['womenShare', 'childrenPerFarmer', 'treesPlanted', 'plotsMapped', 'eudr'],
+      certifications: ['EU Organic', 'Fair for Life'],
+      overdueAlertDays: 14,
+    },
+    land: vitaraLand(),
+    training: { editHeldDays: 3, deletePlannedOnly: true, membersOnly: true, allowGuests: true, minForCommission: 15, maxForCommission: 60, ratingRequired: true },
+  };
+}
+
+const L = (en: string, fr: string) => ({ en, fr });
+const Q = (id: string, en: string, fr: string, kind: 'YES_NO' | 'TEXT', plotTypeIds: string[]) => ({ id, label: L(en, fr), kind, plotTypeIds });
+
+/** Vitara today: shea parkland trees and fruit trees, raised in community nurseries (PRD I1–I4). */
+function vitaraLand(): OrgSettings['land'] {
+  const all = ['pt_farm', 'pt_park', 'pt_conc', 'pt_block'];
+  return {
+    species: [
+      { id: 'sp_sheag', name: L('Shea (grafted)', 'Karité (greffé)'), codePrefix: 'SHG', type: 'SHEA_GRAFTED', densityPerHa: { pt_farm: 40, pt_park: 25, pt_conc: 100, pt_block: 156 }, co2KgPerYear: 12, enabled: true },
+      { id: 'sp_sheau', name: L('Shea (ungrafted)', 'Karité (non greffé)'), codePrefix: 'SHU', type: 'SHEA_UNGRAFTED', densityPerHa: { pt_farm: 30, pt_park: 20, pt_conc: 80, pt_block: 120 }, co2KgPerYear: 14, enabled: true },
+      { id: 'sp_dawa', name: L('Dawadawa', 'Néré'), codePrefix: 'DWD', type: 'TIMBER', densityPerHa: { pt_farm: 20, pt_park: 15, pt_conc: 60, pt_block: 100 }, co2KgPerYear: 18, enabled: true },
+      { id: 'sp_mango', name: L('Mango', 'Manguier'), codePrefix: 'MGO', type: 'FRUIT', densityPerHa: { pt_farm: 50, pt_park: 20, pt_conc: 100, pt_block: 100 }, co2KgPerYear: 22, enabled: true },
+      { id: 'sp_cashew', name: L('Cashew', 'Anacardier'), codePrefix: 'CSH', type: 'FRUIT', densityPerHa: { pt_farm: 60, pt_park: 25, pt_conc: 100, pt_block: 100 }, co2KgPerYear: 16, enabled: true },
+      { id: 'sp_moringa', name: L('Moringa', 'Moringa'), codePrefix: 'MOR', type: 'MEDICINAL', densityPerHa: { pt_farm: 200, pt_park: 50, pt_conc: 400, pt_block: 400 }, co2KgPerYear: 6, enabled: true },
+    ],
+    nurseryRounds: [
+      { id: 'nr_primary', name: L('Primary', 'Principale'), kind: 'PRIMARY', dueDays: 21, fields: ['polyBags', 'potted', 'germinated'] },
+      { id: 'nr_sec', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 45, fields: ['alive', 'dead', 'newGerminations'] },
+      { id: 'nr_sec2', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 75, fields: ['alive', 'dead', 'newGerminations'] },
+      { id: 'nr_sec3', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 105, fields: ['alive', 'dead', 'newGerminations'] },
+    ],
+    treeRoundDays: [30, 90, 180, 365],
+    maxSeedlingsPerFarmer: 20,
+    plotTypes: [
+      { id: 'pt_farm', name: L('Farmland', 'Terre agricole'), requiresFarmer: true },
+      { id: 'pt_park', name: L('Community parkland', 'Parc communautaire'), requiresFarmer: false },
+      { id: 'pt_conc', name: L('Concession', 'Concession'), requiresFarmer: false },
+      { id: 'pt_block', name: L('Block', 'Bloc'), requiresFarmer: false },
+    ],
+    plotMonitoring: [
+      Q('chemicals', 'Chemical additives used', 'Produits chimiques utilisés', 'YES_NO', all),
+      Q('treeCutting', 'Trees cut on the plot', 'Arbres abattus sur la parcelle', 'YES_NO', all),
+      Q('farmingActivities', 'Farming activities seen', 'Activités agricoles observées', 'TEXT', ['pt_farm', 'pt_park']),
+      Q('livestockPresent', 'Livestock present', 'Bétail présent', 'YES_NO', all),
+      Q('livestockPast', 'Livestock in the past month', 'Bétail le mois dernier', 'YES_NO', all),
+      Q('fenced', 'Plot fenced', 'Parcelle clôturée', 'YES_NO', all),
+      Q('bushfire', 'Bushfire this season', 'Feu de brousse cette saison', 'YES_NO', all),
+      Q('recentBushfire', 'Bushfire in the last 30 days', 'Feu de brousse ces 30 derniers jours', 'YES_NO', all),
+      Q('fireProtection', 'Fire protection measures', 'Mesures de protection contre le feu', 'TEXT', all),
+    ],
+    plotMonitoringDays: 90,
+    eudr: { cutoffDate: '2020-12-31', polygonOverHa: 4, minDecimals: 6, operator: { name: 'Vitara Shea Ltd', eori: 'GH-OP-20418', address: 'Plot 14, Wa Road, Tamale, Ghana' } },
+    exportMaxDays: 366,
+  };
+}
+
+/** Kakao Ivoire: cocoa plots with shade trees (EUDR-relevant). */
+function kakaoLand(): OrgSettings['land'] {
+  const all = ['pt_cocoa', 'pt_fallow', 'pt_block'];
+  return {
+    species: [
+      { id: 'sp_frake', name: L('Frake', 'Fraké'), codePrefix: 'FRK', type: 'TIMBER', densityPerHa: { pt_cocoa: 18, pt_fallow: 60, pt_block: 100 }, co2KgPerYear: 25, enabled: true },
+      { id: 'sp_akpi', name: L('Akpi', 'Akpi'), codePrefix: 'AKP', type: 'SHADE', densityPerHa: { pt_cocoa: 12, pt_fallow: 40, pt_block: 80 }, co2KgPerYear: 20, enabled: true },
+      { id: 'sp_orange', name: L('Orange', 'Oranger'), codePrefix: 'ORA', type: 'FRUIT', densityPerHa: { pt_cocoa: 10, pt_fallow: 30, pt_block: 100 }, co2KgPerYear: 9, enabled: true },
+      { id: 'sp_avocado', name: L('Avocado', 'Avocatier'), codePrefix: 'AVO', type: 'FRUIT', densityPerHa: { pt_cocoa: 10, pt_fallow: 30, pt_block: 100 }, co2KgPerYear: 11, enabled: true },
+    ],
+    nurseryRounds: [
+      { id: 'nr_primary', name: L('Primary', 'Principale'), kind: 'PRIMARY', dueDays: 30, fields: ['polyBags', 'potted', 'germinated'] },
+      { id: 'nr_sec', name: L('Secondary', 'Secondaire'), kind: 'SECONDARY', dueDays: 60, fields: ['alive', 'dead'] },
+    ],
+    treeRoundDays: [90, 365],
+    maxSeedlingsPerFarmer: 30,
+    plotTypes: [
+      { id: 'pt_cocoa', name: L('Cocoa plot', 'Parcelle de cacao'), requiresFarmer: true },
+      { id: 'pt_fallow', name: L('Fallow', 'Jachère'), requiresFarmer: true },
+      { id: 'pt_block', name: L('Block', 'Bloc'), requiresFarmer: false },
+    ],
+    plotMonitoring: [
+      Q('chemicals', 'Chemical additives used', 'Produits chimiques utilisés', 'YES_NO', all),
+      Q('treeCutting', 'Trees cut on the plot', 'Arbres abattus sur la parcelle', 'YES_NO', all),
+      Q('fireProtection', 'Fire protection measures', 'Mesures de protection contre le feu', 'TEXT', all),
+    ],
+    plotMonitoringDays: 180,
+    eudr: { cutoffDate: '2020-12-31', polygonOverHa: 4, minDecimals: 6, operator: { name: 'Union des Coopératives Kakao Ivoire SCOOPS', eori: 'CI-OP-55210', address: 'Quartier Commerce, Soubré, Côte d’Ivoire' } },
+    exportMaxDays: 366,
   };
 }
 
@@ -204,7 +281,7 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
     features: { ...base.features, voicePurchase: false },
     extraCharges: [{ id: 'xc_transport', name: 'Transport', amountMinor: m(500), payer: 'company', enabled: true }],
     pricing: { changeApproval: true, premiums: [{ id: 'pm_ra', name: 'Rainforest Alliance', pct: 4 }], history: [] },
-    inventoryRules: { ...base.inventoryRules, transferBoundsPct: 0.5, stockCount: { frequency: 'WEEKLY', basis: 'CYCLE', blind: false }, liability: { payer: 'TRANSPORTER', priceBasis: 'LIST', includeLogistics: false } },
+    inventoryRules: { ...base.inventoryRules, expenseTypes: [{ id: 'wx_in', name: { en: 'Inbound handling', fr: 'Manutention entrée' }, basis: 'PER_BAG', defaultRateMinor: m(250) }, { id: 'wx_fumig', name: { en: 'Fumigation', fr: 'Fumigation' }, basis: 'PER_KG', defaultRateMinor: m(2) }, { id: 'wx_maint', name: { en: 'Maintenance', fr: 'Entretien' }, basis: 'FLAT', defaultRateMinor: m(75_000) }], transferBoundsPct: 0.5, stockCount: { frequency: 'WEEKLY', basis: 'CYCLE', blind: false }, liability: { payer: 'TRANSPORTER', priceBasis: 'LIST', includeLogistics: false } },
     support: {
       ...base.support,
       types: [
@@ -214,19 +291,14 @@ export function kakaoExtras(orgId: string, commodities: Commodity[]): ExtraSetti
       abilityToPay: ['Fèves à la récolte', 'Espèces'], recoveryWindowDays: 120, repaymentModes: ['PRODUCE', 'MIXED'], minGroupScore: 50, linkPurchaseRequest: true,
       feedback: { experience: ['Excellente', 'Très bonne', 'Bonne', 'Mauvaise', 'Très mauvaise'], lendAgain: true },
     },
-    fieldTeam: {
-      ...base.fieldTeam,
-      costCategories: [
-        { id: 'cc_fuel', name: 'Carburant', maxPerDayMinor: m(10_000), maxPerWeekMinor: m(50_000), receiptRequired: true },
-        { id: 'cc_airtime', name: 'Crédit téléphone', maxPerDayMinor: m(1_000), maxPerWeekMinor: m(5_000), receiptRequired: false },
-      ],
-      allowanceTypes: [],
-      carryForward: false,
-    },
+    fieldTeam: kakaoFieldTeam(m),
     biometrics: { ...base.biometrics, thumbprint: false, consentType: 'SIGNATURE' },
     messaging: { sms: [{ country: 'CI', provider: 'Orange SMS API', senderId: 'KAKAOIV', enabled: true }], otpExpiryMinutes: 5, emailDomain: 'kakao-ivoire.example', emailSender: 'ne-pas-repondre@kakao-ivoire.example', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'SAGE' },
     privacy: { retentionDays: { syncLogs: 60, payloads: 14, audio: 180, photos: 365, activity: 1825 } },
+    sales: { ...base.sales, templates: base.sales.templates.map((x) => ({ ...x, deliveryPoint: 'Port de San-Pédro', clauses: 'Le vendeur livre la marchandise au point de livraison pendant la période d’expédition. Les poids sont ceux du pont-bascule de l’acheteur.' })), impactKpis: ['womenShare', 'childrenPerFarmer', 'plotsMapped', 'eudr'], certifications: ['Rainforest Alliance', 'Fairtrade'] },
+    land: kakaoLand(),
+    training: { editHeldDays: 0, deletePlannedOnly: true, membersOnly: false, allowGuests: true, minForCommission: 10, maxForCommission: 80, ratingRequired: false },
   };
 }
 
@@ -240,5 +312,7 @@ export function genericExtras(orgId: string, commodities: Commodity[], currency:
     support: { ...base.support, types: base.support.types.slice(0, 1).map((s) => ({ ...s, subTypes: [] })) },
     messaging: { sms: [], otpExpiryMinutes: 10, emailDomain: '', emailSender: '', domainVerified: false },
     integrations: { apiKeys: [], webhooks: [], accounting: 'NONE' },
+    fieldTeam: { ...base.fieldTeam, rateCards: [], scoreModels: [] },
+    land: { ...base.land, species: base.land.species.slice(0, 2), nurseryRounds: base.land.nurseryRounds.slice(0, 2), eudr: { ...base.land.eudr, operator: { name: '', eori: '', address: '' } } },
   };
 }

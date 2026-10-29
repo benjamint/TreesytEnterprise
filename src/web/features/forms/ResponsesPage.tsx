@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PageTourButton } from '@/components/shared/PageHeader';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
 import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
@@ -136,7 +137,7 @@ function Responses({ form }: { form: FormRecord }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <Link to={`/app/forms/${form.id}`} className="mb-1 inline-flex items-center gap-1 text-[13px] text-muted hover:text-brand"><ArrowLeft className="h-3.5 w-3.5" /> {form.name}</Link>
-          <h1 className="text-[28px] font-semibold text-ink">{t('forms.responses')}</h1>
+          <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="text-[28px] font-semibold text-ink">{t('forms.responses')}</h1><PageTourButton /></span>
           <p className="text-[14px] text-muted">{t('forms.r.summary', { count: rows.length, shown: shown.length })}</p>
         </div>
         <div className="flex gap-2">
@@ -270,7 +271,7 @@ function ResponseDrawer({ form, r, lists, onClose }: { form: FormRecord; r: Surv
 
 const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); const m = Math.floor(s.length / 2); return s.length % 2 ? s[m]! : (s[m - 1]! + s[m]!) / 2; };
 
-function QuestionSummary({ q, values, total }: { q: Question; values: unknown[]; total: number }) {
+export function QuestionSummary({ q, values, total }: { q: Question; values: unknown[]; total: number }) {
   const { t } = useT();
   const f = useFormat();
   const lang = useLang();

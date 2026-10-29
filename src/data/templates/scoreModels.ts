@@ -22,11 +22,13 @@ export const COMMUNITY_MODEL: ScoreModel = {
 };
 
 export const FARMER_MODEL: ScoreModel = {
-  id: 'sm_farmer', entity: 'farmer', period: 'year', version: 1,
+  id: 'sm_farmer', entity: 'farmer', period: 'year', version: 2,
   components: [
     { id: 'consent', name: 'consent', metric: 'consent', rule: 'boolean', weight: 10 },
     { id: 'identity', name: 'identity', metric: 'identity', rule: 'linear-to-target', target: 3, weight: 20 },
-    { id: 'purchases', name: 'purchases', metric: 'purchasesKg', rule: 'linear-to-target', target: 1_500, weight: 50 },
+    { id: 'purchases', name: 'purchases', metric: 'purchasesKg', rule: 'linear-to-target', target: 1_500, weight: 40 },
+    // Survival of the farmer's trees (alive / planted). Farmers without trees keep the full points.
+    { id: 'trees', name: 'trees', metric: 'treeSurvival', rule: 'linear-to-target', target: 100, weight: 10 },
     { id: 'group', name: 'group', metric: 'inGroup', rule: 'boolean', weight: 10 },
     { id: 'noDebt', name: 'noDebt', metric: 'noOverdueLoan', rule: 'boolean', weight: 10 },
   ],

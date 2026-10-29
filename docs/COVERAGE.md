@@ -5,9 +5,9 @@ Every line is a feature found in today's backend. Ticked as the prototype builds
 **Legend:** `[x]` built · `[~]` foundation in place (engine, data or gating), screen comes in a later phase · `[ ]` not started.
 Phase numbers in brackets say which phase delivers the full screen.
 
-_Last updated: Phase 11._
+_Last updated: Phase 14._
 
-Every Settings page (27, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
+Every Settings page (29, PRD A4) has Save (toast + audit entry with before/after), Cancel, Reset to template, a leave-without-saving guard, read-only mode without the edit permission, and "Where this is used" links. Operational pages show the settings in effect (approval route, next number, tolerances).
 
 Prototype-only controls (persona sign-in, demo codes and emails, open mobile window, mobile previews, "view as", "next payout fails", reset demo data, page notes and page actions such as the agent's phone steps for Journey 2) live in the **Demo panel** (flask icon, bottom-right), not in the product UI.
 
@@ -46,21 +46,21 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Languages + terminology — EN/FR via i18next; company terms (`{{term.agent}}` → "Délégué")
 - [x] Currency formatting — `formatMoney()` with minor-unit table (GHS 2, XOF 0, …)
 - [x] Countries catalogue — Platform → Global catalogues: countries, currencies, commodities, question types on/off, permission catalogue, providers per country
-- [ ] API versions / docs page [17]
+- [x] API versions / docs page — `/app/help/api` (linked from Settings → Integrations): v1 / v2 (beta) switch, endpoints grouped by area with method, path, scope, parameters, request body, curl example with the company's key prefix and sample JSON; webhook events with sample payloads
 - [x] Removed unauthenticated debug routes — no backend; nothing to expose
 - [x] NFC keys server-held — Settings → Biometrics & consent shows server-held card keys and rotation
 
 ## Places and people (Scope 2)
 
 - [x] Location levels + explorer + zones — Settings → Locations (levels, tree editor, CSV import, zones); Locations explorer `/app/locations`: tree by levels, node detail with community / farmer / agent counts, zones, add / edit / move; boundary drawing is a "coming" stub
-- [~] Agent multi-area assignment — agents hold many area nodes; explorer counts agents per node [16]
+- [x] Agent multi-area assignment — agents hold many area nodes (agent detail → Areas & manager); explorer counts agents per node
 - [x] Community profile (v1–v3 fields) — community profile form (Vitara v3) rendered on create / edit and in the drawer's Profile tab
 - [x] Community code pattern — new communities get `{region}-{seq:3}` from Settings → Farmer ID & codes; issued once, never regenerated on edit
 - [x] Leaders — communities and groups: name, role (company list), phone; add / edit / remove
 - [x] Documents — type from the company list, upload with image / PDF preview, uploaded by / when
 - [x] Groups in community sync (upsert) — groups added during mobile community profiling, and mobile group saves, upsert by name within the community; meeting / contribution records send the group score for review
 - [x] Community list / detail / map / dashboard / edit — filters + saved views, column picker, CSV export, drawer (overview map, profile, leaders, documents, farmers, groups, purchases, activity), `/app/communities/map` with score-coloured pins, dashboard (profiled, average farmers, bought from, top 3s, over time)
-- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); workshops / trees count as zero until phases 14–15
+- [x] Community score — Vitara model (profile 20 + purchases 35 + training 15 + trees 30) with breakdown and recalculate (replaces); training counts workshops held in the community this year (target 4), trees count planted, alive and average health from the tree register
 - [x] Farmer profile (all fields) — Vitara v3 farmer form (incl. spouse show-if, children repeat group, ID type / number); edit creates a new version with a change history
 - [x] Farmer ID pattern — `{community}-{initials}-{seq}` / `KI-{region}-{seq:5}` on registration; "Import existing IDs" keeps a supplied ID
 - [x] Thumbprints — left / right status on the Identity tab; captured on the phone during registration (simulated reader) with photo, ID card, consent (audio / signature / tick with read-aloud) and NFC card
@@ -71,45 +71,46 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Farmer score — farmer model (consent, identity, purchases, group, no overdue loan) with breakdown and recalculate
 - [x] Farmer list / detail / export / profiling report / dashboard — list with all PRD columns, saved views (Women farmers, No consent, Blocked by debt, Flagged), register with duplicate check (phone / ID number), drawer tabs, CSV export with column picker, profiling report by agent, dashboard (gender, age bands, education, income, real household / children averages, registrations, by agent)
 - [x] Mobile communities, farmers and groups — `/m/communities` (list, profile with location, GPS, live profile form, leaders, groups, documents), `/m/farmers` (list, detail with loans and balance, purchases, fix task; edit as a new version, conflict-checked on sync), `/m/groups` (details, form, members, leaders, payment, records); all save offline
-- [ ] Shared farmers / communities [later — company data sharing, PRD A5]
+- [x] Shared farmers / communities — Settings → Data & privacy grants pick the communities to share (their farmers follow); the receiving company gets a read-only "Shared with us" tab on Communities and Farmers with a "Shared by …" chip, masked phones and its own attributes kept separately (seeded: Vitara shares two communities with Kakao Ivoire)
 - [x] Farmer groups profile / members / leaders / documents / payment details — group type form, membership with roles, joined / left, add / remove; MoMo / bank / cash details
 - [x] Group scorecard + manual review — uploading meeting or contribution records resets that manual score and sets Pending review; reviewer scores 1–4 / 1–18 with a note → Completed; recalculation replaces
 - [x] VSLA savings — Savings tab on VSLA groups: fund, saved, out on loan; contributions, loans, repayments, share-out
 - [x] Community import — wizard: template from the community form, map, match parent locations, validate, import (codes from the pattern), quality re-check, undo
 - [x] Farmer import — Journey 15: template (CSV / Excel) from the farmer form, sample file, auto-map with aliases, transforms (leading 0, dd/mm/yyyy…), fuzzy community matching, inline fixes, warnings for likely duplicates, result report, error file, history, undo last import
-- [~] Other imports — locations import in the wizard; groups, members, leaders, recoveries, warehouse loads, price lists, users, agents show "arrives with its module"
+- [x] Other imports — the wizard now imports all 11 types: communities, farmers, locations, groups, group members, leaders, past recoveries (credited to the farmer's loan), opening warehouse loads (bags in stock + movement), price lists, users (as invitations) and agents (invited); each with templates, column matching, validation, error file and undo
 - [x] Mobile data-fix tasks — fix tasks appear on the agent's phone (home alert, Tasks, `/m/tasks/:id`); saving re-checks the record and resolves the flag on the web; offline fixes wait in the outbox until Sync
 
 ## Field agents (Scope 3)
 
-- [~] Agent types — CEO / Conservation / Warehouse (Vitara), Délégué / Magasinier (Kakao Ivoire) [16]
-- [~] Agent record — 24 Vitara agents, 12 Kakao Ivoire agents, preview table [16]
-- [~] Managers / reporting lines — supervisors seeded as managers [16]
-- [ ] Visibility rules [16]
-- [ ] Multi-company agents [16]
-- [ ] Agent reports + resolutions + consequences [16]
-- [ ] GPS activity + geofences [16]
-- [ ] Activity catalogue [16]
-- [ ] Weekly plans create / publish / amend [16]
-- [ ] Budget requests [16]
-- [ ] Manager review [16]
-- [ ] Finance review [16]
-- [ ] Wallet edit [16]
-- [ ] Payout net of carry-forward [16]
-- [ ] Absorb with carry-forward [16]
-- [ ] Weekly airtime / allowances [16]
-- [ ] Retirements + receipts [16]
-- [ ] Unused funds + refunds [16]
-- [ ] Under-spend carry-forward [16]
-- [ ] Performance penalty [16]
-- [~] Achievement measurement — metric engine scaffolded [16]
-- [ ] Monthly maintenance allowance [16]
-- [~] Agent scores — scoring engine scaffolded [16]
-- [ ] Manager scores [16]
-- [ ] Commission periods [16]
-- [~] Commission lines + rates + eligibility — rate-card engine scaffolded [16]
-- [~] Two-level approval — workflow engine supports separate permissions and separation of duties (tested) [16]
-- [ ] Devices per user [17]
+- [x] Agent types — CEO / Conservation / Warehouse (Vitara), Délégué / Magasinier (Kakao Ivoire); Settings → Field team: name per language, code, visibility, required fields, budget eligibility, mobile tiles
+- [x] Agent record — `/app/agents`: photo, name, type, phone, areas, managers, warehouse, wallet (network, number, verified name), cash held, week target %, score, flags, last sync, app version, status; column picker, CSV export; invite by SMS (country-checked phone, required fields per type) → Invited until the first phone sign-in; detail tabs Overview (KPIs, activity map), Areas & manager, Wallet (edit with name lookup, change log), Purchases & requests, Cash position, Plans & budgets, Scores, Commissions, Reports, Devices, GPS activity, Activity; "Open mobile app as this agent"
+- [x] Managers / reporting lines — `/app/agents/reporting-lines`: company → supervisors → agents; drag (or Move…) to reassign, gated by `agents.reassign`
+- [x] Visibility rules — per agent type (own records / their areas / everyone) applied to the phone's farmer and community lists
+- [x] Multi-company agents — one person can be an agent in several companies (seeded: Wahab Kanton, Vitara CEO agent and Kakao Ivoire délégué); the phone asks which company after the code; agent detail shows "Also works for …"; reports and AI answers stay company-scoped
+- [x] Agent reports + resolutions + consequences — `/app/agent-reports`: category (severity, consequence), reason, files, assignee, due date, Open → In progress → Resolved with comment and files; the agent answers on the phone; consequences enforced: flag chip on records, payouts blocked (budget, allowance and commission Pay skip or disable with the reason), new budgets blocked, extra approval step on budgets
+- [x] GPS activity + geofences — `/app/field-activity`: purchases, profiling, support fulfilment, surveys, tree monitoring, mapping, workshops on one map with agent / type / date filters; day playback with timeline; radius geofence per community (default from settings); out-of-area flags and a report by agent
+- [x] Activity catalogue — Vitara's 25 activities (18 measured from records, 7 entered by the supervisor), each with a metric definition (source, aggregate, filter, planned communities or anywhere); editable in Settings → Field team
+- [x] Weekly plans create / publish / amend — week (current or N ahead), days within min / max, activities with targets for all or per agent, assignees by team / agent type / named agents; publish (push, phone, weekly airtime allowance); amend after publishing as a new version with reason; detail with per-agent progress grid and planned communities map; close
+- [x] Budget requests — `/app/budgets` list or board: WAB number, trips, categories, total, manager and finance decisions, deductions, net; phone M11: trips with date, community, activity target slices, costs with daily and weekly limits shown live; blocked when last retirement is open or a report blocks budgets
+- [x] Manager review — workflow step `budgets.approveManager`; an extra operations step when an open report requires it
+- [x] Finance review — workflow step `budgets.approveFinance` with amount override and reason
+- [x] Wallet edit — agent detail, permission `agents.editWallet`, name lookup, change log
+- [x] Payout net of carry-forward — outstanding carry-forwards deducted oldest first; deduction preview; pay by mobile money (payments engine); retirement opens on payment
+- [x] Absorb with carry-forward — when deductions cover the budget, nothing is sent and the retirement still opens
+- [x] Weekly airtime / allowances — publishing a plan creates the weekly airtime run for its agents
+- [x] Retirements + receipts — `/app/retirements`: receipts per category with possible-duplicate warning, approve / reject each with a reason in one batch; the agent resubmits rejected ones from the phone; categories without receipts are accounted from the budget
+- [x] Unused funds + refunds — agent declares unused amount with a company reason; finance confirms one or more refunds with proof → Retired
+- [x] Under-spend carry-forward — unaccounted money at the end of a retirement becomes a carry-forward deducted from the next budget
+- [x] Performance penalty — run on demand or by the scheduled job: preview each agent's achievement and band, post once per week as penalty carry-forwards; waive / appeal requested by one person and approved by another
+- [x] Achievement measurement — `/app/achievements`: week selector, agents × activities from the metric definitions (planned communities attribution explained), drill into the records counted, manual entry for supervisor-entered activities, "Recompute week" (also a scheduled job) updates each agent's week target %
+- [x] Monthly maintenance allowance — `/app/allowances`: run for a month with an eligibility preview (threshold, tiers by achievement), approval by another user, bulk pay with MMA reference, Eligible → Pending → Paid / Failed, frozen once paid
+- [x] Agent scores — `/app/scores`: score card per agent type (Vitara Conservation and CEO templates, weights total 100), year selector, leaderboard, breakdown with targets and points, trend by month, "Recalculate now" (and scheduled job)
+- [x] Manager scores — average of each supervisor's agents
+- [x] Commission periods — `/app/compensation`: from / to, approval window (enforced), In review → Confirmed → Paid; lines generated from rate cards with progress; payroll CSV export
+- [x] Commission lines + rates + eligibility — items per rate card (achieved, counted, rate, amount) with notes such as "Workshop WS-… excluded: 12 attendees, min 15"; rate cards editable in Settings → Field team
+- [x] Two-level approval — first approval `compensation.approveFirst`, second `compensation.approveSecond`, two different people, not on one's own line; reject / hold with reason; bulk pay skips agents whose report blocks payouts
+- [x] Agent self-service (M12) — phone: cash position with carry-forwards, commissions with item lines and notes, score breakdown, reports with answers, notifications inbox
+- [x] Devices per user — agent detail Devices tab lists each phone (model, OS, app version, push token, last seen, status) with Sign out device / Require update; the demo phone window registers as a device at sign-in
 
 ## Buying (Scope 4)
 
@@ -140,7 +141,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Related unpaid purchases — purchase drawer offers paying the request's other unpaid purchases together; bulk pay from the list (same request, up to the company batch size)
 - [x] Sourcing export — CSV export of purchases and requests
 - [x] PRE create / 4-level approvals / hold / resume / disburse / receipt / edit / wallet — catalogue lines with basis, default rate and caps, bag scan when required, payee wallet, edit only before the first human approval, MoMo or manual payment, printable receipt; agents create PREs on the phone too (`/m/buying/pre/new`, offline-capable)
-- [~] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery and moves its bags in transit; warehouse receiving [12]
+- [x] Pending inbound trigger — paying a PRE whose expense type triggers inbound creates the expected delivery at the agent's warehouse (or the company hub) and moves its bags in transit
 - [x] Price board — current price per commodity × zone, change history, paid vs list chart, suggested price (median paid within the tolerance band)
 - [x] Aggregator registry — `/app/aggregators/suppliers`: individual / company, contact, address, ID / KYC documents, payout by mobile money or bank (bank list per country), status Pending approval / Approved / Blocked, purchase history; new suppliers need approval by someone other than their creator, blocking needs a reason, payout edits are logged
 - [x] Aggregator purchase create / approve / reject / disburse — `/app/aggregators`: list with every PRD column, views and filters, CSV export; create with supplier search or a new supplier inline, unique PO number, bags × weight per bag, price from the list with tolerance and override reason, deal currency and exchange rate (company-currency total shown), includes PRE, PO file and optional weighbridge report, aggregator-threshold hint; approval through the workflow engine; disburse in part or in full by mobile money / bank (payments engine, maker-checker) or manual proof, never above the total and only once the supplier is approved
@@ -154,7 +155,7 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Money (Scope 5)
 
-- [~] Payable types — all 12 types in the engine; agent cash advance, PRE, single and bulk farmer purchase, aggregator purchase and expense, farmer support and loan refunds pay through it now; the others with their modules [16]
+- [x] Payable types — all 12 types pay through the engine: agent cash advance, PRE, single and bulk farmer purchase, aggregator purchase and expense, farmer support, loan refunds, weekly budgets, monthly allowances, commissions, warehouse expenses
 - [x] Payment preview + name lookup — Payees step: network detected from the number, provider override, "Name on wallet ✓" or mismatch warning that must be confirmed
 - [x] Disburse with charges — Charges step: provider fee (tiers, caps, payer), withdrawal charge per provider (% or flat, "include withdrawal charges"), tax, extra charges, total, who pays
 - [x] Extra charges — picked per payment from the company list (company- or payee-paid)
@@ -168,9 +169,9 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Wallet balance — Wallets & balances: card per provider wallet, low-balance alert, paid out today, transactions (payouts, reversals, collections, top-ups), simulated top-up request
 - [x] Providers per company / country — Settings → Payments: providers, masked credentials, wallet names, per-payment and daily limits, withdrawal charge
 - [x] Fee tiers / tax — fee tiers, tax, extra charges, maker/checker with threshold, batch size, live fee calculator
-- [~] Phone validation by country — libphonenumber-js helper [5]
+- [x] Phone validation by country — libphonenumber-js on farmer registration (web and phone), imports, agent invites, My account and the demo form
 - [x] Collections — mobile-money collection request (agent refund from Reconciliation); the agent's phone shows the approval prompt (PIN); approved money credits the wallet and records the refund; Collections view on Payments
-- [~] Weekly budget / allowance / support payouts — support payouts built; budgets and allowances [16]
+- [x] Weekly budget / allowance / support payouts — support, weekly budgets (net of carry-forwards), monthly allowances and commissions pay through the payments engine with bulk runs
 - [x] Money storage and formatting — integer minor units + currency, only through `formatMoney()`
 
 ## Farmer support (Scope 6)
@@ -209,60 +210,60 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 
 ## Inventory and sales (Scope 7)
 
-- [~] Warehouses — 3 per company seeded, preview table [12]
-- [ ] Stock balances [12]
-- [ ] Pending inbound [12]
-- [ ] Inbound with tag statuses [12]
-- [ ] Discrepancies [12]
-- [ ] Tolerance auto write-off [12]
-- [ ] Physical resolution [12]
-- [ ] Weight reimbursement allocation [12]
-- [ ] Agent repayment + finance review [12]
-- [ ] Outbound [12]
-- [ ] Transfer out / in pipeline [12]
-- [ ] Transfer weight bounds [12]
-- [ ] Stock counts [12]
-- [ ] Warehouse expenses + 4-level approval [12]
-- [ ] Dispatch (direct + inventory) [13]
-- [ ] Dispatch approval [13]
-- [ ] Shipment statuses + tracking [13]
-- [ ] Verification + documents [13]
-- [~] Sale number — per-client sequence pattern `SN-{clientCode}-{seq:4}` [13]
-- [ ] Impact metrics [13]
-- [ ] Sales contracts (spec, terms, packaging, statuses, fulfilment, documents, officers) [13]
-- [ ] Traceboard supplier view [13]
-- [~] Traceboard buyer view — buyer companies see only Traceboard; data-sharing grant Vitara → Nordic Shea Butter AB seeded [13]
-- [ ] Order detail + document download log [13]
-- [ ] Insights request [13]
-- [ ] Shipment notifications [13]
-- [ ] Carbon projects [14]
+- [x] Warehouses — list and map, type, place, officers, capacity, stock by commodity, utilisation, open discrepancies; detail with stock (by commodity, by bag, ageing), movements, expected, discrepancies, counts, expenses, officers, activity
+- [x] Stock balances — bags in stock per warehouse; every movement keeps the balance before and after
+- [x] Pending inbound — expected deliveries from paid PREs (bag list, source agent, kg) and from transfers; on the officer's phone
+- [x] Inbound with tag statuses — Original / Missing / Replaced tag / Weight top-up per bag, web and phone (M8)
+- [x] Discrepancies — missing and weight, expected vs received, variance kg and %, Open / Auto written off / Resolved, resolution type; list, filters, export
+- [x] Tolerance auto write-off — under the commodity and movement tolerance, with a status and an activity note
+- [x] Physical resolution — bag returned, tag replaced, written off with a reason
+- [x] Weight reimbursement allocation — top-up bags go to the oldest open weight discrepancies first, allocation shown
+- [x] Agent repayment + finance review — owed = lost kg × blended purchase/loan-produce price (or list price) + logistics share for missing bags; agent pays on the phone with proof; finance approves in full, in part (balance stays) or rejects with a reason
+- [x] Outbound — pick or scan bags; bags out of stock
+- [x] Transfer out / in pipeline — bags in transit, expected at the destination for its officer, received with the same bag statuses; the phone shows each step (received, missing, written off, weight, stock)
+- [x] Transfer weight bounds — each bag checked against the packaging min/max and the transfer tolerance; on receipt the whole load is checked against the company's out-vs-in percentage: above it the transfer is flagged Out of bounds (web and phone), logged and the resolvers notified
+- [x] Stock counts — scheduled (company frequency) or ad hoc, scan on the phone (blind option), expected vs counted, by agent and commodity, photos, adjustment request approved by someone else
+- [x] Warehouse expenses + 4-level approval — company expense types (Settings → Inventory rules), lines per payee, Vitara 4 people / Kakao Ivoire 2, MoMo per line or manual proof, Pending / Partial / Full / Rejected
+- [x] Dispatch (direct + inventory) — from inventory loads pending outbounds (commodity must match the contract) or bought direct from purchase requests; client, optional contract, loading point, driver (name, phone, licence image), truck (plate, image), waybill, expected kg and t; outbounds are marked as loaded
+- [x] Dispatch approval — workflow from Settings → Approvals (Vitara: logistics/operations, Kakao Ivoire: same); the creator can't approve; on the dashboard queue
+- [x] Shipment statuses + tracking — Pending → In transit → Arrived → Delivered → Verified (+ On hold); truck GPS and ETA updates, map with the truck pin, step-by-step timeline
+- [x] Verification + documents — weighbridge report, invoice, optional quality test, delivered weight and bags, unit price, amount; Documents tab with add and download
+- [x] Sale number — issued at verification from the per-client sequence `SN-{clientCode}-{seq:4}`; the buyer and the sales team are told
+- [x] Impact metrics — snapshot on each order and live on Traceboard: farmers, communities, women share, children per farmer, trees planted, plots mapped, EUDR %; which KPIs buyers see is set in Settings → Sales rules
+- [x] Sales contracts (spec, terms, packaging, statuses, fulfilment, documents, officers) — created from templates, quality spec from the commodity, payment schedule from the terms with due dates, mark received, overdue flags, Draft / Agreed / Order created / Fulfilled (with tolerance) / Cancelled, orders and deliveries chart, signed contract upload, printable contract with the company as seller
+- [x] Traceboard supplier view — buyers served, delivered, amount, orders in transit, delivered by month and commodity, top customers; share settings per buyer (orders / traceability / impact) on the data-sharing grant
+- [x] Traceboard buyer view — buyer companies see only Traceboard, branded with the supplier's logo: total weight, amount, orders, crops by weight, upcoming dispatches, farmers and communities, impact, certifications, trace map; only for the buyer's own client record and only while the grant shares orders
+- [x] Order detail + document download log — buyer order drawer with order and sale number, kg and t, driver, truck, timeline, trace to source (communities sized by kg, plot polygons by EUDR status), impact, documents; every download is logged with the person and company
+- [x] Insights request — buyer asks a supplier (optionally about one order); supplier answers from the Traceboard inbox; both are notified
+- [x] Shipment notifications — In transit, Delivered (action required), Verified to the buyer's Traceboard users and the supplier's sales team, with supplier branding in the text
+- [x] Carbon projects — inside the company (no new company or admin; permission checked): standard, start, baseline, species targets, communities and plots, monitoring plan, partner; trees assigned, survival, CO₂ estimate with editable factor per species, printable report
 
 ## Trees and land (Scope 8)
 
-- [ ] Nursery registration [14]
-- [ ] Representative [14]
-- [ ] Images / agreement [14]
-- [ ] Nursery monitoring rounds [14]
-- [ ] Nursery dashboard [14]
-- [ ] Nursery list / detail / map / batch history [14]
-- [~] Batch numbering — `NB-{yy}-{seq:3}` pattern [14]
-- [ ] Seedling sourcing [14]
-- [ ] Seedling stock [14]
-- [ ] Assignment to agent / company [14]
-- [ ] Nursery → farmer assignment [14]
-- [ ] Seedling allocation [14]
-- [ ] Tree monitoring [14]
-- [ ] Tree list / detail / export [14]
-- [ ] Tree maps [14]
-- [ ] Tree dashboard [14]
-- [ ] Tree / community / farmer tree scoring [14]
-- [ ] Health score [14]
-- [ ] Conservation KPIs / rates [16]
-- [ ] Field mapping [14]
-- [ ] Plot list / detail / images / agreement [14]
-- [ ] Mapping dashboard [14]
-- [ ] Plot monitoring [14]
-- [ ] EUDR validation / area / deforestation check / DDS export [14]
+- [x] Nursery registration — web and phone (M9): name, community, agent, GPS, fenced, water source, material, batches, photos; code `NUR-{seq:3}`
+- [x] Representative — name, gender, phone
+- [x] Images / agreement — profiling, primary and secondary monitoring images; establishment agreement upload
+- [x] Nursery monitoring rounds — company plan (Vitara: Primary at 21 days, Secondary 1–3) with due dates and overdue chips; per-batch figures on web or phone
+- [x] Nursery dashboard — nurseries, germination %, survival %, seedlings alive, by species, chart by day / month / year
+- [x] Nursery list / detail / map / batch history — list or map, filters; drawer with profile, batches, rounds, images, agreement, activity; germination and survival per batch over rounds
+- [x] Batch numbering — `NB-{yy}-{seq:3}`
+- [x] Seedling sourcing — from a nursery batch or an outside supplier, quantity, date, cost; codes generated with the species prefix in the background (progress bar)
+- [x] Seedling stock — by species: sourced, in nursery, with agents, with farmers, planted, alive, unassigned
+- [x] Assignment to agent / company — from a lot to an agent, or to another company with consent (accept / decline)
+- [x] Nursery → farmer assignment — straight from a batch (web and phone), codes issued, batch disbursed count updated
+- [x] Seedling allocation — phone: farmer → species → scan or type codes (count must match, only codes the agent holds), max per farmer; each code becomes a tree; allocations list with a timeline per agent
+- [x] Tree monitoring — due list by round, scan the tag, the company's species form on the phone (alive / dead with cause, height, health, pests, photo, GPS) or not found
+- [x] Tree list / detail / export — code, species, farmer, community, plot, planted, last visit, round, state, height, health, issues, agent; visit history; export limited to the company's date range
+- [x] Tree maps — clustered pins coloured by state, plot outlines, filter by species and round
+- [x] Tree dashboard — disbursed, planted, farmers with trees, alive %, average height, survival by planting month, species and round, causes of death
+- [x] Tree / community / farmer tree scoring — community score counts trees planted, alive and average health; farmer score has a tree-survival component (farmers without trees keep full points)
+- [x] Health score — from the species form's rating less issues found, 0–100
+- [x] Conservation KPIs / rates — Vitara Conservation score card (farmers profiled, farmland, parkland, seedlings, trees monitored, farmers trained) and Conservation rate card; survival rates on the tree dashboard
+- [x] Field mapping — phone: walk the boundary (points appear with live area and accuracy) or tap points; web: draw, drop a point, or import GeoJSON / KML; edit vertices
+- [x] Plot list / detail / images / agreement — plot ID, type, farmer, community, area vs declared, geometry, precision, EUDR status, trees (linked or density estimate), agreement, last monitoring; drawer with map, validation, purchases and lots, monitoring, files, activity
+- [x] Mapping dashboard — plots by type, total and average area, % with a polygon, trees per plot, by agent
+- [x] Plot monitoring — company questionnaire by land type (Vitara template: chemicals, tree cutting, farming activities, livestock, fencing, bushfires, fire protection), due list on the phone
+- [x] EUDR validation / area / deforestation check / DDS export — closed ring, no self-intersection, ≥ 6 decimals, polygon over 4 ha, overlaps; area from the geometry; check against the bundled forest-loss layer (cut-off 31 Dec 2020) with Clear / Risk / Not checked on the map; compliance overview; lots from dispatches; statement with GeoJSON, summary PDF and simulated EU TRACES submission (blocked while plots are at risk or unchecked)
 
 ## Forms and training (Scope 9)
 
@@ -278,35 +279,48 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Summary — totals, average completion, approval rate, agents
 - [x] Export — Excel with chosen columns; sensitive answers masked without `farmers.viewSensitive`
 - [x] Subject binding — profile forms drive web and mobile registration, farmer list column options and report fields (Journey 9); Settings → Forms picks the form for each record type
-- [ ] Training catalogue / topics [15]
-- [ ] Workshop planning [15]
-- [ ] Status [15]
-- [ ] Edit / archive / delete rules [15]
-- [ ] Export [15]
-- [ ] Dashboard [15]
-- [ ] Attendance + ratings + comments [15]
-- [ ] Images [15]
+- [x] Training catalogue / topics — `/app/workshops/catalogue`: name per language, category, duration, materials, linked quiz form, audience, active; Vitara 14 topics, Kakao Ivoire 8; starter topics by sector (shea, cocoa, coffee, cashew, grains) skip ones already there
+- [x] Workshop planning — bulk plan sheet: one location, then rows of topic, facilitator, community, group (optional), expected attendees, date; each row gets a `WS-{yymm}-{seq:3}` number
+- [x] Status — Planned / Held / Cancelled / Archived; list with saved views, facilitator and community filters; month calendar; overdue badge when a planned date has passed
+- [x] Edit / archive / delete rules — Settings → Workshops and training: held workshops editable for N days (Vitara 3; afterwards only archive with remarks), delete planned only, cancel with reason; held ones edit the location only
+- [x] Export — CSV of the filtered list (number, title, date, location, community, group, facilitator, expected, actual, status, photos, rating) and of the catalogue
+- [x] Dashboard — created, held, upcoming, cancelled, unique farmers trained, attendances; attendance by topic and by facilitator, held per month, average rating by facilitator
+- [x] Attendance + ratings + comments — phone M10 (`/m/workshops`): today's and upcoming → start with GPS → attendance by NFC tap, card scan, thumbprint (simulated readers) or search, plus named guests → 1–5 rating and comment per farmer → photos → finish (commission check against min / max) → feedback forms (workshop feedback binding) → send, offline through the outbox; eligibility rules (community or group members only, guests, rating required) enforced on the phone and again on sync; web detail lists attendees with method, rating, comment, time, feedback results per question, "counts for commission" badge (J9 bounds); farmer Trainings tab and community Workshops tab
+- [x] Images — photos taken at the end of the session, shown on the workshop's Photos tab with who and when
 
 ## Platform services (Scope 10)
 
 - [x] Dashboards + caching — widget board: ask bar, setup checklist, KPI row, My approvals with inline Approve / Hold / Reject, purchases by week, volume by commodity, top communities, payouts by provider, recovery progress, stock by warehouse, field map, alerts, wallets, activity; customise (drag, resize, add from the library, remove), saved per person or as the company default, role-based default layouts; every widget gated by module and permission; module dashboards reuse the widget system in their phases
-- [ ] Exports / report builder [17]
-- [~] Email — reset and invite emails written to the outbox (simulated gateway); outbox screen [17]
-- [ ] SMS [17]
-- [ ] Push [17]
-- [~] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS reminder switches per window (sending with notifications) [17]
+- [x] Exports / report builder — `/app/reports`: library of the 17 standard exports (read-only, copy to change); builder: entity → columns (incl. farmer profile form fields) → filters (is / contains / at least / at most / between) → group by (dates by month) and sum → table, bars, line or donut, live preview; save, share with roles, schedule daily / weekly email to roles (job "Report schedules"); export XLSX / CSV with headings in the viewer's language and money in company currency; PDF view (print-ready page); exports above 500 rows run as a background job with progress and a link that expires after 24 h; personal columns masked without `farmers.viewSensitive`; every export written to the audit log
+- [x] Email — every email (reset, invite, approvals, payment failures, scheduled reports) written to the outbox; `/app/notifications` → Outbox with branded email preview, status Sent / Delivered / Failed with reason, Send again
+- [x] SMS — payment and receipt SMS in the outbox with SMS-bubble preview, character / part count, failure reasons (number not reachable…)
+- [x] Push — push messages to agents in the outbox with lock-screen banner preview; failed when the device's push token expired
+- [x] Recovery banner / reminders — open-window banner with days left on the agent's phone; push and SMS switches per window; the daily "Recovery reminders" job texts farmers with a balance and pushes their agents, at most weekly per window, shown as "Last reminders" on the window
 - [x] Offline sync protocol — every phone save goes through one queue: applied at once when online, kept in the outbox when offline; Sync screen with counts by type, data usage, per-item results, errors kept for retry, and conflicts (the office changed the record first) resolved with Keep office version / Send mine; stores sync across tabs
-- [ ] Sync logs (scoped, private, retention) [17]
-- [ ] Devices [17]
-- [~] Activity history (structured) — `{key, params}` events from every seeded approval, rendered via `t('activity.' + key)` [17]
-- [~] Audit log — Platform audit (company created, plan changed, suspended, invites, lockouts); company audit log [17]
-- [ ] Scheduled jobs [17]
-- [ ] Backups (platform) [17]
+- [x] Sync logs (scoped, private, retention) — `/app/sync`: every phone sync logged per type (44 sync types listed), with agent, device, app version, sent / created / updated / failed, Success / Partial / Failed, duration; detail with request / response JSON, personal fields masked unless `sync.viewPayloads` + `farmers.viewSensitive`, and what to tell the agent per error kind; live phone syncs log too; retention from Data & privacy with next purge date and "Run purge now"
+- [x] Devices — Devices tab: person, model, OS, app version (below-minimum badge), push token, last seen; Sign out device (the phone returns to sign-in) and Require update (the phone's next sync is refused until it updates); app-version chart and minimum version setting
+- [x] Activity history (structured) — `{key, params}` events rendered via `t('activity.' + key)` in the same feed on every record's Activity tab
+- [x] Audit log — `/app/audit`: immutable list (no edit or delete anywhere) of settings, people, money, device and export changes with actor, record, action in the viewer's language, before / after field diff, IP, device and GPS; filters by person, record, action, dates and text; XLSX / CSV export; Platform audit for the platform owner
+- [x] Scheduled jobs — `/app/jobs`: weekly achievements, performance penalties, monthly allowances, score recalculation, recovery interest accrual, data retention purge, dashboard cache refresh, report schedules, payment status polling; schedule and next run in the company time zone, last run, status, duration, Run now, run log
+- [x] Backups (platform) — backups job on the platform owner's Scheduled jobs page with a snapshot log (simulated)
 - [x] Error reporting — n/a in the prototype (noted)
 - [x] AI assistant — Ask your operations: dashboard bar with 4 suggestions and /app/ai with conversation history; 24 scripted EN/FR intents over company-scoped data (`src/data/ai-intents.ts`, tested for isolation); answer cards with sentence, chart, table, “Open in …” links, “Explain how this was calculated”, CSV export; module and permission checks; optional Claude fallback when `VITE_ANTHROPIC_API_KEY` is set
-- [ ] Knowledge base [17]
+- [x] Knowledge base — `/app/help`: searchable markdown articles, global and per company (Vitara and Kakao Ivoire have their own), topics, EN / FR with "not translated" badge; company admins write and edit their own; quick links to keyboard shortcuts, guided tours, mobile previews, API reference and Reset demo data; "What's configurable here" stays in the ? menu
 - [x] Book a demo — book-a-demo / contact form with country phone validation → confirmation → Platform → Leads
 
 ## Hard-coded values (Scope 11)
 
 - [x] Every item in Scope 11 appears as an editable setting with the Vitara value as the template default — 27 Settings pages edit workflows (visual builder with drag-to-reorder, conditions, parallel, auto, separation of duties, flow diagram, try-a-record), numbering, commodities, packaging, price lists, providers, fee tiers, buying rules, loan terms, inventory tolerances, agent types, budgets and penalties, notifications and templates, SMS/email, integrations, security, privacy and mobile; Reset to template restores the company's starting values
+
+## Quality bar (PRD 15, Phase 18)
+
+- [x] Build, lint and tests pass; quality tests check that no record points at another company's record, that components have no hard-coded English, and that every literal translation key exists
+- [x] Every list: loading skeleton and error with Try again (Demo panel → Screen states), empty state with an illustration (helpful actions where the company has nothing yet), filtered-empty with Clear filters
+- [x] Page error boundary with Try again / Reload; skeleton while a page's code loads
+- [x] Tours on every page (built from the page's title, action, stats, tabs, filters, table and help), auto-run on first visit per session, switch in the Demo panel
+- [x] Motion — page fade-and-rise, list stagger, stat count-up, drawer slide, success toasts; all off for people who prefer reduced motion
+- [x] Responsive — 65 routes checked at 1440, 1024, 768 and 390 px with no horizontal overflow; tables become stacked cards under 768 px; sidebar → icon rail → sheet menu
+- [x] Dark mode — same routes in dark; text on brand-coloured and status-coloured surfaces picks a readable colour, also for company brand colours
+- [x] Accessibility — axe-core (WCAG 2 A/AA) on every route in light and dark; colour contrast AA (muted text, status colours, avatars), names on every control, keyboard-reachable table rows and cards, focusable scroll areas, visible focus rings, skip link
+- [x] Performance — each page loads on demand; the demo-data generator downloads only on first visit or reset; first page ≈ 760 KB gzipped; lists paginate (no more than 15–50 rows in the DOM)
+- [x] All 15 demo journeys run end to end in the browser with no console errors (external map tiles are blocked in the test sandbox)

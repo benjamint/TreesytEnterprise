@@ -31,6 +31,12 @@ type Step = (typeof STEPS)[number];
 const sel = 'h-10 w-full rounded-ctl border border-line bg-surface px-2 text-[14px] text-ink';
 
 /** Imports (PRD C6): the wizard and the import history with undo. */
+/** Where each import's records are listed. */
+const LIST_ROUTE: Record<ImportType, string> = {
+  farmers: '/app/farmers', communities: '/app/communities', locations: '/app/locations', groups: '/app/groups', members: '/app/groups', leaders: '/app/communities',
+  recoveries: '/app/recovery', warehouseLoads: '/app/warehouses', priceLists: '/app/price-board', users: '/app/settings/users', agents: '/app/agents',
+};
+
 export function ImportsPage() {
   const { t } = useT();
   const [params] = useSearchParams();
@@ -194,7 +200,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
     <div className="space-y-5">
       <ol className="flex flex-wrap gap-2" aria-label={t('imp.steps')}>
         {STEPS.map((s, i) => (
-          <li key={s} className={cn('flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium', i === stepIndex ? 'border-brand bg-brand text-white' : i < stepIndex ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line bg-surface text-muted')} aria-current={i === stepIndex ? 'step' : undefined}>
+          <li key={s} className={cn('flex items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium', i === stepIndex ? 'border-brand bg-brand text-on-brand' : i < stepIndex ? 'border-brand/40 bg-brand-soft text-brand' : 'border-line bg-surface text-muted')} aria-current={i === stepIndex ? 'step' : undefined}>
             <span className="tnum">{i + 1}</span>{t(`imp.step.${s}`)}
           </li>
         ))}
@@ -407,7 +413,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
             <div className="flex flex-wrap gap-2">
               {result.errorRows.length > 0 && <Button variant="secondary" onClick={() => downloadErrors(result.errorRows)}><Download /> {t('imp.errorFile')}</Button>}
               <Button variant="secondary" onClick={onHistory}>{t('imp.history')}</Button>
-              <Button variant="secondary" onClick={() => navigate(type === 'farmers' ? '/app/farmers' : type === 'communities' ? '/app/communities' : '/app/locations')}>{t('imp.openList')}</Button>
+              <Button variant="secondary" onClick={() => navigate(type ? LIST_ROUTE[type] : '/app/imports')}>{t('imp.openList')}</Button>
               <Button onClick={() => { reset(); setStep('type'); setType(null); }}>{t('imp.another')}</Button>
             </div>
           </div>

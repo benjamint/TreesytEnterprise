@@ -2,6 +2,9 @@ import type { Lang, Money, WorkflowStep } from './core';
 import type { QualityRule } from '@/engines/rules';
 import type { NotificationRule } from '@/engines/notify';
 import type { MessageTemplate } from '@/engines/templates';
+import type { ScoreModel } from '@/engines/scoring';
+import type { RateCard } from '@/engines/rates';
+import type { FieldActivity } from './fieldTeam';
 
 export type ModuleKey =
   | 'dashboard' | 'ai' | 'farmers' | 'dataQuality' | 'imports' | 'buying' | 'aggregators' | 'payments'
@@ -210,6 +213,79 @@ export interface InventoryRules {
   autoWriteOff: boolean;
   stockCount: { frequency: 'WEEKLY' | 'MONTHLY' | 'QUARTERLY'; basis: 'FULL' | 'CYCLE'; blind: boolean };
   liability: { payer: 'AGENT' | 'TRANSPORTER' | 'COMPANY'; priceBasis: 'PURCHASE' | 'LIST'; includeLogistics: boolean };
+  /** Warehouse expense types (PRD H5). */
+  expenseTypes?: { id: string; name: Partial<Record<Lang, string>>; basis: 'PER_BAG' | 'PER_KG' | 'FLAT'; defaultRateMinor: number }[];
+}
+
+export type ImpactKpi = 'womenShare' | 'childrenPerFarmer' | 'treesPlanted' | 'plotsMapped' | 'eudr';
+
+/** Sales contracts and dispatch (PRD H6–H7): terms, packaging, templates, what buyers see. */
+export interface SalesSettings {
+  paymentTerms: { id: string; name: Partial<Record<Lang, string>>; instalments: { pct: number; trigger: 'SIGNATURE' | 'DELIVERY' | 'AFTER_DELIVERY'; days: number }[] }[];
+  packaging: { id: string; name: Partial<Record<Lang, string>> }[];
+  templates: { id: string; name: string; commodityId: string; unitId: string; paymentTermId: string; packagingId: string; tolerancePct: number; deliveryPoint: string; clauses: string }[];
+  impactKpis: ImpactKpi[];
+  /** Certifications shown to buyers on Traceboard. */
+  certifications: string[];
+  /** Days before a shipment window ends when an open contract is flagged. */
+  overdueAlertDays: number;
+}
+
+/** Trees and land (PRD I1–I6): species, monitoring rounds, plot types, EUDR. */
+export type SpeciesType = 'FRUIT' | 'TIMBER' | 'SHEA_GRAFTED' | 'SHEA_UNGRAFTED' | 'SHADE' | 'MEDICINAL';
+
+export interface Species {
+  id: string;
+  name: Partial<Record<Lang, string>>;
+  /** Seedling and tree codes start with this. */
+  codePrefix: string;
+  type: SpeciesType;
+  /** Trees per hectare, by plot type. */
+  densityPerHa: Record<string, number>;
+  /** kg CO₂ captured per tree per year (carbon estimate). */
+  co2KgPerYear: number;
+  enabled: boolean;
+}
+
+export interface NurseryRoundDef {
+  id: string;
+  name: Partial<Record<Lang, string>>;
+  kind: 'PRIMARY' | 'SECONDARY';
+  /** Due this many days after sowing. */
+  dueDays: number;
+  fields: ('polyBags' | 'potted' | 'germinated' | 'alive' | 'dead' | 'newGerminations')[];
+}
+
+export interface PlotMonitoringQuestion { id: string; label: Partial<Record<Lang, string>>; kind: 'YES_NO' | 'TEXT'; plotTypeIds: string[] }
+
+export interface LandSettings {
+  species: Species[];
+  nurseryRounds: NurseryRoundDef[];
+  /** Tree monitoring rounds, in days after planting. */
+  treeRoundDays: number[];
+  maxSeedlingsPerFarmer: number;
+  plotTypes: { id: string; name: Partial<Record<Lang, string>>; requiresFarmer: boolean }[];
+  plotMonitoring: PlotMonitoringQuestion[];
+  /** Plot monitoring is due this often (days). */
+  plotMonitoringDays: number;
+  eudr: { cutoffDate: string; polygonOverHa: number; minDecimals: number; operator: { name: string; eori: string; address: string } };
+  /** Longest date range allowed in one tree export. */
+  exportMaxDays: number;
+}
+
+/** Workshops and training (PRD G3): edit rules and who counts as an attendee. */
+export interface TrainingRules {
+  /** Planned workshops can always change; held ones only within this many days (0 = never). */
+  editHeldDays: number;
+  /** Only planned workshops can be deleted; held ones are archived with remarks. */
+  deletePlannedOnly: boolean;
+  /** Only farmers of the workshop's community (and group, when set) can be marked present. */
+  membersOnly: boolean;
+  allowGuests: boolean;
+  /** Attendance counted for commission (J9) only within these bounds. */
+  minForCommission: number;
+  maxForCommission: number;
+  ratingRequired: boolean;
 }
 
 export interface SupportType {
@@ -242,16 +318,44 @@ export interface SupportSettings {
   feedback?: { experience: string[]; lendAgain: boolean };
 }
 
+export type IssueSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+/** What an open report does to the agent (PRD J10), enforced across screens. */
+export type IssueConsequence = 'FLAG' | 'BLOCK_PAYOUTS' | 'BLOCK_BUDGETS' | 'EXTRA_APPROVAL';
+
+export interface AllowanceType {
+  id: string;
+  name: string;
+  amountMinor: number;
+  frequency: 'WEEKLY' | 'MONTHLY';
+  /** Minimum achievement (percent of plan) to qualify. */
+  thresholdPct: number;
+  /** Optional amounts by achievement; the highest band reached applies. */
+  tiers?: { fromPct: number; amountMinor: number }[];
+  approval: boolean;
+}
+
 export interface FieldTeamSettings {
   plan: { minDays: number; maxDays: number; planAheadWeeks: number };
   reportingLevels: number;
   costCategories: { id: string; name: string; maxPerDayMinor: number; maxPerWeekMinor: number; receiptRequired: boolean }[];
-  /** Achievement bands (percent of plan) and the penalty applied to next week's budget. */
+  /** Achievement bands (percent of plan) and the penalty, as a percent of the week's budget, carried to next week. */
   penaltyBands: { id: string; fromPct: number; toPct: number; penaltyPct: number }[];
   carryForward: boolean;
-  allowanceTypes: { id: string; name: string; amountMinor: number; frequency: 'WEEKLY' | 'MONTHLY' }[];
+  /** A new budget is blocked while the previous week's retirement is open. */
+  retirementBlocksBudget: boolean;
+  allowanceTypes: AllowanceType[];
   unusedReasons: string[];
-  issueCategories: { id: string; name: string; consequence: 'NOTE' | 'WARNING' | 'PENALTY' | 'SUSPENSION' }[];
+  issueCategories: { id: string; name: string; severity: IssueSeverity; consequence: IssueConsequence }[];
+  /** Activity catalogue used by weekly plans, achievements, scores and commissions. */
+  activities: FieldActivity[];
+  /** Commission rates per agent type (PRD 8.7, J9). */
+  rateCards: RateCard[];
+  /** Agent score card per agent type (PRD J8). */
+  scoreModels: ScoreModel[];
+  /** Manager score = weighted average of their agents' scores; weight by number of agents or equal. */
+  managerScore: 'EQUAL' | 'BY_AGENTS';
+  /** Default geofence radius around a community (km), when it has no polygon. */
+  geofenceKm: number;
 }
 
 /** Settings → Forms: which form is the profile form for each kind of record. */
@@ -359,6 +463,9 @@ export interface OrgSettings {
   extraCharges: ExtraCharge[];
   pricing: { changeApproval: boolean; premiums: { id: string; name: string; pct: number }[]; history: PriceChange[] };
   inventoryRules: InventoryRules;
+  sales: SalesSettings;
+  land: LandSettings;
+  training: TrainingRules;
   support: SupportSettings;
   fieldTeam: FieldTeamSettings;
   qualityRules: QualityRule[];

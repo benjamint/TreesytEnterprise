@@ -153,7 +153,7 @@ export function CompanyDetailPage() {
           <CardHeader><CardTitle>{t('platform.modules')}</CardTitle><span className="tnum text-[13px] text-muted">{t('platform.modulesOn', { count: stats.modules[org.id] ?? 0, total: MODULES.length })}</span></CardHeader>
           <CardContent className="flex flex-wrap gap-2 pt-4">
             {MODULES.map((m) => (
-              <Badge key={m.key} tone={settings.modules[m.key] ? 'brand' : 'neutral'} className={settings.modules[m.key] ? '' : 'opacity-60 line-through'}>{t(`module.${m.key}`)}</Badge>
+              <Badge key={m.key} tone={settings.modules[m.key] ? 'brand' : 'neutral'} className={settings.modules[m.key] ? '' : 'text-muted line-through'}>{t(`module.${m.key}`)}</Badge>
             ))}
           </CardContent>
         </Card>

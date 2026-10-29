@@ -9,20 +9,22 @@
     --brand: 20 88 63;
     --brand-hover: 15 71 50;
     --brand-soft: 234 243 238;
+    /* Text on brand-coloured surfaces (set from contrast when a company picks its own colour). */
+    --on-brand: 255 255 255;
     --lime: 184 224 90;
     --badge-dark: 15 42 32;
     --ink: 15 42 32;
     --body: 51 65 59;
-    --muted: 107 120 114;
+    --muted: 96 109 103;
     --label: 61 74 68;
     --surface: 255 255 255;
     --canvas: 247 248 246;
     --line: 227 231 228;
-    --info: 47 111 219;
-    --success: 31 138 76;
-    --warning: 183 121 31;
-    --danger: 192 57 43;
-    --teal: 15 128 128;
+    --info: 37 95 196;
+    --success: 24 118 64;
+    --warning: 140 88 10;
+    --danger: 176 48 38;
+    --teal: 12 106 106;
     --unknown: 124 77 196;
     /* Chart series (validated categorical palette, fixed order). */
     --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
@@ -34,6 +36,7 @@
     --brand: 63 175 126;
     --brand-hover: 86 192 143;
     --brand-soft: 20 39 30;
+    --on-brand: 10 20 16;
     --lime: 198 234 115;
     --badge-dark: 15 42 32;
     --ink: 241 245 242;
@@ -107,4 +110,20 @@
 /* While a side sheet is open, lift the Demo button above the sheet's footer actions. */
 body:has([role='dialog'][data-state='open'].max-w-\[640px\]) .demo-dock-web {
   bottom: 96px;
+}
+
+/* Report "PDF view": print only the report page. */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-area, .print-area * { visibility: visible !important; }
+  .print-area { position: absolute; inset: 0; border: 0 !important; padding: 0 !important; }
+  .no-print { display: none !important; }
+}
+
+/* List stagger (PRD 6.3): rows rise in 30 ms apart; nothing moves for people who prefer less motion. */
+@keyframes row-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.row-in { animation: row-in 180ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .row-in { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

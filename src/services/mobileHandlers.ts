@@ -10,10 +10,19 @@ import { confirmFundsReceived, createPre, createRequest, recordPurchases, signRe
 import { registerFarmer, type FarmerCore } from './farmerService';
 import { fillSchema, getLiveForm, submitResponse } from './formService';
 import { registerSyncHandler } from './mobileSync';
+import { finishWorkshop, type SessionInput } from './trainingService';
+import { createBudget, submitRetirement, type BudgetInput, type ReceiptInput } from './fieldService';
+import { respondToReport } from './teamService';
+import {
+  assignToFarmer, createNursery, recordPlotVisit, recordRound, recordTreeVisit, savePlot,
+  type FarmerAllocationInput, type NurseryInput, type PlotInput, type VisitInput,
+} from './landService';
+import type { NurseryRoundValues } from '@/types';
 import { saveCommunity, saveFarmerEdit, saveGroup, saveIdentity, type CommunityPayload, type FarmerEditPayload, type GroupPayload } from './profileService';
 import { applyFix } from './qualityService';
 import type { FarmerIdentity } from '@/types';
 import { confirmRecipients, createSupportRequest, recordFulfilment, saveAssets, type Confirmation, type NewSupportRequest } from './supportService';
+import { createTransfer, createWarehouseExpense, receiveInbound, receiveTopUp, resolveDiscrepancy, submitAgentRepayment, submitCount, type NewWarehouseExpense, type ReceiveInput, type TransferInput } from './inventoryService';
 import { createRecoveryRequest, recordRepayment, saveFeedback, type RepaymentInput } from './recoveryService';
 
 /** How each kind of phone save is written to the shared stores (now when online, or on Sync). */
@@ -98,3 +107,47 @@ registerSyncHandler('repayment', { apply: (i) => recordRepayment({ ...(i.payload
 registerSyncHandler('recoveryFeedback', {
   apply: (i) => { const p = i.payload as { id: string; experience: string; lendAgain: 'YES' | 'MAYBE' | 'NO'; comment?: string }; saveFeedback(p.id, p, i.userId, 'mobile'); },
 });
+
+registerSyncHandler('inboundReceive', { apply: (i) => { const p = i.payload as { inboundId: string } & ReceiveInput; return receiveInbound(p.inboundId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('transfer', { apply: (i) => createTransfer({ ...(i.payload as TransferInput), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('stockCount', { apply: (i) => { const p = i.payload as { countId: string; codes: string[]; weighed?: Record<string, number>; photos?: string[] }; return submitCount(p.countId, p, i.userId, 'mobile'); } });
+registerSyncHandler('warehouseExpense', { apply: (i) => createWarehouseExpense({ ...(i.payload as NewWarehouseExpense), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('discrepancyResolve', {
+  apply: (i) => { const p = i.payload as { id: string; type: 'BAG_RETURNED' | 'TAG_REPLACED' | 'WRITTEN_OFF'; newCode?: string; kg?: number; note?: string }; resolveDiscrepancy(p.id, p, i.userId, 'mobile'); },
+});
+registerSyncHandler('topUp', { apply: (i) => { const p = i.payload as { inboundId: string; code: string; kg: number }; return receiveTopUp(p.inboundId, p.code, p.kg, i.userId, 'mobile'); } });
+registerSyncHandler('agentRepayment', {
+  apply: (i) => { const p = i.payload as { inboundId: string; amountMinor: number; method: 'MOMO' | 'CASH' | 'BANK'; reference?: string; proof?: string }; return submitAgentRepayment(p.inboundId, p, i.userId, 'mobile'); },
+});
+
+// ---- M9 trees and land
+registerSyncHandler('nursery', { apply: (i) => createNursery({ ...(i.payload as NurseryInput), device: 'mobile' }) });
+registerSyncHandler('nurseryRound', { apply: (i) => { const p = i.payload as { nurseryId: string; roundId: string; values: NurseryRoundValues[]; photos: string[] }; return recordRound(p.nurseryId, p.roundId, p.values, { photos: p.photos, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('seedlingAllocation', { apply: (i) => assignToFarmer({ ...(i.payload as FarmerAllocationInput), device: 'mobile' }) });
+registerSyncHandler('treeVisit', { apply: (i) => { const p = i.payload as { treeId: string } & VisitInput; return recordTreeVisit(p.treeId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+registerSyncHandler('plot', { apply: (i) => savePlot({ ...(i.payload as PlotInput), device: 'mobile' }) });
+registerSyncHandler('plotVisit', { apply: (i) => { const p = i.payload as { plotId: string; answers: Record<string, boolean | string>; photos: string[] }; return recordPlotVisit(p.plotId, { ...p, actorId: i.userId, device: 'mobile' }); } });
+
+// ---- M10 workshops: the whole session (attendance, photos, feedback forms) arrives in one item.
+export interface WorkshopSessionPayload extends Omit<SessionInput, 'actorId' | 'device' | 'feedbackResponseIds'> {
+  feedback: { formId: string; answers: Record<string, unknown>; subject?: SurveyResponse['subject'] }[];
+  agentId?: string;
+}
+registerSyncHandler('workshop', {
+  apply: (i) => {
+    const p = i.payload as WorkshopSessionPayload;
+    const ids = p.feedback.map((fb) => {
+      const form = useFormStore.getState().forms.find((f) => f.id === fb.formId);
+      if (!form) throw new Error('Form no longer exists');
+      return submitResponse({ form, schema: fillSchema(form, useFormStore.getState().optionLists), answers: fb.answers, userId: i.userId, agentId: p.agentId, subject: fb.subject, gps: p.gps ? { ...p.gps, accuracy: p.gps.accuracy ?? 0 } : undefined, device: 'mobile' }).id;
+    });
+    return finishWorkshop({ ...p, feedbackResponseIds: ids, actorId: i.userId, device: 'mobile' });
+  },
+});
+
+// ---- M11–M12 field team: budget requests, retirements, answers to reports.
+registerSyncHandler('budget', { apply: (i) => createBudget({ ...(i.payload as Omit<BudgetInput, 'actorId'>), actorId: i.userId, device: 'mobile' }) });
+registerSyncHandler('retirement', {
+  apply: (i) => { const p = i.payload as { retirementId: string; receipts: ReceiptInput[]; unused?: { amountMinor: number; reason: string } }; submitRetirement(p.retirementId, p.receipts, p.unused, i.userId, 'mobile'); },
+});
+registerSyncHandler('reportResponse', { apply: (i) => { const p = i.payload as { reportId: string; text: string }; respondToReport(p.reportId, p.text, i.userId, 'mobile'); } });

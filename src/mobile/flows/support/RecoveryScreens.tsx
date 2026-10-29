@@ -126,7 +126,7 @@ export function NewRecoveryScreen() {
                   return (
                     <li key={l.id}>
                       <button type="button" role="checkbox" aria-checked={on} onClick={() => setPicked(on ? chosen.filter((x) => x !== l.id) : [...chosen, l.id])} className="flex min-h-[60px] w-full items-center gap-3 px-4 py-2 text-left active:bg-brand-soft">
-                        <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-white' : 'border-line')}>{on && <Check className="h-4 w-4" />}</span>
+                        <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded-[6px] border', on ? 'border-brand bg-brand text-on-brand' : 'border-line')}>{on && <Check className="h-4 w-4" />}</span>
                         <span className="min-w-0 flex-1"><span className="block font-medium text-ink">{sl.farmerName(l.farmerId)}</span><span className="block text-[13px] text-muted">{sl.typeName(l.typeId)}</span></span>
                         <span className="tnum text-[15px] font-medium text-ink">{f.money({ amountMinor: ledgerOf(l).balance, currency: l.principal.currency })}</span>
                       </button>

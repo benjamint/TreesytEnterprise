@@ -27,10 +27,11 @@ const GROUP_TYPES: FarmerGroup['type'][] = ['COOPERATIVE', 'VSLA', 'WOMENS_GROUP
 export function CommunitiesScreen() {
   const { t, terms } = useT();
   const navigate = useNavigate();
-  const { agent } = useMobileAgent();
+  const { agent, type } = useMobileAgent();
   const communities = useOrgRows(useCommunityStore((s) => s.communities));
   const [q, setQ] = useState('');
-  const mine = useMemo(() => communities.filter((c) => agent && c.agentIds.includes(agent.id)).sort((a, b) => a.name.localeCompare(b.name)), [communities, agent]);
+  // Visibility per agent type (Settings → Field team): ALL sees every community, otherwise their own.
+  const mine = useMemo(() => communities.filter((c) => type?.visibility === 'ALL' || (agent && c.agentIds.includes(agent.id))).sort((a, b) => a.name.localeCompare(b.name)), [communities, agent, type]);
   const shown = mine.filter((c) => !q.trim() || c.name.toLowerCase().includes(q.trim().toLowerCase()) || c.code.toLowerCase().includes(q.trim().toLowerCase()));
   return (
     <div className="flex min-h-0 flex-1 flex-col">

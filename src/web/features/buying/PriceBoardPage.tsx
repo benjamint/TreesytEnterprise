@@ -102,7 +102,7 @@ export function PriceBoardPage() {
           </Panel>
           <Panel title={t('buy.changeHistory')}>
             {history.length ? (
-              <ul className="max-h-72 space-y-3 overflow-y-auto">
+              <ul className="max-h-72 space-y-3 overflow-y-auto" tabIndex={0}>
                 {history.slice(0, 20).map((h) => {
                   const e = settings.priceList.find((p) => p.id === h.entryId)!;
                   const up = h.toMinor > h.fromMinor;

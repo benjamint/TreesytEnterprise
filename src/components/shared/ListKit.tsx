@@ -1,11 +1,12 @@
-import { useCallback, useState, type ReactNode } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useT } from '@/stores/hooks';
+import { useListUiStore } from '@/stores/listUiStore';
 
 export interface FilterDef {
   key: string;
@@ -27,14 +28,21 @@ export interface SavedView {
 export function FilterBar({ search, onSearch, placeholder, filters = [], views = [], onClear, extra }: { search: string; onSearch: (v: string) => void; placeholder: string; filters?: FilterDef[]; views?: SavedView[]; onClear?: () => void; extra?: ReactNode }) {
   const { t } = useT();
   const active = !!search || filters.some((f) => f.value);
+  const { pathname } = useLocation();
+  const clearRef = useRef(onClear);
+  clearRef.current = onClear;
+  useEffect(() => {
+    useListUiStore.getState().set(pathname, active, () => clearRef.current?.());
+  }, [pathname, active]);
+  useEffect(() => () => useListUiStore.getState().set('', false), []);
   return (
-    <div className="mb-4 space-y-3">
+    <div className="mb-4 space-y-3" data-tour="filter-bar">
       {views.length > 0 && (
         <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('table.views')}>
           {views.map((v) => (
-            <button key={v.key} type="button" role="tab" aria-selected={v.active} onClick={v.onSelect} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors', v.active ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-body hover:border-brand/40')}>
+            <button key={v.key} type="button" role="tab" aria-selected={v.active} onClick={v.onSelect} className={cn('rounded-full border px-3 py-1.5 text-[13px] font-medium transition-colors', v.active ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/40')}>
               {v.label}
-              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-white/80' : 'text-muted')}>{v.count}</span>}
+              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-on-brand/80' : 'text-muted')}>{v.count}</span>}
             </button>
           ))}
         </div>

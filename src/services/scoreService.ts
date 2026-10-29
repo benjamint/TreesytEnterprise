@@ -1,4 +1,4 @@
-import type { Community, Farmer, FarmerGroup, GroupMembership, Leader, LoanAccount, Purchase } from '@/types';
+import type { Community, Farmer, FarmerGroup, GroupMembership, Leader, LoanAccount, Purchase, Tree, Workshop } from '@/types';
 import { computeScore, type ScoreBreakdown } from '@/engines/scoring';
 import { COMMUNITY_MODEL, FARMER_MODEL, GROUP_MODEL } from '@/data/templates/scoreModels';
 
@@ -6,9 +6,13 @@ import { COMMUNITY_MODEL, FARMER_MODEL, GROUP_MODEL } from '@/data/templates/sco
 
 const yearStart = (now: Date) => new Date(now.getFullYear(), 0, 1).getTime();
 
-export function communityScore(c: Community, ctx: { purchases: Purchase[]; leaders: Leader[]; now?: Date }): ScoreBreakdown {
+export function communityScore(c: Community, ctx: { purchases: Purchase[]; leaders: Leader[]; workshops?: Workshop[]; trees?: Tree[]; now?: Date }): ScoreBreakdown {
   const now = ctx.now ?? new Date();
   const cf = c.customFields;
+  const held = (ctx.workshops ?? []).filter((w) => w.communityId === c.id && (w.status === 'HELD' || w.status === 'ARCHIVED') && new Date(w.date).getFullYear() === now.getFullYear()).length;
+  const trees = (ctx.trees ?? []).filter((t) => t.communityId === c.id);
+  const alive = trees.filter((t) => t.state === 'ALIVE');
+  const rated = alive.filter((t) => t.health != null);
   const kg = ctx.purchases.filter((p) => p.communityId === c.id && new Date(p.createdAt).getTime() >= yearStart(now)).reduce((s, p) => s + p.quantity, 0);
   return computeScore(COMMUNITY_MODEL, {
     vsla: cf.vslaAvailable ? 1 : 0,
@@ -17,18 +21,20 @@ export function communityScore(c: Community, ctx: { purchases: Purchase[]; leade
     records: cf.meetingRecords || cf.contributionRecords || cf.paymentRecords ? 1 : 0,
     agreement: cf.partnershipAgreement ? 1 : 0,
     purchasesKg: kg,
-    // Workshops and trees arrive in later phases; they count as zero until recorded.
-    workshops: 0, treesPlanted: 0, treesAlive: 0, treeHealth: 0,
+    workshops: held, treesPlanted: trees.length, treesAlive: alive.length,
+    treeHealth: rated.length ? rated.reduce((s, t) => s + t.health!, 0) / rated.length : 0,
     parkland: cf.landForTreePlanting ? 1 : 0,
   });
 }
 
-export function farmerScore(f: Farmer, ctx: { purchases: Purchase[]; memberships: GroupMembership[]; loans: LoanAccount[]; now?: Date }): ScoreBreakdown {
+export function farmerScore(f: Farmer, ctx: { purchases: Purchase[]; memberships: GroupMembership[]; loans: LoanAccount[]; trees?: Tree[]; now?: Date }): ScoreBreakdown {
   const now = ctx.now ?? new Date();
   const kg = ctx.purchases.filter((p) => p.farmerId === f.id && new Date(p.createdAt).getTime() >= yearStart(now)).reduce((s, p) => s + p.quantity, 0);
   const overdue = ctx.loans.some((l) => l.farmerId === f.id && l.status === 'ACTIVE' && new Date(l.window.end) < now);
   const id = f.identity;
+  const mine = (ctx.trees ?? []).filter((t) => t.farmerId === f.id);
   return computeScore(FARMER_MODEL, {
+    treeSurvival: mine.length ? (mine.filter((t) => t.state === 'ALIVE').length / mine.length) * 100 : 100,
     consent: id.consent ? 1 : 0,
     identity: (id.photo ? 1 : 0) + (id.idCard ? 1 : 0) + (id.thumbprints.left && id.thumbprints.right ? 1 : 0),
     purchasesKg: kg,

@@ -55,6 +55,26 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'previous', separation: sep,
     },
     {
+      // No automatic step: every level is a person (PRD H5).
+      id: 'wf_vit_wsx', docType: 'warehouseExpense', statuses: ['PENDING', 'LEVEL_1_APPROVED', 'LEVEL_2_APPROVED', 'LEVEL_3_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'l1', name: 'Level 1 — Warehouse manager', roleIds: [], permission: 'warehouseExpenses.approve' },
+        { id: 'l2', name: 'Level 2 — Logistics', roleIds: [], permission: 'expenses.approveLevel2' },
+        { id: 'l3', name: 'Level 3 — Operations', roleIds: [], permission: 'expenses.approveLevel3' },
+        { id: 'l4', name: 'Level 4 — Finance', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { l1: 'LEVEL_1_APPROVED', l2: 'LEVEL_2_APPROVED', l3: 'LEVEL_3_APPROVED', l4: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'previous', separation: sep,
+    },
+    {
+      id: 'wf_vit_do', docType: 'dispatchOrder', statuses: ['PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'PENDING', 'IN_TRANSIT', 'ARRIVED', 'DELIVERED', 'VERIFIED'],
+      steps: [{ id: 'log', name: 'Logistics approval', roleIds: [], permission: 'dispatch.approve' }],
+      stepStatus: { log: 'PENDING' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'PENDING', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
       id: 'wf_vit_acs', docType: 'aggregatorPurchase', statuses: ['PENDING', 'APPROVED', 'REJECTED', 'PARTIALLY_DISBURSED', 'FUNDS_DISBURSED'],
       steps: [{ id: 'ops', name: 'Operations approval', roleIds: [], permission: 'aggregators.approve' }],
       stepStatus: { ops: 'APPROVED' },
@@ -76,6 +96,18 @@ export function vitaraWorkflows(): WorkflowDefinition[] {
       steps: [{ id: 'prog', name: 'Programme approval', roleIds: [], permission: 'support.approve' }],
       stepStatus: { prog: 'AGENT_CONFIRMATION' },
       initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      // Weekly budget (PRD J3): manager, then an extra step when an open report requires it, then finance.
+      id: 'wf_vit_wab', docType: 'weeklyBudget', statuses: ['SUBMITTED', 'MANAGER_APPROVED', 'EXTRA_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'mgr', name: 'Manager', roleIds: [], permission: 'budgets.approveManager' },
+        { id: 'extra', name: 'Operations (open report)', roleIds: [], permission: 'agentReports.resolve', condition: { field: 'extraApproval', op: '>=', value: 1 } },
+        { id: 'fin', name: 'Finance', roleIds: [], permission: 'budgets.approveFinance', allowEditAmount: true },
+      ],
+      stepStatus: { mgr: 'MANAGER_APPROVED', extra: 'EXTRA_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'SUBMITTED', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
   ];
@@ -106,6 +138,23 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
     {
+      id: 'wf_ki_wsx', docType: 'warehouseExpense', statuses: ['PENDING', 'LEVEL_1_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'l1', name: 'Responsable magasin', roleIds: [], permission: 'warehouseExpenses.approve' },
+        { id: 'fin', name: 'Finance', roleIds: [], permission: 'expenses.approveLevel4' },
+      ],
+      stepStatus: { l1: 'LEVEL_1_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'PENDING', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
+      id: 'wf_ki_do', docType: 'dispatchOrder', statuses: ['PENDING_APPROVAL', 'REJECTED', 'ON_HOLD', 'PENDING', 'IN_TRANSIT', 'ARRIVED', 'DELIVERED', 'VERIFIED'],
+      steps: [{ id: 'log', name: 'Responsable logistique', roleIds: [], permission: 'dispatch.approve' }],
+      stepStatus: { log: 'PENDING' },
+      initialStatus: 'PENDING_APPROVAL', approvedStatus: 'PENDING', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
+    {
       id: 'wf_ki_acs', docType: 'aggregatorPurchase', statuses: ['PENDING', 'APPROVED', 'REJECTED', 'PARTIALLY_DISBURSED', 'FUNDS_DISBURSED'],
       steps: [{ id: 'ops', name: 'Directeur des opérations', roleIds: [], permission: 'aggregators.approve' }],
       stepStatus: { ops: 'APPROVED' },
@@ -129,6 +178,18 @@ export function kakaoWorkflows(): WorkflowDefinition[] {
       initialStatus: 'PENDING_APPROVAL', approvedStatus: 'AGENT_CONFIRMATION', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
       holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
     },
+    {
+      // Weekly budget (PRD J3): manager, then an extra step when an open report requires it, then finance.
+      id: 'wf_ki_wab', docType: 'weeklyBudget', statuses: ['SUBMITTED', 'MANAGER_APPROVED', 'EXTRA_APPROVED', 'APPROVED', 'REJECTED', 'ON_HOLD'],
+      steps: [
+        { id: 'mgr', name: 'Superviseur', roleIds: [], permission: 'budgets.approveManager' },
+        { id: 'extra', name: 'Opérations (rapport ouvert)', roleIds: [], permission: 'agentReports.resolve', condition: { field: 'extraApproval', op: '>=', value: 1 } },
+        { id: 'fin', name: 'Finance', roleIds: [], permission: 'budgets.approveFinance', allowEditAmount: true },
+      ],
+      stepStatus: { mgr: 'MANAGER_APPROVED', extra: 'EXTRA_APPROVED', fin: 'APPROVED' },
+      initialStatus: 'SUBMITTED', approvedStatus: 'APPROVED', rejectedStatus: 'REJECTED', heldStatus: 'ON_HOLD',
+      holdAllowed: true, rejectReasonRequired: true, resumeFrom: 'same', separation: sep,
+    },
   ];
 }
 
@@ -139,6 +200,10 @@ export const VITARA_NUMBERING: NumberingPattern[] = [
   { docType: 'aggregatorPurchase', prefix: 'ACS', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'aggregatorExpense', prefix: 'ACSPRE', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'warehouseExpense', prefix: 'WSPRE', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
+  { docType: 'inbound', prefix: 'IN', pattern: '{prefix}-{yymm}-{seq:4}', scope: 'month' },
+  { docType: 'transfer', prefix: 'TRF', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
+  { docType: 'stockCount', prefix: 'CNT', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
+  { docType: 'inventoryRepayment', prefix: 'IRP', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'supportRequest', prefix: 'PF', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'recoveryBatch', prefix: 'RR', pattern: '{prefix}-{seq:4}', scope: 'company' },
   { docType: 'salesContract', prefix: 'SC', pattern: '{prefix}-{yyyy}-{seq:3}', scope: 'year' },
@@ -150,6 +215,16 @@ export const VITARA_NUMBERING: NumberingPattern[] = [
   { docType: 'payment', prefix: 'PAY', pattern: '{prefix}-{yymm}-{seq:5}', scope: 'month' },
   { docType: 'seedlingCode', prefix: 'TS', pattern: '{prefix}{seq:7}', scope: 'company' },
   { docType: 'nurseryBatch', prefix: 'NB', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
+  { docType: 'nursery', prefix: 'NUR', pattern: '{prefix}-{seq:3}', scope: 'company' },
+  { docType: 'seedlingLot', prefix: 'SDL', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
+  { docType: 'plot', prefix: 'PLT', pattern: '{prefix}-{seq:5}', scope: 'company' },
+  { docType: 'eudrLot', prefix: 'LOT', pattern: '{prefix}-{yy}-{seq:3}', scope: 'year' },
+  { docType: 'dds', prefix: 'DDS', pattern: '{prefix}-{yyyy}-{seq:4}', scope: 'year' },
+  { docType: 'carbonProject', prefix: 'CP', pattern: '{prefix}-{seq:3}', scope: 'company' },
+  { docType: 'workshop', prefix: 'WS', pattern: '{prefix}-{yymm}-{seq:3}', scope: 'month' },
+  { docType: 'weeklyPlan', prefix: 'WP', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
+  { docType: 'commissionPeriod', prefix: 'COM', pattern: '{prefix}-{yyyy}-{seq:2}', scope: 'year' },
+  { docType: 'agentReport', prefix: 'AR', pattern: '{prefix}-{yy}-{seq:4}', scope: 'year' },
   { docType: 'farmerId', prefix: '', pattern: '{community}-{initials}-{seq}', scope: 'community' },
   { docType: 'communityCode', prefix: '', pattern: '{region}-{seq:3}', scope: 'company' },
   { docType: 'surveyResponse', prefix: 'SR', pattern: '{prefix}-{yymm}-{seq:5}', scope: 'month' },

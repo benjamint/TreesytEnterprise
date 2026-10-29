@@ -82,13 +82,13 @@ export interface Bag {
   code: string;
   commodityId: string;
   weightKg: number;
-  status: 'IN_STOCK' | 'IN_TRANSIT' | 'OUT_OF_STOCK' | 'REPLACED' | 'WITH_AGENT';
+  status: 'IN_STOCK' | 'IN_TRANSIT' | 'OUT_OF_STOCK' | 'REPLACED' | 'WITH_AGENT' | 'MISSING';
   warehouseId?: string;
   purchaseIds: string[];
   /** Kg each purchase put in this bag (several farmers share a consolidated bag). */
   contributions?: { purchaseId: string; kg: number }[];
   /** Purchase → PRE → inbound → transfer → dispatch. */
-  history?: { at: string; event: 'PURCHASED' | 'PRE' | 'INBOUND' | 'TRANSFER' | 'DISPATCH' | 'REPLACED'; ref: string; by?: string; note?: string }[];
+  history?: { at: string; event: 'PURCHASED' | 'PRE' | 'INBOUND' | 'TRANSFER' | 'DISPATCH' | 'REPLACED' | 'MISSING' | 'COUNTED' | 'TOP_UP' | 'RETURNED'; ref: string; by?: string; note?: string }[];
   replacement?: { oldCode: string; newCode: string; oldKg: number; newKg: number; by: string; at: string; reason: string };
 }
 
@@ -115,7 +115,7 @@ export interface PreExpense extends OrgEntity {
   bagCodes?: string[];
   disbursement?: { method: 'MOMO' | 'MANUAL'; at: string; by: string; paymentId?: string; proof?: string };
   /** Expected delivery created at the warehouse when an expense type triggers inbound. */
-  expectedDelivery?: { warehouseId: string; bags: number; createdAt: string };
+  expectedDelivery?: { warehouseId: string; bags: number; createdAt: string; inboundId?: string };
 }
 
 export interface Supplier extends OrgEntity {

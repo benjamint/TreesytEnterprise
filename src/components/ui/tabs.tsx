@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 export const Tabs = TabsPrimitive.Root;
 
 export const TabsList = React.forwardRef<React.ElementRef<typeof TabsPrimitive.List>, React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>>(({ className, ...props }, ref) => (
-  <TabsPrimitive.List ref={ref} className={cn('mb-8 flex gap-1 overflow-x-auto border-b border-line scrollbar-thin', className)} {...props} />
+  <TabsPrimitive.List ref={ref} data-tour="page-tabs" className={cn('mb-8 flex gap-1 overflow-x-auto border-b border-line scrollbar-thin', className)} {...props} />
 ));
 TabsList.displayName = 'TabsList';
 

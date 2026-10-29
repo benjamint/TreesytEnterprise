@@ -52,8 +52,16 @@ export function ActivityFeed({ entity, entityId }: { entity: string; entityId: s
   const { t } = useT();
   const f = useFormat();
   const rows = useMemo(() => all.filter((e) => e.entity === entity && e.entityId === entityId).sort((a, b) => b.at.localeCompare(a.at)), [all, entity, entityId]);
-  // Money params are stored as { amountMinor, currency } and shown in the company's format.
-  const params = (p: Record<string, unknown>) => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, v && typeof v === 'object' && 'amountMinor' in v ? f.money(v as Money) : k === 'method' && typeof v === 'string' ? t(`activity.method.${v}`, { defaultValue: v }) : v]));
+  const lang = useLang();
+  // Money params are stored as { amountMinor, currency }, names per language as { en, fr }, dates as
+  // YYYY-MM-DD; each is shown in the viewer's language and the company's format.
+  const one = (k: string, v: unknown) => {
+    if (v && typeof v === 'object' && 'amountMinor' in v) return f.money(v as Money);
+    if (v && typeof v === 'object' && ('en' in v || 'fr' in v)) { const n = v as Partial<Record<string, string>>; return n[lang] ?? n.en ?? n.fr; }
+    if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) return f.date(v);
+    return k === 'method' && typeof v === 'string' ? t(`activity.method.${v}`, { defaultValue: v }) : v;
+  };
+  const params = (p: Record<string, unknown>) => Object.fromEntries(Object.entries(p).map(([k, v]) => [k, one(k, v)]));
   if (!rows.length) return <TabEmpty>{t('people.noActivity')}</TabEmpty>;
   return (
     <ol className="relative space-y-4 border-l border-line pl-5">
@@ -109,7 +117,7 @@ export function DocumentsPanel({ entity, entityId, types, permission, onUploaded
           <select value={type} onChange={(e) => setType(e.target.value)} aria-label={t('people.docTypeLabel')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
             {types.map((x) => <option key={x} value={x}>{t(`people.docType.${x}`)}</option>)}
           </select>
-          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-ctl bg-brand px-4 text-[14px] font-medium text-white hover:bg-brand-hover">
+          <label className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-ctl bg-brand px-4 text-[14px] font-medium text-on-brand hover:bg-brand-hover">
             <Upload className="h-4 w-4" /> {t('people.upload')}
             <input type="file" className="sr-only" accept="image/*,application/pdf" onChange={onFile} />
           </label>

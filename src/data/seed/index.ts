@@ -1,8 +1,10 @@
 import type {
-  FormRecord, OptionList, SurveyResponse,
+  WeeklyPlan, BudgetRequest, Retirement, CarryForward, PenaltyRun, AllowanceRun, CommissionPeriod, AgentReport,
+  AgentRepayment, Client, DispatchOrder, InsightRequest, Plot, SalesContract, Discrepancy, Inbound, StockCount, StockMovement, Transfer, WarehouseExpense,
+  FormRecord, OptionList, SurveyResponse, CarbonProject, DueDiligenceStatement, TrainingTopic, Workshop, EudrLot, ForestLossZone, Nursery, SeedlingAllocation, SeedlingLot, Tree,
   FieldTask, Leader, QualityIssue, RecordDocument, SavingsEntry,
   ActivityEvent, Agent, AggregatorExpense, AggregatorPurchase, AppNotification, Bag, Community, Country, Currency, DataSharingGrant, Farmer, FarmerGroup,
-  AuditEntry, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
+  AuditEntry, Device, JobRun, KbArticle, SavedReport, SyncLog, GroupMembership, LegacyAllocation, LoanRefund, RecoveryRequest, RecoveryWindow, Repayment, ServiceProvider, SupportRequest, Invite, Lead, LoanAccount, ResetToken, Session, LocationNode, Membership, Organisation, OrgSettings, OutboxMessage, Payment, Plan, PreExpense,
   Purchase, PurchaseRequest, Role, Supplier, User, Wallet, Warehouse, WorkflowDefinition,
 } from '@/types';
 import { canAct, type WorkflowRecord, type WorkflowUser } from '@/engines/workflow';
@@ -18,10 +20,18 @@ import { seedFormData } from './forms';
 import { enrichBuying, enrichPayments } from './buying';
 import { enrichAggregators } from './aggregators';
 import { seedSupport, type SupportSeed } from './support';
+import { seedInventory } from './inventory';
+import { seedSales } from './sales';
+import { seedLand } from './land';
+import { seedTraining } from './training';
+import { seedFieldTeam } from './fieldTeam';
+import { VITARA_SUPERVISORS } from './vitara';
+import { seedSystem } from './system';
+import { formId } from '@/data/forms/library';
 import { assignIdNumbers, scoreGroups, seedDocuments, seedIssues, seedLeaders, seedSavings } from './records';
 
-export const SEED_VERSION = 13;
-export const SEED = 20261018;
+import { SEED, SEED_VERSION } from './version';
+export { SEED, SEED_VERSION };
 
 export interface SeedData {
   orgs: Organisation[];
@@ -64,6 +74,36 @@ export interface SeedData {
   repayments: Repayment[];
   loanRefunds: LoanRefund[];
   legacyAllocations: LegacyAllocation[];
+  inbounds: Inbound[];
+  discrepancies: Discrepancy[];
+  agentRepayments: AgentRepayment[];
+  movements: StockMovement[];
+  transfers: Transfer[];
+  stockCounts: StockCount[];
+  warehouseExpenses: WarehouseExpense[];
+  clients: Client[];
+  salesContracts: SalesContract[];
+  dispatches: DispatchOrder[];
+  insights: InsightRequest[];
+  plots: Plot[];
+  nurseries: Nursery[];
+  seedlingLots: SeedlingLot[];
+  seedlingAllocations: SeedlingAllocation[];
+  trees: Tree[];
+  lossZones: ForestLossZone[];
+  eudrLots: EudrLot[];
+  statements: DueDiligenceStatement[];
+  carbonProjects: CarbonProject[];
+  trainingTopics: TrainingTopic[];
+  workshops: Workshop[];
+  weeklyPlans: WeeklyPlan[];
+  budgets: BudgetRequest[];
+  retirements: Retirement[];
+  carryForwards: CarryForward[];
+  penaltyRuns: PenaltyRun[];
+  allowanceRuns: AllowanceRun[];
+  commissionPeriods: CommissionPeriod[];
+  agentReports: AgentReport[];
   activity: ActivityEvent[];
   notifications: AppNotification[];
   outbox: OutboxMessage[];
@@ -75,6 +115,11 @@ export interface SeedData {
   optionLists: OptionList[];
   responses: SurveyResponse[];
   savings: SavingsEntry[];
+  syncLogs: SyncLog[];
+  devices: Device[];
+  savedReports: SavedReport[];
+  jobRuns: JobRun[];
+  articles: KbArticle[];
 }
 
 function phoneMaker(rng: Rng, dial: string, prefixes: string[], keepZero = false) {
@@ -260,17 +305,184 @@ export function buildSeed(now = new Date()): SeedData {
     repayments: sup.flatMap((x) => x.repayments), loanRefunds: sup.flatMap((x) => x.refunds), legacyAllocations: sup.flatMap((x) => x.legacy),
   };
 
+  // ---- Phase 12: inventory (PRD H, Journey 4). Yaw's bags stay with him for the live PRE. ----
+  const inv = [
+    seedInventory(vit, settings[ORG.vitara]!, { orgId: ORG.vitara, seed: 1212, today: clock.today, lang: 'en', currency: 'GHS', approvers: ['u_adwoa', 'u_ibrahim', 'u_kwame', 'u_efua'], financeUserId: 'u_efua', keepAgentIds: [yawAgent.id] }),
+    seedInventory(ki, settings[ORG.kakao]!, { orgId: ORG.kakao, seed: 2323, today: clock.today, lang: 'fr', currency: 'XOF', approvers: ['u_aicha', 'u_jeanmarc'], financeUserId: 'u_jeanmarc', keepAgentIds: [] }),
+  ];
+  vit.activity.push(...inv[0]!.activity);
+  ki.activity.push(...inv[1]!.activity);
+  const inventoryData = {
+    inbounds: inv.flatMap((x) => x.inbounds), discrepancies: inv.flatMap((x) => x.discrepancies), agentRepayments: inv.flatMap((x) => x.agentRepayments),
+    movements: inv.flatMap((x) => x.movements), transfers: inv.flatMap((x) => x.transfers), stockCounts: inv.flatMap((x) => x.stockCounts), warehouseExpenses: inv.flatMap((x) => x.warehouseExpenses),
+  };
+
+  // ---- Phase 13: clients, sales contracts, dispatch orders, plots, Traceboard (PRD H6–H8, Journey 5) ----
+  const allTransfers = inventoryData.transfers;
+  const sal = [
+    seedSales(vit, settings[ORG.vitara]!, allTransfers, {
+      orgId: ORG.vitara, seed: 1313, today: clock.today, lang: 'en', officerUserId: 'u_kojo', approverUserId: 'u_ibrahim', financeUserId: 'u_efua', port: { lat: 5.64, lng: 0.01, name: 'Tema Port' },
+      clients: [
+        { code: 'NSB', name: 'Nordic Shea Butter AB', country: 'SE', buyerOrgId: ORG.nordic, contactName: 'Lena Hartmann' },
+        { code: 'AFP', name: 'Accra Food Processors Ltd', country: 'GH', buyerOrgId: ORG.afp, contactName: 'Esi Quaye' },
+        { code: 'HOG', name: 'Hamburg Oilseeds GmbH', country: 'DE', contactName: 'Jonas Becker' },
+        { code: 'LAT', name: 'Lomé Agro Trading', country: 'TG', contactName: 'Edem Agbeko' },
+      ],
+      contracts: [
+        { client: 'NSB', commodityId: 'com_shea', quantityT: 60, pricePerT: 48_000, currency: 'EUR', term: 'pt_5050', packaging: 'pk_jute', status: 'ORDER_CREATED', windowDays: [90, 60], deliveryPoint: 'Tema Port', dispatches: [['DIRECT', 'VERIFIED', 70], ['INVENTORY', 'VERIFIED', 40], ['INVENTORY', 'IN_TRANSIT', 9]] },
+        { client: 'AFP', commodityId: 'com_shea', pricePerT: 650_000, currency: 'GHS', term: 'pt_on', packaging: 'pk_pp', status: 'FULFILLED', windowDays: [170, -20], deliveryPoint: 'AFP factory, Tema', dispatches: [['DIRECT', 'VERIFIED', 150], ['DIRECT', 'VERIFIED', 120], ['DIRECT', 'VERIFIED', 95]] },
+        { client: 'HOG', commodityId: 'com_sesame', quantityT: 25, pricePerT: 120_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_pp', status: 'ORDER_CREATED', windowDays: [75, 45], deliveryPoint: 'Tema Port', dispatches: [['DIRECT', 'VERIFIED', 60], ['DIRECT', 'DELIVERED', 4]] },
+        { client: 'LAT', commodityId: 'com_maize', quantityT: 30, pricePerT: 320_000, currency: 'GHS', term: 'pt_after', packaging: 'pk_pp', status: 'DRAFT', windowDays: [-10, 70], deliveryPoint: 'Lomé, Togo', dispatches: [] },
+        { client: 'NSB', commodityId: 'com_shea', quantityT: 25, pricePerT: 49_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_jute', status: 'AGREED', windowDays: [5, 75], deliveryPoint: 'Tema Port', dispatches: [] },
+      ],
+      loose: [
+        ['AFP', 'com_gnut', 'VERIFIED', 200], ['LAT', 'com_maize', 'VERIFIED', 180], ['HOG', 'com_soy', 'VERIFIED', 140], ['LAT', 'com_gnut', 'VERIFIED', 160], ['LAT', 'com_maize', 'VERIFIED', 110],
+        ['AFP', 'com_cowpea', 'VERIFIED', 85], ['AFP', 'com_millet', 'VERIFIED', 50], ['HOG', 'com_sesame', 'VERIFIED', 220], ['AFP', 'com_gnut', 'REJECTED', 30],
+        ['HOG', 'com_cowpea', 'PENDING', 3], ['AFP', 'com_soy', 'ARRIVED', 2], ['LAT', 'com_maize', 'PENDING_APPROVAL', 1],
+      ],
+      insights: [
+        { buyerOrgId: ORG.nordic, userId: 'u_lena', topic: 'Women in the supply base', message: 'Could you break down the women supplier share by community for last season?', answer: 'Attached by community: 61% across 14 communities; Daffiama and Busa are above 70%.' },
+        { buyerOrgId: ORG.nordic, userId: 'u_lena', topic: 'Plot maps for the next shipment', message: 'Please share the plot polygons for the farmers in the next shea shipment.' },
+      ],
+    }),
+    seedSales(ki, settings[ORG.kakao]!, allTransfers, {
+      orgId: ORG.kakao, seed: 2424, today: clock.today, lang: 'fr', officerUserId: 'u_aicha', approverUserId: 'u_serge', financeUserId: 'u_jeanmarc', port: { lat: 4.75, lng: -6.64, name: 'Port de San-Pédro' },
+      clients: [
+        { code: 'HKG', name: 'Hanse Kakao GmbH', country: 'DE', contactName: 'Mareike Vogt' },
+        { code: 'ECS', name: 'Ébène Cacao SARL', country: 'CI', contactName: 'Adjoua Kouamé' },
+      ],
+      contracts: [
+        { client: 'HKG', commodityId: 'com_cocoa', quantityT: 50, pricePerT: 280_000, currency: 'EUR', term: 'pt_3070', packaging: 'pk_jute', status: 'ORDER_CREATED', windowDays: [60, 50], deliveryPoint: 'Port de San-Pédro', dispatches: [['DIRECT', 'VERIFIED', 45], ['INVENTORY', 'IN_TRANSIT', 4]] },
+        { client: 'ECS', commodityId: 'com_cocoa', pricePerT: 1_500_000, currency: 'XOF', term: 'pt_on', packaging: 'pk_jute', status: 'FULFILLED', windowDays: [150, -15], deliveryPoint: 'Abidjan', dispatches: [['DIRECT', 'VERIFIED', 120], ['DIRECT', 'VERIFIED', 90]] },
+        { client: 'HKG', commodityId: 'com_cocoa', quantityT: 40, pricePerT: 285_000, currency: 'EUR', term: 'pt_5050', packaging: 'pk_jute', status: 'DRAFT', windowDays: [-20, 90], deliveryPoint: 'Port de San-Pédro', dispatches: [] },
+      ],
+      loose: [['ECS', 'com_cashew', 'VERIFIED', 70], ['ECS', 'com_cocoa', 'VERIFIED', 160], ['HKG', 'com_cocoa', 'PENDING_APPROVAL', 1]],
+    }),
+  ];
+  vit.activity.push(...sal[0]!.activity);
+  ki.activity.push(...sal[1]!.activity);
+  const salesData = {
+    clients: sal.flatMap((x) => x.clients), salesContracts: sal.flatMap((x) => x.contracts), dispatches: sal.flatMap((x) => x.dispatches),
+    insights: sal.flatMap((x) => x.insights),
+  };
+
+  // ---- Phase 14: nurseries, seedlings, trees, plots, EUDR, carbon (PRD I1–I6, Journeys 11 and 14) ----
+  const lnd = [
+    seedLand(vit, settings[ORG.vitara]!, sal[0]!.plots, {
+      orgId: ORG.vitara, seed: 1414, today: clock.today, lang: 'en', agentTypeId: 'at_cons', mainUserId: 'u_mariama', nurseries: 10, farmersPlanting: 90,
+      externalSupplier: 'Savannah Tree Seed Centre, Bolgatanga', officeUserId: 'u_naa', dispatches: sal[0]!.dispatches, checkedShare: 0.85,
+      project: { name: 'Upper West Shea Parkland Restoration', standard: 'PLAN_VIVO', partner: 'Northern Savannah Trust', plan: 'Survival count every 6 months; height sample of 10% of trees; annual Plan Vivo report.', baselineT: 1250 },
+    }),
+    seedLand(ki, settings[ORG.kakao]!, sal[1]!.plots, {
+      orgId: ORG.kakao, seed: 2525, today: clock.today, lang: 'fr', agentTypeId: 'at_del', mainUserId: 'u_moussa', mapperUserId: 'u_moussa', nurseries: 4, farmersPlanting: 40,
+      externalSupplier: 'Pépinière CNRA, Divo', officeUserId: 'u_aicha', dispatches: sal[1]!.dispatches, checkedShare: 1,
+      project: { name: 'Ombrage cacao Soubré', standard: 'INTERNAL', partner: 'Hanse Kakao GmbH', plan: 'Comptage des arbres d’ombrage une fois par an ; rapport au client.', baselineT: 600 },
+    }),
+  ];
+  vit.activity.push(...lnd[0]!.activity);
+  ki.activity.push(...lnd[1]!.activity);
+
+  // ---- Phase 15: training catalogue and workshops (PRD G3, M10) ----
+  const trn = [
+    seedTraining(vit, settings[ORG.vitara]!, {
+      orgId: ORG.vitara, seed: 1515, today: clock.today, lang: 'en', officeUserId: 'u_salamatu', agentTypeIds: ['at_ceo', 'at_cons'], journeyUserId: 'u_yaw',
+      held: 15, archived: 2, cancelled: 1, planned: 2, feedbackFormId: formId(ORG.vitara, 'workshop'), responses: extra.responses,
+      topics: [
+        ['Shea parkland management', 'Gestion des parcs à karité', 'CONSERVATION', 120, 'FARMERS', ['Parkland poster']],
+        ['Good collection and drying of shea nuts', 'Bonne collecte et séchage des noix de karité', 'QUALITY', 90, 'FARMERS', ['Drying mat demo']],
+        ['Bushfire prevention and control', 'Prévention et lutte contre les feux de brousse', 'CONSERVATION', 90, 'FARMERS', ['Fire-belt guide']],
+        ['Seedling care and transplanting', 'Soins et repiquage des plants', 'AGRONOMY', 120],
+        ['Grafting shea trees', 'Greffage du karité', 'AGRONOMY', 180, 'FARMERS', ['Grafting knives', 'Budding tape']],
+        ['Safe storage and moisture control', 'Stockage et contrôle de l’humidité', 'QUALITY', 60, 'FARMERS', ['Moisture meter']],
+        ['Safe use of farm chemicals', 'Utilisation sûre des produits chimiques', 'SAFETY', 90, 'FARMERS', ['PPE kit']],
+        ['VSLA savings and loans', 'Épargne et crédit en AVEC', 'FINANCE', 120, 'GROUPS', ['VSLA box', 'Passbooks']],
+        ['Farm record keeping', 'Tenue des registres de l’exploitation', 'FINANCE', 60, 'FARMERS', ['Record book']],
+        ['Household budgeting for women’s groups', 'Budget du ménage pour les groupements de femmes', 'FINANCE', 90, 'GROUPS'],
+        ['Child protection on the farm', 'Protection de l’enfant à la ferme', 'SOCIAL', 60],
+        ['First aid in the field', 'Premiers secours au champ', 'SAFETY', 60, 'STAFF', ['First aid kit']],
+        ['Composting and soil fertility', 'Compostage et fertilité des sols', 'AGRONOMY', 90],
+        ['Beekeeping for extra income', 'Apiculture pour un revenu en plus', 'AGRONOMY', 120, 'FARMERS', ['Hive model']],
+      ],
+    }),
+    seedTraining(ki, settings[ORG.kakao]!, {
+      orgId: ORG.kakao, seed: 2626, today: clock.today, lang: 'fr', officeUserId: 'u_aicha', agentTypeIds: ['at_del'],
+      held: 5, archived: 1, cancelled: 1, planned: 1, feedbackFormId: formId(ORG.kakao, 'workshop'), responses: extra.responses,
+      topics: [
+        ['Pruning cocoa trees', 'Taille du cacaoyer', 'AGRONOMY', 120, 'FARMERS', ['Scie d’élagage']],
+        ['Swollen shoot: spot and report', 'Swollen shoot : repérer et signaler', 'AGRONOMY', 90],
+        ['Fermentation and drying', 'Fermentation et séchage', 'QUALITY', 90],
+        ['Shade trees and agroforestry', 'Arbres d’ombrage et agroforesterie', 'CONSERVATION', 120],
+        ['EUDR traceability and mapping', 'Traçabilité RDUE et cartographie', 'QUALITY', 60],
+        ['Pesticide safety', 'Sécurité des pesticides', 'SAFETY', 90, 'FARMERS', ['Kit EPI']],
+        ['Child labour awareness', 'Sensibilisation au travail des enfants', 'SOCIAL', 60],
+        ['Cooperative financial management', 'Gestion financière de la coopérative', 'FINANCE', 120, 'STAFF'],
+      ],
+    }),
+  ];
+  vit.activity.push(...trn[0]!.activity);
+  ki.activity.push(...trn[1]!.activity);
+  const trainingData = { trainingTopics: trn.flatMap((x) => x.topics), workshops: trn.flatMap((x) => x.workshops) };
+
+  // ---- Phase 16: field team (PRD J, Journeys 7–8) ----
+  const fld = [
+    seedFieldTeam(vit, settings[ORG.vitara]!, {
+      orgId: ORG.vitara, seed: 1616, today: clock.today, lang: 'en', currency: 'GHS', supervisors: VITARA_SUPERVISORS, journeySupervisor: 'u_fuseini', journeyUserId: 'u_yaw',
+      financeUserId: 'u_efua', opsUserId: 'u_kwame', weeks: 6, activityIds: ['act_profile', 'act_shea', 'act_group', 'act_survey', 'act_workshop', 'act_treemon', 'act_seedlings', 'act_meeting'],
+      reports: [
+        { index: 2, categoryId: 'ic_price', reason: 'Two farmers in Daffiama were paid below the list price on market day.', status: 'OPEN' },
+        { index: 5, categoryId: 'ic_cash', reason: 'Cash advance from last month still not reconciled.', status: 'IN_PROGRESS' },
+        { index: 8, categoryId: 'ic_absent', reason: 'Not seen in the planned community on Tuesday.', status: 'RESOLVED' },
+        { index: 11, categoryId: 'ic_late', reason: 'Phone not synced for six days.', status: 'OPEN' },
+        { index: 14, categoryId: 'ic_receipt', reason: 'Fuel receipt dated after the trip.', status: 'RESOLVED' },
+      ],
+    }),
+    seedFieldTeam(ki, settings[ORG.kakao]!, {
+      orgId: ORG.kakao, seed: 2727, today: clock.today, lang: 'fr', currency: 'XOF', supervisors: ['u_koffi', 'u_lassina'], journeySupervisor: '', financeUserId: 'u_jeanmarc', opsUserId: 'u_serge',
+      weeks: 4, activityIds: ['act_cocoa', 'act_profile', 'act_farmland', 'act_buyers', 'act_meeting'],
+      reports: [
+        { index: 1, categoryId: 'ic_absent', reason: 'Absent du village de Gagnoa prévu jeudi.', status: 'OPEN' },
+        { index: 3, categoryId: 'ic_late', reason: 'Téléphone non synchronisé depuis une semaine.', status: 'RESOLVED' },
+      ],
+    }),
+  ];
+  vit.activity.push(...fld[0]!.activity);
+  ki.activity.push(...fld[1]!.activity);
+  const fieldData = {
+    weeklyPlans: fld.flatMap((x) => x.plans), budgets: fld.flatMap((x) => x.budgets), retirements: fld.flatMap((x) => x.retirements), carryForwards: fld.flatMap((x) => x.carryForwards),
+    penaltyRuns: fld.flatMap((x) => x.penaltyRuns), allowanceRuns: fld.flatMap((x) => x.allowanceRuns), commissionPeriods: fld.flatMap((x) => x.commissions), agentReports: fld.flatMap((x) => x.reports),
+  };
+  const landData = {
+    plots: lnd.flatMap((x) => x.plots), nurseries: lnd.flatMap((x) => x.nurseries), seedlingLots: lnd.flatMap((x) => x.lots), seedlingAllocations: lnd.flatMap((x) => x.allocations),
+    trees: lnd.flatMap((x) => x.trees), lossZones: lnd.flatMap((x) => x.lossZones), eudrLots: lnd.flatMap((x) => x.eudrLots), statements: lnd.flatMap((x) => x.statements), carbonProjects: lnd.flatMap((x) => x.projects),
+  };
+
+  // ---- Phase 17: a multi-company agent — a Vitara CEO agent who also buys cocoa for Kakao Ivoire ----
+  const multi = vit.agents.find((a) => a.userId === 'u_vit_ag4')!;
+  const kiTemplate = ki.agents.find((a) => a.agentTypeId === 'at_del' && a.status === 'ACTIVE')!;
+  const kiMulti: Agent = {
+    ...kiTemplate, id: 'ki_ag_multi', userId: multi.userId, managerIds: ['u_koffi'], wallet: { providerId: 'orange_ci', number: '+2250707445566', verifiedName: users.find((u) => u.id === multi.userId)!.name.toUpperCase() },
+    weekTargetPct: 0, score: 0, flags: [], appVersion: multi.appVersion, lastSyncAt: multi.lastSyncAt,
+  };
+  ki.agents.push(kiMulti);
+  for (const c of ki.communities.filter((x) => x.agentIds.includes(kiTemplate.id)).slice(0, 2)) c.agentIds = [...c.agentIds, kiMulti.id];
+  memberships.push({ id: `mem_${multi.userId}_org_kakao`, userId: multi.userId, orgId: ORG.kakao, roleIds: [roleId(ORG.kakao, 'fieldAgent')], status: 'ACTIVE', title: settings[ORG.kakao]!.agentTypes.find((t) => t.id === 'at_del')?.name.fr });
+
+  // ---- Phase 18: Vitara shares two communities and their farmers with Kakao Ivoire (PRD A5) ----
+  const sharedCommunities = vit.communities.slice(0, 2).map((c) => c.id);
+
   const ops = [vit, ki];
   const cat = <K extends keyof OpsResult>(k: K) => ops.flatMap((o) => o[k] as unknown[]) as OpsResult[K];
+  const sys = seedSystem({ clock, users, memberships, roles, agents: cat('agents'), settings, farmers: cat('farmers'), purchases: cat('purchases'), payments: cat('payments') });
   return {
-    orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: grants(clock), users, memberships, roles, settings,
-    invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: auditSeed(clock),
+    orgs, plans: PLANS, countries: COUNTRIES, currencies: CURRENCIES, leads: leads(clock), grants: [...grants(clock), { id: 'grant_vit_ki', fromOrgId: ORG.vitara, toOrgId: ORG.kakao, scopes: ['communities', 'farmers'], communityIds: sharedCommunities, note: 'Joint women’s savings programme', createdAt: clock.iso(clock.daysAgo(25)), status: 'ACTIVE' }], users, memberships, roles, settings,
+    invites: invites(clock), sessions: sessions(users, memberships, clock), resetTokens: [], audit: [...sys.audit, ...auditSeed(clock)].sort((a, b) => b.at.localeCompare(a.at)),
     questionTypes: Object.fromEntries(QUESTION_TYPES.map((q) => [q, true])),
     sequences: { [ORG.vitara]: vit.sequences, [ORG.kakao]: ki.sequences },
     nodes: cat('nodes'), communities: cat('communities'), farmers: cat('farmers'), groups: cat('groups'), groupMemberships: cat('groupMemberships'),
     agents: cat('agents'), warehouses: cat('warehouses'), requests: cat('requests'), purchases: cat('purchases'), bags: cat('bags'),
     expenses: cat('expenses'), suppliers: cat('suppliers'), aggregatorPurchases: cat('aggregatorPurchases'), aggregatorExpenses: cat('aggregatorExpenses'), payments: cat('payments'),
-    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: [], ...extra, ...supportData,
+    wallets: cat('wallets'), loans, activity: cat('activity'), notifications, outbox: sys.outbox, ...extra, ...supportData, ...inventoryData, ...salesData, ...landData, ...trainingData, ...fieldData,
+    syncLogs: sys.syncLogs, devices: sys.devices, savedReports: sys.savedReports, jobRuns: sys.jobRuns, articles: sys.articles,
   };
 }
 

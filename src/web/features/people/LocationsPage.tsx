@@ -16,6 +16,7 @@ import { cn, uid } from '@/lib/utils';
 import { useAgentStore } from '@/stores/agentStore';
 import { useCommunityStore } from '@/stores/communityStore';
 import { useFarmerStore } from '@/stores/farmerStore';
+import { useLandStore } from '@/stores/landStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useActor, useFormat, useLang, useOrgRows, useOrgSettings, useT } from '@/stores/hooks';
 import { Field } from './CommunityForm';
@@ -35,6 +36,7 @@ export function LocationsExplorerPage() {
   const nodes = useOrgRows(useLocationStore((s) => s.nodes));
   const communities = useOrgRows(useCommunityStore((s) => s.communities));
   const farmers = useOrgRows(useFarmerStore((s) => s.farmers));
+  const plots = useOrgRows(useLandStore((s) => s.plots));
   const agents = useOrgRows(useAgentStore((s) => s.agents));
   const tree = useMemo(() => buildTree(nodes).sort((a, b) => a.name.localeCompare(b.name)), [nodes]);
   const [selected, setSelected] = useState<string | null>(tree[0]?.id ?? null);
@@ -51,11 +53,12 @@ export function LocationsExplorerPage() {
     return {
       communities: coms,
       farmers: farmers.filter((x) => comIds.has(x.communityId)).length,
+      plots: plots.filter((x) => comIds.has(x.communityId)).length,
       agents: agents.filter((a) => a.areaNodeIds.some((id) => ids.has(id)) || coms.some((c) => c.agentIds.includes(a.id))).length,
       children: nodes.filter((n) => n.parentId === node.id).sort((a, b) => a.name.localeCompare(b.name)),
       zones: settings.zones.filter((z) => z.nodeIds.includes(node.id)),
     };
-  }, [node, nodes, communities, farmers, agents, settings.zones]);
+  }, [node, nodes, communities, farmers, plots, agents, settings.zones]);
 
   const query = q.trim().toLowerCase();
   const matches = useMemo(() => {
@@ -122,7 +125,7 @@ export function LocationsExplorerPage() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
             <Input compact value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('people.loc.search')} aria-label={t('people.loc.search')} className="pl-9" />
           </div>
-          <ul className="max-h-[calc(100vh-300px)] min-h-[300px] overflow-y-auto scrollbar-thin" role="tree">{tree.map((n) => renderNode(n, 0))}</ul>
+          <ul className="max-h-[calc(100vh-300px)] min-h-[300px] overflow-y-auto scrollbar-thin">{tree.map((n) => renderNode(n, 0))}</ul>
         </div>
         <div className="rounded-card border border-line bg-surface p-6 shadow-soft">
           {node && counts ? (
@@ -140,7 +143,7 @@ export function LocationsExplorerPage() {
                 </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-4">
-                {[[terms.communities, counts.communities.length], [terms.farmers, counts.farmers], [terms.agents, counts.agents], [t('people.loc.plots'), 0]].map(([k, v]) => (
+                {[[terms.communities, counts.communities.length], [terms.farmers, counts.farmers], [terms.agents, counts.agents], [t('people.loc.plots'), counts.plots]].map(([k, v]) => (
                   <div key={String(k)} className="rounded-ctl border border-line p-4"><div className="eyebrow">{k}</div><div className="tnum mt-1 text-[24px] font-semibold text-ink">{f.number(Number(v))}</div></div>
                 ))}
               </div>

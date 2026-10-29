@@ -378,7 +378,7 @@ function PurchasesDashboard({ purchases }: { purchases: Purchase[] }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('buy.period')}>
-        {[30, 90, 365].map((d) => <button key={d} type="button" role="tab" aria-selected={days === d} onClick={() => setDays(d)} className={`rounded-full border px-3 py-1.5 text-[13px] font-medium ${days === d ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-body hover:border-brand/40'}`}>{t('buy.lastDays', { count: d })}</button>)}
+        {[30, 90, 365].map((d) => <button key={d} type="button" role="tab" aria-selected={days === d} onClick={() => setDays(d)} className={`rounded-full border px-3 py-1.5 text-[13px] font-medium ${days === d ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/40'}`}>{t('buy.lastDays', { count: d })}</button>)}
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpi(t('buy.kpi.volume'), f.kg(Math.round(volume)))}

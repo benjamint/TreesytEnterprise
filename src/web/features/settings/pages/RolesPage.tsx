@@ -187,7 +187,7 @@ function Matrix({ role, onChange, ceiling, planName }: { role: Role; onChange: (
                       const on = granted.has(key);
                       const allowed = hasPermission(ceiling, key);
                       const chip = (
-                        <button key={key} type="button" disabled={!allowed} aria-pressed={on} onClick={() => set([key], !on)} className={cn('inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40', on ? 'border-brand bg-brand text-white' : 'border-line text-body hover:border-brand/40')}>
+                        <button key={key} type="button" disabled={!allowed} aria-pressed={on} onClick={() => set([key], !on)} className={cn('inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40', on ? 'border-brand bg-brand text-on-brand' : 'border-line text-body hover:border-brand/40')}>
                           {on && <Check className="h-3 w-3" />} {t(`perm.action.${a}`)}
                         </button>
                       );

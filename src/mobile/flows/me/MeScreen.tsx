@@ -12,6 +12,7 @@ import { useCurrentOrg, useCurrentUser, useOrgSettings, useT } from '@/stores/ho
 import { useMobileSessionStore } from '@/stores/mobileSessionStore';
 import { useMobileAgent } from '@/mobile/layout/useMobileContext';
 import type { Lang } from '@/types';
+import { MyWorkLinks } from '@/mobile/flows/field/FieldScreens';
 
 /** M2 Me: profile, wallet, language, company, device, app version, sign out. */
 export function MeScreen() {
@@ -60,6 +61,7 @@ export function MeScreen() {
             </div>
           ))}
         </dl>
+        <MyWorkLinks />
         {others.length > 0 && (
           <div>
             <div className="eyebrow mb-2">{t('mobile.me.switchCompany')}</div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, CircleHelp, Keyboard, PlayCircle, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,8 @@ import { APP_ROUTES } from '@/app/routes';
 import { useCurrentOrg, useT } from '@/stores/hooks';
 
 export const TOUR_EVENT = 'treesyt:tour';
+/** Opens the shortcuts dialog from anywhere (Help centre). */
+export const SHORTCUTS_EVENT = 'treesyt:shortcuts';
 
 export function useCurrentRoute() {
   const { pathname } = useLocation();
@@ -27,12 +29,17 @@ export function HelpMenu() {
   const route = useCurrentRoute();
   const org = useCurrentOrg();
   const { t } = useT();
+  useEffect(() => {
+    const show = () => setShortcuts(true);
+    window.addEventListener(SHORTCUTS_EVENT, show);
+    return () => window.removeEventListener(SHORTCUTS_EVENT, show);
+  }, []);
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={t('shell.help')}>
+          <Button variant="ghost" size="icon" aria-label={t('shell.help')} data-tour="help-menu">
             <CircleHelp />
           </Button>
         </DropdownMenuTrigger>

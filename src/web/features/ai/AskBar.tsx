@@ -24,7 +24,7 @@ export function AskBar() {
         <form onSubmit={submit} className="flex items-center gap-3">
           <Sparkles className="h-5 w-5 shrink-0 text-brand" aria-hidden="true" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('ai.placeholder')} aria-label={t('ai.placeholder')} className="h-11 min-w-0 flex-1 bg-transparent text-[16px] text-ink outline-none placeholder:text-muted" />
-          <button type="submit" disabled={!q.trim()} className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white transition-opacity disabled:opacity-40" aria-label={t('ai.send')}>
+          <button type="submit" disabled={!q.trim()} className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-on-brand transition-opacity disabled:opacity-40" aria-label={t('ai.send')}>
             <ArrowRight className="h-4 w-4" />
           </button>
         </form>

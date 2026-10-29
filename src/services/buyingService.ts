@@ -12,6 +12,7 @@ import { useFarmerStore } from '@/stores/farmerStore';
 import { useLoanStore } from '@/stores/loanStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { createExpectedDelivery } from './inventoryService';
 import { pay, registerCollection, registerPayable, requestCollection } from './paymentService';
 import { workflowUser } from './workflowService';
 
@@ -486,18 +487,14 @@ function afterPrePaid(id: string, method: 'MOMO' | 'MANUAL', actorId: string, pa
   const e = useBuyingStore.getState().expenses.find((x) => x.id === id)!;
   const settings = settingsOf(e.orgId);
   const triggers = e.lines.some((l) => settings.expenseTypes.find((t) => t.id === l.expenseTypeId)?.triggersInbound);
-  const agent = useAgentStore.getState().agents.find((a) => a.id === e.agentId);
-  const warehouseId = agent?.warehouseId;
-  useBuyingStore.getState().updateExpense(id, {
-    paymentStatus: 'PAID', disbursement: { method, at: now(), by: actorId, paymentId, proof },
-    expectedDelivery: triggers ? { warehouseId: warehouseId ?? '', bags: e.bags, createdAt: now() } : undefined,
-  });
+  useBuyingStore.getState().updateExpense(id, { paymentStatus: 'PAID', disbursement: { method, at: now(), by: actorId, paymentId, proof } });
   // Bags on this PRE move with the trip.
   const codes = new Set(e.bagCodes ?? []);
   const bags = useBuyingStore.getState().bags.filter((b) => codes.has(b.code));
   if (bags.length) useBuyingStore.getState().saveBags(bags.map((b) => ({ ...b, status: 'IN_TRANSIT', history: [...(b.history ?? []), { at: now(), event: 'PRE', ref: e.number, by: actorId }] })));
   log(e.orgId, 'preExpense', id, 'pre.paid', { amount: e.total, method }, actorId);
-  if (triggers) log(e.orgId, 'preExpense', id, 'pre.expectedDelivery', { count: e.bags }, 'system');
+  // The warehouse now expects the bags (PRD H2).
+  if (triggers && !e.expectedDelivery?.inboundId && createExpectedDelivery(e, actorId)) log(e.orgId, 'preExpense', id, 'pre.expectedDelivery', { count: e.bags }, 'system');
 }
 
 export async function payPre(id: string, actorId: string) {

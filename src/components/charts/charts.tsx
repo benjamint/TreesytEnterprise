@@ -32,7 +32,7 @@ export function ChartFrame({ table, children, legend, className }: { table: { he
         </button>
       </div>
       {asTable ? (
-        <div className="max-h-72 overflow-auto rounded-ctl border border-line">
+        <div className="max-h-72 overflow-auto rounded-ctl border border-line" tabIndex={0} role="region" aria-label={t('chart.showTable')}>
           <table className="w-full text-[13px]">
             <thead className="sticky top-0 bg-canvas">
               <tr>{table.head.map((h, i) => <th key={i} className={cn('px-3 py-2 text-[12px] font-semibold text-label', i ? 'text-right' : 'text-left')}>{h}</th>)}</tr>
@@ -80,6 +80,7 @@ export function HBars({ data, format, height }: { data: Datum[]; format: (v: num
               fill="rgb(var(--brand))"
               radius={[0, 4, 4, 0]}
               maxBarSize={18}
+              isAnimationActive={false}
               label={(props: { x?: number; y?: number; width?: number; height?: number; value?: number }) => (
                 <text x={(props.x ?? 0) + (props.width ?? 0) + 6} y={(props.y ?? 0) + (props.height ?? 0) / 2} dominantBaseline="central" fontSize={12} fill="rgb(var(--body))">{format(Number(props.value ?? 0))}</text>
               )}
@@ -107,7 +108,7 @@ export function StackedColumns({ data, series, format, axisFormat, xKey = 'label
             <YAxis tickLine={false} axisLine={false} tick={axisTick} width={48} tickFormatter={(v: number) => (axisFormat ?? format)(v)} />
             <Tooltip cursor={{ fill: 'rgb(var(--brand-soft))' }} contentStyle={tooltipStyle} formatter={(v: number, name: string) => [format(v), series.find((s) => s.key === name)?.label ?? name]} />
             {series.map((s) => (
-              <Bar key={s.key} dataKey={s.key} stackId="a" fill={seriesColor(s.index)} stroke="rgb(var(--surface))" strokeWidth={1} radius={s.key === last ? [4, 4, 0, 0] : 0} maxBarSize={28} />
+              <Bar key={s.key} dataKey={s.key} stackId="a" fill={seriesColor(s.index)} stroke="rgb(var(--surface))" strokeWidth={1} radius={s.key === last ? [4, 4, 0, 0] : 0} maxBarSize={28} isAnimationActive={false} />
             ))}
           </BarChart>
         </ResponsiveContainer>
@@ -126,7 +127,7 @@ export function Donut({ data, format, center }: { data: (Datum & { index: number
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie data={data} dataKey="value" nameKey="label" innerRadius="64%" outerRadius="100%" paddingAngle={1} stroke="rgb(var(--surface))" strokeWidth={2} isAnimationActive={false}>
-                {data.map((d) => <Cell key={d.label} fill={seriesColor(d.index)} />)}
+                {data.map((d) => <Cell key={d.label} fill={seriesColor(d.index)} aria-label={`${d.label}: ${format(d.value)}`} />)}
               </Pie>
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number, n: string) => [format(v), n]} />
             </PieChart>

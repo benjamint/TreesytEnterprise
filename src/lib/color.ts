@@ -20,3 +20,27 @@ export function brandTokens(primary: string, dark: boolean) {
   const light = mix(base, white, 0.38);
   return { brand: light, hover: mix(base, white, 0.5), soft: mix(base, [10, 20, 16], 0.8) };
 }
+
+/** WCAG relative luminance and contrast ratio. */
+export function luminance([r, g, b]: [number, number, number]) {
+  const f = (v: number) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+export function contrast(a: [number, number, number], b: [number, number, number]) {
+  const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m) as [number, number];
+  return (x + 0.05) / (y + 0.05);
+}
+/** White text when it reads at AA on the colour, otherwise near-black (PRD 15: contrast AA). */
+export function textOn(bg: [number, number, number] | string): [number, number, number] {
+  const c = typeof bg === 'string' ? hexToRgb(bg) : bg;
+  return contrast(c, [255, 255, 255]) >= 4.5 ? [255, 255, 255] : [10, 20, 16];
+}
+
+/** Background and text for a coloured chip (avatars): darkens a mid-tone colour until white text reaches AA. */
+export function readablePair(bg: string): { bg: string; fg: string } {
+  let c = hexToRgb(bg);
+  const white: [number, number, number] = [255, 255, 255];
+  if (contrast(c, [10, 20, 16]) >= 4.5) return { bg, fg: 'rgb(10 20 16)' };
+  for (let i = 0; i < 8 && contrast(c, white) < 4.5; i++) c = mix(c, [0, 0, 0], 0.08);
+  return { bg: `rgb(${c.join(' ')})`, fg: '#fff' };
+}

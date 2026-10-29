@@ -10,6 +10,11 @@ import { useQualityStore } from '@/stores/qualityStore';
 import { agentCashHeld } from '@/stores/selectors';
 import { useMobileAgent } from '@/mobile/layout/useMobileContext';
 import { SyncBar, OfflineBanner } from '@/mobile/layout/SyncBar';
+import { useWarehouseStore } from '@/stores/warehouseStore';
+import { useTrainingStore } from '@/stores/trainingStore';
+import { useOutboxStore } from '@/stores/outboxStore';
+import { useInventory } from '@/web/features/inventory/shared';
+import { useMyWarehouse } from '@/mobile/flows/warehouse/WarehouseScreens';
 
 /** M2 Home (phase 1 version): greeting, sync status, cash held, plan, alerts, quick actions. */
 export function HomeScreen() {
@@ -30,10 +35,21 @@ export function HomeScreen() {
         ? requests
             .filter((r) => r.agentId === agent.id && (((r.status === 'FULL_DISBURSEMENT' || r.status === 'PARTIAL_DISBURSEMENT') && !r.fundsReceived) || r.status === 'NOT_APPROVED'))
             .slice(0, 3)
-            .map((r) => ({ id: r.id, text: t(r.status === 'NOT_APPROVED' ? 'mobile.alertRejected' : 'mobile.alertConfirmFunds', { number: r.number }) }))
+            .map((r) => ({ id: r.id, to: `/m/buying/requests/${r.id}`, text: t(r.status === 'NOT_APPROVED' ? 'mobile.alertRejected' : 'mobile.alertConfirmFunds', { number: r.number }) }))
         : [],
     [agent, requests, t],
   );
+  // Produce lost on the way to the warehouse that the agent still has to pay back (PRD H2).
+  const inbounds = useOrgRows(useWarehouseStore((s) => s.inbounds));
+  const repayments = useOrgRows(useWarehouseStore((s) => s.agentRepayments));
+  const owed = useMemo(() => (agent ? inbounds.filter((x) => x.agentId === agent.id && x.source.kind === 'PRE' && ['DISCREPANCY', 'NEEDS_RESOLUTION'].includes(x.status) && !repayments.some((r) => r.inboundId === x.id && r.status === 'SUBMITTED')) : []), [agent, inbounds, repayments]);
+  const officer = agent && (agent.agentTypeId === 'at_wh' || agent.agentTypeId === 'at_mag');
+  // Workshops the agent facilitates today (PRD M2 alerts), unless already recorded on this phone.
+  const workshops = useOrgRows(useTrainingStore((s) => s.workshops));
+  const outbox = useOutboxStore((s) => s.items);
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const wsToday = agent ? workshops.filter((w) => w.agentId === agent.id && w.status === 'PLANNED' && w.date === todayIso && !outbox.some((i) => i.type === 'workshop' && (i.payload as { workshopId: string }).workshopId === w.id)) : [];
+  const allAlerts = [...wsToday.map((w) => ({ id: w.id, to: `/m/workshops/${w.id}`, text: t('mobile.m10.todayAlert', { title: w.title, location: w.location }) })), ...owed.map((x) => ({ id: x.id, to: `/m/warehouse/repay/${x.id}`, text: t('mobile.m8.owedAlert', { number: x.number }) })), ...alerts];
   if (!user) return null;
 
   return (
@@ -66,6 +82,8 @@ export function HomeScreen() {
             </div>
           )}
 
+          {officer && <WarehouseCard />}
+
           <section className="rounded-card border border-line p-5">
             <div className="mb-2 flex items-center gap-2">
               <CalendarRange className="h-4 w-4 text-brand" aria-hidden="true" />
@@ -83,13 +101,13 @@ export function HomeScreen() {
                 <ChevronRight className="h-4 w-4 text-muted" aria-hidden="true" />
               </button>
             )}
-            {alerts.length === 0 && fixCount === 0 ? (
+            {allAlerts.length === 0 && fixCount === 0 ? (
               <p className="text-[14px] text-muted">{t('mobile.noAlerts')}</p>
             ) : (
               <ul className="space-y-2">
-                {alerts.map((a) => (
+                {allAlerts.map((a) => (
                   <li key={a.id}>
-                    <button type="button" onClick={() => navigate(`/m/buying/requests/${a.id}`)} className="flex w-full items-start gap-3 rounded-ctl bg-warning/10 px-4 py-3 text-left text-[14px] text-ink active:bg-warning/20">
+                    <button type="button" onClick={() => navigate(a.to)} className="flex w-full items-start gap-3 rounded-ctl bg-warning/10 px-4 py-3 text-left text-[14px] text-ink active:bg-warning/20">
                       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
                       <span className="flex-1">{a.text}</span>
                       <ChevronRight className="h-4 w-4 text-muted" aria-hidden="true" />
@@ -117,5 +135,24 @@ export function HomeScreen() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Warehouse officer: stock and deliveries expected today (PRD M8 home). */
+function WarehouseCard() {
+  const { t } = useT();
+  const f = useFormat();
+  const navigate = useNavigate();
+  const inv = useInventory();
+  const wh = useMyWarehouse();
+  const inbounds = useOrgRows(useWarehouseStore((s) => s.inbounds));
+  if (!wh) return null;
+  const expected = inbounds.filter((x) => x.warehouseId === wh.id && x.status === 'PENDING');
+  return (
+    <button type="button" onClick={() => navigate('/m/warehouse')} className="w-full rounded-card bg-badge-dark p-5 text-left text-white shadow-soft">
+      <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-white/70">{wh.name}</div>
+      <div className="tnum mt-1 text-[30px] font-semibold tracking-[-0.02em]">{f.kg(inv.stockKg(wh.id))}</div>
+      <div className="mt-1 flex items-center justify-between text-[14px] text-white/85"><span>{t('mobile.m8.expectedN', { count: expected.length })}</span><ChevronRight className="h-5 w-5" aria-hidden="true" /></div>
+    </button>
   );
 }

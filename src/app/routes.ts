@@ -63,19 +63,19 @@ export const APP_ROUTES: AppRoute[] = [
   r('outbound', '/app/inventory/outbound', PackageCheck, 'outbound.view', 12, 'inventory', 'inventory', { configurable: ['inventoryRules'] }),
   r('stockCounts', '/app/inventory/stock-counts', ListChecks, 'stockCounts.view', 12, 'inventory', 'inventory'),
   r('warehouseExpenses', '/app/inventory/expenses', Receipt, 'warehouseExpenses.view', 12, 'inventory', 'inventory', { configurable: ['approvals'] }),
-  r('dispatch', '/app/dispatch', Send, 'dispatch.view', 13, 'dispatch', 'inventory', { configurable: ['approvals', 'numbering'] }),
-  r('salesContracts', '/app/sales-contracts', FileSignature, 'salesContracts.view', 13, 'salesContracts', 'inventory'),
-  r('traceboard', '/app/traceboard', Radar, 'traceboard.view', 13, 'traceboard', 'inventory', { configurable: ['privacy', 'branding'] }),
+  r('dispatch', '/app/dispatch', Send, 'dispatch.view', 13, 'dispatch', 'inventory', { configurable: ['approvals', 'numbering', 'salesRules'] }),
+  r('salesContracts', '/app/sales-contracts', FileSignature, 'salesContracts.view', 13, 'salesContracts', 'inventory', { configurable: ['salesRules', 'numbering'] }),
+  r('traceboard', '/app/traceboard', Radar, 'traceboard.view', 13, 'traceboard', 'inventory', { configurable: ['salesRules', 'privacy', 'branding'] }),
 
-  r('nurseries', '/app/nurseries', Sprout, 'nurseries.view', 14, 'nurseries', 'trees'),
-  r('seedlings', '/app/seedlings', Leaf, 'seedlings.view', 14, 'trees', 'trees', { configurable: ['farmerId'] }),
-  r('trees', '/app/trees', Trees, 'trees.view', 14, 'trees', 'trees', { configurable: ['forms'] }),
-  r('plots', '/app/plots', Map, 'plots.view', 14, 'plots', 'trees'),
-  r('eudr', '/app/eudr', BadgeCheck, 'eudr.view', 14, 'eudr', 'trees', { configurable: ['commodities'] }),
-  r('carbon', '/app/carbon', CloudSun, 'carbon.view', 14, 'carbon', 'trees'),
+  r('nurseries', '/app/nurseries', Sprout, 'nurseries.view', 14, 'nurseries', 'trees', { configurable: ['treesLand', 'forms'] }),
+  r('seedlings', '/app/seedlings', Leaf, 'seedlings.view', 14, 'trees', 'trees', { configurable: ['treesLand', 'numbering'] }),
+  r('trees', '/app/trees', Trees, 'trees.view', 14, 'trees', 'trees', { configurable: ['treesLand', 'forms'] }),
+  r('plots', '/app/plots', Map, 'plots.view', 14, 'plots', 'trees', { configurable: ['treesLand', 'units'] }),
+  r('eudr', '/app/eudr', BadgeCheck, 'eudr.view', 14, 'eudr', 'trees', { configurable: ['commodities', 'treesLand'] }),
+  r('carbon', '/app/carbon', CloudSun, 'carbon.view', 14, 'carbon', 'trees', { configurable: ['treesLand'] }),
 
   r('forms', '/app/forms', FileText, 'forms.view', 6, 'forms', 'forms', { configurable: ['forms'] }),
-  r('workshops', '/app/workshops', GraduationCap, 'workshops.view', 15, 'workshops', 'forms'),
+  r('workshops', '/app/workshops', GraduationCap, 'workshops.view', 15, 'workshops', 'forms', { configurable: ['training', 'forms', 'numbering'] }),
 
   r('agents', '/app/agents', UserCog, 'agents.view', 16, 'fieldTeam', 'fieldTeam', { configurable: ['fieldTeam', 'terminology'] }),
   r('weeklyPlans', '/app/weekly-plans', CalendarRange, 'weeklyPlans.view', 16, 'fieldTeam', 'fieldTeam', { configurable: ['fieldTeam'] }),
@@ -105,7 +105,7 @@ export const APP_ROUTES: AppRoute[] = [
   r('priceBoard', '/app/price-board', LineChart, 'priceBoard.view', 7, 'buying', undefined, { configurable: ['priceLists'] }),
   r('allocations', '/app/support/allocations', Archive, 'support.view', 11, 'support'),
   r('optionLists', '/app/forms/option-lists', ListTree, 'forms.view', 6, 'forms'),
-  r('trainingCatalogue', '/app/workshops/catalogue', Award, 'workshops.view', 15, 'workshops'),
+  r('trainingCatalogue', '/app/workshops/catalogue', Award, 'workshops.view', 15, 'workshops', undefined, { configurable: ['training'] }),
   r('reportingLines', '/app/agents/reporting-lines', Network, 'agents.view', 16, 'fieldTeam'),
   r('achievements', '/app/achievements', Trophy, 'weeklyPlans.view', 16, 'fieldTeam'),
   r('helpMobile', '/app/help/mobile', Smartphone, 'dashboard.view', 1),
@@ -124,14 +124,14 @@ export function routeByKey(key: string): AppRoute {
 /** Company settings pages (PRD A4). */
 export const SETTINGS_PAGES = [
   'profile', 'branding', 'modules', 'locations', 'commodities', 'units', 'priceLists', 'approvals', 'numbering', 'payments',
-  'buyingRules', 'supportLoans', 'inventoryRules', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
+  'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'training', 'fieldTeam', 'dataQuality', 'forms', 'farmerId', 'biometrics', 'roles', 'users',
   'terminology', 'notifications', 'smsEmail', 'integrations', 'security', 'privacy', 'mobile',
 ] as const;
 export type SettingsPage = (typeof SETTINGS_PAGES)[number];
 
 export const SETTINGS_GROUPS: { key: string; pages: SettingsPage[] }[] = [
   { key: 'company', pages: ['profile', 'branding', 'modules', 'terminology'] },
-  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'fieldTeam'] },
+  { key: 'operations', pages: ['locations', 'commodities', 'units', 'priceLists', 'buyingRules', 'supportLoans', 'inventoryRules', 'salesRules', 'treesLand', 'training', 'fieldTeam'] },
   { key: 'workflows', pages: ['approvals', 'numbering', 'farmerId', 'forms', 'dataQuality', 'notifications'] },
   { key: 'money', pages: ['payments', 'smsEmail'] },
   { key: 'access', pages: ['roles', 'users', 'security', 'biometrics', 'mobile'] },

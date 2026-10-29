@@ -11,12 +11,12 @@ export const TILES: { key: string; icon: LucideIcon; flow: MobileFlow; module: M
   { key: 'buying', icon: ShoppingBasket, flow: 'M5', module: 'buying', path: '/m/buying' },
   { key: 'support', icon: HandHeart, flow: 'M6', module: 'support', path: '/m/support' },
   { key: 'recovery', icon: RotateCcw, flow: 'M7', module: 'recovery', path: '/m/recovery' },
-  { key: 'warehouse', icon: Warehouse, flow: 'M8', module: 'inventory' },
-  { key: 'trees', icon: Trees, flow: 'M9', module: 'trees' },
-  { key: 'plots', icon: Map, flow: 'M9', module: 'plots' },
+  { key: 'warehouse', icon: Warehouse, flow: 'M8', module: 'inventory', path: '/m/warehouse' },
+  { key: 'trees', icon: Trees, flow: 'M9', module: 'trees', path: '/m/trees' },
+  { key: 'plots', icon: Map, flow: 'M9', module: 'plots', path: '/m/plots' },
   { key: 'surveys', icon: ClipboardCheck, flow: 'M10', module: 'forms', path: '/m/surveys' },
-  { key: 'workshops', icon: GraduationCap, flow: 'M10', module: 'workshops' },
-  { key: 'budget', icon: PiggyBank, flow: 'M11', module: 'weeklyBudgets' },
+  { key: 'workshops', icon: GraduationCap, flow: 'M10', module: 'workshops', path: '/m/workshops' },
+  { key: 'budget', icon: PiggyBank, flow: 'M11', module: 'weeklyBudgets', path: '/m/plan' },
 ];
 
 /** Where a tile opens: its built screen, or the flow's placeholder until its phase. */

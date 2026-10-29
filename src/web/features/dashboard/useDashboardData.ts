@@ -10,6 +10,7 @@ import { useCommunityStore } from '@/stores/communityStore';
 import { useFarmerStore } from '@/stores/farmerStore';
 import { useLoanStore } from '@/stores/loanStore';
 import { useWarehouseStore } from '@/stores/warehouseStore';
+import { useSalesStore } from '@/stores/salesStore';
 import { useAgentStore } from '@/stores/agentStore';
 
 const DAY = 86_400_000;
@@ -21,6 +22,8 @@ export interface QueueItem {
   number: string;
   status: string;
   total: number;
+  /** Shown instead of the amount: the weight of a dispatch order. */
+  kg?: number;
   createdAt: string;
   link: string;
   risk?: 'HIGH' | 'MEDIUM' | 'LOW';
@@ -41,6 +44,8 @@ export function useDashboardData() {
   const acs = useOrgRows(useBuyingStore((s) => s.aggregatorPurchases));
   const acsPre = useOrgRows(useBuyingStore((s) => s.aggregatorExpenses));
   const support = useOrgRows(useSupportStore((s) => s.requests));
+  const wexp = useOrgRows(useWarehouseStore((s) => s.warehouseExpenses));
+  const dispatches = useOrgRows(useSalesStore((s) => s.dispatches));
   const bags = useOrgRows(useBuyingStore((s) => s.bags));
   const payments = useOrgRows(usePaymentStore((s) => s.payments));
   const wallets = useOrgRows(usePaymentStore((s) => s.wallets));
@@ -87,14 +92,14 @@ export function useDashboardData() {
     const m = memberships.find((x) => x.userId === userId && x.orgId === orgId);
     const me = { id: userId, roleIds: m?.roleIds ?? [], permissions: patterns };
     const items: QueueItem[] = [];
-    const add = (rows: (WorkflowRecord & { number: string; total: { amountMinor: number }; createdAt: string; riskFlags?: { severity: 'HIGH' | 'MEDIUM' | 'LOW' }[]; agentId?: string; supplierId?: string })[], docType: DocType, path: string) => {
+    const add = (rows: (WorkflowRecord & { number: string; total?: { amountMinor: number }; kg?: number; createdAt: string; riskFlags?: { severity: 'HIGH' | 'MEDIUM' | 'LOW' }[]; agentId?: string; supplierId?: string })[], docType: DocType, path: string) => {
       const def = settings.workflows.find((w) => w.docType === docType);
       if (!def) return;
       for (const r of rows) {
         if (!canAct(r, def, me)) continue;
         const flags = r.riskFlags ?? [];
         const risk = flags.some((f) => f.severity === 'HIGH') ? 'HIGH' : flags.some((f) => f.severity === 'MEDIUM') ? 'MEDIUM' : flags.length ? 'LOW' : undefined;
-        items.push({ id: r.id, docType, number: r.number, status: r.status, total: r.total.amountMinor, createdAt: r.createdAt, link: `${path}?open=${r.id}`, risk, by: r.agentId ? agentName(r.agentId) : names.get(String(r.createdBy)) ?? '—' });
+        items.push({ id: r.id, docType, number: r.number, status: r.status, total: r.total?.amountMinor ?? 0, kg: r.kg, createdAt: r.createdAt, link: `${path}?open=${r.id}`, risk, by: r.agentId ? agentName(r.agentId) : names.get(String(r.createdBy)) ?? '—' });
       }
     };
     if (settings.modules.buying) {
@@ -103,8 +108,10 @@ export function useDashboardData() {
     }
     if (settings.modules.aggregators) { add(acs as never, 'aggregatorPurchase', '/app/aggregators'); add(acsPre as never, 'aggregatorExpense', '/app/aggregators/expenses'); }
     if (settings.modules.support) add(support.filter((r) => r.wf) as never, 'supportRequest', '/app/support');
+    if (settings.modules.inventory) add(wexp.filter((r) => r.wf) as never, 'warehouseExpense', '/app/inventory/expenses');
+    if (settings.modules.dispatch) add(dispatches.filter((r) => r.wf).map((r) => ({ ...r, kg: r.expectedKg })) as never, 'dispatchOrder', '/app/dispatch');
     return items.sort((a, b) => (a.risk === 'HIGH' ? -1 : 0) - (b.risk === 'HIGH' ? -1 : 0) || b.createdAt.localeCompare(a.createdAt));
-  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, support, agentName, names]);
+  }, [userId, memberships, orgId, patterns, settings.workflows, settings.modules, requests, expenses, acs, acsPre, support, wexp, dispatches, agentName, names]);
 
   const charts = useMemo(() => {
     const now = Date.now();

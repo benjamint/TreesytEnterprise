@@ -54,7 +54,7 @@ export function OptionListsPage() {
       <Link to="/app/forms" className="mb-1 inline-flex items-center gap-1 text-[13px] text-muted hover:text-brand"><ArrowLeft className="h-3.5 w-3.5" /> {t('nav.forms')}</Link>
       <PageHeader eyebrow={t('nav.section.forms')} title={t('nav.optionLists')} description={t('pages.optionLists')}
         primary={<PermissionGate permission="forms.edit"><Button onClick={() => { setSelectedId(null); setDraft({ id: uid('ol'), orgId, name: { en: t('forms.lists.newName'), fr: t('forms.lists.newName') }, options: [], updatedAt: new Date().toISOString() }); }}><Plus /> {t('forms.lists.new')}</Button></PermissionGate>} />
-      <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[320px_minmax(0,1fr)] [&>*]:min-w-0">
         <ul className="h-fit divide-y divide-line rounded-card border border-line bg-surface shadow-soft">
           {sorted.map((l) => (
             <li key={l.id}>

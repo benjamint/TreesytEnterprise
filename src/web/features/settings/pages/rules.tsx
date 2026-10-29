@@ -220,7 +220,7 @@ export function NotificationsPage() {
       <Section title={t('set.notif.grid')} description={t('set.notif.gridHint')}>
         <EditTable head={[t('set.notif.event'), ...CHANNELS.map((c) => t(`set.notif.channel.${c}`)), t('set.notif.recipients'), t('set.notif.template'), t('set.enabled')]}>
           {rules.map((r) => (
-            <tr key={r.id} className={cn(!r.enabled && 'opacity-60')}>
+            <tr key={r.id} className={cn(!r.enabled && 'bg-canvas/70 [&_td]:text-muted')}>
               <td className="min-w-52 font-medium text-ink">{t(`set.notif.eventName.${r.eventKey.replace('.', '_')}`)}</td>
               {CHANNELS.map((c) => (
                 <td key={c} className="w-20 text-center">

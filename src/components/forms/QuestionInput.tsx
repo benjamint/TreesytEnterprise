@@ -56,7 +56,7 @@ export function QuestionInput({ q, value, onChange, invalid, big, answers = {}, 
     <div className={cn('flex flex-wrap gap-1.5', big && 'gap-2')} role="radiogroup" aria-label={aria}>
       {values.map((v) => (
         <button key={v} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(value === v ? undefined : v)}
-          className={cn('min-w-10 rounded-ctl border px-2.5 font-medium tnum transition-colors', big ? 'h-12 min-w-12 text-[16px]' : 'h-10 text-[14px]', value === v ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-body hover:border-brand/50')}>
+          className={cn('min-w-10 rounded-ctl border px-2.5 font-medium tnum transition-colors', big ? 'h-12 min-w-12 text-[16px]' : 'h-10 text-[14px]', value === v ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/50')}>
           {labelOf ? labelOf(v) : v}
         </button>
       ))}
@@ -183,7 +183,7 @@ export function QuestionInput({ q, value, onChange, invalid, big, answers = {}, 
           {labels?.length === max ? (
             <div className={cn('grid gap-1.5', big ? 'grid-cols-1' : 'sm:grid-cols-5')} role="radiogroup" aria-label={aria}>
               {labels.map((l, i) => (
-                <button key={i} type="button" role="radio" aria-checked={value === i + 1} onClick={() => onChange(value === i + 1 ? undefined : i + 1)} className={cn('rounded-ctl border px-2 py-2 text-[13px]', big && 'min-h-12 text-[15px]', value === i + 1 ? 'border-brand bg-brand text-white' : 'border-line text-body hover:border-brand/50')}>
+                <button key={i} type="button" role="radio" aria-checked={value === i + 1} onClick={() => onChange(value === i + 1 ? undefined : i + 1)} className={cn('rounded-ctl border px-2 py-2 text-[13px]', big && 'min-h-12 text-[15px]', value === i + 1 ? 'border-brand bg-brand text-on-brand' : 'border-line text-body hover:border-brand/50')}>
                   {l[lang] ?? l.en}
                 </button>
               ))}

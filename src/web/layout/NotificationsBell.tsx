@@ -9,8 +9,9 @@ import type { AppNotification } from '@/types';
 
 export function useNotificationText() {
   const { t } = useT();
+  const f = useFormat();
   return (n: AppNotification) => {
-    const params: Record<string, unknown> = { ...n.params };
+    const params: Record<string, unknown> = Object.fromEntries(Object.entries(n.params).map(([k, v]) => [k, v && typeof v === 'object' && 'amountMinor' in v ? f.money(v as never) : v]));
     if (typeof params.docType === 'string') params.docType = t(`docType.${params.docType}`);
     return t(`notification.${n.key}`, params);
   };
@@ -34,7 +35,7 @@ export function NotificationsBell() {
         <Button variant="ghost" size="icon" className="relative" aria-label={`${t('shell.notifications')}${unread ? ` (${unread})` : ''}`}>
           <Bell />
           {unread > 0 && (
-            <span className="tnum absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-semibold text-white">{unread > 9 ? '9+' : unread}</span>
+            <span className="tnum absolute right-1 top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-danger px-1 text-[11px] font-semibold text-white dark:text-canvas">{unread > 9 ? '9+' : unread}</span>
           )}
         </Button>
       </DropdownMenuTrigger>

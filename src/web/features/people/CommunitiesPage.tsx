@@ -27,9 +27,14 @@ import { useFarmerStore } from '@/stores/farmerStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useQualityStore } from '@/stores/qualityStore';
+import { useLandStore } from '@/stores/landStore';
 import { useRecordsStore } from '@/stores/recordsStore';
+import { useTrainingStore } from '@/stores/trainingStore';
+import { TreeList } from '@/web/features/land/shared';
+import { WorkshopList } from '@/web/features/training/WorkshopsPage';
 import { useActor, useCurrentOrg, useFormat, useLang, useOrgRows, useT } from '@/stores/hooks';
 import { CommunityForm } from './CommunityForm';
+import { SharedCommunitiesTab, useSharedCounts } from './SharedRecords';
 import { ActivityFeed, DocumentsPanel, LeadersPanel, ScoreView, logActivity, useLookups } from './shared';
 
 export const COMMUNITY_DOC_TYPES = ['membershipList', 'meetingRecords', 'contributionRecords', 'paymentRecords', 'partnershipAgreement', 'other'];
@@ -113,6 +118,7 @@ export function CommunitiesPage() {
   ], [t, f, lk, terms]);
 
   const current = rows.find((r) => r.id === openId);
+  const shared = useSharedCounts();
   return (
     <>
       {tour.element}
@@ -133,7 +139,9 @@ export function CommunitiesPage() {
         <TabsList className="mb-5">
           <TabsTrigger value="list">{t('people.list')}</TabsTrigger>
           <TabsTrigger value="dashboard">{t('nav.dashboard')}</TabsTrigger>
+          {shared.communities.length > 0 && <TabsTrigger value="shared">{t('share.tab')} <Badge tone="info" className="ml-1.5">{shared.communities.length}</Badge></TabsTrigger>}
         </TabsList>
+        <TabsContent value="shared"><SharedCommunitiesTab /></TabsContent>
         <TabsContent value="list">
           <FilterBar
             search={q}
@@ -194,12 +202,16 @@ function CommunityDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => vo
   const purchases = useOrgRows(useBuyingStore((s) => s.purchases));
   const leaders = useOrgRows(useRecordsStore((s) => s.leaders));
   const form = useLiveForm('communityProfile');
+  const workshops = useOrgRows(useTrainingStore((s) => s.workshops));
+  const trees = useOrgRows(useLandStore((s) => s.trees));
   const mine = useMemo(() => ({
+    workshops: workshops.filter((w) => w.communityId === row.id),
+    trees: trees.filter((x) => x.communityId === row.id),
     farmers: farmers.filter((x) => x.communityId === row.id),
     groups: groups.filter((g) => g.communityId === row.id),
     purchases: purchases.filter((p) => p.communityId === row.id).sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-  }), [farmers, groups, purchases, row.id]);
-  const breakdown = useMemo(() => communityScore(row, { purchases, leaders }), [row, purchases, leaders]);
+  }), [farmers, groups, purchases, workshops, trees, row.id]);
+  const breakdown = useMemo(() => communityScore(row, { purchases, leaders, workshops, trees }), [row, purchases, leaders, workshops, trees]);
   const recalc = () => {
     useCommunityStore.getState().saveCommunity({ ...useCommunityStore.getState().communities.find((c) => c.id === row.id)!, score: breakdown.total });
     logActivity(orgId, 'community', row.id, 'community.scored', { score: breakdown.total }, userId ?? 'system');
@@ -273,8 +285,8 @@ function CommunityDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => vo
             </div>
           ) : <TabEmpty>{t('people.none')}</TabEmpty>,
         },
-        { key: 'workshops', label: t('nav.workshops'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
-        { key: 'trees', label: t('people.tab.trees'), content: <TabEmpty>{t('people.laterPhase')}</TabEmpty> },
+        { key: 'workshops', label: t('nav.workshops'), count: mine.workshops.length, content: mine.workshops.length ? <WorkshopList workshops={mine.workshops} /> : <TabEmpty>{t('ws.noneHere')}</TabEmpty> },
+        { key: 'trees', label: t('people.tab.trees'), count: mine.trees.length, content: mine.trees.length ? <TreeList trees={mine.trees} showFarmer /> : <TabEmpty>{t('land.noTreesHere')}</TabEmpty> },
         { key: 'activity', label: t('people.tab.activity'), content: <ActivityFeed entity="community" entityId={row.id} /> },
       ]}
     />

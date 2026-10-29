@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { RouteBoundary } from '@/components/shared/RouteBoundary';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -10,6 +11,7 @@ import { SessionTimeout } from './SessionTimeout';
 import '@/services/aggregatorService';
 import '@/services/supportService';
 import '@/services/recoveryService';
+import '@/services/inventoryService';
 import { onAnnounce } from '@/stores/persistence';
 import { useActor, useCurrentOrg, useCurrentUser, useT } from '@/stores/hooks';
 import { Sidebar } from './Sidebar';
@@ -65,7 +67,7 @@ export function AppShell() {
         <TopBar onMenu={() => setMenuOpen(true)} onSearch={() => setPaletteOpen(true)} />
         <main id="main" className="flex-1 px-4 py-8 md:px-8 lg:px-10 lg:py-10">
           <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1600px]">
-            <Outlet />
+            <RouteBoundary key={location.pathname}><Outlet /></RouteBoundary>
           </motion.div>
         </main>
       </div>

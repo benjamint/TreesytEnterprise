@@ -121,7 +121,8 @@
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar",
     "menu": "Menu",
-    "locations": "Locations"
+    "locations": "Locations",
+    "feedback": "Feedback"
   },
   "pages": {
     "dashboard": "Your operation at a glance: volumes, money, approvals and alerts.",
@@ -186,7 +187,8 @@
     "help": "Guides and answers for every part of TreeSyt.",
     "apiDocs": "Endpoints, sample payloads and webhooks.",
     "account": "Your profile, security and sessions.",
-    "locations": "Your location tree, with counts per node."
+    "locations": "Your location tree, with counts per node.",
+    "feedback": "Bugs and ideas sent from the app."
   },
   "shell": {
     "openMobile": "Open mobile app",
@@ -238,7 +240,9 @@
     "viewingAs": "Viewing {{company}} as platform owner",
     "mobileSyncedToast_one": "{{name}} synced {{count}} record from the phone",
     "mobileSyncedToast_other": "{{name}} synced {{count}} records from the phone",
-    "mobileSavedToast": "{{name}} saved on the phone: {{label}}"
+    "mobileSavedToast": "{{name}} saved on the phone: {{label}}",
+    "sendFeedback": "Send feedback",
+    "feedbackBoard": "Feedback board"
   },
   "orgType": {
     "PLATFORM": "Platform",
@@ -682,7 +686,17 @@
     "reportFiled": "A report was filed about your work ({{number}})",
     "reportAssigned": "Report {{number}} assigned to you",
     "reportResponse": "The agent answered report {{number}}",
-    "transferOutOfBounds": "Transfer {{number}} lost {{pct}}% of its weight (limit {{bound}}%)"
+    "transferOutOfBounds": "Transfer {{number}} lost {{pct}}% of its weight (limit {{bound}}%)",
+    "feedbackNew": "New feedback {{number}}: {{title}}",
+    "feedbackReply": "New reply on {{number}}: {{title}}",
+    "feedbackStatus": {
+      "NEW": "{{number}} is now new: {{title}}",
+      "UNDER_REVIEW": "{{number}} is now under review: {{title}}",
+      "PLANNED": "{{number}} is now planned: {{title}}",
+      "IN_PROGRESS": "{{number}} is now in progress: {{title}}",
+      "DONE": "{{number}} is now done: {{title}}",
+      "DECLINED": "{{number}} is now not planned: {{title}}"
+    }
   },
   "activity": {
     "workflow": {
@@ -1061,6 +1075,17 @@
     },
     "geofence": {
       "saved": "Geofence set ({{km}} km)"
+    },
+    "feedback": {
+      "sent": "Sent feedback {{number}}",
+      "status": {
+        "NEW": "Marked {{number}} as new",
+        "UNDER_REVIEW": "Marked {{number}} as under review",
+        "PLANNED": "Marked {{number}} as planned",
+        "IN_PROGRESS": "Marked {{number}} as in progress",
+        "DONE": "Marked {{number}} as done",
+        "DECLINED": "Marked {{number}} as not planned"
+      }
     }
   },
   "settings": {
@@ -1692,7 +1717,9 @@
         "sync": "Tap Sync when you have network. The number on the sync bar shows what is waiting.",
         "conflict": "If the office changed a record you edited, Sync asks which version to keep.",
         "record": "Use + to record: purchases, farmers, communities, groups and surveys."
-      }
+      },
+      "feedback": "Send feedback",
+      "feedbackHint": "Report a bug or suggest an idea"
     },
     "m6": {
       "todo": {
@@ -9835,5 +9862,130 @@
     "communitiesCount_other": "{{count}} communities",
     "pickedCount_one": "{{count}} community picked",
     "pickedCount_other": "{{count}} communities picked"
+  },
+  "fb": {
+    "title": "Send feedback",
+    "hint": "Report a problem or suggest an idea. It goes straight to the TreeSyt product team.",
+    "kind": {
+      "BUG": "Report a bug",
+      "FEATURE": "Request a feature",
+      "IMPROVEMENT": "Suggest an improvement"
+    },
+    "kindHint": {
+      "BUG": "Something isn’t working",
+      "FEATURE": "Something new you need",
+      "IMPROVEMENT": "Make something better"
+    },
+    "kindShort": {
+      "BUG": "Bug",
+      "FEATURE": "Feature",
+      "IMPROVEMENT": "Improvement"
+    },
+    "kindLabel": "What would you like to do?",
+    "titleLabel": "Title",
+    "titlePlaceholder": {
+      "BUG": "e.g. Export does nothing on Farmers",
+      "FEATURE": "e.g. Export stock to Excel",
+      "IMPROVEMENT": "e.g. Show the list price next to the requested price"
+    },
+    "bodyLabel": {
+      "BUG": "What happened?",
+      "FEATURE": "Describe what you need",
+      "IMPROVEMENT": "Describe the change"
+    },
+    "bodyPlaceholder": {
+      "BUG": "What did you do, what did you expect, and what happened instead?",
+      "FEATURE": "What would you like to do, and why does it matter for your work?",
+      "IMPROVEMENT": "What should change, and how would it help?"
+    },
+    "severity": "How bad is it?",
+    "severityLevel": {
+      "LOW": "Minor",
+      "MEDIUM": "Annoying",
+      "HIGH": "Blocks some work",
+      "BLOCKING": "Blocks everything"
+    },
+    "screenshot": "Screenshot (optional)",
+    "screenshotAdd": "Attach a screenshot",
+    "screenshotRemove": "Remove screenshot",
+    "screenshotTooBig": "That image is too large. Use one under 8 MB.",
+    "context": "Sent with: {{page}} · {{device}} · {{language}} · version {{version}}",
+    "device": {
+      "web": "Web",
+      "mobile": "Phone app"
+    },
+    "send": "Send feedback",
+    "err": {
+      "title": "Add a short title (at least 4 characters).",
+      "body": "Describe it in a sentence or two.",
+      "severity": "Choose how bad it is."
+    },
+    "sent": "Thanks! {{number}} has been sent to the TreeSyt team.",
+    "view": "View",
+    "pageDesc": "Bugs and ideas from your team, and what the TreeSyt team is doing about them.",
+    "pageDescOwner": "Bugs and ideas from every company. Set a status or reply and the person who sent it is told.",
+    "stats": {
+      "open": "Open",
+      "active": "Planned or in progress",
+      "done": "Done"
+    },
+    "views": {
+      "all": "All",
+      "mine": "Mine",
+      "bugs": "Bugs",
+      "ideas": "Ideas"
+    },
+    "col": {
+      "number": "Number",
+      "title": "Title",
+      "company": "Company",
+      "votes": "Votes",
+      "status": "Status",
+      "by": "Sent by",
+      "updated": "Updated"
+    },
+    "status": {
+      "NEW": "New",
+      "UNDER_REVIEW": "Under review",
+      "PLANNED": "Planned",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Done",
+      "DECLINED": "Not planned"
+    },
+    "vote": "Me too",
+    "voted": "You voted",
+    "votesN_one": "{{count}} vote",
+    "votesN_other": "{{count}} votes",
+    "tab": {
+      "details": "Details",
+      "conversation": "Conversation"
+    },
+    "reporter": "Sent by",
+    "page": "Page",
+    "deviceCol": "Device",
+    "language": "Language",
+    "appVersion": "App version",
+    "created": "Sent",
+    "severityCol": "Severity",
+    "screenshotAlt": "Screenshot attached to {{number}}",
+    "noReplies": "No replies yet. The TreeSyt team usually answers within two working days.",
+    "replyPlaceholder": "Write a reply…",
+    "replySend": "Reply",
+    "team": "TreeSyt team",
+    "setStatus": "Set status",
+    "next": {
+      "NEW": "Start review",
+      "UNDER_REVIEW": "Plan it",
+      "PLANNED": "Start work",
+      "IN_PROGRESS": "Mark done"
+    },
+    "decline": "Not planned",
+    "statusChanged": "{{number}} is now {{status}}",
+    "voteAdded": "Your vote was added to {{number}}",
+    "empty": "No feedback yet. Use Send feedback to report a bug or suggest an idea.",
+    "filterStatus": "Status",
+    "filterCompany": "Company",
+    "search": "Search feedback",
+    "board": "Feedback board"
   }
 }

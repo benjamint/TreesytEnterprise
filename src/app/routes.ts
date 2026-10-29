@@ -4,7 +4,7 @@ import {
   CreditCard, Wallet, HandHeart, RotateCcw, Wrench, Warehouse, PackageOpen, PackageCheck, ListChecks, Receipt, Send, FileSignature,
   Radar, Sprout, Leaf, Trees, Map, BadgeCheck, CloudSun, FileText, GraduationCap, UserCog, CalendarRange, PiggyBank, ReceiptText,
   Repeat, Gift, Trophy, Coins, Flag, Navigation, BarChart3, Bell, RefreshCcw, ScrollText, Timer, Settings, Building2, QrCode, LineChart,
-  Smartphone, BookOpen, UserCircle, Network, Code2, Archive, ListTree, Award,
+  Smartphone, BookOpen, UserCircle, Network, Code2, Archive, ListTree, Award, MessageSquarePlus,
 } from 'lucide-react';
 import type { ModuleKey } from '@/types';
 
@@ -112,10 +112,11 @@ export const APP_ROUTES: AppRoute[] = [
   r('help', '/app/help', BookOpen, 'dashboard.view', 17),
   r('apiDocs', '/app/help/api', Code2, 'settings.view', 17),
   r('account', '/app/account', UserCircle, 'dashboard.view', 2),
+  r('feedback', '/app/feedback', MessageSquarePlus, 'dashboard.view', 19),
 ];
 
 /** Pages anyone signed in can open regardless of permissions. */
-export const ALWAYS_ALLOWED = new Set(['helpMobile', 'help', 'account']);
+export const ALWAYS_ALLOWED = new Set(['helpMobile', 'help', 'account', 'feedback']);
 
 export function routeByKey(key: string): AppRoute {
   return APP_ROUTES.find((x) => x.key === key)!;

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { ArrowLeftRight, CircleHelp, Lock, LogOut } from 'lucide-react';
+import { ArrowLeftRight, ChevronRight, CircleHelp, Lock, LogOut, MessageSquarePlus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAccessStore } from '@/stores/accessStore';
 import { usePlatformStore } from '@/stores/platformStore';
 import { DownloadData } from '@/mobile/flows/auth/DownloadData';
@@ -62,6 +63,11 @@ export function MeScreen() {
           ))}
         </dl>
         <MyWorkLinks />
+        <Link to="/m/me/feedback" className="flex min-h-[64px] items-center gap-3.5 rounded-card border border-line bg-surface px-4 shadow-soft active:bg-brand-soft">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-brand-soft"><MessageSquarePlus className="h-[18px] w-[18px] text-brand" aria-hidden="true" /></span>
+          <span className="min-w-0 flex-1"><span className="block font-medium text-ink">{t('mobile.me.feedback')}</span><span className="block text-[13px] text-muted">{t('mobile.me.feedbackHint')}</span></span>
+          <ChevronRight className="h-5 w-5 text-muted/70" aria-hidden="true" />
+        </Link>
         {others.length > 0 && (
           <div>
             <div className="eyebrow mb-2">{t('mobile.me.switchCompany')}</div>

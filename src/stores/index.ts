@@ -29,3 +29,4 @@ export * from './landStore';
 export * from './trainingStore';
 export * from './fieldStore';
 export * from './systemStore';
+export * from './feedbackStore';

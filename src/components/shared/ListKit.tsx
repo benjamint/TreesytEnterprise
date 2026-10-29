@@ -87,7 +87,11 @@ export interface DrawerTab {
   content: ReactNode;
 }
 
-/** Detail drawer (PRD 6.2): 640 px floating right sheet with a header and tabs. */
+/**
+ * Detail drawer (PRD 6.2): 640 px floating right sheet with a header, tabs and a fixed action bar.
+ * The bar groups whatever buttons a page passes: tertiary (ghost) on the left; secondary, then
+ * destructive, then the primary action on the right; status banners on their own row above.
+ */
 export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, tabs }: { open: boolean; onClose: () => void; title: ReactNode; subtitle?: ReactNode; badges?: ReactNode; actions?: ReactNode; tabs: DrawerTab[] }) {
   const { t } = useT();
   const [params] = useSearchParams();
@@ -102,7 +106,6 @@ export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, 
             <SheetTitle className="font-display text-[24px] leading-tight text-ink">{title}</SheetTitle>
             {subtitle && <SheetDescription className="mt-1 text-[13px] text-muted">{subtitle}</SheetDescription>}
             {badges && <div className="mt-3 flex flex-wrap items-center gap-1.5">{badges}</div>}
-            {actions && <div className="mt-4 flex flex-wrap gap-2">{actions}</div>}
           </div>
           <div className="-mb-px mt-5 flex gap-5 overflow-x-auto scrollbar-thin" role="tablist">
             {tabs.map((x) => (
@@ -114,6 +117,7 @@ export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, 
           </div>
         </div>
         <div className="flex-1 overflow-y-auto px-7 py-6 scrollbar-thin" role="tabpanel">{current?.content}</div>
+        {actions && <div className="drawer-actions" role="group" aria-label={t('common.actions')}>{actions}</div>}
       </SheetContent>
     </Sheet>
   );

@@ -1,5 +1,6 @@
 {
   "common": {
+    "actions": "Actions",
     "comingSoon": "Disponible dans la version complète",
     "comingSoonHint": "Ce bouton répond dans le prototype ; le parcours complet arrive dans une phase ultérieure.",
     "save": "Enregistrer",

@@ -38,12 +38,17 @@ export function useInventory() {
   }, [warehouses, bags, purchases, nodes, users]);
 }
 
+/** Days since a bag last came into the warehouse (inbound, top-up or return). */
+export function bagAgeDays(b: Bag, now = Date.now()) {
+  const lastIn = [...(b.history ?? [])].reverse().find((h) => h.event === 'INBOUND' || h.event === 'TOP_UP' || h.event === 'RETURNED');
+  return lastIn ? Math.max(0, (now - new Date(lastIn.at).getTime()) / 86_400_000) : 0;
+}
+
 /** Bags in stock, oldest first, grouped by days in the warehouse. */
 export function ageingBuckets(bags: Bag[], now = Date.now()) {
   const buckets = [{ key: '0-30', max: 30 }, { key: '31-60', max: 60 }, { key: '61-90', max: 90 }, { key: '90+', max: Infinity }].map((b) => ({ ...b, bags: 0, kg: 0 }));
   for (const b of bags) {
-    const lastIn = [...(b.history ?? [])].reverse().find((h) => h.event === 'INBOUND' || h.event === 'TOP_UP' || h.event === 'RETURNED');
-    const days = lastIn ? (now - new Date(lastIn.at).getTime()) / 86_400_000 : 0;
+    const days = bagAgeDays(b, now);
     const bucket = buckets.find((x) => days <= x.max)!;
     bucket.bags += 1;
     bucket.kg += b.weightKg;

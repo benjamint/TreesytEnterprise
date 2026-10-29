@@ -47,7 +47,7 @@ export function ChartFrame({ table, children, legend, className }: { table: { he
   const [asTable, setAsTable] = useState(false);
   const { t } = useT();
   return (
-    <div className={cn('relative flex h-full flex-col', className)}>
+    <div className={cn('relative', className)}>
       <div className="flex min-h-[20px] items-start justify-between gap-3">
         <div className="min-w-0">{!asTable && legend}</div>
         <button type="button" onClick={() => setAsTable((v) => !v)} className="-mt-1 shrink-0 rounded-chip p-1.5 text-muted/80 transition-colors hover:bg-canvas hover:text-ink" aria-label={asTable ? t('chart.showChart') : t('chart.showTable')} aria-pressed={asTable}>
@@ -121,8 +121,9 @@ export function StackedColumns({ data, series, format, axisFormat, xKey = 'label
       legend={<Legend items={series.map((s) => ({ label: s.label, color: seriesColor(s.index) }))} />}
       table={{ head: ['', ...series.map((s) => s.label)], rows: data.map((d) => [String(d[xKey]), ...series.map((s) => format(Number(d[s.key] ?? 0)))]) }}
     >
-      <div className="min-h-64 flex-1">
-        <ResponsiveContainer width="100%" height="100%" minHeight={256}>
+      {/* Fixed height: a chart sized from its container makes stretched grid cells grow without end. */}
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 4, right: 0, left: -8, bottom: 0 }} barCategoryGap="28%">
             <CartesianGrid {...grid} />
             <XAxis dataKey={xKey} tickLine={false} axisLine={false} tick={axisTick} interval="preserveStartEnd" dy={6} />

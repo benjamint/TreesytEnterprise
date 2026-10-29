@@ -42,8 +42,8 @@
   }
 
   .dark {
-    --brand: 63 175 126;
-    --brand-hover: 86 192 143;
+    --brand: 74 190 139;
+    --brand-hover: 100 205 158;
     --brand-soft: 30 48 39;
     --on-brand: 10 20 16;
     --lime: 198 234 115;
@@ -58,12 +58,12 @@
     --line: 54 52 48;
     --line-strong: 70 68 63;
     --shadow: 0 0 0;
-    --info: 106 155 234;
+    --info: 133 173 238;
     --success: 76 192 127;
     --warning: 224 169 74;
-    --danger: 232 105 92;
+    --danger: 238 146 137;
     --teal: 72 190 190;
-    --unknown: 170 136 230;
+    --unknown: 185 157 234;
     --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
     --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
     color-scheme: dark;

@@ -52,7 +52,7 @@ export function RetirementsPage() {
   return (
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.retirements')} description={t('pages.retirements')} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('field.status.PENDING_REVIEW')} value={f.number(rows.filter((r) => r.status === 'PENDING_REVIEW').length)} icon={ReceiptText} onClick={() => setStatus('PENDING_REVIEW')} />
         <StatCard label={t('field.status.PENDING_SUBMISSION')} value={f.number(rows.filter((r) => r.status === 'PENDING_SUBMISSION').length)} onClick={() => setStatus('PENDING_SUBMISSION')} />
         <StatCard label={t('field.status.AWAITING_REFUND')} value={f.number(rows.filter((r) => r.status === 'AWAITING_REFUND').length)} onClick={() => setStatus('AWAITING_REFUND')} />

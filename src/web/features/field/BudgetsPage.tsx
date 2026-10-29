@@ -64,7 +64,7 @@ export function BudgetsPage() {
   return (
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.budgets')} description={t('pages.budgets')} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('field.waitingManager')} value={f.number(waitingMgr)} icon={PiggyBank} onClick={() => setStage('SUBMITTED')} />
         <StatCard label={t('field.waitingFinance')} value={f.number(waitingFin)} onClick={() => setStage('MANAGER_APPROVED')} />
         <StatCard label={t('field.toPay')} value={f.number(toPay.length)} hint={f.money(toPay.reduce((s, b) => s + b.net.amountMinor, 0))} icon={Wallet} onClick={() => setStage('APPROVED')} />

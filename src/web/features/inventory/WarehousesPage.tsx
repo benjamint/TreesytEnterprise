@@ -1,7 +1,8 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
-import { CircleMarker, MapContainer, TileLayer, Tooltip as LTooltip } from 'react-leaflet';
+import { CircleMarker, MapContainer, Tooltip as LTooltip } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, LayoutGrid, List, Map as MapIcon, PackageOpen, Search, Truck, UserRound } from 'lucide-react';
 import type { Bag, Warehouse } from '@/types';
@@ -203,7 +204,7 @@ function WarehouseMap({ rows, onOpen }: { rows: Warehouse[]; onOpen: (id: string
   return (
     <div className="h-[520px] overflow-hidden rounded-card border border-line shadow-soft" role="region" aria-label={t('inv.layout.map')}>
       <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full">
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+        <BaseTiles />
         {pts.map((w) => (
           <CircleMarker key={w.id} center={[w.gps.lat, w.gps.lng]} radius={8 + (inv.stockKg(w.id) / max) * 14} eventHandlers={{ click: () => onOpen(w.id) }}
             pathOptions={{ color: 'rgb(var(--surface))', weight: 2, fillColor: 'var(--series-2)', fillOpacity: 0.9 }}>

@@ -89,7 +89,7 @@ export function ReconciliationPage() {
         description={t('pages.reconciliation')}
         primary={<PermissionGate permission="reconciliation.reconcile"><Button onClick={() => { const n = autoReconcile(orgId); toast.success(t('buy.toast.autoRun', { count: n })); }}><RefreshCcw /> {t('buy.runAutoMatch')}</Button></PermissionGate>}
       />
-      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label={t('buy.stat.openRecon')} value={f.number(openRows.length)} />
         <Kpi label={t('buy.stat.cashToRefund')} value={cur(openRows.filter((x) => x.s.status === 'RECEIVE_REFUND').reduce((s, x) => s + x.s.gap, 0))} hint={t('buy.stat.withPurchases')} />
         <Kpi label={t('buy.stat.owedToAgents', { agents: terms.agents.toLocaleLowerCase() })} value={cur(openRows.filter((x) => ['REFUND_AGENT', 'OVERPAID'].includes(x.s.status)).reduce((s, x) => s - x.s.gap, 0))} />

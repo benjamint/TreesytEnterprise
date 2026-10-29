@@ -109,7 +109,7 @@ function SupplierView() {
       <Tabs tab={tab} onTab={setTab} tabs={[{ key: 'overview', label: t('sales.tb.overview') }, { key: 'sharing', label: t('sales.tb.sharing'), count: grants.length }, { key: 'insights', label: t('sales.tb.insights'), count: open }]} />
       {tab === 'overview' && (
         <div className="space-y-5">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label={t('sales.tb.buyersServed')} value={f.number(byClient.size)} hint={t('sales.tb.onPlatform', { count: sl.clients.filter((c) => c.buyerOrgId).length })} />
             <StatCard label={t('sales.tb.delivered')} value={tonnes(verified.reduce((s, d) => s + d.verification!.deliveredKg, 0))} hint={t('sales.tb.ordersN', { count: verified.length })} />
             <StatCard label={t('sales.tb.amount')} value={f.money({ amountMinor: amount, currency }, { compact: true })} />
@@ -248,7 +248,7 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
       <Tabs tab={tab} onTab={setTab} tabs={[{ key: 'overview', label: t('sales.tb.dashboard') }, { key: 'orders', label: t('sales.tb.orders'), count: orders.length }, { key: 'insights', label: t('sales.tb.myRequests'), count: insights.length }]} />
       {tab === 'overview' && (
         <div className="space-y-5">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label={t('sales.tb.totalWeight')} value={tonnes(totalKg)} hint={f.kg(Math.round(totalKg))} />
             <StatCard label={t('sales.tb.amount')} value={f.money({ amountMinor: amount, currency }, { compact: true })} />
             <StatCard label={t('sales.tb.orders')} value={f.number(orders.length)} hint={t('sales.tb.verifiedN', { count: verified.length })} />

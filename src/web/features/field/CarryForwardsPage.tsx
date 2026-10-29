@@ -56,7 +56,7 @@ export function CarryForwardsPage() {
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.carryForwards')} description={t('pages.carryForwards')}
         actions={<PermissionGate permission="carryForwards.waive"><Button variant="secondary" onClick={() => setManual(true)}><Plus /> {t('field.manualCf')}</Button></PermissionGate>}
         primary={<PermissionGate permission="carryForwards.runPenalties"><Button onClick={() => setRunning(true)}><Gavel /> {t('field.runPenalties')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('field.outstanding')} value={f.money(open$.reduce((s, c) => s + c.remainingMinor, 0))} hint={t('field.agentsN', { count: new Set(open$.map((c) => c.agentId)).size })} icon={Repeat} />
         <StatCard label={t('field.cfType.UNDER_SPEND')} value={f.number(rows.filter((c) => c.type === 'UNDER_SPEND').length)} onClick={() => setType('UNDER_SPEND')} />
         <StatCard label={t('field.cfType.PENALTY')} value={f.number(rows.filter((c) => c.type === 'PENALTY').length)} onClick={() => setType('PENALTY')} />

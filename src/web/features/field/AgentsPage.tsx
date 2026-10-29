@@ -88,7 +88,7 @@ export function AgentsPage() {
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.agents')} description={t('pages.agents')}
         actions={<Button variant="secondary" asChild><Link to="/app/agents/reporting-lines"><Network /> {t('nav.reportingLines')}</Link></Button>}
         primary={<PermissionGate permission="agents.create"><Button onClick={() => setInviting(true)}><UserPlus /> {t('field.inviteAgent')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('field.activeAgents')} value={f.number(active.length)} hint={t('field.invitedN', { count: rows.filter((a) => a.status === 'INVITED').length })} icon={UsersRound} />
         <StatCard label={t('field.cashHeld')} value={f.money([...cash.values()].reduce((s, x) => s + x, 0))} />
         <StatCard label={t('field.avgWeekTarget')} value={`${active.length ? Math.round(active.reduce((s, a) => s + a.weekTargetPct, 0) / active.length) : 0}%`} />

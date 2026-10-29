@@ -101,7 +101,7 @@ export function WorkshopsPage() {
       <PageHeader eyebrow={t('nav.section.forms')} title={t('nav.workshops')} description={t('pages.workshops')}
         actions={<Button variant="secondary" asChild><Link to="/app/workshops/catalogue"><Award /> {t('nav.trainingCatalogue')}</Link></Button>}
         primary={<PermissionGate permission="workshops.create"><Button onClick={() => setPlanning(true)}><Plus /> {t('ws.plan')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('ws.held')} value={f.number(dash.held)} hint={t('ws.ofCreated', { n: f.number(dash.created) })} icon={GraduationCap} />
         <StatCard label={t('ws.upcoming')} value={f.number(dash.upcoming)} hint={dash.overdue ? t('ws.overdueN', { count: dash.overdue }) : t('ws.noneOverdue')} icon={CalendarDays} />
         <StatCard label={t('ws.farmersTrained')} value={f.number(dash.farmersTrained)} hint={t('ws.attendanceN', { n: f.number(dash.attendance) })} icon={Users} />
@@ -196,7 +196,7 @@ function Dashboard({ rows }: { rows: Workshop[] }) {
   const card = 'rounded-card border border-line bg-surface p-5 shadow-soft';
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <div className="stat-strip grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
         {([[t('ws.created'), d.created], [t('ws.held'), d.held], [t('ws.upcoming'), d.upcoming], [t('ws.cancelled'), d.cancelled], [t('ws.farmersTrained'), d.farmersTrained], [t('ws.attendance'), d.attendance]] as [string, number][]).map(([k, v]) => <StatCard key={k} label={k} value={f.number(v)} />)}
       </div>
       <div className="grid gap-5 lg:grid-cols-2">

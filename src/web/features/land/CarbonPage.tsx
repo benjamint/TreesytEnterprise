@@ -37,7 +37,7 @@ export function CarbonPage() {
     <>
       <PageHeader eyebrow={t('nav.section.trees')} title={t('nav.carbon')} description={t('pages.carbon')}
         primary={<PermissionGate permission="carbon.create"><Button onClick={() => setCreating(true)}><Plus /> {t('land.newProject')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-3">
         <StatCard label={t('land.projects')} value={f.number(projects.length)} icon={CloudSun} />
         <StatCard label={t('land.treesInProjects')} value={f.number(total.trees)} hint={t('land.aliveN', { n: f.number(total.alive) })} icon={Trees} />
         <StatCard label={t('land.co2PerYear')} value={`${f.number(total.t, { maximumFractionDigits: 1 })} t`} hint={t('land.estimate')} />

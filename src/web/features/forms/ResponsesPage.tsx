@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { PageTourButton } from '@/components/shared/PageHeader';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
-import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
+import { CircleMarker, MapContainer } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, Check, Download, MessageSquareWarning, Pencil, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -223,7 +224,7 @@ function ResponseDrawer({ form, r, lists, onClose }: { form: FormRecord; r: Surv
               {r.gps && (
                 <div className="h-56 overflow-hidden rounded-ctl border border-line">
                   <MapContainer center={[r.gps.lat, r.gps.lng]} zoom={13} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}>
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <BaseTiles />
                     <CircleMarker center={[r.gps.lat, r.gps.lng]} radius={9} pathOptions={{ color: '#fff', weight: 2, fillColor: '#14583F', fillOpacity: 1 }} />
                     <CircleMarker center={[r.gps.lat, r.gps.lng]} radius={Math.min(40, 6 + r.gps.accuracy)} pathOptions={{ color: '#14583F', weight: 1, fillOpacity: 0.08 }} />
                   </MapContainer>
@@ -328,7 +329,7 @@ function Analytics({ form, rows, lists }: { form: FormRecord; rows: SurveyRespon
   const card = (k: string, v: string) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{k}</div><div className="tnum mt-2 text-[24px] font-semibold text-ink">{v}</div></div>;
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="stat-strip grid gap-4 sm:grid-cols-4">
         {card(t('forms.responses'), f.number(rows.length))}
         {card(t('forms.a.completion'), `${f.number(avgCompletion, { maximumFractionDigits: 0 })}%`)}
         {card(t('forms.a.approved'), `${f.number((rows.filter((r) => r.status === 'APPROVED').length / rows.length) * 100, { maximumFractionDigits: 0 })}%`)}
@@ -339,7 +340,7 @@ function Analytics({ form, rows, lists }: { form: FormRecord; rows: SurveyRespon
         <div className="rounded-card border border-line bg-surface p-5 shadow-soft">
           <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('forms.a.map')}</h3>
           <div className="h-[260px] overflow-hidden rounded-ctl border border-line">
-            {bounds && <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}><TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />{gps.slice(0, 400).map((r) => <CircleMarker key={r.id} center={[r.gps!.lat, r.gps!.lng]} radius={4} pathOptions={{ color: '#fff', weight: 1, fillColor: '#2a78d6', fillOpacity: 0.85 }} />)}</MapContainer>}
+            {bounds && <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}><BaseTiles />{gps.slice(0, 400).map((r) => <CircleMarker key={r.id} center={[r.gps!.lat, r.gps!.lng]} radius={4} pathOptions={{ color: '#fff', weight: 1, fillColor: '#2a78d6', fillOpacity: 0.85 }} />)}</MapContainer>}
           </div>
         </div>
       </div>

@@ -133,7 +133,7 @@ function PlotDashboard({ plots }: { plots: Plot[] }) {
   const treesPerPlot = plots.length ? Math.round((trees.filter((x) => x.plotId).length / plots.length) * 10) / 10 : 0;
   return (
     <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label={t('nav.plots')} value={f.number(plots.length)} />
         <StatCard label={t('land.totalArea')} value={area(total)} />
         <StatCard label={t('land.avgArea')} value={area(plots.length ? total / plots.length : 0)} />

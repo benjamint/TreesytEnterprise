@@ -131,7 +131,7 @@ export function PurchaseRequestsPage() {
         }
         primary={<PermissionGate permission="purchaseRequests.create"><Button onClick={() => setCreating(true)}><Plus /> {t('buy.newRequest')}</Button></PermissionGate>}
       />
-      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label={t('buy.stat.open')} value={f.number(open3.length)} hint={f.money({ amountMinor: open3.reduce((s, r) => s + r.total.amountMinor, 0), currency: f.org.currency }, { compact: true })} onClick={() => setView('all')} />
         <Stat label={t('buy.stat.mine')} value={f.number(mine.size)} onClick={() => setView('mine')} active={view === 'mine'} />
         <Stat label={t('buy.stat.toDisburse')} value={f.number(requests.filter((r) => ['RATE_CONFIRMED', 'FINANCE_APPROVED', 'PARTIAL_DISBURSEMENT'].includes(r.status) && r.sourcingModel === 'CASH_ADVANCE').length)} onClick={() => { setView('all'); setStatus('RATE_CONFIRMED'); }} />
@@ -178,7 +178,7 @@ export function PurchaseRequestsPage() {
 
 function Stat({ label, value, hint, onClick, active }: { label: string; value: string; hint?: string; onClick: () => void; active?: boolean }) {
   return (
-    <button type="button" onClick={onClick} className={cn('flex flex-col items-start justify-start rounded-card border bg-surface p-5 text-left shadow-soft transition-colors', active ? 'border-brand' : 'border-line hover:border-brand/40')}>
+    <button type="button" onClick={onClick} className={cn('flex flex-col items-start justify-start rounded-card border bg-surface p-5 text-left shadow-soft transition-colors', active ? 'border-brand bg-brand-soft/50' : 'border-line hover:border-brand/40')}>
       <div className="eyebrow">{label}</div>
       <div className="tnum mt-2 text-[24px] font-semibold leading-none text-ink">{value}</div>
       {hint && <div className="mt-1 text-[13px] text-muted">{hint}</div>}

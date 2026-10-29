@@ -72,7 +72,7 @@ export function NurseriesPage() {
     <>
       <PageHeader eyebrow={t('nav.section.trees')} title={t('nav.nurseries')} description={t('pages.nurseries')}
         primary={<PermissionGate permission="nurseries.create"><Button onClick={() => setCreating(true)}><Plus /> {t('land.newNursery')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('nav.nurseries')} value={f.number(rows.length)} hint={t('land.roundsDueN', { count: rows.filter((n) => roundsDue(n).length).length })} icon={Sprout} />
         <StatCard label={t('land.germinationPct')} value={`${f.number(totals.germinationPct)}%`} hint={t('land.ofPotted', { n: f.number(totals.potted) })} />
         <StatCard label={t('land.survivalPct')} value={`${f.number(totals.survivalPct)}%`} hint={t('land.ofGerminated', { n: f.number(totals.germinated) })} />

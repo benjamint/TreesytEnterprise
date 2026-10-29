@@ -1,13 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import { LogOut, UserCircle } from 'lucide-react';
+import { Languages, LogOut, Moon, Sun, UserCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useSessionStore } from '@/stores/sessionStore';
+import type { Lang } from '@/types';
 import { Avatar } from '@/components/shared/Avatar';
 import { useCurrentOrg, useCurrentUser, useRoleName, useT } from '@/stores/hooks';
 import { useAccessStore } from '@/stores/accessStore';
 import { signOutThisTab } from '@/services/authService';
 
-/** Account menu (avatar). Demo persona switching lives in the Demo panel. */
+/** Account menu (avatar): account, language, appearance, sign out. Demo persona switching lives in the Demo panel. */
 export function RoleSwitcher() {
   const user = useCurrentUser();
   const org = useCurrentOrg();
@@ -15,7 +17,9 @@ export function RoleSwitcher() {
   const roleName = useRoleName();
   const navigate = useNavigate();
   const { t } = useT();
+  const { language, setLanguage, theme, setTheme } = useSessionStore();
   if (!user) return null;
+  const langs: Lang[] = ['en', 'fr'];
   const m = memberships.find((x) => x.userId === user.id && x.orgId === org.id) ?? memberships.find((x) => x.userId === user.id);
   const role = user.isPlatformOwner ? t('shell.platformBadge') : m ? m.title ?? roleName(m.roleIds[0]!) : '';
   return (
@@ -36,6 +40,24 @@ export function RoleSwitcher() {
         <DropdownMenuItem onSelect={() => navigate('/app/account')}>
           <UserCircle /> {t('shell.myAccount')}
         </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger value={language.toUpperCase()}><Languages /> {t('shell.language')}</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={language} onValueChange={(v) => setLanguage(v as Lang)}>
+              {langs.map((l) => <DropdownMenuRadioItem key={l} value={l}>{t(`set.lang.${l}`)}</DropdownMenuRadioItem>)}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger value={theme === 'dark' ? t('shell.themeDark') : t('shell.themeLight')}>{theme === 'dark' ? <Moon /> : <Sun />} {t('shell.theme')}</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={theme} onValueChange={(v) => setTheme(v as 'light' | 'dark')}>
+              <DropdownMenuRadioItem value="light">{t('shell.themeLight')}</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="dark">{t('shell.themeDark')}</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           onSelect={() => {
             signOutThisTab();

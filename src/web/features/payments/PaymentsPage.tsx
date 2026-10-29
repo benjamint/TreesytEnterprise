@@ -111,7 +111,7 @@ export function PaymentsPage() {
   return (
     <>
       <PageHeader eyebrow={t('nav.section.money')} title={t('nav.payments')} description={t('pages.payments')} />
-      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi label={t('pay.kpi.paid')} value={money(paidTotal)} hint={f.money({ amountMinor: paidTotal, currency: f.org.currency })} />
         <Kpi label={t('pay.kpi.count')} value={f.number(filtered.length)} hint={t('pay.kpi.successRate', { pct: filtered.length ? Math.round((ok.length / filtered.length) * 100) : 0 })} />
         <Kpi label={t('pay.kpi.failed')} value={f.number(filtered.filter((p) => p.status === 'FAILED').length)} onClick={() => setView('FAILED')} tone="danger" />

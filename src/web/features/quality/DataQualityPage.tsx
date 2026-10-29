@@ -105,7 +105,7 @@ export function DataQualityPage() {
         actions={<PermissionGate permission="settings.view"><Button variant="secondary" onClick={() => navigate('/app/settings/dataQuality')}><Settings2 /> {t('dq.rules')}</Button></PermissionGate>}
         primary={<PermissionGate permission="dataQuality.resolve"><Button onClick={recheckAll}><RefreshCcw /> {t('dq.recheckAll')}</Button></PermissionGate>}
       />
-      <div className="mb-5 grid gap-4 sm:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-4 sm:grid-cols-4">
         {(['OPEN', 'ASSIGNED', 'VALID', 'RESOLVED'] as const).map((s) => (
           <button key={s} type="button" onClick={() => setView(s)} className={`rounded-card border bg-surface p-5 text-left shadow-soft transition-colors ${view === s ? 'border-brand' : 'border-line hover:border-brand/40'}`}>
             <div className="eyebrow">{t(`dq.status.${s}`)}</div>

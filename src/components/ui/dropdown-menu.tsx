@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import { Check } from 'lucide-react';
+import { Check, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
@@ -33,6 +33,31 @@ export const DropdownMenuItem = React.forwardRef<React.ElementRef<typeof Dropdow
   ),
 );
 DropdownMenuItem.displayName = 'DropdownMenuItem';
+
+/** Opens a nested menu; shows the current value on the right. */
+export const DropdownMenuSubTrigger = React.forwardRef<React.ElementRef<typeof DropdownMenuPrimitive.SubTrigger>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubTrigger> & { value?: React.ReactNode }>(
+  ({ className, children, value, ...props }, ref) => (
+    <DropdownMenuPrimitive.SubTrigger
+      ref={ref}
+      className={cn('relative flex cursor-pointer select-none items-center gap-2.5 rounded-chip px-2.5 py-1.5 text-[14px] outline-none transition-colors focus:bg-canvas data-[state=open]:bg-canvas [&_svg]:size-4 [&_svg]:text-muted', className)}
+      {...props}
+    >
+      {children}
+      {value != null && <span className="ml-auto text-[12px] text-muted">{value}</span>}
+      <ChevronRight className={cn(value == null && 'ml-auto')} aria-hidden="true" />
+    </DropdownMenuPrimitive.SubTrigger>
+  ),
+);
+DropdownMenuSubTrigger.displayName = 'DropdownMenuSubTrigger';
+
+export const DropdownMenuSubContent = React.forwardRef<React.ElementRef<typeof DropdownMenuPrimitive.SubContent>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.SubContent>>(
+  ({ className, sideOffset = 6, ...props }, ref) => (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.SubContent ref={ref} sideOffset={sideOffset} className={cn('z-50 min-w-[11rem] overflow-hidden rounded-ctl border border-line bg-surface p-1 text-ink shadow-pop data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95', className)} {...props} />
+    </DropdownMenuPrimitive.Portal>
+  ),
+);
+DropdownMenuSubContent.displayName = 'DropdownMenuSubContent';
 
 export const DropdownMenuRadioItem = React.forwardRef<React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>>(
   ({ className, children, ...props }, ref) => (

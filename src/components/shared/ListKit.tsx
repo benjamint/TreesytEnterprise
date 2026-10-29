@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useT } from '@/stores/hooks';
 import { useListUiStore } from '@/stores/listUiStore';
@@ -28,6 +29,7 @@ export interface SavedView {
 export function FilterBar({ search, onSearch, placeholder, filters = [], views = [], onClear, extra }: { search: string; onSearch: (v: string) => void; placeholder: string; filters?: FilterDef[]; views?: SavedView[]; onClear?: () => void; extra?: ReactNode }) {
   const { t } = useT();
   const active = !!search || filters.some((f) => f.value);
+  const setCount = filters.filter((f) => f.value).length;
   const { pathname } = useLocation();
   const clearRef = useRef(onClear);
   clearRef.current = onClear;
@@ -52,22 +54,63 @@ export function FilterBar({ search, onSearch, placeholder, filters = [], views =
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
           <Input compact value={search} onChange={(e) => onSearch(e.target.value)} placeholder={placeholder} aria-label={placeholder} className="pl-9" />
         </div>
-        {filters.map((f) => (
-          <select
-            key={f.key}
-            value={f.value}
-            onChange={(e) => f.onChange(e.target.value)}
-            aria-label={f.label}
-            className={cn('h-ctl min-w-0 flex-1 rounded-ctl sm:max-w-[220px] sm:flex-none border bg-surface px-2.5 text-[14px] shadow-xs hover:border-muted/50 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/15', f.value ? 'border-brand/50 text-ink' : 'border-line-strong text-body')}
-          >
-            <option value="">{f.label}</option>
-            {f.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-        ))}
+        {filters.length === 1 && <FilterSelect f={filters[0]!} />}
+        {filters.length > 1 && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="secondary" className={cn('h-ctl', setCount > 0 && 'border-brand/40 text-ink')} aria-label={setCount ? `${t('table.filters')} (${setCount})` : t('table.filters')}>
+                <SlidersHorizontal /> {t('table.filters')}
+                {setCount > 0 && <span className="tnum ml-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-semibold text-on-brand">{setCount}</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-72 p-0">
+              <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
+                <span className="text-[13px] font-semibold text-ink">{t('table.filters')}</span>
+                {setCount > 0 && <button type="button" onClick={() => filters.forEach((f) => f.onChange(''))} className="text-[12px] font-medium text-muted hover:text-ink">{t('table.clearFilters')}</button>}
+              </div>
+              <div className="space-y-3 p-4">
+                {filters.map((f) => (
+                  <label key={f.key} className="block">
+                    <span className="mb-1 block text-[12px] font-medium text-muted">{f.label}</span>
+                    <FilterSelect f={f} full />
+                  </label>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
         {active && onClear && <Button variant="ghost" size="sm" onClick={onClear}><X /> {t('table.clearFilters')}</Button>}
         {extra}
       </div>
+      {filters.length > 1 && setCount > 0 && (
+        <ul className="flex flex-wrap gap-1.5" aria-label={t('table.filters')}>
+          {filters.filter((f) => f.value).map((f) => (
+            <li key={f.key}>
+              <button type="button" onClick={() => f.onChange('')} aria-label={t('table.removeFilter', { name: `${f.label}: ${f.options.find((o) => o.value === f.value)?.label ?? f.value}` })}
+                className="inline-flex h-7 items-center gap-1.5 rounded-full border border-brand/25 bg-brand-soft/60 pl-2.5 pr-1.5 text-[12px] text-ink transition-colors hover:bg-brand-soft">
+                <span className="text-muted">{f.label}</span>
+                <span className="font-medium">{f.options.find((o) => o.value === f.value)?.label ?? f.value}</span>
+                <X className="h-3.5 w-3.5 text-muted" aria-hidden="true" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
+  );
+}
+
+function FilterSelect({ f, full }: { f: FilterDef; full?: boolean }) {
+  return (
+    <select
+      value={f.value}
+      onChange={(e) => f.onChange(e.target.value)}
+      aria-label={f.label}
+      className={cn('h-ctl min-w-0 rounded-ctl border bg-surface px-2.5 text-[14px] shadow-xs hover:border-muted/50 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/15', full ? 'w-full' : 'flex-1 sm:max-w-[220px] sm:flex-none', f.value ? 'border-brand/50 text-ink' : 'border-line-strong text-body')}
+    >
+      <option value="">{f.label}</option>
+      {f.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
   );
 }
 

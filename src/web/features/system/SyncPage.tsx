@@ -83,7 +83,7 @@ function Logs() {
   const partial = inRange.filter((l) => l.status === 'PARTIAL').length;
   return (
     <>
-      <div className="mb-5 grid gap-3 sm:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-4">
         <StatCard label={t('sync.stat.syncs')} value={f.number(inRange.length)} hint={t('sync.stat.agents', { count: new Set(inRange.map((l) => l.userId)).size })} />
         <StatCard label={t('sync.stat.records')} value={f.number(inRange.reduce((s, l) => s + l.sent, 0))} />
         <StatCard label={t('sys.status.PARTIAL')} value={f.number(partial)} onClick={() => setStatus('PARTIAL')} />

@@ -66,7 +66,7 @@ function TreeDashboard({ trees }: { trees: Tree[] }) {
   return (
     <div className="space-y-5">
       <div className="flex justify-end"><select value={species} onChange={(e) => setSpecies(e.target.value)} aria-label={t('land.species')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px]"><option value="">{t('land.allSpecies')}</option>{ll.species.map((s) => <option key={s.id} value={s.id}>{ll.speciesName(s.id)}</option>)}</select></div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label={t('land.disbursed')} value={f.number(d.disbursed)} />
         <StatCard label={t('land.planted')} value={f.number(d.planted)} hint={t('land.visitedN', { n: f.number(d.visited) })} />
         <StatCard label={t('land.farmersWithTrees')} value={f.number(d.farmers)} />

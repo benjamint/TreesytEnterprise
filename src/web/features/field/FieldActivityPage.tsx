@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, Polyline, TileLayer, CircleMarker, Tooltip as LTooltip } from 'react-leaflet';
+import { MapContainer, Polyline, CircleMarker, Tooltip as LTooltip } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, Pause, Play, Radius } from 'lucide-react';
 import { toast } from 'sonner';
@@ -48,7 +49,7 @@ export function FieldActivityPage() {
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.fieldActivity')} description={t('pages.fieldActivity')}
         primary={<PermissionGate permission="fieldActivity.manageGeofences"><Button variant="secondary" onClick={() => setFencing(true)}><Radius /> {t('field.geofences')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-3">
         <StatCard label={t('field.activitiesShown')} value={f.number(shown.length)} />
         <StatCard label={t('field.outOfAreaN')} value={f.number(shown.filter((p) => p.outOfArea).length)} icon={AlertTriangle} onClick={() => setOnlyFlags(true)} />
         <StatCard label={t('field.agentsActive')} value={f.number(new Set(shown.map((p) => p.agentId)).size)} />
@@ -117,7 +118,7 @@ function Playback({ points, agentId, onAgent }: { points: FieldPoint[]; agentId:
           <Legend items={KINDS.filter((k) => seq.some((p) => p.kind === k)).map((k) => ({ label: t(`field.kind.${k}`), color: KIND_COLOR[k] }))} />
           <div className="h-[460px] overflow-hidden rounded-ctl border border-line" role="region" aria-label={t('field.mapTab.playback')}>
             <MapContainer key={`${who}-${d}`} bounds={seq.map((p) => [p.lat, p.lng] as [number, number]).concat(seq.length === 1 ? [[seq[0]!.lat + 0.01, seq[0]!.lng + 0.01]] : [])} scrollWheelZoom={false} className="h-full w-full">
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+              <BaseTiles />
               <Polyline positions={upTo.map((p) => [p.lat, p.lng])} pathOptions={{ color: '#14583F', weight: 3, dashArray: '6 6' }} />
               {upTo.map((p, k) => <CircleMarker key={p.id} center={[p.lat, p.lng]} radius={k === i ? 9 : 6} pathOptions={{ color: 'rgb(var(--surface))', weight: 2, fillColor: p.outOfArea ? 'rgb(var(--danger))' : KIND_COLOR[p.kind], fillOpacity: 0.95 }}><LTooltip>{`${f.dateTime(p.at)} · ${t(`field.kind.${p.kind}`)} · ${p.label}`}</LTooltip></CircleMarker>)}
             </MapContainer>

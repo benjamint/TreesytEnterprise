@@ -58,7 +58,7 @@ export function AgentReportsPage() {
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.agentReports')} description={t('pages.agentReports')}
         primary={<PermissionGate permission="agentReports.create"><Button onClick={() => setCreating(true)}><Plus /> {t('rep.new')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-3">
         <StatCard label={t('field.status.OPEN')} value={f.number(rows.filter((r) => r.status === 'OPEN').length)} icon={Flag} onClick={() => setStatus('OPEN')} />
         <StatCard label={t('field.status.IN_PROGRESS')} value={f.number(rows.filter((r) => r.status === 'IN_PROGRESS').length)} onClick={() => setStatus('IN_PROGRESS')} />
         <StatCard label={t('rep.blocking')} value={f.number(rows.filter((r) => r.status !== 'RESOLVED' && fl.issue(r.categoryId)?.consequence !== 'FLAG').length)} hint={t('rep.blockingHint')} />

@@ -1,27 +1,22 @@
 import { useNavigate } from 'react-router-dom';
-import { Menu, Moon, Search, Sparkles, Sun } from 'lucide-react';
+import { Menu, Search, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tip } from '@/components/ui/tooltip';
 import { routeByKey } from '@/app/routes';
 import { useRouteAccessFn, useT } from '@/stores/hooks';
-import { useSessionStore } from '@/stores/sessionStore';
-import type { Lang } from '@/types';
 import { CompanySwitcher } from './CompanySwitcher';
 import { RoleSwitcher } from './RoleSwitcher';
 import { NotificationsBell } from './NotificationsBell';
 import { HelpMenu } from './HelpMenu';
 
 /**
- * Top bar (PRD 7): company switcher · search (⌘K) · Ask AI · EN/FR · theme · bell · help · account.
+ * Top bar (PRD 7): company switcher · search (⌘K) · Ask AI · bell · help · account (language and theme live in the account menu).
  * "Open mobile app" lives in the Demo panel with the other prototype-only controls.
  */
 export function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () => void }) {
-  const { language, setLanguage, theme, setTheme } = useSessionStore();
   const navigate = useNavigate();
   const access = useRouteAccessFn();
   const { t } = useT();
   const aiOpen = access(routeByKey('ai')) === 'ok';
-  const langs: Lang[] = ['en', 'fr'];
 
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface/90 px-4 backdrop-blur-md md:gap-3 md:px-6">
@@ -48,24 +43,6 @@ export function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
             <Sparkles className="text-brand" /> {t('shell.askAi')}
           </Button>
         )}
-        <div className="hidden items-center rounded-ctl border border-line bg-subtle p-0.5 sm:flex" role="group" aria-label={t('shell.language')}>
-          {langs.map((l) => (
-            <button
-              key={l}
-              type="button"
-              onClick={() => setLanguage(l)}
-              aria-pressed={language === l}
-              className={`h-7 rounded-[5px] px-2 text-[12px] font-semibold uppercase transition-colors ${language === l ? 'bg-surface text-ink shadow-xs' : 'text-muted hover:text-ink'}`}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-        <Tip label={theme === 'dark' ? t('shell.themeLight') : t('shell.themeDark')}>
-          <Button variant="ghost" size="icon" className="hidden sm:inline-flex" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={t('shell.theme')}>
-            {theme === 'dark' ? <Sun /> : <Moon />}
-          </Button>
-        </Tip>
         <NotificationsBell />
         <HelpMenu />
         <RoleSwitcher />

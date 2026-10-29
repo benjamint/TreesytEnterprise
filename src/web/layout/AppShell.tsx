@@ -17,6 +17,7 @@ import { useActor, useCurrentOrg, useCurrentUser, useT } from '@/stores/hooks';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { CommandPalette } from './CommandPalette';
+import { FeedbackHost } from '@/web/features/feedback/FeedbackHost';
 
 /** Web app shell (PRD 4.1, 6.4): sidebar → icon rail at 1024 → sheet menu below. */
 export function AppShell() {
@@ -72,6 +73,7 @@ export function AppShell() {
         </main>
       </div>
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <FeedbackHost />
       <DemoDock />
       <SessionTimeout />
     </div>

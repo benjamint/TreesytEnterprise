@@ -13,3 +13,4 @@ export * from './sales';
 export * from './land';
 export * from './training';
 export * from './fieldTeam';
+export * from './feedback';

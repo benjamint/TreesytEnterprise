@@ -121,7 +121,8 @@
     "collapse": "Réduire le menu",
     "expand": "Déplier le menu",
     "menu": "Menu",
-    "locations": "Localités"
+    "locations": "Localités",
+    "feedback": "Avis"
   },
   "pages": {
     "dashboard": "Votre activité en un coup d’œil : volumes, argent, validations et alertes.",
@@ -186,7 +187,8 @@
     "help": "Guides et réponses pour chaque partie de TreeSyt.",
     "apiDocs": "Points d’accès, exemples de données et webhooks.",
     "account": "Votre profil, sécurité et sessions.",
-    "locations": "Votre arborescence de localités, avec les effectifs par nœud."
+    "locations": "Votre arborescence de localités, avec les effectifs par nœud.",
+    "feedback": "Bugs et idées envoyés depuis l’application."
   },
   "shell": {
     "openMobile": "Ouvrir l’application mobile",
@@ -238,7 +240,9 @@
     "viewingAs": "Vous consultez {{company}} en tant que propriétaire de la plateforme",
     "mobileSyncedToast_one": "{{name}} a synchronisé {{count}} fiche depuis le téléphone",
     "mobileSyncedToast_other": "{{name}} a synchronisé {{count}} fiches depuis le téléphone",
-    "mobileSavedToast": "{{name}} a enregistré sur le téléphone : {{label}}"
+    "mobileSavedToast": "{{name}} a enregistré sur le téléphone : {{label}}",
+    "sendFeedback": "Envoyer un avis",
+    "feedbackBoard": "Tableau des avis"
   },
   "orgType": {
     "PLATFORM": "Plateforme",
@@ -682,7 +686,17 @@
     "reportFiled": "Un rapport a été ouvert sur votre travail ({{number}})",
     "reportAssigned": "Rapport {{number}} qui vous est attribué",
     "reportResponse": "L’agent a répondu au rapport {{number}}",
-    "transferOutOfBounds": "Le transfert {{number}} a perdu {{pct}} % de son poids (limite {{bound}} %)"
+    "transferOutOfBounds": "Le transfert {{number}} a perdu {{pct}} % de son poids (limite {{bound}} %)",
+    "feedbackNew": "Nouvel avis {{number}} : {{title}}",
+    "feedbackReply": "Nouvelle réponse sur {{number}} : {{title}}",
+    "feedbackStatus": {
+      "NEW": "{{number}} est maintenant nouveau : {{title}}",
+      "UNDER_REVIEW": "{{number}} est maintenant en examen : {{title}}",
+      "PLANNED": "{{number}} est maintenant planifié : {{title}}",
+      "IN_PROGRESS": "{{number}} est maintenant en cours : {{title}}",
+      "DONE": "{{number}} est maintenant terminé : {{title}}",
+      "DECLINED": "{{number}} est maintenant non retenu : {{title}}"
+    }
   },
   "activity": {
     "workflow": {
@@ -1061,6 +1075,17 @@
     },
     "geofence": {
       "saved": "Géorepérage défini ({{km}} km)"
+    },
+    "feedback": {
+      "sent": "Avis {{number}} envoyé",
+      "status": {
+        "NEW": "{{number}} marqué nouveau",
+        "UNDER_REVIEW": "{{number}} marqué en examen",
+        "PLANNED": "{{number}} marqué planifié",
+        "IN_PROGRESS": "{{number}} marqué en cours",
+        "DONE": "{{number}} marqué terminé",
+        "DECLINED": "{{number}} marqué non retenu"
+      }
     }
   },
   "settings": {
@@ -1692,7 +1717,9 @@
         "sync": "Touchez Synchroniser quand vous avez du réseau. Le chiffre sur la barre indique ce qui attend.",
         "conflict": "Si le bureau a modifié une fiche que vous avez changée, la synchronisation vous demande quelle version garder.",
         "record": "Utilisez + pour enregistrer : achats, producteurs, communautés, groupements et enquêtes."
-      }
+      },
+      "feedback": "Envoyer un avis",
+      "feedbackHint": "Signaler un bug ou proposer une idée"
     },
     "m6": {
       "todo": {
@@ -9835,5 +9862,130 @@
     "communitiesCount_other": "{{count}} communautés",
     "pickedCount_one": "{{count}} communauté choisie",
     "pickedCount_other": "{{count}} communautés choisies"
+  },
+  "fb": {
+    "title": "Envoyer un avis",
+    "hint": "Signalez un problème ou proposez une idée. Votre message va directement à l’équipe produit TreeSyt.",
+    "kind": {
+      "BUG": "Signaler un bug",
+      "FEATURE": "Demander une fonctionnalité",
+      "IMPROVEMENT": "Proposer une amélioration"
+    },
+    "kindHint": {
+      "BUG": "Quelque chose ne marche pas",
+      "FEATURE": "Quelque chose de nouveau",
+      "IMPROVEMENT": "Rendre quelque chose meilleur"
+    },
+    "kindShort": {
+      "BUG": "Bug",
+      "FEATURE": "Fonctionnalité",
+      "IMPROVEMENT": "Amélioration"
+    },
+    "kindLabel": "Que souhaitez-vous faire ?",
+    "titleLabel": "Titre",
+    "titlePlaceholder": {
+      "BUG": "ex. L’export ne fait rien sur Producteurs",
+      "FEATURE": "ex. Exporter le stock vers Excel",
+      "IMPROVEMENT": "ex. Afficher le prix de liste à côté du prix demandé"
+    },
+    "bodyLabel": {
+      "BUG": "Que s’est-il passé ?",
+      "FEATURE": "Décrivez votre besoin",
+      "IMPROVEMENT": "Décrivez le changement"
+    },
+    "bodyPlaceholder": {
+      "BUG": "Qu’avez-vous fait, qu’attendiez-vous, et que s’est-il passé ?",
+      "FEATURE": "Que voulez-vous faire, et pourquoi est-ce important pour votre travail ?",
+      "IMPROVEMENT": "Que faut-il changer, et en quoi cela aiderait ?"
+    },
+    "severity": "Quelle gravité ?",
+    "severityLevel": {
+      "LOW": "Mineur",
+      "MEDIUM": "Gênant",
+      "HIGH": "Bloque en partie",
+      "BLOCKING": "Bloque tout"
+    },
+    "screenshot": "Capture d’écran (facultatif)",
+    "screenshotAdd": "Joindre une capture",
+    "screenshotRemove": "Retirer la capture",
+    "screenshotTooBig": "Image trop lourde. Utilisez une image de moins de 8 Mo.",
+    "context": "Envoyé avec : {{page}} · {{device}} · {{language}} · version {{version}}",
+    "device": {
+      "web": "Web",
+      "mobile": "Application mobile"
+    },
+    "send": "Envoyer l’avis",
+    "err": {
+      "title": "Ajoutez un titre court (au moins 4 caractères).",
+      "body": "Décrivez-le en une ou deux phrases.",
+      "severity": "Choisissez la gravité."
+    },
+    "sent": "Merci ! {{number}} a été envoyé à l’équipe TreeSyt.",
+    "view": "Voir",
+    "pageDesc": "Les bugs et idées de votre équipe, et ce que l’équipe TreeSyt en fait.",
+    "pageDescOwner": "Les bugs et idées de toutes les entreprises. Changez le statut ou répondez : l’auteur est prévenu.",
+    "stats": {
+      "open": "Ouverts",
+      "active": "Planifiés ou en cours",
+      "done": "Terminés"
+    },
+    "views": {
+      "all": "Tous",
+      "mine": "Les miens",
+      "bugs": "Bugs",
+      "ideas": "Idées"
+    },
+    "col": {
+      "number": "Numéro",
+      "title": "Titre",
+      "company": "Entreprise",
+      "votes": "Votes",
+      "status": "Statut",
+      "by": "Envoyé par",
+      "updated": "Mis à jour"
+    },
+    "status": {
+      "NEW": "Nouveau",
+      "UNDER_REVIEW": "En examen",
+      "PLANNED": "Planifié",
+      "IN_PROGRESS": "En cours",
+      "DONE": "Terminé",
+      "DECLINED": "Non retenu"
+    },
+    "vote": "Moi aussi",
+    "voted": "Vous avez voté",
+    "votesN_one": "{{count}} vote",
+    "votesN_other": "{{count}} votes",
+    "tab": {
+      "details": "Détails",
+      "conversation": "Conversation"
+    },
+    "reporter": "Envoyé par",
+    "page": "Page",
+    "deviceCol": "Appareil",
+    "language": "Langue",
+    "appVersion": "Version de l’application",
+    "created": "Envoyé",
+    "severityCol": "Gravité",
+    "screenshotAlt": "Capture jointe à {{number}}",
+    "noReplies": "Pas encore de réponse. L’équipe TreeSyt répond en général sous deux jours ouvrés.",
+    "replyPlaceholder": "Écrire une réponse…",
+    "replySend": "Répondre",
+    "team": "Équipe TreeSyt",
+    "setStatus": "Changer le statut",
+    "next": {
+      "NEW": "Commencer l’examen",
+      "UNDER_REVIEW": "Planifier",
+      "PLANNED": "Commencer",
+      "IN_PROGRESS": "Marquer terminé"
+    },
+    "decline": "Non retenu",
+    "statusChanged": "{{number}} est maintenant : {{status}}",
+    "voteAdded": "Votre vote a été ajouté à {{number}}",
+    "empty": "Aucun avis pour l’instant. Utilisez Envoyer un avis pour signaler un bug ou proposer une idée.",
+    "filterStatus": "Statut",
+    "filterCompany": "Entreprise",
+    "search": "Rechercher un avis",
+    "board": "Tableau des avis"
   }
 }

@@ -341,3 +341,10 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Warehouses redone: cards (default), table or map; each warehouse shows total stock and bags, one stock-mix bar by commodity with the top three, capacity used with kg free, officer, deliveries expected and open discrepancies; detail Stock tab has a summary strip, a "What's in stock" table (bags, weight, share, oldest bag; click to filter), one stock-age bar with a 90-day warning, and a filterable bag list sorted oldest first
 - [x] Fix: stacked column charts (Traceboard deliveries by month, tree survival by planting month) have a fixed height again; they grew without end inside stretched grid cells
 - [x] Detail drawer actions in a fixed bar at the bottom of the drawer, grouped the same way everywhere: tertiary actions (archive, open record) on the left; secondary, then destructive (reject), then the primary action (approve, retry) on the right; status banners on their own row above; one button height; hidden when a record has no actions. The Demo button moves to the bottom-left while a drawer is open
+
+## Feedback (bug and feature reporting)
+
+- [x] Send feedback from anywhere: Help menu (?) → Send feedback, the command palette (⌘K), the Feedback page, and the phone app's Me screen
+- [x] Form: bug / feature / improvement, title, description, severity for bugs, optional screenshot (downscaled before saving); the page, device, screen size, language and app version are attached automatically; inline validation in English and French
+- [x] Feedback page (`/app/feedback`, open to everyone): your company's reports with views (all, mine, bugs, ideas), status filter and search; "Me too" votes; detail drawer with the description, screenshot, context, a conversation thread and activity
+- [x] Platform owner triage: sees every company's reports (company filter), moves them through New → Under review → Planned → In progress → Done (or Not planned) and replies; the reporter is notified of each status change and reply, and the owner is notified of new reports and the reporter's replies

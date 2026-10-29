@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { Building2, MessageSquarePlus } from 'lucide-react';
+import { openFeedback } from '@/web/features/feedback/FeedbackForm';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { APP_ROUTES, SETTINGS_PAGES } from '@/app/routes';
@@ -42,6 +43,11 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <CommandInput placeholder={t('shell.searchPlaceholder')} />
           <CommandList>
             <CommandEmpty className="py-8 text-center text-[14px] text-muted">{t('shell.noResults')}</CommandEmpty>
+            <CommandGroup heading={t('common.actions')}>
+              <CommandItem value={t('shell.sendFeedback')} onSelect={() => { onOpenChange(false); setTimeout(() => openFeedback(), 50); }}>
+                <MessageSquarePlus /> {t('shell.sendFeedback')}
+              </CommandItem>
+            </CommandGroup>
             <CommandGroup heading={t('shell.commandPages')}>
               {pages.map((r) => (
                 <CommandItem key={r.key} value={`${t(`nav.${r.key}`)} ${r.path}`} onSelect={() => go(r.path)}>

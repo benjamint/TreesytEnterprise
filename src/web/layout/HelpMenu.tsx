@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, CircleHelp, Keyboard, PlayCircle, Settings2 } from 'lucide-react';
+import { BookOpen, CircleHelp, Keyboard, MessageSquarePlus, MessagesSquare, PlayCircle, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { openFeedback } from '@/web/features/feedback/FeedbackForm';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import { APP_ROUTES } from '@/app/routes';
 import { useCurrentOrg, useT } from '@/stores/hooks';
@@ -55,6 +56,13 @@ export function HelpMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setShortcuts(true)}>
             <Keyboard /> {t('shell.shortcuts')}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => openFeedback()}>
+            <MessageSquarePlus /> {t('shell.sendFeedback')}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => navigate('/app/feedback')}>
+            <MessagesSquare /> {t('shell.feedbackBoard')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

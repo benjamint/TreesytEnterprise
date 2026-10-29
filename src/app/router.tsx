@@ -16,6 +16,8 @@ const NotificationsPage = lazy(() => import('@/web/features/system/Notifications
 const SyncPage = lazy(() => import('@/web/features/system/SyncPage').then((m) => ({ default: m.SyncPage })));
 const AuditPage = lazy(() => import('@/web/features/system/AuditPage').then((m) => ({ default: m.AuditPage })));
 const JobsPage = lazy(() => import('@/web/features/system/JobsPage').then((m) => ({ default: m.JobsPage })));
+const FeedbackPage = lazy(() => import('@/web/features/feedback/FeedbackPage').then((m) => ({ default: m.FeedbackPage })));
+const MobileFeedbackScreen = lazy(() => import('@/mobile/flows/me/FeedbackScreen').then((m) => ({ default: m.FeedbackScreen })));
 const HelpPage = lazy(() => import('@/web/features/system/HelpPage').then((m) => ({ default: m.HelpPage })));
 const ApiDocsPage = lazy(() => import('@/web/features/system/ApiDocsPage').then((m) => ({ default: m.ApiDocsPage })));
 const SettingsLayout = lazy(() => import('@/web/features/settings/SettingsLayout').then((m) => ({ default: m.SettingsLayout })));
@@ -152,7 +154,7 @@ const ResolveScreen = lazy(() => import('@/mobile/flows/warehouse/WarehouseScree
 const WarehouseExpensesScreen = lazy(() => import('@/mobile/flows/warehouse/WarehouseScreens').then((m) => ({ default: m.WarehouseExpensesScreen })));
 const WarehouseScreen = lazy(() => import('@/mobile/flows/warehouse/WarehouseScreens').then((m) => ({ default: m.WarehouseScreen })));
 
-const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue', 'agents', 'weeklyPlans', 'budgets', 'retirements', 'carryForwards', 'allowances', 'scores', 'compensation', 'agentReports', 'fieldActivity', 'reportingLines', 'achievements', 'reports', 'notifications', 'sync', 'audit', 'jobs', 'help', 'apiDocs']);
+const CUSTOM = new Set(['dashboard', 'ai', 'helpMobile', 'settings', 'platform', 'account', 'communities', 'communitiesMap', 'farmers', 'groups', 'dataQuality', 'imports', 'locations', 'forms', 'optionLists', 'purchaseRequests', 'purchases', 'bags', 'expenses', 'reconciliation', 'priceBoard', 'payments', 'wallets', 'aggregators', 'support', 'recovery', 'providers', 'allocations', 'warehouses', 'inbound', 'outbound', 'stockCounts', 'warehouseExpenses', 'dispatch', 'salesContracts', 'traceboard', 'nurseries', 'seedlings', 'trees', 'plots', 'eudr', 'carbon', 'workshops', 'trainingCatalogue', 'agents', 'weeklyPlans', 'budgets', 'retirements', 'carryForwards', 'allowances', 'scores', 'compensation', 'agentReports', 'fieldActivity', 'reportingLines', 'achievements', 'reports', 'notifications', 'sync', 'audit', 'jobs', 'help', 'apiDocs', 'feedback']);
 const rel = (path: string) => path.replace(/^\/app\//, '');
 
 export const router = createBrowserRouter([
@@ -184,6 +186,7 @@ export const router = createBrowserRouter([
       { path: 'ai', element: <RouteGuard routeKey="ai"><AiPage /></RouteGuard> },
       { path: 'help/mobile', element: <MobilePreviewsPage /> },
       { path: 'help', element: <RouteGuard routeKey="help"><HelpPage /></RouteGuard> },
+      { path: 'feedback', element: <RouteGuard routeKey="feedback"><FeedbackPage /></RouteGuard> },
       { path: 'help/api', element: <RouteGuard routeKey="apiDocs"><ApiDocsPage /></RouteGuard> },
       { path: 'reports', element: <RouteGuard routeKey="reports"><ReportsPage /></RouteGuard> },
       { path: 'notifications', element: <RouteGuard routeKey="notifications"><NotificationsPage /></RouteGuard> },
@@ -337,6 +340,7 @@ export const router = createBrowserRouter([
       { path: 'budget/:id', element: <BudgetStatusScreen /> },
       { path: 'retirement/:id', element: <RetirementScreen /> },
       { path: 'me/cash', element: <MyCashScreen /> },
+      { path: 'me/feedback', element: <MobileFeedbackScreen /> },
       { path: 'me/commissions', element: <MyCommissionsScreen /> },
       { path: 'me/score', element: <MyScoreScreen /> },
       { path: 'me/reports', element: <MyReportsScreen /> },

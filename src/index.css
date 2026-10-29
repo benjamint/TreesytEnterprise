@@ -147,9 +147,27 @@
   }
 }
 
-/* While a side sheet is open, lift the Demo button above the sheet's footer actions. */
+/* Detail drawer action bar: groups the buttons a page passes, whatever wrappers they come in.
+   Visual order: status banner row · tertiary (ghost) · spacer · secondary · destructive · primary. */
+@layer components {
+  .drawer-actions {
+    @apply flex shrink-0 flex-wrap items-center gap-2 border-t border-line bg-subtle px-7 py-3.5;
+  }
+  .drawer-actions:empty { display: none; }
+  .drawer-actions::before { content: ''; order: 2; flex: 1 1 0; }
+  .drawer-actions > * { order: 3; }
+  .drawer-actions > div:not([data-variant]) { order: 0; flex-basis: 100%; }
+  .drawer-actions > :is([data-variant='ghost'], [data-variant='link'], :has(> [data-variant='ghost'])) { order: 1; }
+  .drawer-actions > :is([data-variant='dangerOutline'], :has(> [data-variant='dangerOutline'])) { order: 4; }
+  .drawer-actions > :is([data-variant='danger'], :has(> [data-variant='danger'])) { order: 5; }
+  .drawer-actions > :is([data-variant='primary'], :has(> [data-variant='primary'])) { order: 6; }
+  .drawer-actions [data-variant]:not([data-variant='link']) { height: var(--btn); padding-inline: 0.875rem; font-size: 13px; }
+}
+
+/* While a side sheet is open, the Demo button moves to the bottom-left, clear of the sheet and its action bar. */
 body:has([role='dialog'][data-state='open'].max-w-\[640px\]) .demo-dock-web {
-  bottom: 96px;
+  left: 20px;
+  right: auto;
 }
 
 /* Report "PDF view": print only the report page. */

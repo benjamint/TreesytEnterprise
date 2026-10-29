@@ -1,5 +1,6 @@
 {
   "common": {
+    "actions": "Actions",
     "comingSoon": "Coming in the full product",
     "comingSoonHint": "This control responds in the prototype; the full flow ships in a later phase.",
     "save": "Save",

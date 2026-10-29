@@ -238,7 +238,7 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-card border border-line bg-surface p-5 shadow-soft" style={{ borderTop: `4px solid ${supplier.branding.primaryColor}` }}>
         <div className="flex items-center gap-4">
           <CompanyLogo text={supplier.branding.logoText} color={supplier.branding.primaryColor} size={52} />
-          <div><div className="eyebrow">{t('nav.traceboard')}</div><h1 className="text-[24px] font-semibold leading-tight text-ink">{supplier.name}</h1><p className="text-[13px] text-muted">{t('sales.tb.suppliedTo', { buyer: buyer.name })}</p></div>
+          <div><div className="eyebrow">{t('nav.traceboard')}</div><h1 className="font-display text-[28px] leading-tight text-ink">{supplier.name}</h1><p className="text-[13px] text-muted">{t('sales.tb.suppliedTo', { buyer: buyer.name })}</p></div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {grants.length > 1 && <select value={supplierId} onChange={(e) => { setSupplierId(e.target.value); close(); }} aria-label={t('sales.tb.supplier')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">{grants.map((g) => <option key={g.id} value={g.fromOrgId}>{orgs.find((o) => o.id === g.fromOrgId)?.name}</option>)}</select>}

@@ -65,8 +65,8 @@ export function AppShell() {
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar onMenu={() => setMenuOpen(true)} onSearch={() => setPaletteOpen(true)} />
-        <main id="main" className="flex-1 px-4 py-6 md:px-8 lg:py-8">
-          <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1440px]">
+        <main id="main" className="flex-1 px-4 py-7 md:px-8 lg:px-12 lg:py-10">
+          <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1360px]">
             <RouteBoundary key={location.pathname}><Outlet /></RouteBoundary>
           </motion.div>
         </main>

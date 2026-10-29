@@ -10,8 +10,8 @@ export default {
     container: { center: true, padding: '1rem' },
     extend: {
       screens: {
-        // Desktop windows tall enough for the 390×844 device frame (PRD 4.2).
-        frame: { raw: '(min-width: 768px) and (min-height: 900px)' },
+        // Desktop windows show the phone app inside a device frame, scaled to fit (PRD 4.2).
+        frame: { raw: '(min-width: 768px)' },
       },
       colors: {
         brand: { DEFAULT: token('brand'), hover: token('brand-hover'), soft: token('brand-soft') },
@@ -59,6 +59,7 @@ export default {
         xs: '0 1px 1px rgb(var(--shadow) / .06)',
         raised: '0 0 0 1px rgb(var(--shadow) / .03), 0 2px 6px -1px rgb(var(--shadow) / .08)',
         pop: '0 0 0 1px rgb(var(--shadow) / .04), 0 6px 12px -4px rgb(var(--shadow) / .08), 0 28px 56px -16px rgb(var(--shadow) / .28)',
+        lift: '0 0 0 1px rgb(var(--shadow) / .04), 0 6px 12px -4px rgb(var(--shadow) / .08), 0 28px 56px -16px rgb(var(--shadow) / .28)',
         inner: 'inset 0 1px 0 rgb(255 255 255 / .14), 0 1px 2px rgb(var(--shadow) / .18)',
       },
       backgroundImage: { ai: 'linear-gradient(90deg, #14583F, #B8E05A)' },

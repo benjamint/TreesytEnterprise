@@ -43,7 +43,7 @@ export function LandingPage() {
       <section className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 py-14 lg:grid-cols-2 lg:py-20">
         <div>
           <div className="eyebrow mb-4">{t('landing.eyebrow')}</div>
-          <h1 className="text-[40px] leading-[1.08] lg:text-[56px]">{t('landing.title')}</h1>
+          <h1 className="font-display text-[44px] leading-[1.05] lg:text-[64px]">{t('landing.title')}</h1>
           <p className="mt-6 max-w-xl text-[18px] leading-relaxed text-body">{t('landing.subtitle')}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg"><Link to="/sign-up">{t('landing.startTrial')} <ArrowRight /></Link></Button>
@@ -60,7 +60,7 @@ export function LandingPage() {
       <section id="how" className="border-y border-line bg-canvas py-16 lg:py-20">
         <div className="mx-auto max-w-[1240px] px-6">
           <div className="eyebrow mb-3">{t('landing.how.eyebrow')}</div>
-          <h2 className="max-w-2xl text-[32px] leading-tight">{t('landing.how.title')}</h2>
+          <h2 className="max-w-2xl font-display text-[36px] leading-tight">{t('landing.how.title')}</h2>
           <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
             {FLOW.map((k, i) => (
               <li key={k} className="rounded-card border border-line bg-surface p-5 shadow-soft">
@@ -76,7 +76,7 @@ export function LandingPage() {
       <section id="modules" className="py-16 lg:py-20">
         <div className="mx-auto max-w-[1240px] px-6">
           <div className="eyebrow mb-3">{t('landing.modules.eyebrow')}</div>
-          <h2 className="max-w-2xl text-[32px] leading-tight">{t('landing.modules.title')}</h2>
+          <h2 className="max-w-2xl font-display text-[36px] leading-tight">{t('landing.modules.title')}</h2>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {MODULES.map(([k, Icon]) => (
               <div key={k} className="rounded-card border border-line p-6 transition-colors hover:border-brand/40">
@@ -93,7 +93,7 @@ export function LandingPage() {
         <div className="mx-auto grid max-w-[1240px] gap-10 px-6 lg:grid-cols-[1fr_1.2fr] lg:items-center">
           <div>
             <div className="text-[12px] font-semibold uppercase tracking-[0.08em] text-lime">{t('landing.config.eyebrow')}</div>
-            <h2 className="mt-3 text-[32px] leading-tight text-white">{t('landing.config.title')}</h2>
+            <h2 className="mt-3 font-display text-[36px] leading-tight text-white">{t('landing.config.title')}</h2>
             <p className="mt-4 text-[16px] text-white/75">{t('landing.config.body')}</p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2">
@@ -110,7 +110,7 @@ export function LandingPage() {
 
       <section className="py-16 lg:py-20">
         <div className="mx-auto max-w-[880px] px-6 text-center">
-          <h2 className="text-[32px] leading-tight">{t('landing.cta.title')}</h2>
+          <h2 className="font-display text-[36px] leading-tight">{t('landing.cta.title')}</h2>
           <p className="mt-3 text-[16px] text-muted">{t('landing.cta.body')}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild size="lg"><Link to="/sign-up">{t('landing.startTrial')}</Link></Button>

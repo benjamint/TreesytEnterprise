@@ -89,7 +89,7 @@ export function NewCompanyWizard() {
     return (
       <div className="mx-auto max-w-xl py-16 text-center">
         <span className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-success/10 text-success"><CheckCircle2 className="h-8 w-8" aria-hidden="true" /></span>
-        <h1 className="text-[26px] leading-tight tracking-[-0.02em]">{t('wizard.doneTitle', { company: org.name })}</h1>
+        <h1 className="font-display text-[30px] leading-tight">{t('wizard.doneTitle', { company: org.name })}</h1>
         <p className="mt-3 text-[16px] text-muted">{t('wizard.doneBody', { count: created.invites })}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button variant="secondary" size="lg" onClick={() => navigate(`/app/platform/companies/${org.id}`)}>{t('wizard.viewCompany')}</Button>
@@ -349,7 +349,7 @@ export function NewCompanyWizard() {
       <Link to="/app/platform/companies" className="mb-6 inline-flex items-center gap-1.5 text-[14px] text-muted hover:text-ink">
         <ArrowLeft className="h-4 w-4" /> {t('platform.page.companies')}
       </Link>
-      <h1 className="mb-8 text-[26px] leading-tight tracking-[-0.02em]">{t('platform.addCompany')}</h1>
+      <h1 className="mb-8 font-display text-[30px] leading-tight">{t('platform.addCompany')}</h1>
       <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
         <aside className="hidden lg:block">
           <StepperHeader steps={STEPS.map((s) => t(`wizard.step.${s}`))} current={step} onStep={setStep} />

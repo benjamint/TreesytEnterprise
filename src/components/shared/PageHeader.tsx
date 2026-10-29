@@ -63,11 +63,11 @@ export function PageHeader({
     return () => window.removeEventListener(TOUR_EVENT, replay);
   }, [onTour]);
   return (
-    <header className="flex flex-col gap-4 pb-6 md:flex-row md:items-end md:justify-between" data-tour="page-header">
-      <div className="min-w-0 space-y-1">
-        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+    <header className="flex flex-col gap-5 pb-8 md:flex-row md:items-end md:justify-between" data-tour="page-header">
+      <div className="min-w-0 space-y-1.5">
+        {eyebrow && <div className="text-[12px] font-medium text-muted">{eyebrow}</div>}
         <div className="flex items-center gap-2">
-          <h1 className="text-[22px] leading-[1.2] tracking-[-0.02em] md:text-[24px]" data-tour="page-title">{title}</h1>
+          <h1 className="font-display text-[26px] leading-[1.15] md:text-[30px]" data-tour="page-title">{title}</h1>
           <Tip label={t('common.tour')}>
             <button type="button" onClick={tour} className="rounded-full p-1 text-muted transition-colors hover:bg-canvas hover:text-ink" aria-label={t('common.tour')} data-tour="page-tour">
               <CircleHelp className="h-4 w-4" />

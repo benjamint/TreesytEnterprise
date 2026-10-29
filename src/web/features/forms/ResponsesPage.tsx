@@ -137,7 +137,7 @@ function Responses({ form }: { form: FormRecord }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
           <Link to={`/app/forms/${form.id}`} className="mb-1 inline-flex items-center gap-1 text-[13px] text-muted hover:text-brand"><ArrowLeft className="h-3.5 w-3.5" /> {form.name}</Link>
-          <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="text-[24px] font-semibold text-ink">{t('forms.responses')}</h1><PageTourButton /></span>
+          <span className="flex min-w-0 items-center gap-2"><h1 data-tour="page-title" className="font-display text-[30px] leading-tight text-ink">{t('forms.responses')}</h1><PageTourButton /></span>
           <p className="text-[14px] text-muted">{t('forms.r.summary', { count: rows.length, shown: shown.length })}</p>
         </div>
         <div className="flex gap-2">

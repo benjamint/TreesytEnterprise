@@ -13,16 +13,16 @@
     --on-brand: 255 255 255;
     --lime: 184 224 90;
     --badge-dark: 15 42 32;
-    --ink: 17 26 23;
-    --body: 52 62 58;
-    --muted: 99 108 105;
-    --label: 64 74 70;
+    --ink: 26 25 22;
+    --body: 60 58 53;
+    --muted: 104 101 94;
+    --label: 72 70 64;
     --surface: 255 255 255;
-    --canvas: 246 247 246;
-    --subtle: 250 251 250;
-    --line: 230 233 231;
-    --line-strong: 212 217 214;
-    --shadow: 16 24 22;
+    --canvas: 250 249 246;
+    --subtle: 246 245 241;
+    --line: 234 232 226;
+    --line-strong: 216 213 205;
+    --shadow: 48 38 24;
     --info: 37 95 196;
     --success: 24 118 64;
     --warning: 140 88 10;
@@ -33,7 +33,8 @@
     --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
     --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6; --series-8: #e34948;
     /* Sizing: compact web controls. */
-    --text-base: 14px; --leading-base: 20px;
+    --font-display: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+    --text-base: 14px; --leading-base: 21px;
     --ctl: 40px; --ctl-sm: 36px;
     --btn: 36px; --btn-sm: 32px; --btn-xs: 28px; --btn-lg: 44px;
     --r-chip: 6px; --r-ctl: 8px; --r-card: 12px; --r-panel: 16px;
@@ -43,19 +44,19 @@
   .dark {
     --brand: 63 175 126;
     --brand-hover: 86 192 143;
-    --brand-soft: 20 39 30;
+    --brand-soft: 30 48 39;
     --on-brand: 10 20 16;
     --lime: 198 234 115;
     --badge-dark: 15 42 32;
-    --ink: 238 242 240;
-    --body: 196 206 201;
-    --muted: 145 158 152;
-    --label: 172 186 179;
-    --surface: 18 25 22;
-    --canvas: 11 16 14;
-    --subtle: 22 30 27;
-    --line: 37 47 43;
-    --line-strong: 52 64 59;
+    --ink: 241 239 234;
+    --body: 208 204 196;
+    --muted: 163 159 150;
+    --label: 188 184 176;
+    --surface: 38 37 34;
+    --canvas: 30 29 27;
+    --subtle: 44 43 40;
+    --line: 54 52 48;
+    --line-strong: 70 68 63;
     --shadow: 0 0 0;
     --info: 106 155 234;
     --success: 76 192 127;
@@ -73,7 +74,7 @@
     --text-base: 16px; --leading-base: 24px;
     --ctl: 56px; --ctl-sm: 44px;
     --btn: 44px; --btn-sm: 40px; --btn-xs: 32px; --btn-lg: 52px;
-    --r-chip: 8px; --r-ctl: 12px; --r-card: 16px; --r-panel: 24px;
+    --r-chip: 8px; --r-ctl: 14px; --r-card: 20px; --r-panel: 28px;
   }
 
   * {
@@ -93,6 +94,18 @@
   h1, h2, h3, h4 {
     @apply text-ink font-semibold;
     letter-spacing: -0.015em;
+  }
+
+  /* Display serif for page titles and hero numbers (web only; the phone app stays in Inter). */
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+  }
+  .mobile-ui .font-display {
+    font-family: inherit;
+    font-weight: 600;
   }
 
   :focus-visible {

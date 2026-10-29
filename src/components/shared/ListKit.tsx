@@ -42,7 +42,7 @@ export function FilterBar({ search, onSearch, placeholder, filters = [], views =
           {views.map((v) => (
             <button key={v.key} type="button" role="tab" aria-selected={v.active} onClick={v.onSelect} className={cn('inline-flex h-8 items-center rounded-full border px-3 text-[13px] font-medium transition-colors', v.active ? 'border-brand/30 bg-brand-soft text-brand' : 'border-line bg-surface text-body shadow-xs hover:bg-subtle hover:text-ink')}>
               {v.label}
-              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-brand/80' : 'text-muted')}>{v.count}</span>}
+              {v.count != null && <span className={cn('ml-1.5 tnum text-[12px]', v.active ? 'text-brand' : 'text-muted')}>{v.count}</span>}
             </button>
           ))}
         </div>
@@ -97,9 +97,9 @@ export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
-        <div className="border-b border-line px-6 pb-0 pt-5">
+        <div className="border-b border-line px-7 pb-0 pt-6">
           <div className="pr-10">
-            <SheetTitle className="text-[20px] font-semibold leading-tight tracking-[-0.015em] text-ink">{title}</SheetTitle>
+            <SheetTitle className="font-display text-[24px] leading-tight text-ink">{title}</SheetTitle>
             {subtitle && <SheetDescription className="mt-1 text-[13px] text-muted">{subtitle}</SheetDescription>}
             {badges && <div className="mt-3 flex flex-wrap items-center gap-1.5">{badges}</div>}
             {actions && <div className="mt-4 flex flex-wrap gap-2">{actions}</div>}
@@ -113,7 +113,7 @@ export function DetailDrawer({ open, onClose, title, subtitle, badges, actions, 
             ))}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin" role="tabpanel">{current?.content}</div>
+        <div className="flex-1 overflow-y-auto px-7 py-6 scrollbar-thin" role="tabpanel">{current?.content}</div>
       </SheetContent>
     </Sheet>
   );

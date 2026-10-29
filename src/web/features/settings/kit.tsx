@@ -74,7 +74,7 @@ export function SettingsFrame({ page, dirty = false, onSave, onCancel, onReset, 
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-[20px] tracking-[-0.015em]">{t(`settings.page.${page}`)}</h2>
+            <h2 className="font-display text-[24px] leading-tight">{t(`settings.page.${page}`)}</h2>
             {!canEdit && (
               <Badge tone="neutral">
                 <Lock className="h-3 w-3" /> {t('set.frame.viewOnly')}

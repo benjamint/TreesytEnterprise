@@ -9,13 +9,13 @@ export function MobileHeader({ title, back, right }: { title: ReactNode; back?: 
   const { t } = useT();
   return (
     <div className="shrink-0">
-      <div className="flex h-14 items-center gap-2 px-3">
+      <div className="flex h-14 items-center gap-2 px-4">
         {back && (
-          <button type="button" onClick={() => navigate(-1)} className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-canvas" aria-label={t('mobile.back')}>
+          <button type="button" onClick={() => navigate(-1)} className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full hover:bg-canvas" aria-label={t('mobile.back')}>
             <ChevronLeft className="h-6 w-6 text-ink" />
           </button>
         )}
-        <h1 className={`flex-1 truncate text-[19px] ${back ? '' : 'pl-2'}`}>{title}</h1>
+        <h1 className={`flex-1 truncate text-[18px] font-semibold tracking-[-0.015em] ${back ? '' : 'pl-1'}`}>{title}</h1>
         {right}
       </div>
       <OfflineBanner />

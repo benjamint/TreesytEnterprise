@@ -116,7 +116,7 @@ export function CompanyDetailPage() {
           <CompanyLogo text={org.branding.logoText} color={org.branding.primaryColor} size={56} />
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-[30px] leading-tight">{org.name}</h1>
+              <h1 className="font-display text-[30px] leading-tight">{org.name}</h1>
               <StatusBadge status={org.status} />
             </div>
             <p className="mt-1 flex items-center gap-2 text-[14px] text-muted">

@@ -193,7 +193,7 @@ export function DashboardPage() {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={visible.map((w) => w.id)} strategy={rectSortingStrategy}>
-          <div className="grid grid-cols-1 gap-5 xl:grid-cols-12" data-tour="widgets">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-12" data-tour="widgets">
             {visible.map((w) => (
               <WidgetCard
                 key={w.id}
@@ -247,21 +247,25 @@ function WidgetCard({ placement, editing, onResize, onRemove }: { placement: Wid
   const { t } = useT();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: placement.id, disabled: !editing });
   const Body = def.component;
+  const bare = !!def.bare;
   const sizes = SIZE_ORDER.filter((s) => def.sizes.includes(s));
   return (
     <section
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={cn('min-w-0 rounded-card border bg-surface p-5 shadow-soft', SPAN[placement.size], editing ? 'border-dashed border-brand/40' : 'border-line', isDragging && 'z-10 opacity-90 shadow-lift')}
+      className={cn('flex min-w-0 flex-col', SPAN[placement.size], bare ? (editing ? 'rounded-card border border-dashed border-brand/40 p-3' : '') : cn('rounded-card border bg-surface p-5 shadow-soft lg:p-6', editing ? 'border-dashed border-brand/40' : 'border-line'), isDragging && 'z-10 opacity-90 shadow-pop')}
       aria-label={t(`dashboard.widget.${def.id}`)}
     >
-      <header className="mb-4 flex items-center gap-2">
+      <header className={cn('flex items-start gap-2', bare && !editing ? 'sr-only' : 'mb-5')}>
         {editing && (
           <button type="button" {...attributes} {...listeners} className="cursor-grab rounded p-1 text-muted hover:bg-canvas active:cursor-grabbing" aria-label={t('dashboard.move', { widget: t(`dashboard.widget.${def.id}`) })}>
             <GripVertical className="h-4 w-4" />
           </button>
         )}
-        <h2 className="min-w-0 flex-1 truncate text-[15px] font-semibold tracking-[-0.01em] text-ink">{t(`dashboard.widget.${def.id}`)}</h2>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-[14px] font-semibold tracking-[-0.01em] text-ink">{t(`dashboard.widget.${def.id}`)}</h2>
+          {!def.noDesc && !bare && <p className="mt-0.5 truncate text-[12px] text-muted">{t(`dashboard.widgetDesc.${def.id}`)}</p>}
+        </div>
         {editing && sizes.length > 1 && (
           <div className="flex rounded-chip border border-line p-0.5" role="radiogroup" aria-label={t('dashboard.size')}>
             {sizes.map((s) => (
@@ -277,7 +281,7 @@ function WidgetCard({ placement, editing, onResize, onRemove }: { placement: Wid
           </button>
         )}
       </header>
-      <div className={cn(editing && 'pointer-events-none select-none opacity-80')}>
+      <div className={cn('flex-1', editing && 'pointer-events-none select-none opacity-80')}>
         <Body />
       </div>
     </section>

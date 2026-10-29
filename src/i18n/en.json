@@ -263,6 +263,9 @@
     "auditor": "Auditor"
   },
   "dashboard": {
+    "kpiVs": "vs previous 4 weeks",
+    "kpiUp": "Up {{pct}}",
+    "kpiDown": "Down {{pct}}",
     "greeting": "Good to see you, {{name}}",
     "subtitle": "Here’s what’s happening at {{company}} today.",
     "kpi": {

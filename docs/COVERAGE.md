@@ -333,3 +333,8 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Label / value details in bordered cells with hairlines between them (drawer overviews and form answers)
 - [x] Dashboard key figures as one divided metrics strip; tables with a quiet header row and neutral hover
 - [x] Deviation from PRD 6.1 component sizes on the web (52 px buttons, 56 px inputs, uppercase labels), made on request for a cleaner, denser look
+- [x] Premium pass: warm ivory neutrals in light and dark (contrast checked), Newsreader display serif for page, drawer and auth titles, roomier page margins
+- [x] Dashboard: key figures as one strip with 12-week sparklines and change vs the previous 4 weeks; widget cards with title and one-line description; approvals with document icons and a compact approve / hold / reject group; alerts with tone icons; wallets and activity timeline restyled
+- [x] Charts: card tooltips (text in ink, swatch for colour), dashed recessive grid, smooth area under single-series lines, thinner donut with a centre total, ranked bars as label + value with a thin track (values always printed)
+- [x] Phone app in a device frame on desktop: titanium-edged phone with side buttons, camera island, live status bar and home indicator, scaled to fit any window height; full screen on a real phone or the phone-sized window
+- [x] Phone screens: wallet-style cash card, icon tiles for plan and quick actions, softer alert cards, glass bottom tabs and wizard footer, rounder lists and inputs

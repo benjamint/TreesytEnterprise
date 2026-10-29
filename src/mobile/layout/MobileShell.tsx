@@ -9,6 +9,7 @@ import { useAccessStore } from '@/stores/accessStore';
 import { MOBILE_FLOWS } from '@/app/routes';
 import i18n from '@/i18n';
 import { BottomTabs } from './BottomTabs';
+import { DeviceFrame } from './DeviceFrame';
 import { RecordSheet } from './RecordSheet';
 import { MobileSignIn, PinLock } from '@/mobile/flows/auth/MobileSignIn';
 import '@/services/mobileHandlers';
@@ -18,7 +19,7 @@ import { useSystemStore } from '@/stores/systemStore';
 import { demoDeviceId, registerDemoDevice } from '@/services/systemService';
 
 /**
- * Mobile app shell (PRD 4.1–4.2): centred 390×844 viewport with a subtle device frame on desktop,
+ * Mobile app shell (PRD 4.1–4.2): centred 390×844 viewport inside a phone frame on desktop,
  * full screen on phones (and in the phone-sized window). Its own session, tabs and offline mode.
  */
 export function MobileShell() {
@@ -74,8 +75,7 @@ export function MobileShell() {
   const immersive = /^\/m\/(surveys\/.+|farmers\/(new|[^/]+\/edit)|communities\/.+|groups\/.+|buying\/(purchase|voice|pre\/new|requests\/new)|support\/new|warehouse\/(receive|outbound|count|resolve)|recovery\/(new|[^/]+\/repay)|preview\/.+|tasks\/.+)/.test(location.pathname);
 
   return (
-    <div className="min-h-[100dvh] bg-canvas frame:flex frame:items-center frame:justify-center frame:bg-[radial-gradient(ellipse_at_top,_rgb(var(--brand-soft)),_rgb(var(--canvas))_60%)] frame:p-6">
-      <div className="relative mx-auto flex h-[100dvh] w-full flex-col overflow-hidden bg-surface text-[16px] frame:h-[844px] frame:w-[390px] frame:rounded-[52px] frame:shadow-[0_0_0_10px_#0F2A20,0_0_0_11px_#2a3d34,0_30px_80px_rgba(15,42,32,0.35)]">
+    <DeviceFrame>
         {actor ? (
           <ActorContext.Provider value={actor}>
             <EnvironmentSync />
@@ -91,7 +91,6 @@ export function MobileShell() {
           <MobileSignIn />
         )}
         <DemoDock placement="mobile" />
-      </div>
-    </div>
+    </DeviceFrame>
   );
 }

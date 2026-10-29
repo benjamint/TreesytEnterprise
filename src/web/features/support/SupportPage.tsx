@@ -582,7 +582,7 @@ function SupportDashboard({ rows }: { rows: SupportRequest[] }) {
       <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label={t('sup.col.service')}>
         {[{ id: '', label: t('sup.dashAll') }, ...sl.types.map((x) => ({ id: x.id, label: sl.typeName(x.id) }))].map((x) => <button key={x.id || 'all'} type="button" role="tab" aria-selected={type === x.id} onClick={() => setType(x.id)} className={`rounded-full border px-3 py-1.5 text-[13px] font-medium ${type === x.id ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/40'}`}>{x.label}</button>)}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpi(t('sup.kpi.farmers'), f.number(farmers))}
         {kpi(t('sup.kpi.disbursed'), money(amount))}
         {kpi(t('sup.kpi.requests'), f.number(rows.filter((r) => !type || r.primaryTypeId === type).length))}

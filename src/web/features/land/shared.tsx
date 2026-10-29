@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { CircleMarker, MapContainer, Marker, Polygon, TileLayer, Tooltip as LTooltip, useMapEvents } from 'react-leaflet';
+import { CircleMarker, MapContainer, Marker, Polygon, Tooltip as LTooltip, useMapEvents } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, CheckCircle2, CircleDashed } from 'lucide-react';
@@ -123,7 +124,7 @@ export function LandMap({ shapes = [], zones = [], points = [], edit, draw, heig
       {legend && <Legend items={legend} />}
       <div className={cn('overflow-hidden rounded-ctl border border-line', draw && 'cursor-crosshair')} style={{ height }} role="region" aria-label={ariaLabel}>
         <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+          <BaseTiles />
           {zones.map((z) => <Polygon key={z.id} positions={z.polygon} pathOptions={{ color: z.color, weight: 2, dashArray: '6 4', fillOpacity: 0.12 }}><LTooltip>{z.label}</LTooltip></Polygon>)}
           {shapes.map((s) => <Polygon key={s.id} positions={s.polygon} eventHandlers={s.onClick ? { click: s.onClick } : undefined} pathOptions={{ color: s.color, weight: 2, fillOpacity: 0.3, dashArray: s.dashed ? '4 4' : undefined }}><LTooltip>{s.label}</LTooltip></Polygon>)}
           {points.length > 0 && <Clustered points={points} />}

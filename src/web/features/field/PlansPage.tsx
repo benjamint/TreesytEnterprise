@@ -58,7 +58,7 @@ export function PlansPage() {
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.weeklyPlans')} description={t('pages.weeklyPlans')}
         primary={<PermissionGate permission="weeklyPlans.create"><Button onClick={() => setCreating(true)}><Plus /> {t('field.newPlan')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label={t('field.plansThisWeek')} value={f.number(live.length)} hint={t('field.draftsN', { count: live.filter((p) => p.status === 'DRAFT').length })} icon={CalendarRange} />
         <StatCard label={t('field.agentsPlanned')} value={f.number(new Set(live.flatMap((p) => p.agentIds)).size)} />
         <StatCard label={t('field.budgetsThisWeek')} value={f.number(budgets.filter((b) => b.weekStart === thisWeek).length)} />

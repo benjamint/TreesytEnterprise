@@ -47,7 +47,7 @@ export function AllowancesPage() {
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.allowances')} description={t('pages.allowances')}
         primary={<PermissionGate permission="allowances.run"><Button onClick={() => setRunning(true)} disabled={!settings.fieldTeam.allowanceTypes.length}><Play /> {t('field.runAllowance')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-3">
         <StatCard label={t('field.runs')} value={f.number(rows.length)} icon={Gift} />
         <StatCard label={t('field.waitingApproval')} value={f.number(rows.filter((r) => r.status === 'PREVIEW').length)} onClick={() => setStatus('PREVIEW')} />
         <StatCard label={t('field.paidThisYear')} value={f.money(rows.filter((r) => r.period.from.slice(0, 4) === new Date().toISOString().slice(0, 4)).reduce((s, r) => s + r.lines.filter((l) => l.status === 'PAID').reduce((a, l) => a + l.amountMinor, 0), 0))} />

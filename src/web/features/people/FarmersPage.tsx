@@ -451,7 +451,7 @@ function FarmerDashboard({ rows }: { rows: FarmerRow[] }) {
   };
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="stat-strip grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {card(t('people.dash.total', { farmers: terms.farmers }), f.number(rows.length))}
         {card(t('people.dash.women'), `${f.number(rows.length ? (women / rows.length) * 100 : 0, { maximumFractionDigits: 1 })}%`, t('people.dash.ofTotal', { n: f.number(women), total: f.number(rows.length) }))}
         {card(t('people.dash.avgHousehold'), f.number(avg(nums('householdSize')), { maximumFractionDigits: 1 }), t('people.dash.answered', { n: f.number(nums('householdSize').length) }))}

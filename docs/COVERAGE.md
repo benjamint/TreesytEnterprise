@@ -341,6 +341,11 @@ Prototype-only controls (persona sign-in, demo codes and emails, open mobile win
 - [x] Warehouses redone: cards (default), table or map; each warehouse shows total stock and bags, one stock-mix bar by commodity with the top three, capacity used with kg free, officer, deliveries expected and open discrepancies; detail Stock tab has a summary strip, a "What's in stock" table (bags, weight, share, oldest bag; click to filter), one stock-age bar with a 90-day warning, and a filterable bag list sorted oldest first
 - [x] Fix: stacked column charts (Traceboard deliveries by month, tree survival by planting month) have a fixed height again; they grew without end inside stretched grid cells
 - [x] Detail drawer actions in a fixed bar at the bottom of the drawer, grouped the same way everywhere: tertiary actions (archive, open record) on the left; secondary, then destructive (reject), then the primary action (approve, retry) on the right; status banners on their own row above; one button height; hidden when a record has no actions. The Demo button moves to the bottom-left while a drawer is open
+- [x] Key figures on every list page in the same divided strip as the dashboard (one bordered card, hairlines between figures, clickable figures highlight on hover)
+- [x] Calmer top bar: language and theme moved into the account menu (avatar → Language, Theme)
+- [x] Sidebar sections collapse and expand (remembered in this browser; the section of the current page always stays open, collapsed sections show a page count); pin any page to a Pinned group at the top (per person)
+- [x] Muted map tiles (CARTO light, or dark in dark mode) on every map
+- [x] Lists with two or more filters show one Filters button (count badge, panel of filters, Clear filters) and removable filter chips under the toolbar; a single filter stays inline
 
 ## Feedback (bug and feature reporting)
 

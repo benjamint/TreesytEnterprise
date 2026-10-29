@@ -71,7 +71,7 @@ function Overview({ commodityId }: { commodityId: string }) {
   return (
     <div className="space-y-5">
       {o && (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="stat-strip grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard label={t('land.tracePct')} value={`${f.number(o.tracePct)}%`} hint={t('land.traceKg', { kg: f.kg(Math.round(o.traceKg)), total: f.kg(Math.round(o.kg)) })} />
           <StatCard label={t('land.validPct')} value={`${f.number(o.validPct)}%`} hint={t('land.plotsN', { count: o.plots })} />
           <StatCard label={t('land.checkedPct')} value={`${f.number(o.checkedPct)}%`} hint={t('land.notCheckedN', { count: o.notChecked })} />

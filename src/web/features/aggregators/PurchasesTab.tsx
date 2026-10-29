@@ -102,7 +102,7 @@ export function PurchasesTab() {
   const current = rows.find((a) => a.id === openId);
   return (
     <>
-      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-5 stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label={t('agg.stat.open')} value={f.number(openRows.length)} hint={f.money({ amountMinor: openRows.reduce((s, a) => s + companyTotal(a).amountMinor, 0), currency: cur }, { compact: true })} onClick={() => setView('all')} active={view === 'all'} />
         <Stat label={t('buy.stat.mine')} value={f.number(mine.size)} onClick={() => setView('mine')} active={view === 'mine'} />
         <Stat label={t('agg.stat.toPay')} value={f.number(rows.filter((a) => canDisburse(a)).length)} hint={f.money({ amountMinor: rows.filter((a) => canDisburse(a)).reduce((s, a) => s + remainingToPay(a), 0), currency: cur }, { compact: true })} onClick={() => setView('toPay')} active={view === 'toPay'} />

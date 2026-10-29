@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
-import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
+import { CircleMarker, MapContainer } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, Lock, Pencil, Send } from 'lucide-react';
 import { toast } from 'sonner';
@@ -252,7 +253,7 @@ function PurchaseDrawer({ purchase: p, onClose, onPay }: { purchase: Purchase; o
                     <>
                       <div className="h-56 overflow-hidden rounded-ctl border border-line">
                         <MapContainer center={[p.evidence.gps.lat, p.evidence.gps.lng]} zoom={13} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}>
-                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          <BaseTiles />
                           <CircleMarker center={[p.evidence.gps.lat, p.evidence.gps.lng]} radius={9} pathOptions={{ color: '#fff', weight: 2, fillColor: '#14583F', fillOpacity: 1 }} />
                         </MapContainer>
                       </div>
@@ -380,7 +381,7 @@ function PurchasesDashboard({ purchases }: { purchases: Purchase[] }) {
       <div className="flex flex-wrap gap-1.5" role="tablist" aria-label={t('buy.period')}>
         {[30, 90, 365].map((d) => <button key={d} type="button" role="tab" aria-selected={days === d} onClick={() => setDays(d)} className={`rounded-full border px-3 py-1.5 text-[13px] font-medium ${days === d ? 'border-brand bg-brand text-on-brand' : 'border-line bg-surface text-body hover:border-brand/40'}`}>{t('buy.lastDays', { count: d })}</button>)}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpi(t('buy.kpi.volume'), f.kg(Math.round(volume)))}
         {kpi(t('buy.kpi.spend'), cur(spend, true), cur(spend))}
         {kpi(t('buy.kpi.farmers', { farmers: terms.farmers.toLocaleLowerCase() }), f.number(farmers))}

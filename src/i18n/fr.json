@@ -122,7 +122,10 @@
     "expand": "Déplier le menu",
     "menu": "Menu",
     "locations": "Localités",
-    "feedback": "Avis"
+    "feedback": "Avis",
+    "pinned": "Épinglés",
+    "pin": "Épingler {{page}}",
+    "unpin": "Désépingler {{page}}"
   },
   "pages": {
     "dashboard": "Votre activité en un coup d’œil : volumes, argent, validations et alertes.",
@@ -4851,7 +4854,9 @@
     "retry": "Réessayer",
     "noMatch": "Aucun résultat pour ces filtres",
     "noMatchHint": "Essayez une autre recherche ou effacez les filtres.",
-    "cards": "Fiches"
+    "cards": "Fiches",
+    "filters": "Filtres",
+    "removeFilter": "Retirer le filtre {{name}}"
   },
   "form": {
     "choose": "Choisir…",

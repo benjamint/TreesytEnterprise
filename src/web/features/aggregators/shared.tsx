@@ -35,7 +35,7 @@ export function useSuppliers() {
 
 export function Stat({ label, value, hint, onClick, active }: { label: string; value: string; hint?: string; onClick: () => void; active?: boolean }) {
   return (
-    <button type="button" onClick={onClick} className={cn('flex flex-col items-start justify-start rounded-card border bg-surface p-5 text-left shadow-soft transition-colors', active ? 'border-brand' : 'border-line hover:border-brand/40')}>
+    <button type="button" onClick={onClick} className={cn('flex flex-col items-start justify-start rounded-card border bg-surface p-5 text-left shadow-soft transition-colors', active ? 'border-brand bg-brand-soft/50' : 'border-line hover:border-brand/40')}>
       <div className="eyebrow">{label}</div>
       <div className="tnum mt-2 text-[24px] font-semibold leading-none text-ink">{value}</div>
       {hint && <div className="mt-1 text-[13px] text-muted">{hint}</div>}

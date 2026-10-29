@@ -702,7 +702,7 @@ function RecoveryDashboard() {
   const kpi = (label: string, value: string, hint?: string) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{label}</div><div className="tnum mt-2 text-[24px] font-semibold leading-none text-ink">{value}</div>{hint && <div className="mt-1 text-[12px] text-muted">{hint}</div>}</div>;
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="stat-strip grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpi(t('rec.kpi.expected'), money(expected), t('rec.kpi.expectedKg', { kg: f.kg(Math.round(expected / price)) }))}
         {kpi(t('rec.kpi.recovered'), money(recovered), t('rec.kpi.recoveredKg', { kg: f.kg(Math.round(kg)) }))}
         {kpi(t('rec.kpi.rate'), `${expected ? Math.round((recovered / expected) * 100) : 0}%`)}

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { CircleMarker, MapContainer, Polygon, TileLayer, Tooltip as LTooltip } from 'react-leaflet';
+import { CircleMarker, MapContainer, Polygon, Tooltip as LTooltip } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { Check } from 'lucide-react';
 import type { DispatchOrder, DispatchStatus, ImpactSnapshot, Plot } from '@/types';
@@ -92,7 +93,7 @@ export function TraceMap({ communities, plots, kgByCommunity, truck, height = 38
       <Legend items={[{ label: t('sales.legend.community'), color: 'var(--series-2)' }, ...(['COMPLIANT', 'AT_RISK', 'PENDING'] as const).map((s) => ({ label: t(`sales.eudr.${s}`), color: EUDR_COLOR[s] })), ...(truck ? [{ label: t('sales.legend.truck'), color: 'var(--series-3)' }] : [])]} />
       <div className="overflow-hidden rounded-ctl border border-line" style={{ height }} role="region" aria-label={t('sales.traceToSource')}>
         <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full">
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+          <BaseTiles />
           {plots.map((p) => <Polygon key={p.id} positions={p.polygon} pathOptions={{ color: EUDR_COLOR[p.eudrStatus], weight: 1.5, fillOpacity: 0.35 }}><LTooltip>{`${p.areaHa} ha · ${t(`sales.eudr.${p.eudrStatus}`)}`}</LTooltip></Polygon>)}
           {communities.map((c) => (
             <CircleMarker key={c.id} center={[c.gps.lat, c.gps.lng]} radius={6 + ((kgByCommunity.get(c.id) ?? 0) / max) * 12} pathOptions={{ color: 'rgb(var(--surface))', weight: 2, fillColor: 'var(--series-2)', fillOpacity: 0.9 }}>

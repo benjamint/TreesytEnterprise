@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ColumnDef } from '@tanstack/react-table';
-import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
+import { CircleMarker, MapContainer } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { AlertTriangle, ListTree, Map as MapIcon, Pencil, Plus } from 'lucide-react';
 import type { Community } from '@/types';
@@ -234,7 +235,7 @@ function CommunityDrawer({ row, onClose, onEdit }: { row: Row; onClose: () => vo
               {row.gps && (
                 <div className="h-48 overflow-hidden rounded-ctl border border-line">
                   <MapContainer center={[row.gps.lat, row.gps.lng]} zoom={11} scrollWheelZoom={false} className="h-full w-full" attributionControl={false}>
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <BaseTiles />
                     <CircleMarker center={[row.gps.lat, row.gps.lng]} radius={9} pathOptions={{ color: '#fff', weight: 2, fillColor: '#14583F', fillOpacity: 1 }} />
                   </MapContainer>
                 </div>
@@ -318,7 +319,7 @@ function CommunityDashboard({ rows }: { rows: Row[] }) {
   );
   return (
     <div className="space-y-5">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="stat-strip grid gap-4 sm:grid-cols-3">
         {card(t('people.dash.profiled'), f.number(rows.length))}
         {card(t('people.dash.avgFarmers', { farmers: terms.farmers }), f.number(avg, { maximumFractionDigits: 1 }))}
         {card(t('people.dash.boughtFrom'), `${f.number(bought)} / ${f.number(rows.length)}`)}
@@ -358,7 +359,7 @@ export function CommunitiesMapPage() {
       <div className="h-[calc(100vh-320px)] min-h-[420px] overflow-hidden rounded-card border border-line">
         {bounds ? (
           <MapContainer key={`${agent}${score}`} bounds={bounds} className="h-full w-full">
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+            <BaseTiles />
             {shown.map((r) => (
               <CircleMarker key={r.id} center={[r.gps.lat, r.gps.lng]} radius={7 + Math.min(6, r.farmers / 6)} eventHandlers={{ click: () => navigate(`/app/communities?open=${r.id}`) }} pathOptions={{ color: '#fff', weight: 2, fillColor: BAND_COLOR[band(r.score)], fillOpacity: 0.95 }} />
             ))}

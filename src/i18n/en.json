@@ -122,7 +122,10 @@
     "expand": "Expand sidebar",
     "menu": "Menu",
     "locations": "Locations",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "pinned": "Pinned",
+    "pin": "Pin {{page}}",
+    "unpin": "Unpin {{page}}"
   },
   "pages": {
     "dashboard": "Your operation at a glance: volumes, money, approvals and alerts.",
@@ -4851,7 +4854,9 @@
     "retry": "Try again",
     "noMatch": "Nothing matches your filters",
     "noMatchHint": "Try a different search or clear the filters.",
-    "cards": "Records"
+    "cards": "Records",
+    "filters": "Filters",
+    "removeFilter": "Remove filter {{name}}"
   },
   "form": {
     "choose": "Choose…",

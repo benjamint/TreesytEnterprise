@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { CircleMarker, MapContainer, TileLayer, Tooltip as LTooltip } from 'react-leaflet';
+import { CircleMarker, MapContainer, Tooltip as LTooltip } from 'react-leaflet';
+import { BaseTiles } from '@/components/shared/BaseTiles';
 import 'leaflet/dist/leaflet.css';
 import { Legend } from '@/components/charts/charts';
 import { useAccessStore } from '@/stores/accessStore';
@@ -43,7 +44,7 @@ export function FieldMap() {
       <Legend items={(['community', 'warehouse', 'agent'] as const).map((k) => ({ label: t(`dashboard.map.${k}`, { count: counts[k] }), color: COLORS[k] }))} />
       <div className="h-[340px] overflow-hidden rounded-ctl border border-line" role="region" aria-label={t('dashboard.widget.map')}>
         <MapContainer bounds={bounds} scrollWheelZoom={false} className="h-full w-full" attributionControl>
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution="&copy; OpenStreetMap" />
+          <BaseTiles />
           {points.map((p) => (
             <CircleMarker
               key={`${p.kind}:${p.id}`}

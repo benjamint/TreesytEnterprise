@@ -396,7 +396,7 @@ function Wizard({ initialType, onHistory }: { initialType: ImportType | null; on
                 <p className="text-[14px] text-muted">{t('imp.doneHint', { file: result.run.fileName })}</p>
               </div>
             </div>
-            <div className="grid gap-3 sm:grid-cols-4">
+            <div className="stat-strip grid gap-3 sm:grid-cols-4">
               {([['created', result.run.created], ['updated', result.run.updated], ['skipped', result.run.skipped], ['flags', result.flags]] as const).map(([k, v]) => (
                 <div key={k} className={cn('rounded-ctl border p-4', k === 'flags' && v > 0 ? 'border-warning/40 bg-warning/5' : 'border-line')}>
                   <div className="eyebrow">{t(`imp.result.${k}`)}</div>

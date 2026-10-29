@@ -50,7 +50,7 @@ export function CompensationPage() {
     <>
       <PageHeader eyebrow={t('nav.section.fieldTeam')} title={t('nav.compensation')} description={t('pages.compensation')}
         primary={<PermissionGate permission="compensation.create"><Button onClick={() => setCreating(true)}><Plus /> {t('field.newPeriod')}</Button></PermissionGate>} />
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
+      <div className="mb-5 stat-strip grid gap-3 sm:grid-cols-3">
         <StatCard label={t('field.status.IN_REVIEW')} value={f.number(review.length)} hint={t('field.linesWaiting', { count: review.flatMap((p) => p.lines).filter((l) => l.status === 'PENDING' || l.status === 'FIRST_APPROVED').length })} icon={Coins} onClick={() => setStatus('IN_REVIEW')} />
         <StatCard label={t('field.status.CONFIRMED')} value={f.number(rows.filter((p) => p.status === 'CONFIRMED').length)} onClick={() => setStatus('CONFIRMED')} />
         <StatCard label={t('field.paidThisYear')} value={f.money(rows.filter((p) => p.from.slice(0, 4) === new Date().toISOString().slice(0, 4)).reduce((s, p) => s + p.lines.filter((l) => l.paid).reduce((a, l) => a + l.total.amountMinor, 0), 0))} />

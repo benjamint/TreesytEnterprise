@@ -147,6 +147,28 @@
   }
 }
 
+/* Key figures: one bordered strip with hairline dividers, whatever cards sit inside (StatCard or a page's own).
+   Cells draw their right and bottom edges; the strip clips the outer ones, so short last rows stay clean. */
+@layer components {
+  .stat-strip.stat-strip {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid rgb(var(--line));
+    border-radius: var(--r-card);
+    background: rgb(var(--surface));
+    box-shadow: 0 1px 2px rgb(var(--shadow) / .05);
+  }
+  .stat-strip.stat-strip > * {
+    margin: 0 -1px -1px 0;
+    border: 0;
+    border-right: 1px solid rgb(var(--line));
+    border-bottom: 1px solid rgb(var(--line));
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .stat-strip.stat-strip > button:hover { background: rgb(var(--subtle)); }
+}
+
 /* Detail drawer action bar: groups the buttons a page passes, whatever wrappers they come in.
    Visual order: status banner row · tertiary (ghost) · spacer · secondary · destructive · primary. */
 @layer components {

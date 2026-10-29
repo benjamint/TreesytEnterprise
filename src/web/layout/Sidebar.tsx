@@ -10,6 +10,7 @@ import { useNavSections } from './useNav';
 
 /** Sections open on first use; the section holding the current page always opens. */
 const OPEN_BY_DEFAULT = new Set(['main']);
+const NO_PINS: string[] = [];
 
 /**
  * Sidebar (PRD 6.1): 248px, logo badge top-left, collapsible sections (remembered per browser),
@@ -23,7 +24,9 @@ export function Sidebar({ rail = false, onNavigate }: { rail?: boolean; onNaviga
   const { userId } = useActor();
   const openPrefs = useNavStore((s) => s.open);
   const toggle = useNavStore((s) => s.toggle);
-  const pinnedKeys = useNavStore((s) => s.pinned[userId ?? ''] ?? []);
+  // Select the stable map, not a fresh `[]` fallback: a new array each render would loop forever.
+  const pinnedMap = useNavStore((s) => s.pinned);
+  const pinnedKeys = pinnedMap[userId ?? ''] ?? NO_PINS;
   const togglePin = useNavStore((s) => s.togglePin);
   const isActive = (r: AppRoute) => !!matchPath({ path: r.path, end: r.key === 'payments' || r.key === 'support' }, pathname);
   const allItems = sections.flatMap((s) => s.items);

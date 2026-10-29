@@ -270,21 +270,21 @@ export function AmountDialog({ open, onClose, title, description, initialMinor, 
         </DialogHeader>
         <div className="space-y-3">
           <label className="block">
-            <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('buy.amountIn', { currency })}</span>
-            <input type="number" min={0} step={decimals ? '0.01' : '1'} value={amount} onChange={(e) => setAmount(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[15px] text-ink tnum focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft" aria-label={t('buy.amountIn', { currency })} autoFocus />
+            <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('buy.amountIn', { currency })}</span>
+            <input type="number" min={0} step={decimals ? '0.01' : '1'} value={amount} onChange={(e) => setAmount(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink tnum focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft" aria-label={t('buy.amountIn', { currency })} autoFocus />
             <span className="mt-1 block text-[12px] text-muted">{f.money({ amountMinor: minor, currency })}{maxMinor != null && ` · ${t('buy.max', { amount: f.money({ amountMinor: maxMinor, currency }) })}`}</span>
             {over && <span className="mt-1 block text-[12px] text-danger" role="alert">{t('buy.overMax')}</span>}
           </label>
           {withWeight && (
             <label className="block">
-              <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('buy.weightKg')}</span>
-              <input type="number" min={0} value={weight} onChange={(e) => setWeight(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[15px] text-ink tnum" aria-label={t('buy.weightKg')} />
+              <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('buy.weightKg')}</span>
+              <input type="number" min={0} value={weight} onChange={(e) => setWeight(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink tnum" aria-label={t('buy.weightKg')} />
             </label>
           )}
           {reasonLabel && (
             <label className="block">
-              <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{reasonLabel}</span>
-              <input value={reason} onChange={(e) => setReason(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={reasonLabel} />
+              <span className="mb-1.5 block text-[13px] font-medium text-ink">{reasonLabel}</span>
+              <input value={reason} onChange={(e) => setReason(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={reasonLabel} />
             </label>
           )}
           {proof && <ProofPicker value={file} onChange={setFile} />}
@@ -317,7 +317,7 @@ export function ProofPicker({ value, onChange }: { value?: string; onChange: (v:
 export function Panel({ title, children, actions, className }: { title?: ReactNode; children: ReactNode; actions?: ReactNode; className?: string }) {
   return (
     <section className={cn('rounded-card border border-line bg-surface p-5 shadow-soft', className)}>
-      {(title || actions) && <div className="mb-3 flex items-center justify-between gap-3">{title && <h3 className="text-[15px] font-semibold text-ink">{title}</h3>}{actions}</div>}
+      {(title || actions) && <div className="mb-3 flex items-center justify-between gap-3">{title && <h3 className="text-[14px] font-semibold text-ink">{title}</h3>}{actions}</div>}
       {children}
     </section>
   );

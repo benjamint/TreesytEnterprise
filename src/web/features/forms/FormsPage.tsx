@@ -98,7 +98,7 @@ function NewFormDialog({ forms, onClose }: { forms: FormRecord[]; onClose: () =>
   const [description, setDescription] = useState('');
   const [copyId, setCopyId] = useState(forms[0]?.id ?? '');
   const [busy, setBusy] = useState(false);
-  const sel = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const sel = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 
   const create = async () => {
     if (!name.trim()) return;

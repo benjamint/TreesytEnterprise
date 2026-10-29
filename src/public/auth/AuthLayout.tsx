@@ -99,7 +99,7 @@ export function AuthLayout({ children, wide }: { children: ReactNode; wide?: boo
 export function AuthHeading({ title, subtitle }: { title: ReactNode; subtitle?: ReactNode }) {
   return (
     <div className="mb-8">
-      <h1 className="text-[32px] leading-tight lg:text-[36px]">{title}</h1>
+      <h1 className="font-display text-[34px] leading-[1.1] lg:text-[40px]">{title}</h1>
       {subtitle && <p className="mt-2 text-[15px] text-muted">{subtitle}</p>}
     </div>
   );

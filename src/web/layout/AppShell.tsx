@@ -58,15 +58,15 @@ export function AppShell() {
         <Sidebar />
       </aside>
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetContent side="left" closeLabel={t('common.close')} className="w-[264px] p-0">
+        <SheetContent side="left" closeLabel={t('common.close')} className="w-[248px] p-0">
           <SheetTitle className="sr-only">{t('nav.menu')}</SheetTitle>
           <Sidebar onNavigate={() => setMenuOpen(false)} />
         </SheetContent>
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar onMenu={() => setMenuOpen(true)} onSearch={() => setPaletteOpen(true)} />
-        <main id="main" className="flex-1 px-4 py-8 md:px-8 lg:px-10 lg:py-10">
-          <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1600px]">
+        <main id="main" className="flex-1 px-4 py-7 md:px-8 lg:px-12 lg:py-10">
+          <motion.div key={`${location.pathname}:${orgId}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.15 }} className="mx-auto w-full max-w-[1360px]">
             <RouteBoundary key={location.pathname}><Outlet /></RouteBoundary>
           </motion.div>
         </main>

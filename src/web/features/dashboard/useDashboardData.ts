@@ -132,6 +132,18 @@ export function useDashboardData() {
       if (i < 0) continue;
       byWeek[i]![p.commodityId] = (byWeek[i]![p.commodityId] ?? 0) + p.quantity;
     }
+    // Weekly trends for the key figures (sparklines and change vs the previous 4 weeks).
+    const trendVolume = weeks.map(() => 0);
+    const trendSpend = weeks.map(() => 0);
+    const paidSets = weeks.map(() => new Set<string>());
+    for (const p of purchases) {
+      const i = weeks.indexOf(weekStart(new Date(p.createdAt).getTime()));
+      if (i < 0) continue;
+      trendVolume[i]! += p.quantity;
+      trendSpend[i]! += p.amount.amountMinor;
+      if (p.paymentStatus === 'PAID') paidSets[i]!.add(p.farmerId);
+    }
+    const trend = { volume: trendVolume, spend: trendSpend, farmersPaid: paidSets.map((x) => x.size) };
     const commodityTotals = new Map<string, number>();
     for (const p of purchases) commodityTotals.set(p.commodityId, (commodityTotals.get(p.commodityId) ?? 0) + p.quantity);
 
@@ -152,7 +164,7 @@ export function useDashboardData() {
 
     const principal = loans.reduce((s, l) => s + l.principal.amountMinor, 0);
     const repaid = loans.reduce((s, l) => s + l.repayments.reduce((x, r) => x + r.amount.amountMinor, 0), 0);
-    return { weeks: byWeek, commodityTotals, commodityIndex, topCommunities, payoutsByProvider, stockByWarehouse, recovery: { principal, repaid, loans: loans.length, settled: loans.filter((l) => l.status === 'SETTLED').length } };
+    return { weeks: byWeek, trend, commodityTotals, commodityIndex, topCommunities, payoutsByProvider, stockByWarehouse, recovery: { principal, repaid, loans: loans.length, settled: loans.filter((l) => l.status === 'SETTLED').length } };
   }, [purchases, payments, bags, warehouses, loans, communities, settings.commodities, settings.paymentProviders]);
 
   const alerts = useMemo(() => {

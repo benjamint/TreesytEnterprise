@@ -97,7 +97,7 @@ function RetirementDrawer({ r, onClose }: { r: Retirement; onClose: () => void }
             key: 'receipts', label: t('field.receipts'), count: s.live.length, content: (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {([[t('field.gross'), r.gross.amountMinor], [t('field.approvedAmount'), s.approved], [s.pending ? t('field.inReview') : t('field.unused'), s.pending || s.unused], [t('field.unaccounted'), s.unaccounted]] as [string, number][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{f.money(v)}</div></div>)}
+                  {([[t('field.gross'), r.gross.amountMinor], [t('field.approvedAmount'), s.approved], [s.pending ? t('field.inReview') : t('field.unused'), s.pending || s.unused], [t('field.unaccounted'), s.unaccounted]] as [string, number][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{f.money(v)}</div></div>)}
                 </div>
                 {s.byCat.map((c) => (
                   <section key={c.categoryId}>

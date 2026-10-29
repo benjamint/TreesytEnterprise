@@ -248,7 +248,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={terms.purchaseRequest}>
-              <select value={requestId} disabled={!!pre} onChange={(e) => { setRequestId(e.target.value); setCodes([]); }} aria-label={terms.purchaseRequest} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
+              <select value={requestId} disabled={!!pre} onChange={(e) => { setRequestId(e.target.value); setCodes([]); }} aria-label={terms.purchaseRequest} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 {eligible.map((r) => <option key={r.id} value={r.id}>{`${r.number} · ${lk.agent(r.agentId)} · ${lk.community(r.communityId)}`}</option>)}
               </select>
             </Field>
@@ -256,7 +256,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
           </div>
           <Checkbox label={t('buy.costDiscussedLabel')} checked={discussed} onChange={(e) => setDiscussed(e.target.checked)} />
           <div>
-            <div className="mb-2 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('buy.expenseLines')}</h3>
+            <div className="mb-2 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-ink">{t('buy.expenseLines')}</h3>
               <select value="" onChange={(e) => e.target.value && add(e.target.value)} aria-label={t('buy.addLine')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 <option value="">{t('buy.addLine')}</option>
                 {preTypes(settings).map((x) => <option key={x.id} value={x.id}>{`${x.name} · ${t(`buy.basis.${x.basis}`)}`}</option>)}
@@ -272,7 +272,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
                       <div className="mt-2 grid grid-cols-3 gap-2">
                         <Input compact type="number" value={l.quantity} onChange={(e) => setLines(lines.map((y, j) => (j === i ? { ...y, quantity: e.target.value } : y)))} aria-label={`${x.name} ${t('col.quantity')}`} />
                         <Input compact type="number" value={l.rate} onChange={(e) => setLines(lines.map((y, j) => (j === i ? { ...y, rate: e.target.value } : y)))} aria-label={`${x.name} ${t('buy.rate')}`} />
-                        <div className={cn('flex h-11 items-center justify-end rounded-ctl bg-canvas px-3 tnum text-[14px] font-medium', l.capped ? 'text-warning' : 'text-ink')}>{f.money({ amountMinor: l.amount, currency: f.org.currency })}</div>
+                        <div className={cn('flex h-ctl items-center justify-end rounded-ctl bg-canvas px-3 tnum text-[14px] font-medium', l.capped ? 'text-warning' : 'text-ink')}>{f.money({ amountMinor: l.amount, currency: f.org.currency })}</div>
                       </div>
                       {l.capped && x.cap && <p className="mt-1 text-[12px] text-warning">{t('buy.capHint', { cap: f.money(x.cap) })}</p>}
                       {x.requiresWallet && agent && <p className="mt-1 text-[12px] text-muted">{t('buy.payeeIs', { name: agent.wallet.verifiedName, number: agent.wallet.number })}</p>}
@@ -284,7 +284,7 @@ function PreSheet({ pre, onClose }: { pre?: PreExpense; onClose: (id?: string) =
           </div>
           {needScan && (
             <div>
-              <div className="mb-2 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{t('buy.scanBags')}</h3><Button size="xs" variant="secondary" onClick={() => setCodes(reqBags.slice(0, n).map((b) => b.code))}><ScanLine /> {t('buy.scanAll')}</Button></div>
+              <div className="mb-2 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-ink">{t('buy.scanBags')}</h3><Button size="xs" variant="secondary" onClick={() => setCodes(reqBags.slice(0, n).map((b) => b.code))}><ScanLine /> {t('buy.scanAll')}</Button></div>
               {reqBags.length ? (
                 <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto rounded-ctl border border-line p-3">
                   {reqBags.map((b) => {

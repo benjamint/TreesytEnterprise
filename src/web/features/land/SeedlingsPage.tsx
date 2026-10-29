@@ -200,7 +200,7 @@ function AssignDialog({ lot, onClose }: { lot: SeedlingLot; onClose: () => void 
       onClose();
     } catch (e) { toast.error(t(`land.error.${(e as Error).message}`, { defaultValue: (e as Error).message })); }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
@@ -260,7 +260,7 @@ function ReceiveSheet({ onClose }: { onClose: () => void }) {
       setDone(lot);
     } catch (e) { setProgress(null); toast.error(t(`land.error.${(e as Error).message}`, { defaultValue: (e as Error).message })); }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   const finished = done && progress != null && progress >= 1;
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>

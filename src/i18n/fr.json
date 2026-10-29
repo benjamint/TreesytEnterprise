@@ -263,6 +263,9 @@
     "auditor": "Auditeur"
   },
   "dashboard": {
+    "kpiVs": "par rapport aux 4 semaines précédentes",
+    "kpiUp": "En hausse de {{pct}}",
+    "kpiDown": "En baisse de {{pct}}",
     "greeting": "Ravi de vous revoir, {{name}}",
     "subtitle": "Voici ce qui se passe chez {{company}} aujourd’hui.",
     "kpi": {
@@ -2342,9 +2345,7 @@
       "normal": "Normal",
       "slow": "Réseau lent",
       "error": "Erreurs"
-    },
-    "autoTours": "Visites à la première ouverture",
-    "autoToursHint": "Lancer la visite de chaque page la première fois dans cette session."
+    }
   },
   "auth": {
     "home": "Accueil TreeSyt",

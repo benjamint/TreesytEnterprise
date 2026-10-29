@@ -326,7 +326,7 @@ function VerifyDialog({ dispatch: d, onClose }: { dispatch: DispatchOrder; onClo
           <FilePick label={t('sales.qualityTestOptional')} value={quality} onChange={setQuality} sample={`quality-${d.number}.pdf`} />
           <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]">
             <span className="text-muted">{t('sales.varianceIs', { pct: f.number(variance) })}</span>
-            <span className="tnum text-[18px] font-semibold text-ink">{f.money({ amountMinor, currency })}</span>
+            <span className="tnum text-[16px] font-semibold text-ink">{f.money({ amountMinor, currency })}</span>
           </div>
         </div>
         <DialogFooter><Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button><Button disabled={invalid} onClick={save}><BadgeCheck /> {t('sales.verifyAndIssue')}</Button></DialogFooter>
@@ -347,7 +347,7 @@ function AddDocDialog({ dispatchId, onClose }: { dispatchId: string; onClose: ()
       <DialogContent>
         <DialogHeader><DialogTitle>{t('sales.addDocument')}</DialogTitle><DialogDescription>{t('sales.addDocumentHint')}</DialogDescription></DialogHeader>
         <div className="space-y-4">
-          <Field label={t('col.type')}><select value={type} onChange={(e) => setType(e.target.value)} aria-label={t('col.type')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">{DOC_TYPES.map((x) => <option key={x} value={x}>{t(`sales.docType.${x}`)}</option>)}</select></Field>
+          <Field label={t('col.type')}><select value={type} onChange={(e) => setType(e.target.value)} aria-label={t('col.type')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">{DOC_TYPES.map((x) => <option key={x} value={x}>{t(`sales.docType.${x}`)}</option>)}</select></Field>
           <FilePick label={t('sales.file')} value={name} onChange={setName} sample={`${type}.pdf`} />
         </div>
         <DialogFooter><Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button><Button disabled={!name} onClick={() => { addDispatchDocument(dispatchId, { type, name: name! }, userId ?? 'system'); toast.success(t('sales.toast.docAdded', { name })); onClose(); }}>{t('common.save')}</Button></DialogFooter>
@@ -407,7 +407,7 @@ function NewDispatchSheet({ onClose }: { onClose: (id?: string) => void }) {
       toast.error(t(`sales.error.${(e as Error).message}`, { defaultValue: (e as Error).message }));
     }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -448,7 +448,7 @@ function NewDispatchSheet({ onClose }: { onClose: (id?: string) => void }) {
           </div>
           <FilePick label={t('sales.licence')} value={driver.licence} onChange={(v) => setDriver({ ...driver, licence: v })} sample="driver-licence.jpg" />
           <FilePick label={t('sales.truckImage')} value={truck.image} onChange={(v) => setTruck({ ...truck, image: v })} sample="truck.jpg" />
-          <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]"><span className="text-muted">{t('sales.expected')}</span><span className="tnum text-[18px] font-semibold text-ink">{kgT(expectedKg)}</span></div>
+          <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]"><span className="text-muted">{t('sales.expected')}</span><span className="tnum text-[16px] font-semibold text-ink">{kgT(expectedKg)}</span></div>
           {left != null && expectedKg > left && <p className="text-[13px] text-warning">{t('sales.overContract')}</p>}
         </div>
         <div className="flex justify-end gap-2 border-t border-line px-6 py-4"><Button variant="secondary" onClick={() => onClose()}>{t('common.cancel')}</Button><Button disabled={invalid} onClick={save}>{t('buy.submit')}</Button></div>

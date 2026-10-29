@@ -159,7 +159,7 @@ function BudgetDrawer({ b, onClose }: { b: BudgetRequest; onClose: () => void })
                 {problem === 'reportBlocksPayout' && b.status === 'APPROVED' && <p className="flex items-center gap-2 rounded-ctl border border-danger/40 bg-danger/5 px-3 py-2 text-[13px] text-ink" role="alert"><AlertTriangle className="h-4 w-4 text-danger" /> {t('field.payBlocked', { category: blocks.payouts?.category?.name ?? '' })}</p>}
                 <PaymentState payableId={b.id} />
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  {([[t('field.requested'), f.money(b.total)], [t('field.approvedAmount'), f.money(grossOf(b))], [t('field.deductions'), `− ${f.money(b.deductions.reduce((s, d) => s + d.amountMinor, 0))}`], [t('field.net'), f.money(b.net)]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{v}</div></div>)}
+                  {([[t('field.requested'), f.money(b.total)], [t('field.approvedAmount'), f.money(grossOf(b))], [t('field.deductions'), `− ${f.money(b.deductions.reduce((s, d) => s + d.amountMinor, 0))}`], [t('field.net'), f.money(b.net)]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{v}</div></div>)}
                 </div>
                 <div className="overflow-x-auto rounded-ctl border border-line">
                   <table className="w-full min-w-[640px] text-[13px]">

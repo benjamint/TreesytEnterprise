@@ -6,16 +6,16 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useT } from '@/stores/hooks';
 
-/** Label above, helper or error below (PRD 6.1): 12px uppercase label, 13px helper/error. */
+/** Label above, helper or error below (PRD 6.1): 13px label (uppercase in the phone app), 13px helper/error. */
 export function Field({ label, helper, error, htmlFor, children, className }: { label: ReactNode; helper?: ReactNode; error?: ReactNode; htmlFor?: string; children: ReactNode; className?: string }) {
   return (
     <div className={className}>
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {error ? (
-        <p className="mt-2 text-[13px] text-danger" role="alert">{error}</p>
+        <p className="mt-1.5 text-[13px] text-danger" role="alert">{error}</p>
       ) : helper ? (
-        <p className="mt-2 text-[13px] text-muted">{helper}</p>
+        <p className="mt-1.5 text-[13px] text-muted">{helper}</p>
       ) : null}
     </div>
   );
@@ -79,7 +79,7 @@ export const SelectField = forwardRef<HTMLSelectElement, SelectProps>(({ label, 
         <select
           ref={ref}
           id={fid}
-          className="h-14 w-full appearance-none rounded-ctl border border-line bg-surface pl-4 pr-11 text-[15px] text-ink transition-shadow focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft"
+          className="h-ctl-lg w-full appearance-none rounded-ctl border border-line-strong bg-surface pl-3 pr-10 text-[14px] text-ink shadow-xs transition-shadow hover:border-muted/50 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/15 [.mobile-ui_&]:pl-4 [.mobile-ui_&]:text-[16px]"
           {...props}
         >
           {options.map((o) => (
@@ -102,7 +102,7 @@ export const TextAreaField = forwardRef<HTMLTextAreaElement, TextareaHTMLAttribu
         <textarea
           ref={ref}
           id={fid}
-          className="min-h-[120px] w-full rounded-ctl border border-line bg-surface px-4 py-3.5 text-[15px] text-ink placeholder:text-muted focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft"
+          className="min-h-[112px] w-full rounded-ctl border border-line-strong bg-surface px-3 py-2.5 text-[14px] text-ink shadow-xs placeholder:text-muted hover:border-muted/50 focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/15 [.mobile-ui_&]:px-4 [.mobile-ui_&]:text-[16px]"
           {...props}
         />
       </Field>
@@ -165,7 +165,7 @@ export function OtpInput({ value, onChange, length = 6, invalid, autoFocus, labe
             }
           }}
           className={cn(
-            'tnum h-14 w-full min-w-0 rounded-ctl border bg-surface text-center text-[22px] font-semibold text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft',
+            'tnum h-ctl-lg w-full min-w-0 rounded-ctl border bg-surface text-center text-[20px] font-semibold text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft',
             invalid ? 'border-danger' : 'border-line',
           )}
         />

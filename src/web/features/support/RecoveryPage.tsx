@@ -255,7 +255,7 @@ function ReviewDialog({ recovery: r, terms, onClose }: { recovery: RecoveryReque
   const list = settings.priceList.find((p) => p.commodityId === commodityId)?.price.amountMinor ?? 0;
   const [price, setPrice] = useState(String(list / 10 ** dec));
   const [excess, setExcess] = useState(String(Math.round(list * 1.05) / 10 ** dec));
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   const minor = (v: string) => Math.round(Number(v || 0) * 10 ** dec);
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -402,7 +402,7 @@ function WindowSheet({ window: w, onClose }: { window?: RecoveryWindow; onClose:
     : { name: '', typeId: sl.types.find((x) => x.recoverable)?.id ?? '', season: String(new Date().getFullYear()), commodityId: settings.commodities[0]?.id ?? '', start: today, end: new Date(Date.now() + settings.support.recoveryWindowDays * 86_400_000).toISOString().slice(0, 10), status: 'DRAFT', remark: '', reminders: { sms: true, push: true } });
   const overlap = windowOverlap(orgId, v, w?.id);
   const invalid = !v.name.trim() || v.end < v.start || !!overlap;
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -420,7 +420,7 @@ function WindowSheet({ window: w, onClose }: { window?: RecoveryWindow; onClose:
           {overlap && <p className="rounded-ctl border border-danger/30 bg-danger/5 px-3 py-2 text-[13px] text-danger" role="alert">{t('rec.err.windowOverlap', { name: overlap.name })}</p>}
           <Field label={t('rec.remark')}><Input value={v.remark ?? ''} onChange={(e) => setV({ ...v, remark: e.target.value })} aria-label={t('rec.remark')} /></Field>
           <div className="space-y-2">
-            <div className="text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('rec.reminders')}</div>
+            <div className="text-[12px] font-medium text-muted">{t('rec.reminders')}</div>
             <Checkbox label={t('rec.reminderBanner')} checked disabled />
             <Checkbox label={t('rec.reminderSms')} checked={v.reminders.sms} onChange={(e) => setV({ ...v, reminders: { ...v.reminders, sms: e.target.checked } })} />
             <Checkbox label={t('rec.reminderPush')} checked={v.reminders.push} onChange={(e) => setV({ ...v, reminders: { ...v.reminders, push: e.target.checked } })} />
@@ -549,7 +549,7 @@ function LoanDrawer({ loan: l, onClose }: { loan: LoanAccount; onClose: () => vo
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div><div className="eyebrow">{t('rec.quoteCash')}</div><div className="tnum mt-1 text-[22px] font-semibold text-ink">{f.money(cashQ.amount)}</div>{cashQ.penaltyIncluded > 0 && <div className="text-[12px] text-warning">{t('rec.inclPenalty', { amount: money(cashQ.penaltyIncluded) })}</div>}</div>
                     <div><div className="eyebrow">{t('rec.quoteProduce')}</div><div className="tnum mt-1 text-[22px] font-semibold text-ink">{f.money(prodQ.amount)}</div>{prodQ.volumeKg != null && <div className="text-[12px] text-muted">{t('rec.volumeNeeded', { kg: f.kg(prodQ.volumeKg), price: price ? f.money(price) : '—' })}</div>}</div>
-                    <div><div className="eyebrow">{t('rec.quoteDate')}</div><div className="mt-1 text-[15px] font-medium text-ink">{f.date(when)}</div>
+                    <div><div className="eyebrow">{t('rec.quoteDate')}</div><div className="mt-1 text-[14px] font-medium text-ink">{f.date(when)}</div>
                       <input type="range" min={0} max={365} step={5} value={ahead} onChange={(e) => setAhead(Number(e.target.value))} className="mt-2 w-full accent-[rgb(var(--brand))]" aria-label={t('rec.whatIf')} />
                       <div className="text-[12px] text-muted">{ahead ? t('rec.inDays', { count: ahead }) : t('rec.today')}</div>
                     </div>

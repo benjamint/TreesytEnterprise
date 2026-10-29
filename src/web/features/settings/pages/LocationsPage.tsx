@@ -202,7 +202,7 @@ function LocationTree({ nodes, levels, used, onChange }: { nodes: LocationNode[]
           >
             <ChevronRight className={cn('h-4 w-4 transition-transform', isOpen && 'rotate-90')} />
           </button>
-          <span className="w-24 shrink-0 truncate text-[12px] uppercase tracking-[0.06em] text-label">{levelLabel(levels, n.levelId, lang)}</span>
+          <span className="w-24 shrink-0 truncate text-[12px] font-medium text-muted">{levelLabel(levels, n.levelId, lang)}</span>
           <Input compact value={n.name} onChange={(e) => update(n.id, { name: e.target.value })} className="h-9 max-w-xs" aria-label={t('set.locations.nodeName')} />
           <Input compact value={n.code} onChange={(e) => update(n.id, { code: e.target.value.toUpperCase() })} className="h-9 w-24 font-mono" aria-label={t('set.locations.nodeCode')} />
           <span className="ml-auto text-[12px] text-muted">{n.children.length ? t('set.locations.children', { count: n.children.length }) : ''}</span>

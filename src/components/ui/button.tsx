@@ -4,24 +4,24 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ctl font-semibold transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface [&_svg]:size-[18px] [&_svg]:shrink-0',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-ctl font-medium transition-[background-color,border-color,color,box-shadow] duration-150 disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/25 [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
         primary: 'bg-brand text-on-brand shadow-inner hover:bg-brand-hover',
-        secondary: 'bg-surface text-ink border border-line hover:bg-canvas',
-        ghost: 'text-ink hover:bg-brand-soft/70',
-        danger: 'bg-danger text-white hover:bg-danger/90 dark:text-canvas',
-        dangerOutline: 'border border-danger/40 text-danger bg-surface hover:bg-danger/5',
+        secondary: 'bg-surface text-ink border border-line-strong shadow-xs hover:bg-subtle hover:border-muted/40',
+        ghost: 'text-body hover:bg-canvas hover:text-ink',
+        danger: 'bg-danger text-white shadow-inner hover:bg-danger/90 dark:text-canvas',
+        dangerOutline: 'border border-danger/35 text-danger bg-surface shadow-xs hover:bg-danger/5',
         link: 'text-ink underline underline-offset-[3px] decoration-1 hover:text-brand px-0 h-auto',
       },
       size: {
-        lg: 'h-[52px] px-6 text-[15px]',
-        md: 'h-11 px-4 text-[15px]',
-        sm: 'h-10 px-3.5 text-sm',
-        xs: 'h-8 px-2.5 text-[13px] rounded-chip',
-        icon: 'h-10 w-10',
-        iconSm: 'h-8 w-8 rounded-chip',
+        lg: 'h-btn-lg px-5 text-[15px]',
+        md: 'h-btn px-3.5 text-[14px] [.mobile-ui_&]:text-[15px]',
+        sm: 'h-btn-sm px-3 text-[13px]',
+        xs: 'h-btn-xs px-2.5 text-[12px] rounded-chip',
+        icon: 'h-btn w-btn',
+        iconSm: 'h-btn-sm w-btn-sm rounded-chip',
       },
     },
     defaultVariants: { variant: 'primary', size: 'md' },

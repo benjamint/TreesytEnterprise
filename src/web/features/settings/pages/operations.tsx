@@ -91,7 +91,7 @@ export function CommoditiesPage() {
                 <Select value={c.defaultUnitId} onChange={(x) => setC({ defaultUnitId: x, allowedUnitIds: [...new Set([...c.allowedUnitIds, x])] })} options={massUnits.map((u) => ({ value: u, label: t(`set.unit.${u}`) }))} />
               </Mini>
               <Mini label={t('set.commodities.allowedUnits')}>
-                <div className="flex h-11 flex-wrap items-center gap-4">
+                <div className="flex h-ctl flex-wrap items-center gap-4">
                   {massUnits.map((u) => (
                     <Checkbox key={u} label={u} checked={c.allowedUnitIds.includes(u)} disabled={u === c.defaultUnitId} onChange={(e) => setC({ allowedUnitIds: e.target.checked ? [...c.allowedUnitIds, u] : c.allowedUnitIds.filter((x) => x !== u) })} />
                   ))}
@@ -125,7 +125,7 @@ export function CommoditiesPage() {
               <Mini label={t('set.commodities.farmerMax')}><NumberInput value={c.farmerMaxKg} min={0} suffix="kg" onChange={(v) => setC({ farmerMaxKg: v })} /></Mini>
               <Mini label={t('set.commodities.color')}>
                 <div className="flex items-center gap-2">
-                  <input type="color" value={c.color} onChange={(e) => setC({ color: e.target.value })} aria-label={t('set.commodities.color')} className="h-11 w-12 cursor-pointer rounded-ctl border border-line bg-surface p-1" />
+                  <input type="color" value={c.color} onChange={(e) => setC({ color: e.target.value })} aria-label={t('set.commodities.color')} className="h-ctl w-12 cursor-pointer rounded-ctl border border-line bg-surface p-1" />
                   <TextInput value={c.color} onChange={(color) => setC({ color })} className="font-mono" />
                 </div>
               </Mini>

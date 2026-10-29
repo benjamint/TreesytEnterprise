@@ -25,13 +25,13 @@ export function MobileWizard({ steps, finishLabel, onFinish, busy, step: control
           <span className="font-semibold text-ink">{step.title}</span>
           <span className="tnum text-muted">{t('mobile.form.step', { n: i + 1, total: steps.length })}</span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-canvas"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${((i + 1) / steps.length) * 100}%` }} /></div>
+        <div className="h-1 overflow-hidden rounded-full bg-canvas"><div className="h-full rounded-full bg-brand transition-all duration-300" style={{ width: `${((i + 1) / steps.length) * 100}%` }} /></div>
       </div>
       <div className="flex-1 overflow-y-auto px-5 pb-6">
         <div id="mwiz-top" />
         {step.content}
       </div>
-      <div className="shrink-0 border-t border-line p-4">
+      <div className="shrink-0 border-t border-line/70 bg-surface/90 p-4 backdrop-blur-xl frame:pb-7">
         {step.hint && <div className="mb-2 text-center text-[13px] text-muted">{step.hint}</div>}
         <div className="flex gap-2">
           {i > 0 && <Button size="lg" variant="secondary" onClick={() => go(i - 1)} aria-label={t('mobile.back')} disabled={busy}><ArrowLeft /></Button>}
@@ -55,7 +55,7 @@ export function MField({ label, required, children, error, help, group }: { labe
   );
 }
 
-export const mInput = 'h-12 w-full rounded-ctl border border-line bg-surface px-3 text-[16px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft';
+export const mInput = 'h-12 w-full rounded-ctl border border-line-strong bg-surface px-4 text-[16px] text-ink shadow-xs placeholder:text-muted focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand/15';
 
 export function MSelect<V extends string>({ value, onChange, options, label }: { value: V; onChange: (v: V) => void; options: { value: V; label: string }[]; label: string }) {
   return (
@@ -69,7 +69,7 @@ export function Segmented<V extends string>({ value, onChange, options, label }:
   return (
     <div className="flex h-14 items-center gap-1 rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={label}>
       {options.map((o) => (
-        <button key={o.value} type="button" role="radio" aria-checked={value === o.value} onClick={() => onChange(o.value)} className={cn('h-full flex-1 rounded-[8px] px-2 text-[15px] font-medium', value === o.value ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>{o.label}</button>
+        <button key={o.value} type="button" role="radio" aria-checked={value === o.value} onClick={() => onChange(o.value)} className={cn('h-full flex-1 rounded-[11px] px-2 text-[15px] font-medium transition-colors', value === o.value ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>{o.label}</button>
       ))}
     </div>
   );
@@ -83,7 +83,7 @@ export function ListRow({ title, subtitle, right, onClick, badge }: { title: Rea
         {subtitle && <span className="block truncate text-[13px] text-muted">{subtitle}</span>}
       </span>
       {right}
-      {onClick && <ChevronRight className="h-5 w-5 shrink-0 text-muted" aria-hidden="true" />}
+      {onClick && <ChevronRight className="h-5 w-5 shrink-0 text-muted/70" aria-hidden="true" />}
     </>
   );
   return onClick
@@ -92,7 +92,7 @@ export function ListRow({ title, subtitle, right, onClick, badge }: { title: Rea
 }
 
 export function MList({ children }: { children: ReactNode }) {
-  return <ul className="divide-y divide-line overflow-hidden rounded-card border border-line">{children}</ul>;
+  return <ul className="divide-y divide-line overflow-hidden rounded-card border border-line bg-surface shadow-soft">{children}</ul>;
 }
 
 export function MSearch({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {

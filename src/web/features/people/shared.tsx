@@ -209,7 +209,7 @@ export function LeadersPanel({ entity, entityId, roles, permission }: { entity: 
           {edit && (
             <div className="space-y-3">
               <Input compact value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} placeholder={t('people.name')} aria-label={t('people.name')} autoFocus />
-              <select value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value })} aria-label={t('people.role')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
+              <select value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value })} aria-label={t('people.role')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                 {[...new Set([...roles, edit.role])].map((r) => <option key={r} value={r}>{roleLabel(r)}</option>)}
               </select>
               <Input compact type="tel" value={edit.phone} onChange={(e) => setEdit({ ...edit, phone: e.target.value })} placeholder={t('people.phone')} aria-label={t('people.phone')} />

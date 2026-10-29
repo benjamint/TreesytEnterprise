@@ -80,7 +80,7 @@ function Overview({ commodityId }: { commodityId: string }) {
       )}
       <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div><h3 className="text-[15px] font-semibold text-ink">{t('land.deforestationCheck')}</h3><p className="text-[13px] text-muted">{t('land.checkHint', { count: unchecked })}</p></div>
+          <div><h3 className="text-[14px] font-semibold text-ink">{t('land.deforestationCheck')}</h3><p className="text-[13px] text-muted">{t('land.checkHint', { count: unchecked })}</p></div>
           <PermissionGate permission="eudr.runCheck"><Button onClick={run} disabled={busy || !unchecked}>{busy ? <Loader2 className="animate-spin" /> : <Radar />} {busy ? t('land.checking') : t('land.runCheck')}</Button></PermissionGate>
         </div>
         {last && <div className={cn('mb-3 rounded-ctl px-4 py-3 text-[14px]', last.risk ? 'bg-danger/5 text-ink' : 'bg-success/5 text-ink')} role="status">{t('land.checkResult', { count: last.checked, risk: last.risk, clear: last.clear })}</div>}
@@ -193,7 +193,7 @@ function GenerateDialog({ commodityIds, onClose }: { commodityIds: string[]; onC
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
         <DialogHeader><DialogTitle>{t('land.generateDds')}</DialogTitle><DialogDescription>{t('land.generateHint')}</DialogDescription></DialogHeader>
-        <Field label={t('nav.dispatch')}><select value={dispatchId} onChange={(e) => setDispatchId(e.target.value)} aria-label={t('nav.dispatch')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{dispatches.map((d) => <option key={d.id} value={d.id}>{`${d.number} · ${sl(d.clientId)} · ${f.kg(Math.round(d.verification?.deliveredKg ?? d.expectedKg))} · ${t(`status.${d.status}`)}`}</option>)}</select></Field>
+        <Field label={t('nav.dispatch')}><select value={dispatchId} onChange={(e) => setDispatchId(e.target.value)} aria-label={t('nav.dispatch')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{dispatches.map((d) => <option key={d.id} value={d.id}>{`${d.number} · ${sl(d.clientId)} · ${f.kg(Math.round(d.verification?.deliveredKg ?? d.expectedKg))} · ${t(`status.${d.status}`)}`}</option>)}</select></Field>
         <DialogFooter><Button variant="secondary" onClick={() => onClose()}>{t('common.cancel')}</Button><Button disabled={!dispatchId} onClick={go}><FileCheck2 /> {t('land.generate')}</Button></DialogFooter>
       </DialogContent>
     </Dialog>

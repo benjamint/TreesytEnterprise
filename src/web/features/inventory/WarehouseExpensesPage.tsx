@@ -155,7 +155,7 @@ function NewExpenseSheet({ typeName, onClose }: { typeName: (id: string) => stri
     toast.success(t('inv.toast.expenseCreated', { number: e.number }), { description: t('dashboard.actedStatus', { status: t(`status.${e.status}`) }) });
     onClose(e.id);
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">

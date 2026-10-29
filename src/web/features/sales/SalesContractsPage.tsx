@@ -280,7 +280,7 @@ function ContractSheet({ contract, onClose }: { contract?: SalesContract; onClos
     toast.success(t(contract ? 'sales.toast.contractSaved' : 'sales.toast.contractCreated', { number: c.number }));
     onClose(c.id);
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   const name = (x: { name: Partial<Record<string, string>> }) => x.name[f.lang] ?? x.name.en ?? '';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>

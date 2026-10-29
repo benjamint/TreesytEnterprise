@@ -407,7 +407,7 @@ function ApproveDialog({ request: r, onClose }: { request: SupportRequest; onClo
     if (res.ok) { toast.success(t('buy.acted.APPROVE', { number: r.number }), { description: t('dashboard.actedStatus', { status: t(`status.${res.status}`) }) }); onClose(); }
     else toast.error(t(`dashboard.blocked.${res.reason}`, { defaultValue: t('dashboard.blocked.notAllowed') }));
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-2xl">
@@ -436,7 +436,7 @@ function ApproveDialog({ request: r, onClose }: { request: SupportRequest; onClo
             );
           })}
         </div>
-        <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]"><span className="text-muted">{t('sup.approvedTotal')}</span><span className="tnum text-[18px] font-semibold text-ink">{f.money({ amountMinor: total, currency: r.total.currency })}</span></div>
+        <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]"><span className="text-muted">{t('sup.approvedTotal')}</span><span className="tnum text-[16px] font-semibold text-ink">{f.money({ amountMinor: total, currency: r.total.currency })}</span></div>
         <DialogFooter>
           <Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button>
           <Button disabled={invalid} onClick={save}><ClipboardCheck /> {t('sup.approve')}</Button>
@@ -457,7 +457,7 @@ function RefundDialog({ request: r, farmers, onClose }: { request: SupportReques
   const [reference, setReference] = useState('');
   const [doc, setDoc] = useState<string | undefined>();
   const minor = Math.round(Number(amount || 0) * 10 ** dec);
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
@@ -517,7 +517,7 @@ function NewSupportSheet({ onClose }: { onClose: (id?: string) => void }) {
     toast.success(t('sup.toast.created', { number: r.number }), { description: t('dashboard.actedStatus', { status: t(`status.${r.status}`) }) });
     onClose(r.id);
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -533,14 +533,14 @@ function NewSupportSheet({ onClose }: { onClose: (id?: string) => void }) {
           </div>
           <Checkbox label={t('sup.agroInterest')} checked={agro} onChange={(e) => setAgro(e.target.checked)} />
           <div>
-            <div className="mb-2 flex items-center justify-between"><h3 className="text-[15px] font-semibold text-ink">{terms.farmers}</h3><span className="text-[13px] text-muted">{t('sup.pickedN', { count: picked.length, total: members.length })}</span></div>
+            <div className="mb-2 flex items-center justify-between"><h3 className="text-[14px] font-semibold text-ink">{terms.farmers}</h3><span className="text-[13px] text-muted">{t('sup.pickedN', { count: picked.length, total: members.length })}</span></div>
             <div className="max-h-56 divide-y divide-line overflow-y-auto rounded-ctl border border-line">
               {members.map((id) => <div key={id} className="px-3 py-2"><Checkbox label={sl.farmerName(id)} checked={picked.includes(id)} onChange={(e) => setPicked(e.target.checked ? [...picked, id] : picked.filter((x) => x !== id))} /></div>)}
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div><div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('sup.leaderVoice')}</div><AudioCapture value={leader} onChange={setLeader} /></div>
-            <div><div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('sup.witnessVoice')}</div><AudioCapture value={witness} onChange={setWitness} /></div>
+            <div><div className="mb-1.5 text-[12px] font-medium text-muted">{t('sup.leaderVoice')}</div><AudioCapture value={leader} onChange={setLeader} /></div>
+            <div><div className="mb-1.5 text-[12px] font-medium text-muted">{t('sup.witnessVoice')}</div><AudioCapture value={witness} onChange={setWitness} /></div>
           </div>
           <div className="flex items-center justify-between rounded-ctl bg-canvas px-4 py-3 text-[14px]"><span className="text-muted">{t('col.total')}</span><span className="tnum text-[20px] font-semibold text-ink">{f.money({ amountMinor: minor * picked.length, currency: f.org.currency })}</span></div>
         </div>

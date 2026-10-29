@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode; compact?: bo
       <div role="alert" className={`mx-auto flex max-w-md flex-col items-center gap-4 text-center ${this.props.compact ? 'p-6' : 'py-20'}`}>
         <span className="rounded-full bg-danger/10 p-4 text-danger"><AlertTriangle className="h-6 w-6" aria-hidden="true" /></span>
         <div>
-          <h1 className="text-[22px] text-ink">{i18n.t(chunk ? 'errors.offlineTitle' : 'errors.pageTitle')}</h1>
+          <h1 className="font-display text-[24px] text-ink">{i18n.t(chunk ? 'errors.offlineTitle' : 'errors.pageTitle')}</h1>
           <p className="mt-1 text-[14px] text-muted">{i18n.t(chunk ? 'errors.offlineHint' : 'errors.pageHint')}</p>
         </div>
         <div className="flex gap-2">

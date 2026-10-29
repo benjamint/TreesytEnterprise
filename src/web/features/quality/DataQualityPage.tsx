@@ -109,7 +109,7 @@ export function DataQualityPage() {
         {(['OPEN', 'ASSIGNED', 'VALID', 'RESOLVED'] as const).map((s) => (
           <button key={s} type="button" onClick={() => setView(s)} className={`rounded-card border bg-surface p-5 text-left shadow-soft transition-colors ${view === s ? 'border-brand' : 'border-line hover:border-brand/40'}`}>
             <div className="eyebrow">{t(`dq.status.${s}`)}</div>
-            <div className="tnum mt-2 text-[28px] font-semibold text-ink">{f.number(rows.filter((r) => r.status === s).length)}</div>
+            <div className="tnum mt-2 text-[24px] font-semibold text-ink">{f.number(rows.filter((r) => r.status === s).length)}</div>
           </button>
         ))}
       </div>
@@ -231,7 +231,7 @@ function QualityCharts({ rows, active }: { rows: (QualityIssue & { rule?: Parame
     }
     return [...m].sort((a, b) => a[0].localeCompare(b[0])).slice(-10).map(([k, v]) => ({ label: f.date(k, 'd MMM'), ...Object.fromEntries(SOURCES.map((s) => [s, v[s] ?? 0])) }));
   }, [rows, f]);
-  const panel = (title: string, body: React.ReactNode) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{title}</h3>{body}</div>;
+  const panel = (title: string, body: React.ReactNode) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{title}</h3>{body}</div>;
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-2">

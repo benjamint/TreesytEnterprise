@@ -13,7 +13,7 @@ import { useActor, useFormat, useOrgRows, useOrgSettings, useT } from '@/stores/
 import { useLookups } from '@/web/features/people/shared';
 import { Field } from '@/components/shared/Field';
 
-const selectCls = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft';
+const selectCls = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft';
 const decimalsOf = (currency: string) => (currency === 'XOF' ? 0 : 2);
 
 /** New purchase request on the web, entered for an agent (PRD D1 Create). */

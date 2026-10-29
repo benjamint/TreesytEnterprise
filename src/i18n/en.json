@@ -263,6 +263,9 @@
     "auditor": "Auditor"
   },
   "dashboard": {
+    "kpiVs": "vs previous 4 weeks",
+    "kpiUp": "Up {{pct}}",
+    "kpiDown": "Down {{pct}}",
     "greeting": "Good to see you, {{name}}",
     "subtitle": "Here’s what’s happening at {{company}} today.",
     "kpi": {
@@ -2342,9 +2345,7 @@
       "normal": "Normal",
       "slow": "Slow network",
       "error": "Errors"
-    },
-    "autoTours": "Tours on first visit",
-    "autoToursHint": "Run each page's tour the first time you open it in this session."
+    }
   },
   "auth": {
     "home": "TreeSyt home",

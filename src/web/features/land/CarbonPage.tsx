@@ -48,11 +48,11 @@ export function CarbonPage() {
           const target = p.speciesTargets.reduce((a, x) => a + x.target, 0);
           return (
             <li key={p.id}><button type="button" onClick={() => open(p.id)} className="w-full rounded-card border border-line bg-surface p-5 text-left shadow-soft hover:border-brand/40">
-              <div className="flex items-start justify-between gap-3"><div><div className="font-mono text-[12px] text-muted">{p.number}</div><div className="text-[17px] font-semibold text-ink">{p.name}</div><div className="text-[13px] text-muted">{`${t(`land.standard.${p.standard}`)} · ${p.partner?.name ?? '—'} · ${p.communityIds.map((c) => lk.community(c)).join(', ')}`}</div></div><Badge tone={p.status === 'ACTIVE' ? 'teal' : 'neutral'}>{t(`land.projectStatus.${p.status}`)}</Badge></div>
+              <div className="flex items-start justify-between gap-3"><div><div className="font-mono text-[12px] text-muted">{p.number}</div><div className="text-[15px] font-semibold text-ink">{p.name}</div><div className="text-[13px] text-muted">{`${t(`land.standard.${p.standard}`)} · ${p.partner?.name ?? '—'} · ${p.communityIds.map((c) => lk.community(c)).join(', ')}`}</div></div><Badge tone={p.status === 'ACTIVE' ? 'teal' : 'neutral'}>{t(`land.projectStatus.${p.status}`)}</Badge></div>
               <div className="mt-4 grid grid-cols-3 gap-2 text-[13px]">
-                <div><div className="text-muted">{t('land.trees')}</div><div className="tnum text-[18px] font-semibold text-ink">{`${f.number(s.trees)} / ${f.number(target)}`}</div></div>
-                <div><div className="text-muted">{t('land.survivalPct')}</div><div className="tnum text-[18px] font-semibold text-ink">{`${f.number(s.survivalPct)}%`}</div></div>
-                <div><div className="text-muted">{t('land.co2PerYear')}</div><div className="tnum text-[18px] font-semibold text-ink">{`${f.number(s.tPerYear, { maximumFractionDigits: 1 })} t`}</div></div>
+                <div><div className="text-muted">{t('land.trees')}</div><div className="tnum text-[16px] font-semibold text-ink">{`${f.number(s.trees)} / ${f.number(target)}`}</div></div>
+                <div><div className="text-muted">{t('land.survivalPct')}</div><div className="tnum text-[16px] font-semibold text-ink">{`${f.number(s.survivalPct)}%`}</div></div>
+                <div><div className="text-muted">{t('land.co2PerYear')}</div><div className="tnum text-[16px] font-semibold text-ink">{`${f.number(s.tPerYear, { maximumFractionDigits: 1 })} t`}</div></div>
               </div>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-canvas" role="meter" aria-valuenow={target ? Math.round((s.trees / target) * 100) : 0} aria-valuemin={0} aria-valuemax={100} aria-label={t('land.towardTarget')}><div className="h-full rounded-full bg-brand" style={{ width: `${target ? Math.min(100, (s.trees / target) * 100) : 0}%` }} /></div>
             </button></li>
@@ -94,7 +94,7 @@ function ProjectDrawer({ project: p, onClose }: { project: CarbonProject; onClos
           {
             key: 'overview', label: t('land.tab.overview'), content: (
               <div className="space-y-5">
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{([[t('land.trees'), f.number(s.trees)], [t('land.survivalPct'), `${f.number(s.survivalPct)}%`], [t('land.co2PerYear'), `${f.number(s.tPerYear, { maximumFractionDigits: 1 })} t`], [t('land.co2ToDate'), `${f.number(s.tToDate, { maximumFractionDigits: 1 })} t`]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[18px] font-semibold text-ink">{v}</div></div>)}</div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{([[t('land.trees'), f.number(s.trees)], [t('land.survivalPct'), `${f.number(s.survivalPct)}%`], [t('land.co2PerYear'), `${f.number(s.tPerYear, { maximumFractionDigits: 1 })} t`], [t('land.co2ToDate'), `${f.number(s.tToDate, { maximumFractionDigits: 1 })} t`]] as [string, string][]).map(([k, v]) => <div key={k} className="rounded-ctl border border-line px-3 py-2.5"><div className="text-[12px] text-muted">{k}</div><div className="tnum text-[16px] font-semibold text-ink">{v}</div></div>)}</div>
                 <Facts items={[
                   [t('land.standardCol'), t(`land.standard.${p.standard}`)], [t('land.partner'), p.partner?.name ?? '—'], [t('land.baseline'), `${f.number(p.baselineT)} tCO₂e`], [t('land.startDate'), f.date(p.startDate)],
                   [t('land.communities'), p.communityIds.map((c) => lk.community(c)).join(', ')], [t('land.plotsCol'), f.number(p.plotIds.length)],
@@ -141,7 +141,7 @@ function AssignTreesDialog({ project: p, onClose }: { project: CarbonProject; on
       <DialogContent>
         <DialogHeader><DialogTitle>{t('land.assignTrees')}</DialogTitle><DialogDescription>{t('land.assignTreesHint')}</DialogDescription></DialogHeader>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label={t('land.species')}><select value={speciesId} onChange={(e) => setSpeciesId(e.target.value)} aria-label={t('land.species')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{p.speciesTargets.map((x) => <option key={x.speciesId} value={x.speciesId}>{ll.speciesName(x.speciesId)}</option>)}</select></Field>
+          <Field label={t('land.species')}><select value={speciesId} onChange={(e) => setSpeciesId(e.target.value)} aria-label={t('land.species')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px]">{p.speciesTargets.map((x) => <option key={x.speciesId} value={x.speciesId}>{ll.speciesName(x.speciesId)}</option>)}</select></Field>
           <Field label={t('col.quantity')} helper={t('land.availableN', { n: free })}><Input type="number" value={qty} onChange={(e) => setQty(e.target.value)} aria-label={t('col.quantity')} /></Field>
         </div>
         <DialogFooter><Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button><Button disabled={!(Number(qty) > 0) || Number(qty) > free} onClick={() => { const n = assignTreesToProject(p.id, speciesId, Number(qty), userId ?? 'system'); toast.success(t('land.toast.treesAssigned', { n })); onClose(); }}>{t('land.assign')}</Button></DialogFooter>
@@ -161,7 +161,7 @@ function NewProjectSheet({ onClose }: { onClose: (id?: string) => void }) {
   const set = (p: Partial<typeof v>) => setV({ ...v, ...p });
   const speciesTargets = Object.entries(targets).filter(([, n]) => Number(n) > 0).map(([speciesId, n]) => ({ speciesId, target: Number(n) }));
   const invalid = !v.name.trim() || !communities.length || !speciesTargets.length;
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">

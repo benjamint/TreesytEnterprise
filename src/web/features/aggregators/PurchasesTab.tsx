@@ -200,7 +200,7 @@ function AcsSheet({ onClose, settingsCommodities }: { onClose: (id?: string) => 
       onClose(a.id);
     } catch (e) { setError(t(`agg.err.${(e as Error).message}`)); }
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <>
       <Sheet open onOpenChange={(o) => !o && onClose()}>
@@ -231,7 +231,7 @@ function AcsSheet({ onClose, settingsCommodities }: { onClose: (id?: string) => 
             </div>
             {belowThreshold && <p className="flex items-start gap-2 rounded-ctl border border-info/30 bg-info/5 px-3 py-2 text-[13px] text-ink"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-info" />{t('agg.belowThreshold', { kg: f.kg(commodity!.aggregatorThresholdKg) })}</p>}
             <section className="space-y-3 rounded-card border border-line p-4">
-              <h3 className="text-[15px] font-semibold text-ink">{t('agg.priceAndCurrency')}</h3>
+              <h3 className="text-[14px] font-semibold text-ink">{t('agg.priceAndCurrency')}</h3>
               <div className="grid gap-4 sm:grid-cols-3">
                 <Field label={t('agg.dealCurrency')}>
                   <select value={currency} onChange={(e) => { setCurrency(e.target.value); setRate(String(FX_HINT[org.currency]?.[e.target.value] ?? 1)); setPrice(null); }} aria-label={t('agg.dealCurrency')} className={select}>

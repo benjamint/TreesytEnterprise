@@ -81,7 +81,7 @@ export function CommunityForm({ open, onClose, community }: { open: boolean; onC
               <Input compact value={name} onChange={(e) => setName(e.target.value)} aria-label={t('people.name')} />
             </Field>
             <Field label={t('people.community.parent', { level: levelLabel(settings.locationLevels, parentLevel ?? '', lang) })}>
-              <select value={parentId} onChange={(e) => setParentId(e.target.value)} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('people.location')}>
+              <select value={parentId} onChange={(e) => setParentId(e.target.value)} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink" aria-label={t('people.location')}>
                 {parents.map((p) => <option key={p.id} value={p.id}>{pathLabel(nodes, p.id)}</option>)}
               </select>
             </Field>
@@ -101,7 +101,7 @@ export function CommunityForm({ open, onClose, community }: { open: boolean; onC
             </div>
           </Field>
           <div>
-            <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
+            <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('people.profile')} <span className="text-[12px] font-normal text-muted">{form.name} · {t('set.forms.v', { n: form.version })}</span></h3>
             <FormFields form={form} answers={answers} onChange={setAnswers} errors={tried ? errors : []} />
           </div>
         </div>
@@ -117,7 +117,7 @@ export function CommunityForm({ open, onClose, community }: { open: boolean; onC
 export function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <label className="block min-w-0">
-      <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium text-ink">{label}</span>
       {children}
       {error && <span className="mt-1 block text-[12px] text-danger" role="alert">{error}</span>}
     </label>

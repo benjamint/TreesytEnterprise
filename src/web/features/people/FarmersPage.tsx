@@ -295,7 +295,7 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
                 <AnswersView form={form} answers={row.customFields} />
               </div>
               <div>
-                <h3 className="mb-2 text-[15px] font-semibold text-ink">{t('people.farmer.history')}</h3>
+                <h3 className="mb-2 text-[14px] font-semibold text-ink">{t('people.farmer.history')}</h3>
                 {mine.versions.length ? (
                   <ul className="divide-y divide-line rounded-ctl border border-line text-[13px]">
                     {mine.versions.map((e) => <li key={e.id} className="px-4 py-2"><span className="text-ink">{t(`activity.${e.key}`, e.params)}</span><span className="block text-[12px] text-muted">{lk.user(e.actorId)} · {f.dateTime(e.at)}</span></li>)}
@@ -384,7 +384,7 @@ function FarmerDrawer({ row, onClose, onEdit }: { row: FarmerRow; onClose: () =>
                   <li key={l.id} className="rounded-ctl border border-line p-4 text-[13px]">
                     <div className="flex items-center justify-between"><span className="font-medium text-ink">{t('people.farmer.loan', { amount: f.money(l.principal) })}</span><Badge tone={l.status === 'ACTIVE' ? 'warning' : 'success'}>{t(`people.farmer.loanStatus.${l.status}`)}</Badge></div>
                     <div className="mt-1 text-muted">{t('people.farmer.loanWindow', { from: f.date(l.window.start), to: f.date(l.window.end) })} · {t('people.farmer.repayments', { count: l.repayments.length })}</div>
-                    <div className="mt-2 text-[15px] text-ink">{t('people.farmer.balance')}: <span className="tnum font-semibold">{f.money({ amountMinor: bal, currency: l.principal.currency })}</span></div>
+                    <div className="mt-2 text-[14px] text-ink">{t('people.farmer.balance')}: <span className="tnum font-semibold">{f.money({ amountMinor: bal, currency: l.principal.currency })}</span></div>
                     <p className="mt-1 text-[12px] text-muted">{t('people.farmer.ledgerLater')}</p>
                   </li>
                 );
@@ -441,9 +441,9 @@ function FarmerDashboard({ rows }: { rows: FarmerRow[] }) {
     return [...m].sort((a, b) => a[0].localeCompare(b[0])).slice(-12).map(([k, n]) => ({ label: f.date(`${k}-01`, 'MMM yy'), registered: n }));
   }, [rows, f]);
   const card = (label: string, value: string, detail?: string) => (
-    <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{label}</div><div className="tnum mt-2 text-[28px] font-semibold text-ink">{value}</div>{detail && <div className="mt-1 text-[13px] text-muted">{detail}</div>}</div>
+    <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><div className="eyebrow">{label}</div><div className="tnum mt-2 text-[24px] font-semibold text-ink">{value}</div>{detail && <div className="mt-1 text-[13px] text-muted">{detail}</div>}</div>
   );
-  const panel = (title: string, body: React.ReactNode) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{title}</h3>{body}</div>;
+  const panel = (title: string, body: React.ReactNode) => <div className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{title}</h3>{body}</div>;
   const top = (list: [string, number][], label: (k: string) => string) => {
     const head = list.slice(0, 6).map(([k, v]) => ({ label: label(k), value: v }));
     const rest = list.slice(6).reduce((s, [, v]) => s + v, 0);

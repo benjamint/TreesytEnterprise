@@ -84,7 +84,7 @@ export function SetupChecklist() {
                 {step.done ? <Check className="h-4 w-4" strokeWidth={3} /> : i + 1}
               </span>
               <span className="min-w-0 flex-1">
-                <span className={cn('block text-[15px] font-medium', step.done ? 'text-muted line-through decoration-1' : 'text-ink')}>{t(`checklist.step.${step.key}.title`)}</span>
+                <span className={cn('block text-[14px] font-medium', step.done ? 'text-muted line-through decoration-1' : 'text-ink')}>{t(`checklist.step.${step.key}.title`)}</span>
                 <span className="block text-[13px] text-muted">{t(`checklist.step.${step.key}.desc`)}</span>
               </span>
               <ChevronRight className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />

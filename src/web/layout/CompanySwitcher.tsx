@@ -32,14 +32,14 @@ export function CompanySwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="flex h-11 min-w-0 shrink-0 items-center gap-2.5 rounded-full border border-line bg-surface py-1.5 pl-1.5 pr-2 sm:pr-3 text-left shadow-soft transition-colors hover:border-brand/40"
+        className="flex h-btn min-w-0 shrink-0 items-center gap-2 rounded-ctl border border-line-strong bg-surface py-1 pl-1 pr-2 text-left shadow-xs transition-colors hover:bg-subtle sm:pr-2.5"
         aria-label={t('shell.switchCompany')}
         data-tour="company-switcher"
       >
-        <CompanyLogo text={org.branding.logoText} color={org.branding.primaryColor} size={32} />
+        <CompanyLogo text={org.branding.logoText} color={org.branding.primaryColor} size={26} />
         <span className="hidden min-w-0 sm:block">
-          <span className="block truncate text-[14px] font-semibold leading-tight text-ink">{org.name}</span>
-          <span className="flex items-center gap-1.5 text-[12px] leading-tight text-muted">
+          <span className="block truncate text-[13px] font-semibold leading-tight text-ink">{org.name}</span>
+          <span className="flex items-center gap-1.5 text-[11px] leading-tight text-muted">
             <Flag code={org.countries[0]!} className="h-2.5 w-3.5" />
             {t(`orgType.${org.type}`)}
           </span>

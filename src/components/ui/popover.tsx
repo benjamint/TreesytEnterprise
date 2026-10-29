@@ -12,7 +12,7 @@ export const PopoverContent = React.forwardRef<React.ElementRef<typeof PopoverPr
         ref={ref}
         align={align}
         sideOffset={sideOffset}
-        className={cn('z-[60] rounded-card border border-line bg-surface shadow-soft outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95', className)}
+        className={cn('z-[60] rounded-card border border-line bg-surface shadow-pop outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95', className)}
         {...props}
       />
     </PopoverPrimitive.Portal>

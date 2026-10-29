@@ -74,7 +74,7 @@ export function SettingsFrame({ page, dirty = false, onSave, onCancel, onReset, 
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-2xl">{t(`settings.page.${page}`)}</h2>
+            <h2 className="font-display text-[24px] leading-tight">{t(`settings.page.${page}`)}</h2>
             {!canEdit && (
               <Badge tone="neutral">
                 <Lock className="h-3 w-3" /> {t('set.frame.viewOnly')}
@@ -208,7 +208,7 @@ export function Section({ title, description, actions, children, className }: { 
     <section className={cn('min-w-0', className)}>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h3 className="text-[17px] font-semibold text-ink">{title}</h3>
+          <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
           {description && <p className="mt-0.5 max-w-2xl text-[14px] text-muted">{description}</p>}
         </div>
         {actions}
@@ -224,7 +224,7 @@ export function SwitchRow({ label, description, checked, onChange, disabled }: {
   return (
     <div className="flex items-start justify-between gap-6 py-3">
       <label htmlFor={id} className="min-w-0 cursor-pointer">
-        <span className="block text-[15px] font-medium text-ink">{label}</span>
+        <span className="block text-[14px] font-medium text-ink">{label}</span>
         {description && <span className="mt-0.5 block text-[13px] text-muted">{description}</span>}
       </label>
       <Switch id={id} checked={checked} onCheckedChange={onChange} disabled={disabled} />
@@ -236,7 +236,7 @@ export function SwitchRow({ label, description, checked, onChange, disabled }: {
 export function Mini({ label, children, className }: { label: ReactNode; children: ReactNode; className?: string }) {
   return (
     <label className={cn('block min-w-0', className)}>
-      <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium text-ink">{label}</span>
       {children}
     </label>
   );
@@ -283,7 +283,7 @@ export function Select<V extends string>({ value, onChange, options, className, 
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as V)}
-      className={cn('h-11 w-full min-w-0 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft disabled:opacity-60', className)}
+      className={cn('h-ctl w-full min-w-0 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-soft disabled:opacity-60', className)}
       {...props}
     >
       {options.map((o) => (
@@ -323,7 +323,7 @@ export function ChipsInput({ values, onChange, placeholder, label }: { values: s
     setText('');
   };
   return (
-    <div className="flex min-h-11 flex-wrap items-center gap-1.5 rounded-ctl border border-line bg-surface px-2 py-1.5 focus-within:border-brand focus-within:ring-[3px] focus-within:ring-brand-soft">
+    <div className="flex min-h-ctl flex-wrap items-center gap-1.5 rounded-ctl border border-line bg-surface px-2 py-1.5 focus-within:border-brand focus-within:ring-[3px] focus-within:ring-brand-soft">
       {values.map((v) => (
         <span key={v} className="inline-flex items-center gap-1 rounded-full bg-canvas px-2.5 py-1 text-[13px] text-ink">
           {v}
@@ -382,7 +382,7 @@ export function EditTable({ head, children, empty, className }: { head: ReactNod
         <thead>
           <tr className="bg-canvas text-left">
             {head.map((h, i) => (
-              <th key={i} className="whitespace-nowrap px-3 py-2.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{h}</th>
+              <th key={i} className="whitespace-nowrap px-3 py-2.5 text-[12px] font-medium text-muted">{h}</th>
             ))}
           </tr>
         </thead>

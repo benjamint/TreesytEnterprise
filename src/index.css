@@ -13,13 +13,16 @@
     --on-brand: 255 255 255;
     --lime: 184 224 90;
     --badge-dark: 15 42 32;
-    --ink: 15 42 32;
-    --body: 51 65 59;
-    --muted: 96 109 103;
-    --label: 61 74 68;
+    --ink: 26 25 22;
+    --body: 60 58 53;
+    --muted: 104 101 94;
+    --label: 72 70 64;
     --surface: 255 255 255;
-    --canvas: 247 248 246;
-    --line: 227 231 228;
+    --canvas: 250 249 246;
+    --subtle: 246 245 241;
+    --line: 234 232 226;
+    --line-strong: 216 213 205;
+    --shadow: 48 38 24;
     --info: 37 95 196;
     --success: 24 118 64;
     --warning: 140 88 10;
@@ -29,32 +32,49 @@
     /* Chart series (validated categorical palette, fixed order). */
     --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
     --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6; --series-8: #e34948;
+    /* Sizing: compact web controls. */
+    --font-display: 'Newsreader Variable', 'Iowan Old Style', Georgia, serif;
+    --text-base: 14px; --leading-base: 21px;
+    --ctl: 40px; --ctl-sm: 36px;
+    --btn: 36px; --btn-sm: 32px; --btn-xs: 28px; --btn-lg: 44px;
+    --r-chip: 6px; --r-ctl: 8px; --r-card: 12px; --r-panel: 16px;
     color-scheme: light;
   }
 
   .dark {
-    --brand: 63 175 126;
-    --brand-hover: 86 192 143;
-    --brand-soft: 20 39 30;
+    --brand: 74 190 139;
+    --brand-hover: 100 205 158;
+    --brand-soft: 30 48 39;
     --on-brand: 10 20 16;
     --lime: 198 234 115;
     --badge-dark: 15 42 32;
-    --ink: 241 245 242;
-    --body: 201 212 206;
-    --muted: 147 163 155;
-    --label: 175 192 183;
-    --surface: 17 29 24;
-    --canvas: 10 20 16;
-    --line: 36 53 45;
-    --info: 106 155 234;
+    --ink: 241 239 234;
+    --body: 208 204 196;
+    --muted: 163 159 150;
+    --label: 188 184 176;
+    --surface: 38 37 34;
+    --canvas: 30 29 27;
+    --subtle: 44 43 40;
+    --line: 54 52 48;
+    --line-strong: 70 68 63;
+    --shadow: 0 0 0;
+    --info: 133 173 238;
     --success: 76 192 127;
     --warning: 224 169 74;
-    --danger: 232 105 92;
+    --danger: 238 146 137;
     --teal: 72 190 190;
-    --unknown: 170 136 230;
+    --unknown: 185 157 234;
     --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
     --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
     color-scheme: dark;
+  }
+
+  /* The phone app keeps the PRD's large tap targets and rounder corners. */
+  .mobile-ui {
+    --text-base: 16px; --leading-base: 24px;
+    --ctl: 56px; --ctl-sm: 44px;
+    --btn: 44px; --btn-sm: 40px; --btn-xs: 32px; --btn-lg: 52px;
+    --r-chip: 8px; --r-ctl: 14px; --r-card: 20px; --r-panel: 28px;
   }
 
   * {
@@ -73,19 +93,39 @@
 
   h1, h2, h3, h4 {
     @apply text-ink font-semibold;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
+  }
+
+  /* Display serif for page titles and hero numbers (web only; the phone app stays in Inter). */
+  .font-display {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    letter-spacing: -0.012em;
+  }
+  .mobile-ui .font-display {
+    font-family: inherit;
+    font-weight: 600;
   }
 
   :focus-visible {
-    outline: 3px solid rgb(var(--brand));
-    outline-offset: 3px;
+    outline: 2px solid rgb(var(--brand));
+    outline-offset: 2px;
     border-radius: 6px;
+  }
+
+  ::selection {
+    background: rgb(var(--brand) / 0.18);
   }
 }
 
 @layer components {
+  /* Small labels: sentence case and quiet on the web; uppercase in the phone app (PRD 9). */
   .eyebrow {
-    @apply text-eyebrow uppercase text-label;
+    @apply text-eyebrow text-muted;
+  }
+  .mobile-ui .eyebrow {
+    @apply font-semibold uppercase tracking-[0.08em] text-label;
   }
   .tnum {
     font-feature-settings: 'cv11', 'ss01', 'tnum';

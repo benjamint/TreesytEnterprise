@@ -44,7 +44,7 @@ export function LeadsPage() {
                   <div key={k} className="grid grid-cols-[140px_1fr] gap-3 py-3 text-[14px]"><dt className="eyebrow pt-0.5">{t(k!)}</dt><dd className="text-ink">{v}</dd></div>
                 ))}
               </dl>
-              {open.message && <p className="mt-6 rounded-ctl bg-canvas p-4 text-[15px] leading-relaxed text-body">{open.message}</p>}
+              {open.message && <p className="mt-6 rounded-ctl bg-canvas p-4 text-[14px] leading-relaxed text-body">{open.message}</p>}
             </>
           )}
         </SheetContent>

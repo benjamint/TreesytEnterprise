@@ -209,7 +209,7 @@ function StepCard({ def, step, index, onChange, onStatus, onRemove }: { def: Wor
           <Select value={def.stepStatus[step.id] ?? ''} onChange={onStatus} options={[{ value: '', label: t('set.approvals.noStatus') }, ...def.statuses.map((s) => ({ value: s, label: t(`status.${s}`, { defaultValue: s }) }))]} />
         </Mini>
         <div className="md:col-span-2">
-          <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.approvals.roles')}</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('set.approvals.roles')}</span>
           <div className="flex flex-wrap gap-1.5">
             {roles.map((r) => {
               const on = step.roleIds.includes(r.id);
@@ -224,7 +224,7 @@ function StepCard({ def, step, index, onChange, onStatus, onRemove }: { def: Wor
         </div>
 
         <div className="md:col-span-2">
-          <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('set.approvals.condition')}</span>
+          <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('set.approvals.condition')}</span>
           <div className="flex flex-wrap items-center gap-2">
             <Select className="w-56" value={field} onChange={setCondField} options={(['none', 'total', 'commodityId', 'variancePct'] as const).map((x) => ({ value: x, label: t(`set.approvals.cond.${x}`) }))} aria-label={t('set.approvals.condition')} />
             {field === 'total' && cond && (

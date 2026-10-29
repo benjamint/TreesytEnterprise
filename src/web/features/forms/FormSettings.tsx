@@ -13,7 +13,7 @@ import { useFormStore } from '@/stores/formStore';
 import { useLocationStore } from '@/stores/locationStore';
 import { useActor, useCan, useLang, useOrgRows, useOrgSettings, useRoleName, useT } from '@/stores/hooks';
 
-const sel = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+const sel = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
 const STEPS: FormRecord['status'][] = ['DRAFT', 'TEST', 'LIVE', 'CLOSED'];
 
 function Card({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
@@ -25,7 +25,7 @@ function Card({ title, hint, children }: { title: string; hint?: string; childre
     </section>
   );
 }
-const Label = ({ text, children }: { text: string; children: ReactNode }) => <label className="block"><span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{text}</span>{children}</label>;
+const Label = ({ text, children }: { text: string; children: ReactNode }) => <label className="block"><span className="mb-1.5 block text-[13px] font-medium text-ink">{text}</span>{children}</label>;
 
 /** Form settings, lifecycle and assignment (PRD G1 Lifecycle, Assignment). */
 export function FormSettings({ form }: { form: FormRecord }) {

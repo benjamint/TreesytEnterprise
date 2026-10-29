@@ -122,7 +122,7 @@ export function PayDialog({ request, onClose }: { request: PayRequest; onClose: 
                   </div>
                   <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_180px]">
                     <Input compact type="tel" value={r.number} onChange={(e) => setRow(i, { number: e.target.value, providerId: detectProvider(orgId, e.target.value)?.id ?? r.providerId })} aria-label={t('pay.walletNumber', { name: r.name })} />
-                    <select value={r.providerId} onChange={(e) => setRow(i, { providerId: e.target.value })} aria-label={t('pay.network', { name: r.name })} className="h-11 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
+                    <select value={r.providerId} onChange={(e) => setRow(i, { providerId: e.target.value })} aria-label={t('pay.network', { name: r.name })} className="h-ctl rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">
                       {mobile.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
                   </div>
@@ -137,13 +137,13 @@ export function PayDialog({ request, onClose }: { request: PayRequest; onClose: 
             {editable && (
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="block">
-                  <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('buy.amountIn', { currency })}</span>
+                  <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('buy.amountIn', { currency })}</span>
                   <Input compact type="number" min={0} step={dec ? '0.01' : '1'} value={String(rows[0]!.amountMinor / 10 ** dec)} onChange={(e) => setRow(0, { amountMinor: Math.round(Number(e.target.value || 0) * 10 ** dec) })} aria-label={t('buy.amountIn', { currency })} />
                   <span className={cn('mt-1 block text-[12px]', overMax ? 'text-danger' : 'text-muted')}>{t('buy.max', { amount: money(request.editableMaxMinor!) })}</span>
                 </label>
                 {request.withWeight && (
                   <label className="block">
-                    <span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('buy.weightKg')}</span>
+                    <span className="mb-1.5 block text-[13px] font-medium text-ink">{t('buy.weightKg')}</span>
                     <Input compact type="number" min={0} value={weight} onChange={(e) => setWeight(e.target.value)} aria-label={t('buy.weightKg')} />
                   </label>
                 )}
@@ -196,7 +196,7 @@ export function PayDialog({ request, onClose }: { request: PayRequest; onClose: 
           <div className="space-y-3">
             <dl className="grid gap-3 rounded-ctl border border-line p-4 text-[14px] sm:grid-cols-2">
               <div><dt className="text-[12px] text-muted">{t('pay.payees')}</dt><dd className="text-ink">{rows.length === 1 ? `${rows[0]!.name} · ${formatPhone(rows[0]!.number)}` : t('pay.payeesN', { count: rows.length })}</dd></div>
-              <div><dt className="text-[12px] text-muted">{t('pay.totalCompany')}</dt><dd className="tnum text-[18px] font-semibold text-ink">{money(sum('total'))}</dd></div>
+              <div><dt className="text-[12px] text-muted">{t('pay.totalCompany')}</dt><dd className="tnum text-[16px] font-semibold text-ink">{money(sum('total'))}</dd></div>
               {[...new Set(rows.map((r) => r.providerId))].map((pid) => {
                 const w = wallets.find((x) => x.orgId === orgId && x.providerId === pid);
                 const out = rows.reduce((s, r, i) => s + (r.providerId === pid ? quotes[i]!.total.amountMinor : 0), 0);

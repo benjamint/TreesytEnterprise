@@ -132,7 +132,7 @@ export function AiPage() {
             {active?.messages.map((m, i) =>
               m.role === 'user' ? (
                 <div key={m.id} className="flex justify-end">
-                  <p className="max-w-[80%] rounded-2xl rounded-br-sm bg-brand px-4 py-2.5 text-[15px] text-on-brand">{m.text}</p>
+                  <p className="max-w-[80%] rounded-2xl rounded-br-sm bg-brand px-4 py-2.5 text-[14px] text-on-brand">{m.text}</p>
                 </div>
               ) : (
                 <div key={m.id}>{m.answer && <AnswerCard answer={m.answer} question={active.messages[i - 1]?.text ?? ''} />}</div>
@@ -155,7 +155,7 @@ export function AiPage() {
           <form onSubmit={submit} className="border-t border-line bg-surface p-3">
             <div className="flex items-center gap-2 rounded-ctl border border-line bg-surface px-3 focus-within:border-brand focus-within:ring-[3px] focus-within:ring-brand-soft">
               <Sparkles className="h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
-              <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t('ai.placeholder')} aria-label={t('ai.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent text-[15px] text-ink outline-none placeholder:text-muted" />
+              <input value={text} onChange={(e) => setText(e.target.value)} placeholder={t('ai.placeholder')} aria-label={t('ai.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent text-[14px] text-ink outline-none placeholder:text-muted" />
               <Button type="submit" size="iconSm" disabled={!text.trim() || busy} aria-label={t('ai.send')}><ArrowUp /></Button>
             </div>
             <p className="mt-2 px-1 text-[12px] text-muted">{t('ai.scope', { company: org.name })} <button type="button" className="underline-offset-2 hover:underline" onClick={() => navigate('/app/help')}>{t('ai.learnMore')}</button></p>

@@ -24,7 +24,7 @@ export function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
   const langs: Lang[] = ['en', 'fr'];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-2 border-b md:gap-3 border-line bg-surface/95 px-4 backdrop-blur md:px-6">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-line bg-surface/90 px-4 backdrop-blur-md md:gap-3 md:px-6">
       <Button variant="ghost" size="icon" className="lg:hidden" onClick={onMenu} aria-label={t('nav.menu')}>
         <Menu />
       </Button>
@@ -32,30 +32,30 @@ export function TopBar({ onMenu, onSearch }: { onMenu: () => void; onSearch: () 
       <button
         type="button"
         onClick={onSearch}
-        className="ml-1 hidden h-10 min-w-0 flex-1 items-center gap-2.5 rounded-ctl border border-line bg-canvas px-3.5 text-left text-[14px] text-muted transition-colors hover:border-brand/40 md:flex md:max-w-md"
+        className="ml-1 hidden h-btn min-w-0 flex-1 items-center gap-2 rounded-ctl border border-line bg-subtle px-3 text-left text-[13px] text-muted transition-colors hover:border-line-strong hover:bg-surface md:flex md:max-w-md"
       >
         <Search className="h-4 w-4 shrink-0" aria-hidden="true" />
         <span className="truncate">{t('shell.searchPlaceholder')}</span>
         {/* eslint-disable-next-line i18next/no-literal-string */}
-        <kbd className="ml-auto rounded-chip border border-line bg-surface px-1.5 font-mono text-[11px]">⌘K</kbd>
+        <kbd className="ml-auto rounded border border-line bg-surface px-1.5 font-sans text-[11px] font-medium text-muted">⌘K</kbd>
       </button>
       <div className="ml-auto flex items-center gap-1 md:gap-1.5">
         <Button variant="ghost" size="icon" className="md:hidden" onClick={onSearch} aria-label={t('shell.searchShort')}>
           <Search />
         </Button>
         {aiOpen && (
-          <Button variant="secondary" size="sm" className="hidden border-transparent bg-brand-soft text-brand hover:bg-brand-soft/70 xl:inline-flex" onClick={() => navigate('/app/ai')}>
-            <Sparkles className="text-lime" /> {t('shell.askAi')}
+          <Button variant="secondary" size="sm" className="hidden xl:inline-flex" onClick={() => navigate('/app/ai')}>
+            <Sparkles className="text-brand" /> {t('shell.askAi')}
           </Button>
         )}
-        <div className="hidden items-center rounded-ctl border border-line p-0.5 sm:flex" role="group" aria-label={t('shell.language')}>
+        <div className="hidden items-center rounded-ctl border border-line bg-subtle p-0.5 sm:flex" role="group" aria-label={t('shell.language')}>
           {langs.map((l) => (
             <button
               key={l}
               type="button"
               onClick={() => setLanguage(l)}
               aria-pressed={language === l}
-              className={`h-8 rounded-chip px-2.5 text-[12px] font-semibold uppercase transition-colors ${language === l ? 'bg-brand-soft text-brand' : 'text-muted hover:text-ink'}`}
+              className={`h-7 rounded-[5px] px-2 text-[12px] font-semibold uppercase transition-colors ${language === l ? 'bg-surface text-ink shadow-xs' : 'text-muted hover:text-ink'}`}
             >
               {l}
             </button>

@@ -349,7 +349,7 @@ function ResolveDialog({ discrepancy: d, onClose }: { discrepancy: Discrepancy; 
         {type === 'TAG_REPLACED' && <Field label={t('inv.newTag')}><Input value={newCode} onChange={(e) => setNewCode(e.target.value.toUpperCase())} aria-label={t('inv.newTag')} /></Field>}
         {type !== 'WRITTEN_OFF' && <Field label={t('inv.weightKg')}><Input type="number" value={kg} onChange={(e) => setKg(e.target.value)} aria-label={t('inv.weightKg')} /></Field>}
         <Field label={type === 'WRITTEN_OFF' ? t('dashboard.reason') : t('agg.note')}><Input value={note} onChange={(e) => setNote(e.target.value)} aria-label={t('agg.note')} /></Field>
-        {type === 'WRITTEN_OFF' && <div><div className="mb-1.5 text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('inv.writeOffProof')}</div><ProofPicker value={proof} onChange={setProof} /></div>}
+        {type === 'WRITTEN_OFF' && <div><div className="mb-1.5 text-[12px] font-medium text-muted">{t('inv.writeOffProof')}</div><ProofPicker value={proof} onChange={setProof} /></div>}
         <DialogFooter><Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button>
           <Button disabled={invalid} onClick={() => { resolveDiscrepancy(d.id, { type, newCode: newCode.trim() || undefined, kg: Number(kg), note: note.trim() || proof }, userId ?? 'system'); toast.success(t('inv.toast.resolved', { code: d.bagCode })); onClose(); }}><Check /> {t('inv.resolve')}</Button>
         </DialogFooter>

@@ -118,7 +118,7 @@ export function PaymentsPage() {
         <Kpi label={t('pay.kpi.awaiting')} value={f.number(filtered.filter((p) => p.status === 'AWAITING_CHECKER').length)} onClick={() => setView('AWAITING_CHECKER')} />
       </div>
       <details className="mb-5 rounded-card border border-line bg-surface shadow-soft">
-        <summary className="cursor-pointer px-5 py-3.5 text-[15px] font-semibold text-ink">{t('pay.breakdown')}</summary>
+        <summary className="cursor-pointer px-5 py-3.5 text-[14px] font-semibold text-ink">{t('pay.breakdown')}</summary>
         <div className="grid gap-6 border-t border-line p-5 lg:grid-cols-2">
           <div><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('pay.byType')}</h3>{ok.length ? <HBars data={tally((p) => p.payableType, (k) => t(`pay.type.${k}`))} format={money} /> : <TabEmpty>{t('pay.empty')}</TabEmpty>}</div>
           <div><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('pay.byProvider')}</h3>{ok.length ? <Donut data={byProvider.map((d) => ({ ...d, index: settings.paymentProviders.findIndex((p) => p.id === d.key) }))} format={money} /> : <TabEmpty>{t('pay.empty')}</TabEmpty>}</div>

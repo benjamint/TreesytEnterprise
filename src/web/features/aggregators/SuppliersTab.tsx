@@ -202,7 +202,7 @@ export function SupplierSheet({ supplier, onClose, initialName }: { supplier?: S
     toast.success(t('agg.toast.supplierCreated', { name: s.name }), { description: t('agg.pendingHint') });
     onClose(s.id);
   };
-  const select = 'h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
+  const select = 'h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink';
   return (
     <Sheet open onOpenChange={(o) => !o && onClose()}>
       <SheetContent closeLabel={t('common.close')} className="flex flex-col p-0">
@@ -211,7 +211,7 @@ export function SupplierSheet({ supplier, onClose, initialName }: { supplier?: S
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t('col.name')} error={duplicate ? t('agg.err.duplicateSupplier') : undefined} className="sm:col-span-2"><Input value={v.name} onChange={(e) => set({ name: e.target.value })} aria-label={t('col.name')} autoFocus /></Field>
             <Field label={t('col.type')}>
-              <div className="inline-flex h-11 rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={t('col.type')}>
+              <div className="inline-flex h-ctl rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={t('col.type')}>
                 {(['COMPANY', 'INDIVIDUAL'] as const).map((k) => <button key={k} type="button" role="radio" aria-checked={v.kind === k} onClick={() => set({ kind: k })} className={cn('rounded-[8px] px-4 text-[14px] font-medium', v.kind === k ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>{t(`agg.kind.${k}`)}</button>)}
               </div>
             </Field>
@@ -223,8 +223,8 @@ export function SupplierSheet({ supplier, onClose, initialName }: { supplier?: S
             <Field label={t('agg.idNumber')}><Input value={v.idNumber ?? ''} onChange={(e) => set({ idNumber: e.target.value })} aria-label={t('agg.idNumber')} /></Field>
           </div>
           <section className="space-y-3 rounded-card border border-line p-4">
-            <h3 className="text-[15px] font-semibold text-ink">{t('agg.payout')}</h3>
-            <div className="inline-flex h-11 rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={t('agg.payout')}>
+            <h3 className="text-[14px] font-semibold text-ink">{t('agg.payout')}</h3>
+            <div className="inline-flex h-ctl rounded-ctl border border-line bg-canvas p-1" role="radiogroup" aria-label={t('agg.payout')}>
               {(['MOMO', 'BANK'] as const).map((m) => <button key={m} type="button" role="radio" aria-checked={v.payout.method === m} onClick={() => setPayout({ method: m, providerOrBank: m === 'MOMO' ? momo[0]?.id ?? '' : banks[0] ?? '' })} className={cn('rounded-[8px] px-4 text-[14px] font-medium', v.payout.method === m ? 'bg-surface text-ink shadow-soft' : 'text-muted')}>{t(`agg.method.${m}`)}</button>)}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

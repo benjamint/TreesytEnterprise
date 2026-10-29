@@ -69,10 +69,10 @@ export function OptionListsPage() {
           {draft ? (
             <fieldset disabled={!edit} className="space-y-5">
               <div className="grid gap-3 sm:grid-cols-2">
-                {(['en', 'fr'] as const).map((l) => <label key={l} className="block"><span className="mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.06em] text-label">{t('forms.lists.name')} ({l.toUpperCase()})</span><Input compact value={draft.name[l] ?? ''} onChange={(e) => setDraft({ ...draft, name: { ...draft.name, [l]: e.target.value } })} aria-label={`${t('forms.lists.name')} ${l}`} /></label>)}
+                {(['en', 'fr'] as const).map((l) => <label key={l} className="block"><span className="mb-1.5 block text-[13px] font-medium text-ink">{t('forms.lists.name')} ({l.toUpperCase()})</span><Input compact value={draft.name[l] ?? ''} onChange={(e) => setDraft({ ...draft, name: { ...draft.name, [l]: e.target.value } })} aria-label={`${t('forms.lists.name')} ${l}`} /></label>)}
               </div>
               <div>
-                <div className="mb-2 grid grid-cols-[140px_1fr_1fr_100px] gap-2 text-[12px] font-semibold uppercase tracking-[0.06em] text-label"><span>{t('forms.lists.value')}</span><span>{'EN'}</span><span>{'FR'}</span><span /></div>
+                <div className="mb-2 grid grid-cols-[140px_1fr_1fr_100px] gap-2 text-[12px] font-medium text-muted"><span>{t('forms.lists.value')}</span><span>{'EN'}</span><span>{'FR'}</span><span /></div>
                 <ul className="space-y-1.5">
                   {opts.map((o, i) => (
                     <li key={i} className="grid grid-cols-[140px_1fr_1fr_100px] items-center gap-2">

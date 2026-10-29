@@ -116,11 +116,11 @@ function SupplierView() {
             <StatCard label={t('sales.tb.inTransit')} value={f.number(moving.length)} hint={kgT(moving.reduce((s, d) => s + d.expectedKg, 0))} />
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
-            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.tb.byMonth')}</h3><StackedColumns data={chart.data} series={chart.series} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /></section>
-            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.tb.topCustomers')}</h3>{top.length ? <HBars data={top} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /> : <TabEmpty>{t('sales.noDeliveries')}</TabEmpty>}</section>
+            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.tb.byMonth')}</h3><StackedColumns data={chart.data} series={chart.series} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /></section>
+            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.tb.topCustomers')}</h3>{top.length ? <HBars data={top} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /> : <TabEmpty>{t('sales.noDeliveries')}</TabEmpty>}</section>
           </div>
           <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
-            <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.tb.ordersInTransit')}</h3>
+            <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.tb.ordersInTransit')}</h3>
             {moving.length ? <ul className="divide-y divide-line">{moving.map((d) => <li key={d.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-[14px]"><Link to={`/app/dispatch?open=${d.id}`} className="font-mono text-[13px] text-ink hover:underline">{d.number}</Link><span className="text-muted">{`${sl.clientName(d.clientId)} · ${d.truck.plate}${d.position?.eta ? ` · ${t('sales.etaAt', { at: f.dateTime(d.position.eta) })}` : ''}`}</span><StatusBadge status={d.status} /></li>)}</ul> : <TabEmpty>{t('sales.tb.nothingMoving')}</TabEmpty>}
           </section>
         </div>
@@ -134,7 +134,7 @@ function SupplierView() {
             return (
               <section key={g.id} className="rounded-card border border-line bg-surface p-5 shadow-soft">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">{buyer && <CompanyLogo text={buyer.branding.logoText} color={buyer.branding.primaryColor} size={36} />}<div><div className="text-[15px] font-semibold text-ink">{buyer?.name ?? g.toOrgId}</div><div className="text-[12px] text-muted">{clients.length ? t('sales.tb.asClient', { names: clients.map((c) => `${c.name} (${c.code})`).join(', ') }) : t('sales.tb.noClient')}</div></div></div>
+                  <div className="flex items-center gap-3">{buyer && <CompanyLogo text={buyer.branding.logoText} color={buyer.branding.primaryColor} size={36} />}<div><div className="text-[14px] font-semibold text-ink">{buyer?.name ?? g.toOrgId}</div><div className="text-[12px] text-muted">{clients.length ? t('sales.tb.asClient', { names: clients.map((c) => `${c.name} (${c.code})`).join(', ') }) : t('sales.tb.noClient')}</div></div></div>
                   <StatusBadge status={g.status} />
                 </div>
                 <div className="mt-4 grid gap-2 sm:grid-cols-3">
@@ -170,7 +170,7 @@ function InsightsInbox({ insights }: { insights: InsightRequest[] }) {
   return (
     <ul className="space-y-3">{list.map((r) => (
       <li key={r.id} className="rounded-card border border-line bg-surface p-5 shadow-soft">
-        <div className="flex flex-wrap items-start justify-between gap-2"><div><div className="text-[15px] font-semibold text-ink">{r.topic}</div><div className="text-[12px] text-muted">{`${users.find((u) => u.id === r.userId)?.name ?? ''} · ${orgs.find((o) => o.id === r.fromOrgId)?.name ?? ''} · ${f.dateTime(r.createdAt)}`}</div></div><StatusBadge status={r.status === 'OPEN' ? 'INS_OPEN' : 'INS_ANSWERED'} /></div>
+        <div className="flex flex-wrap items-start justify-between gap-2"><div><div className="text-[14px] font-semibold text-ink">{r.topic}</div><div className="text-[12px] text-muted">{`${users.find((u) => u.id === r.userId)?.name ?? ''} · ${orgs.find((o) => o.id === r.fromOrgId)?.name ?? ''} · ${f.dateTime(r.createdAt)}`}</div></div><StatusBadge status={r.status === 'OPEN' ? 'INS_OPEN' : 'INS_ANSWERED'} /></div>
         <p className="mt-2 text-[14px] text-body">{r.message}</p>
         {r.answer ? <p className="mt-3 rounded-ctl bg-canvas px-4 py-3 text-[14px] text-body"><span className="block text-[12px] text-muted">{`${users.find((u) => u.id === r.answer!.by)?.name ?? ''} · ${f.dateTime(r.answer.at)}`}</span>{r.answer.text}</p> : (
           <PermissionGate permission="traceboard.share">
@@ -238,7 +238,7 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-card border border-line bg-surface p-5 shadow-soft" style={{ borderTop: `4px solid ${supplier.branding.primaryColor}` }}>
         <div className="flex items-center gap-4">
           <CompanyLogo text={supplier.branding.logoText} color={supplier.branding.primaryColor} size={52} />
-          <div><div className="eyebrow">{t('nav.traceboard')}</div><h1 className="text-[24px] font-semibold leading-tight text-ink">{supplier.name}</h1><p className="text-[13px] text-muted">{t('sales.tb.suppliedTo', { buyer: buyer.name })}</p></div>
+          <div><div className="eyebrow">{t('nav.traceboard')}</div><h1 className="font-display text-[28px] leading-tight text-ink">{supplier.name}</h1><p className="text-[13px] text-muted">{t('sales.tb.suppliedTo', { buyer: buyer.name })}</p></div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {grants.length > 1 && <select value={supplierId} onChange={(e) => { setSupplierId(e.target.value); close(); }} aria-label={t('sales.tb.supplier')} className="h-10 rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink">{grants.map((g) => <option key={g.id} value={g.fromOrgId}>{orgs.find((o) => o.id === g.fromOrgId)?.name}</option>)}</select>}
@@ -255,21 +255,21 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
             <StatCard label={t('sales.tb.sourcedFrom')} value={t('sales.tb.farmersN', { count: trace.farmers.length })} hint={t('sales.tb.communitiesN', { count: trace.communities.length })} />
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
-            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.tb.crops')}</h3>{crops.length ? <Donut data={crops} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /> : <TabEmpty>{t('sales.noDeliveries')}</TabEmpty>}</section>
+            <section className="rounded-card border border-line bg-surface p-5 shadow-soft"><h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.tb.crops')}</h3>{crops.length ? <Donut data={crops} format={(v) => `${f.number(v, { maximumFractionDigits: 1 })} t`} /> : <TabEmpty>{t('sales.noDeliveries')}</TabEmpty>}</section>
             <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
-              <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.tb.upcoming')}</h3>
+              <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.tb.upcoming')}</h3>
               {upcoming.length ? <ul className="divide-y divide-line">{upcoming.map((d) => <li key={d.id}><button type="button" onClick={() => open(d.id)} className="flex w-full flex-wrap items-center justify-between gap-2 py-2.5 text-left text-[14px] hover:bg-canvas"><span><span className="block font-mono text-[13px] text-ink">{d.number}</span><span className="text-[12px] text-muted">{`${commodityName(d.commodityId)} · ${kgT(d.expectedKg)}${d.position?.eta ? ` · ${t('sales.etaAt', { at: f.dateTime(d.position.eta) })}` : ''}`}</span></span><StatusBadge status={d.status} /></button></li>)}</ul> : <TabEmpty>{t('sales.tb.nothingUpcoming')}</TabEmpty>}
             </section>
           </div>
           {showImpact && (
             <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-[15px] font-semibold text-ink">{t('sales.tb.impact')}</h3><div className="flex flex-wrap gap-1.5">{(ss?.sales.certifications ?? []).map((c) => <span key={c} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-[12px] font-medium text-brand">{c}</span>)}</div></div>
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><h3 className="text-[14px] font-semibold text-ink">{t('sales.tb.impact')}</h3><div className="flex flex-wrap gap-1.5">{(ss?.sales.certifications ?? []).map((c) => <span key={c} className="rounded-full bg-brand-soft px-2.5 py-0.5 text-[12px] font-medium text-brand">{c}</span>)}</div></div>
               <ImpactTiles impact={impact} kpis={ss?.sales.impactKpis ?? []} />
             </section>
           )}
           {showTrace && (
             <section className="rounded-card border border-line bg-surface p-5 shadow-soft">
-              <h3 className="mb-3 text-[15px] font-semibold text-ink">{t('sales.traceToSource')}</h3>
+              <h3 className="mb-3 text-[14px] font-semibold text-ink">{t('sales.traceToSource')}</h3>
               <TraceMap communities={trace.communities} plots={trace.plots} kgByCommunity={trace.kgByCommunity} height={360} />
             </section>
           )}
@@ -279,7 +279,7 @@ function BuyerView({ buyer }: { buyer: Organisation }) {
       {tab === 'insights' && (
         insights.length ? <ul className="space-y-3">{[...insights].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map((r) => (
           <li key={r.id} className="rounded-card border border-line bg-surface p-5 shadow-soft">
-            <div className="flex flex-wrap items-start justify-between gap-2"><div><div className="text-[15px] font-semibold text-ink">{r.topic}</div><div className="text-[12px] text-muted">{f.dateTime(r.createdAt)}</div></div><StatusBadge status={r.status === 'OPEN' ? 'INS_OPEN' : 'INS_ANSWERED'} /></div>
+            <div className="flex flex-wrap items-start justify-between gap-2"><div><div className="text-[14px] font-semibold text-ink">{r.topic}</div><div className="text-[12px] text-muted">{f.dateTime(r.createdAt)}</div></div><StatusBadge status={r.status === 'OPEN' ? 'INS_OPEN' : 'INS_ANSWERED'} /></div>
             <p className="mt-2 text-[14px] text-body">{r.message}</p>
             {r.answer && <p className="mt-3 rounded-ctl bg-canvas px-4 py-3 text-[14px] text-body"><span className="block text-[12px] text-muted">{`${supplier.name} · ${f.dateTime(r.answer.at)}`}</span>{r.answer.text}</p>}
           </li>
@@ -354,7 +354,7 @@ function InsightDialog({ buyerOrgId, supplierId, orders, onClose }: { buyerOrgId
         <div className="space-y-4">
           <Field label={t('sales.tb.topic')}><Input value={topic} onChange={(e) => setTopic(e.target.value)} aria-label={t('sales.tb.topic')} /></Field>
           <TextAreaField label={t('sales.tb.message')} value={message} onChange={(e) => setMessage(e.target.value)} rows={4} />
-          <Field label={t('sales.tb.aboutOrder')}><select value={dispatchId} onChange={(e) => setDispatchId(e.target.value)} aria-label={t('sales.tb.aboutOrder')} className="h-11 w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink"><option value="">{t('sales.tb.anyOrder')}</option>{orders.map((d) => <option key={d.id} value={d.id}>{d.number}</option>)}</select></Field>
+          <Field label={t('sales.tb.aboutOrder')}><select value={dispatchId} onChange={(e) => setDispatchId(e.target.value)} aria-label={t('sales.tb.aboutOrder')} className="h-ctl w-full rounded-ctl border border-line bg-surface px-3 text-[14px] text-ink"><option value="">{t('sales.tb.anyOrder')}</option>{orders.map((d) => <option key={d.id} value={d.id}>{d.number}</option>)}</select></Field>
         </div>
         <DialogFooter><Button variant="secondary" onClick={onClose}>{t('common.cancel')}</Button><Button disabled={!topic.trim() || !message.trim()} onClick={() => { requestInsights({ fromOrgId: buyerOrgId, orgId: supplierId, userId: userId ?? 'system', topic: topic.trim(), message: message.trim(), dispatchId: dispatchId || undefined }); toast.success(t('sales.toast.insightSent')); onClose(); }}><Send /> {t('sales.tb.send')}</Button></DialogFooter>
       </DialogContent>
